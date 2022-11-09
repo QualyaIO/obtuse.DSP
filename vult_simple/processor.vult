@@ -1,0 +1,16 @@
+
+fun sine_table(x) @[table(size=1024,min=0.0,max=1.0)] {
+   return sin(6.283185307179586 * x);
+}
+
+fun process(fs:real) {
+
+   // time passing by, going through the wavetable
+   mem phase;
+   phase = phase + 440.0/fs;
+   // loop to stay within best interval for float precision
+   phase = phase % 1.0;
+
+   return sine_table(phase);
+}
+
