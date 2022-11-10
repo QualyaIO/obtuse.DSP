@@ -32,6 +32,10 @@ and setSamplerate(newFs:real) {
    }
    step = freq/fs;
 }
+// manually setting the step between each call, overriding frequency and samplerate for for effiency at times
+and setStep(newStep:real) {
+   step = newStep;
+}
 and default() @[init] {
    // default frequency (in kHz)
    _ = setFrequency(0.440);

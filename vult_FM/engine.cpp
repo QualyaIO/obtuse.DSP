@@ -15,10 +15,31 @@ void Sinus__ctx_type_4_init(Sinus__ctx_type_4 &_output_){
 
 void Engine__ctx_type_0_init(Engine__ctx_type_0 &_output_){
    Engine__ctx_type_0 _ctx;
+   Sinus__ctx_type_4_init(_ctx.modulator);
+   _ctx.fs = 0x0 /* 0.000000 */;
+   _ctx.cbase = 0x0 /* 0.000000 */;
    Sinus__ctx_type_4_init(_ctx.carrier);
    Engine_default(_ctx);
    _output_ = _ctx;
    return ;
+}
+
+fix16_t Engine_process(Engine__ctx_type_0 &_ctx){
+   fix16_t cstep;
+   cstep = fix_mul(_ctx.cbase,Sinus_process(_ctx.modulator));
+   Sinus_setStep(_ctx.carrier,cstep);
+   fix16_t c;
+   c = Sinus_process(_ctx.carrier);
+   return c;
+}
+
+void Engine_setSamplerate(Engine__ctx_type_0 &_ctx, fix16_t newFs){
+   if(newFs > 0x0 /* 0.000000 */){
+      _ctx.fs = newFs;
+   }
+   _ctx.cbase = fix_div(0x70a3 /* 0.440000 */,_ctx.fs);
+   Sinus_setSamplerate(_ctx.carrier,newFs);
+   Sinus_setSamplerate(_ctx.modulator,newFs);
 }
 
 

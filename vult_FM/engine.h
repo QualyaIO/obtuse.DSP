@@ -73,6 +73,17 @@ static_inline void Sinus_setSamplerate(Sinus__ctx_type_4 &_ctx, fix16_t newFs){
    _ctx.step = fix_div(_ctx.freq,_ctx.fs);
 }
 
+typedef Sinus__ctx_type_4 Sinus_setStep_type;
+
+static_inline void Sinus_setStep_init(Sinus__ctx_type_4 &_output_){
+   Sinus__ctx_type_4_init(_output_);
+   return ;
+}
+
+static_inline void Sinus_setStep(Sinus__ctx_type_4 &_ctx, fix16_t newStep){
+   _ctx.step = newStep;
+};
+
 typedef Sinus__ctx_type_4 Sinus_default_type;
 
 static_inline void Sinus_default_init(Sinus__ctx_type_4 &_output_){
@@ -86,6 +97,9 @@ static_inline void Sinus_default(Sinus__ctx_type_4 &_ctx){
 }
 
 typedef struct Engine__ctx_type_0 {
+   Sinus__ctx_type_4 modulator;
+   fix16_t fs;
+   fix16_t cbase;
    Sinus__ctx_type_4 carrier;
 } Engine__ctx_type_0;
 
@@ -98,11 +112,7 @@ static_inline void Engine_process_init(Engine__ctx_type_0 &_output_){
    return ;
 }
 
-static_inline fix16_t Engine_process(Engine__ctx_type_0 &_ctx){
-   fix16_t c;
-   c = Sinus_process(_ctx.carrier);
-   return c;
-}
+fix16_t Engine_process(Engine__ctx_type_0 &_ctx);
 
 typedef Engine__ctx_type_0 Engine_setSamplerate_type;
 
@@ -111,9 +121,7 @@ static_inline void Engine_setSamplerate_init(Engine__ctx_type_0 &_output_){
    return ;
 }
 
-static_inline void Engine_setSamplerate(Engine__ctx_type_0 &_ctx, fix16_t newFs){
-   Sinus_setSamplerate(_ctx.carrier,newFs);
-};
+void Engine_setSamplerate(Engine__ctx_type_0 &_ctx, fix16_t newFs);
 
 typedef Engine__ctx_type_0 Engine_default_type;
 
@@ -125,6 +133,7 @@ static_inline void Engine_default_init(Engine__ctx_type_0 &_output_){
 static_inline void Engine_default(Engine__ctx_type_0 &_ctx){
    Engine_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    Sinus_setFrequency(_ctx.carrier,0x70a3 /* 0.440000 */);
+   Sinus_setFrequency(_ctx.modulator,0x41 /* 0.001000 */);
 }
 
 
