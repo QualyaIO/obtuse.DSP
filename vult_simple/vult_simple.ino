@@ -124,12 +124,11 @@ void loop() {
 
   //  buffers hard-coded of size 16 in I2S (unless i2s.setBuffers() is called), make sure there are at least two of them free in the audio circular buffer (of buffers)
   while (i2s.availableForWrite() > 32) {
-    // as long as float is really between -1 and 1, int part of fixed will be on -65536/65535 range (should we checkit ?)
-    // not forgetting to convert passed parameters to fixed (of course...)
     dsp_tick = micros();
-    fix16_t val_fix = Processor_process(context, float_to_fix(sampleRate));
+    // returned float should be between -1 and 1 (should we checkit ?)
+    // not forgetting to convert passed parameters to fixed (of course...)
+    int16_t val = fix_to_float(Processor_process(context, float_to_fix(sampleRate))) * 32767;
     dsp_time += micros() - dsp_tick;
-    int16_t val = (int16_t)(val_fix / 2);
     //Serial.println(val);
     i2s.write(val);
     i2s.write(val);
@@ -157,7 +156,7 @@ void loop() {
 
     Serial.print("DSP time (useconds): ");
     Serial.print(dsp_time);
-    Serial.print(" ("); Serial.print((float)dsp_time/(newTick - tick)); Serial.println("% CPU)");
+    Serial.print(" ("); Serial.print((float)dsp_time / (newTick - tick)); Serial.println("% CPU)");
     loop_n = 0;
     loop_i2s_a = 0;
     loop_buf_a = 0;
