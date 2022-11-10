@@ -109,6 +109,10 @@ long loop_buf_f = 0;
 // audio transmitted in this loop
 long loop_audio = 0;
 
+// computing time spent on DPS
+unsigned long dsp_tick;
+unsigned long dsp_time;
+
 void loop() {
   loop_n++;
 
@@ -122,7 +126,9 @@ void loop() {
   while (i2s.availableForWrite() > 32) {
     // as long as float is really between -1 and 1, int part of fixed will be on -65536/65535 range (should we checkit ?)
     // not forgetting to convert passed parameters to fixed (of course...)
+    dsp_tick = micros();
     fix16_t val_fix = Processor_process(context, float_to_fix(sampleRate));
+    dsp_time += micros() - dsp_tick;
     int16_t val = (int16_t)(val_fix / 2);
     //Serial.println(val);
     i2s.write(val);
@@ -130,8 +136,8 @@ void loop() {
   }
 
   // debug
-  int newTick = millis();
-  if (newTick - tick >= 1000) {
+  int newTick = micros();
+  if (newTick - tick >= 1000000) {
     unsigned long st = micros();
     Serial.println("Running strong!");
     Serial.print("loops with i2s available");
@@ -148,14 +154,19 @@ void loop() {
 
     Serial.print("i2s available: ");
     Serial.println(i2s.availableForWrite());
+
+    Serial.print("DSP time (useconds): ");
+    Serial.print(dsp_time);
+    Serial.print(" ("); Serial.print((float)dsp_time/(newTick - tick)); Serial.println("% CPU)");
     loop_n = 0;
     loop_i2s_a = 0;
     loop_buf_a = 0;
     loop_buf_f = 0;
     loop_audio = 0;
     nb_updates = 0;
+    dsp_time = 0;
 
-    tick += 1000;
+    tick += 1000000;
 
     // testing buffer to create pops
     //delayMicroseconds(random(0, 2000));
