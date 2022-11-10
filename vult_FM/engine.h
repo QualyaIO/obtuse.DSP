@@ -8,21 +8,21 @@
 #include "engine.tables.h"
 
 static_inline fix16_t Sinus_sine_table_raw_c0(int index){
-   return pgm_read_word_near(Sinus_sine_table_c0 + index);
+   return Sinus_sine_table_c0[index];
 };
 
 static_inline fix16_t Sinus_sine_table_raw_c1(int index){
-   return pgm_read_word_near(Sinus_sine_table_c1 + index);
+   return Sinus_sine_table_c1[index];
 };
 
 static_inline fix16_t Sinus_sine_table_raw_c2(int index){
-   return pgm_read_word_near(Sinus_sine_table_c2 + index);
+   return Sinus_sine_table_c2[index];
 };
 
 static_inline fix16_t Sinus_sine_table(fix16_t x){
    int index;
    index = int_clip(fix_to_int(fix_mul(0x3ff0000 /* 1023.000000 */,x)),0,1023);
-   return (pgm_read_dword_near(fix_wrap_array(Sinus_sine_table_c0) + index) + fix_mul(x,(pgm_read_dword_near(fix_wrap_array(Sinus_sine_table_c1) + index) + fix_mul(x,pgm_read_dword_near(fix_wrap_array(Sinus_sine_table_c2) + index)))));
+   return (fix_mac(fix_wrap_array(Sinus_sine_table_c0)[index],x,(fix_mac(fix_wrap_array(Sinus_sine_table_c1)[index],x,fix_wrap_array(Sinus_sine_table_c2)[index]))));
 }
 
 typedef struct Sinus__ctx_type_4 {
