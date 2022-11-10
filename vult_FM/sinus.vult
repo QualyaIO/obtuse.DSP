@@ -1,0 +1,40 @@
+
+fun sine_table(x) @[table(size=1024,min=0.0,max=1.0)] {
+   return sin(6.283185307179586 * x);
+}
+
+// expect values of desired frequency and current sampring rate in kHz to avoid fixed float limits ([1/32767 ..32767]... probably)
+fun process() {
+   // audio sampling rate
+   mem fs: real;
+   // sinus frequency
+   mem freq: real;
+   // [0..1[ in the wavetable
+   mem phase: real;
+   // going that much through wavetable at each call
+   mem step: real;
+
+   // advance time
+   phase = phase + step;
+   // loop to stay within best interval for float precision
+   phase = phase % 1.0;
+
+   return sine_table(phase);
+}
+// seter for parameters
+and setFrequency(newFreq:real) {
+   freq = newFreq;
+   step = freq/fs;
+}
+and setSamplerate(newFs:real) {
+   if (newFs > 0.0) {
+      fs = newFs;
+   }
+   step = freq/fs;
+}
+and default() @[init] {
+   // default frequency (in kHz)
+   _ = setFrequency(0.440);
+   // default sampling rate (in kHz)
+   _ = setSamplerate(44.1);
+}

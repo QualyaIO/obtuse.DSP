@@ -1,0 +1,14 @@
+
+
+fun process() {
+   val c = carrier:Sinus.process();
+   return c;
+}
+and setSamplerate(newFs:real) {
+    _ = carrier:Sinus.setSamplerate(newFs);
+}
+and default() @[init] {
+    // default sampling rate (in kHz)
+    _ = setSamplerate(44.100);
+    _ = carrier:Sinus.setFrequency(0.440);
+}
