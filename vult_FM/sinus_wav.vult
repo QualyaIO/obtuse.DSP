@@ -1,0 +1,49 @@
+
+external sin_wave(channel:int, index:int) : real @[wave(channels=1, file="sinus_8k.wav")];
+
+fun index() {
+   mem i = (i + 1) % sin_wave_samples();
+   return i;
+}
+
+// expect values of desired frequency and current sampring rate in kHz to avoid fixed float limits ([1/32767 ..32767]... probably)
+fun process() {
+   // audio sampling rate
+   mem fs: real;
+   // sinus frequency
+   mem freq: real;
+   // [0..8k[ in the wavetable
+   mem phase: int;
+   // going that much through wavetable at each call
+   mem step: int;
+
+   // advance time
+   phase = phase + step;
+   // loop in sample
+   phase = phase % sin_wave_samples();
+
+   return sin_wave(0, phase);
+}
+// manually setting the step between each call, overriding frequency and samplerate for for effiency at times
+// for outised, expect step between 0 and 1
+and setStep(newStep:real) {
+    newStep = newStep % 1.0;
+   step = int(newStep * real(sin_wave_samples()));
+}
+// seter for parameters
+and setFrequency(newFreq:real) {
+   freq = newFreq;
+   _ = setStep(freq/fs);
+}
+and setSamplerate(newFs:real) {
+   if (newFs > 0.0) {
+      fs = newFs;
+   }
+   _ = setStep(freq/fs);
+}
+and default() @[init] {
+   // default frequency (in kHz)
+   _ = setFrequency(0.440);
+   // default sampling rate (in kHz)
+   _ = setSamplerate(44.1);
+}

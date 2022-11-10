@@ -7,9 +7,9 @@ fun process() {
     mem cbase: real;
 
     // computing change of thep for carrier
-    val cstep : real =  modulator:Sinus.process() * cbase;
-    _ = carrier:Sinus.setStep(cstep);
-   val c = carrier:Sinus.process();
+    val cstep : real =  modulator:Sinus_wav.process() * cbase;
+    _ = carrier:Sinus_wav.setStep(cstep);
+   val c = carrier:Sinus_wav.process();
    return c;
 }
 and setSamplerate(newFs:real) {
@@ -17,12 +17,12 @@ and setSamplerate(newFs:real) {
       fs = newFs;
    }
    cbase = 0.440 / fs;
-   _ = carrier:Sinus.setSamplerate(newFs);
-   _ = modulator:Sinus.setSamplerate(newFs);
+   _ = carrier:Sinus_wav.setSamplerate(newFs);
+   _ = modulator:Sinus_wav.setSamplerate(newFs);
 }
 and default() @[init] {
     // default sampling rate (in kHz)
     _ = setSamplerate(44.100);
-    _ = carrier:Sinus.setFrequency(0.440);
-    _ = modulator:Sinus.setFrequency(0.001);
+    _ = carrier:Sinus_wav.setFrequency(0.440);
+    _ = modulator:Sinus_wav.setFrequency(0.001);
 }

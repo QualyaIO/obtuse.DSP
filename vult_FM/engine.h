@@ -7,100 +7,117 @@
 #include "vultin.h"
 #include "engine.tables.h"
 
-static_inline fix16_t Sinus_sine_table_raw_c0(int index){
-   return Sinus_sine_table_c0[index];
+static_inline int Sinus_wav_sin_wave_samples(){
+   return 8000;
 };
 
-static_inline fix16_t Sinus_sine_table_raw_c1(int index){
-   return Sinus_sine_table_c1[index];
-};
-
-static_inline fix16_t Sinus_sine_table_raw_c2(int index){
-   return Sinus_sine_table_c2[index];
-};
-
-static_inline fix16_t Sinus_sine_table(fix16_t x){
-   int index;
-   index = int_clip(fix_to_int(fix_mul(0x3ff0000 /* 1023.000000 */,x)),0,1023);
-   return (fix_mac(fix_wrap_array(Sinus_sine_table_c0)[index],x,(fix_mac(fix_wrap_array(Sinus_sine_table_c1)[index],x,fix_wrap_array(Sinus_sine_table_c2)[index]))));
+static_inline fix16_t Sinus_wav_sin_wave(int channel, int index){
+   if(channel == 0){
+      return fix_wrap_array(Sinus_wav_sin_wave_chan_0)[(index % 8000)];
+   }
+   return 0x0 /* 0.000000 */;
 }
 
-typedef struct Sinus__ctx_type_4 {
-   fix16_t step;
-   fix16_t phase;
+typedef struct Sinus_wav__ctx_type_2 {
+   int i;
+} Sinus_wav__ctx_type_2;
+
+typedef Sinus_wav__ctx_type_2 Sinus_wav_index_type;
+
+static_inline void Sinus_wav__ctx_type_2_init(Sinus_wav__ctx_type_2 &_output_){
+   Sinus_wav__ctx_type_2 _ctx;
+   _ctx.i = 0;
+   _output_ = _ctx;
+   return ;
+}
+
+static_inline void Sinus_wav_index_init(Sinus_wav__ctx_type_2 &_output_){
+   Sinus_wav__ctx_type_2_init(_output_);
+   return ;
+}
+
+static_inline int Sinus_wav_index(Sinus_wav__ctx_type_2 &_ctx){
+   _ctx.i = ((1 + _ctx.i) % Sinus_wav_sin_wave_samples());
+   return _ctx.i;
+}
+
+typedef struct Sinus_wav__ctx_type_3 {
+   int step;
+   int phase;
    fix16_t fs;
    fix16_t freq;
-} Sinus__ctx_type_4;
+} Sinus_wav__ctx_type_3;
 
-typedef Sinus__ctx_type_4 Sinus_process_type;
+typedef Sinus_wav__ctx_type_3 Sinus_wav_process_type;
 
-void Sinus__ctx_type_4_init(Sinus__ctx_type_4 &_output_);
+void Sinus_wav__ctx_type_3_init(Sinus_wav__ctx_type_3 &_output_);
 
-static_inline void Sinus_process_init(Sinus__ctx_type_4 &_output_){
-   Sinus__ctx_type_4_init(_output_);
+static_inline void Sinus_wav_process_init(Sinus_wav__ctx_type_3 &_output_){
+   Sinus_wav__ctx_type_3_init(_output_);
    return ;
 }
 
-static_inline fix16_t Sinus_process(Sinus__ctx_type_4 &_ctx){
+static_inline fix16_t Sinus_wav_process(Sinus_wav__ctx_type_3 &_ctx){
    _ctx.phase = (_ctx.phase + _ctx.step);
-   _ctx.phase = (_ctx.phase % 0x10000 /* 1.000000 */);
-   return Sinus_sine_table(_ctx.phase);
+   _ctx.phase = (_ctx.phase % Sinus_wav_sin_wave_samples());
+   return Sinus_wav_sin_wave(0,_ctx.phase);
 }
 
-typedef Sinus__ctx_type_4 Sinus_setFrequency_type;
+typedef Sinus_wav__ctx_type_3 Sinus_wav_setStep_type;
 
-static_inline void Sinus_setFrequency_init(Sinus__ctx_type_4 &_output_){
-   Sinus__ctx_type_4_init(_output_);
+static_inline void Sinus_wav_setStep_init(Sinus_wav__ctx_type_3 &_output_){
+   Sinus_wav__ctx_type_3_init(_output_);
    return ;
 }
 
-static_inline void Sinus_setFrequency(Sinus__ctx_type_4 &_ctx, fix16_t newFreq){
+static_inline void Sinus_wav_setStep(Sinus_wav__ctx_type_3 &_ctx, fix16_t newStep){
+   newStep = (newStep % 0x10000 /* 1.000000 */);
+   _ctx.step = fix_to_int(fix_mul(newStep,int_to_fix(Sinus_wav_sin_wave_samples())));
+}
+
+typedef Sinus_wav__ctx_type_3 Sinus_wav_setFrequency_type;
+
+static_inline void Sinus_wav_setFrequency_init(Sinus_wav__ctx_type_3 &_output_){
+   Sinus_wav__ctx_type_3_init(_output_);
+   return ;
+}
+
+static_inline void Sinus_wav_setFrequency(Sinus_wav__ctx_type_3 &_ctx, fix16_t newFreq){
    _ctx.freq = newFreq;
-   _ctx.step = fix_div(_ctx.freq,_ctx.fs);
+   Sinus_wav_setStep(_ctx,fix_div(_ctx.freq,_ctx.fs));
 }
 
-typedef Sinus__ctx_type_4 Sinus_setSamplerate_type;
+typedef Sinus_wav__ctx_type_3 Sinus_wav_setSamplerate_type;
 
-static_inline void Sinus_setSamplerate_init(Sinus__ctx_type_4 &_output_){
-   Sinus__ctx_type_4_init(_output_);
+static_inline void Sinus_wav_setSamplerate_init(Sinus_wav__ctx_type_3 &_output_){
+   Sinus_wav__ctx_type_3_init(_output_);
    return ;
 }
 
-static_inline void Sinus_setSamplerate(Sinus__ctx_type_4 &_ctx, fix16_t newFs){
+static_inline void Sinus_wav_setSamplerate(Sinus_wav__ctx_type_3 &_ctx, fix16_t newFs){
    if(newFs > 0x0 /* 0.000000 */){
       _ctx.fs = newFs;
    }
-   _ctx.step = fix_div(_ctx.freq,_ctx.fs);
+   Sinus_wav_setStep(_ctx,fix_div(_ctx.freq,_ctx.fs));
 }
 
-typedef Sinus__ctx_type_4 Sinus_setStep_type;
+typedef Sinus_wav__ctx_type_3 Sinus_wav_default_type;
 
-static_inline void Sinus_setStep_init(Sinus__ctx_type_4 &_output_){
-   Sinus__ctx_type_4_init(_output_);
+static_inline void Sinus_wav_default_init(Sinus_wav__ctx_type_3 &_output_){
+   Sinus_wav__ctx_type_3_init(_output_);
    return ;
 }
 
-static_inline void Sinus_setStep(Sinus__ctx_type_4 &_ctx, fix16_t newStep){
-   _ctx.step = newStep;
-};
-
-typedef Sinus__ctx_type_4 Sinus_default_type;
-
-static_inline void Sinus_default_init(Sinus__ctx_type_4 &_output_){
-   Sinus__ctx_type_4_init(_output_);
-   return ;
-}
-
-static_inline void Sinus_default(Sinus__ctx_type_4 &_ctx){
-   Sinus_setFrequency(_ctx,0x70a3 /* 0.440000 */);
-   Sinus_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
+static_inline void Sinus_wav_default(Sinus_wav__ctx_type_3 &_ctx){
+   Sinus_wav_setFrequency(_ctx,0x70a3 /* 0.440000 */);
+   Sinus_wav_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
 }
 
 typedef struct Engine__ctx_type_0 {
-   Sinus__ctx_type_4 modulator;
+   Sinus_wav__ctx_type_3 modulator;
    fix16_t fs;
    fix16_t cbase;
-   Sinus__ctx_type_4 carrier;
+   Sinus_wav__ctx_type_3 carrier;
 } Engine__ctx_type_0;
 
 typedef Engine__ctx_type_0 Engine_process_type;
@@ -132,8 +149,8 @@ static_inline void Engine_default_init(Engine__ctx_type_0 &_output_){
 
 static_inline void Engine_default(Engine__ctx_type_0 &_ctx){
    Engine_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
-   Sinus_setFrequency(_ctx.carrier,0x70a3 /* 0.440000 */);
-   Sinus_setFrequency(_ctx.modulator,0x41 /* 0.001000 */);
+   Sinus_wav_setFrequency(_ctx.carrier,0x70a3 /* 0.440000 */);
+   Sinus_wav_setFrequency(_ctx.modulator,0x41 /* 0.001000 */);
 }
 
 
