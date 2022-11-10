@@ -1,6 +1,6 @@
 
 // WARNING: need this bit to fix issues with vult template, not retrieving 32bit otherwise -- but only workes with fixed version, for real leplace with pgm_read_float
-#define pgm_read_word(addr) pgm_read_dword(addr)
+//#define pgm_read_word(addr) pgm_read_dword(addr)
 
 
 /*** Vult ***/
