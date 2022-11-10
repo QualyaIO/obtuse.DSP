@@ -95,6 +95,12 @@ void setup() {
   Serial.println(sgtl.volume(0.2));
 
   delay(1000);
+
+  /* Vult */
+  // generating 440hz sinus, not forgetting to convert passed parameters to fixed (of course...)
+
+  Processor_setSamplerate(context, float_to_fix(sampleRate/1000.0));
+  Processor_setFrequency(context, float_to_fix(0.440));
 }
 
 int nb_updates = 0;
@@ -126,8 +132,7 @@ void loop() {
   while (i2s.availableForWrite() > 32) {
     dsp_tick = micros();
     // returned float should be between -1 and 1 (should we checkit ?)
-    // not forgetting to convert passed parameters to fixed (of course...)
-    int16_t val = fix_to_float(Processor_process(context, float_to_fix(440.0/1000), float_to_fix(sampleRate/1000))) * 32767;
+    int16_t val = fix_to_float(Processor_process(context)) * 32767;
     dsp_time += micros() - dsp_tick;
     //Serial.println(val);
     i2s.write(val);

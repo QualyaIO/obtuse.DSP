@@ -26,27 +26,63 @@ static_inline fix16_t Processor_sine_table(fix16_t x){
 }
 
 typedef struct Processor__ctx_type_4 {
+   fix16_t step;
    fix16_t phase;
+   fix16_t fs;
+   fix16_t freq;
 } Processor__ctx_type_4;
 
 typedef Processor__ctx_type_4 Processor_process_type;
 
-static_inline void Processor__ctx_type_4_init(Processor__ctx_type_4 &_output_){
-   Processor__ctx_type_4 _ctx;
-   _ctx.phase = 0x0 /* 0.000000 */;
-   _output_ = _ctx;
-   return ;
-}
+void Processor__ctx_type_4_init(Processor__ctx_type_4 &_output_);
 
 static_inline void Processor_process_init(Processor__ctx_type_4 &_output_){
    Processor__ctx_type_4_init(_output_);
    return ;
 }
 
-static_inline fix16_t Processor_process(Processor__ctx_type_4 &_ctx, fix16_t freq, fix16_t fs){
-   _ctx.phase = (_ctx.phase + fix_div(freq,fs));
+static_inline fix16_t Processor_process(Processor__ctx_type_4 &_ctx){
+   _ctx.phase = (_ctx.phase + _ctx.step);
    _ctx.phase = (_ctx.phase % 0x10000 /* 1.000000 */);
    return Processor_sine_table(_ctx.phase);
+}
+
+typedef Processor__ctx_type_4 Processor_default_type;
+
+static_inline void Processor_default_init(Processor__ctx_type_4 &_output_){
+   Processor__ctx_type_4_init(_output_);
+   return ;
+}
+
+static_inline void Processor_default(Processor__ctx_type_4 &_ctx){
+   _ctx.fs = 0x2c1999 /* 44.100000 */;
+   _ctx.freq = 0x70a3 /* 0.440000 */;
+}
+
+typedef Processor__ctx_type_4 Processor_setFrequency_type;
+
+static_inline void Processor_setFrequency_init(Processor__ctx_type_4 &_output_){
+   Processor__ctx_type_4_init(_output_);
+   return ;
+}
+
+static_inline void Processor_setFrequency(Processor__ctx_type_4 &_ctx, fix16_t newFreq){
+   _ctx.freq = newFreq;
+   _ctx.step = fix_div(_ctx.freq,_ctx.fs);
+}
+
+typedef Processor__ctx_type_4 Processor_setSamplerate_type;
+
+static_inline void Processor_setSamplerate_init(Processor__ctx_type_4 &_output_){
+   Processor__ctx_type_4_init(_output_);
+   return ;
+}
+
+static_inline void Processor_setSamplerate(Processor__ctx_type_4 &_ctx, fix16_t newFs){
+   if(newFs > 0x0 /* 0.000000 */){
+      _ctx.fs = newFs;
+   }
+   _ctx.step = fix_div(_ctx.freq,_ctx.fs);
 }
 
 
