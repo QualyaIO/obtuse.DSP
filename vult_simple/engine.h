@@ -43,8 +43,8 @@ static_inline void Processor_process_init(Processor__ctx_type_4 &_output_){
    return ;
 }
 
-static_inline fix16_t Processor_process(Processor__ctx_type_4 &_ctx, fix16_t fs){
-   _ctx.phase = (_ctx.phase + fix_div(0x1b80000 /* 440.000000 */,fs));
+static_inline fix16_t Processor_process(Processor__ctx_type_4 &_ctx, fix16_t freq, fix16_t fs){
+   _ctx.phase = (_ctx.phase + fix_div(freq,fs));
    _ctx.phase = (_ctx.phase % 0x10000 /* 1.000000 */);
    return Processor_sine_table(_ctx.phase);
 }

@@ -3,11 +3,12 @@ fun sine_table(x) @[table(size=1024,min=0.0,max=1.0)] {
    return sin(6.283185307179586 * x);
 }
 
-fun process(fs:real) {
+// expect values of desired frequency and current sampring rate in kHz to avoid fixed float limits ([1/32767 ..32767]... probably)
+fun process(freq:real, fs:real) {
 
    // time passing by, going through the wavetable
    mem phase;
-   phase = phase + 440.0/fs;
+   phase = phase + freq/fs;
    // loop to stay within best interval for float precision
    phase = phase % 1.0;
 

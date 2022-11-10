@@ -127,7 +127,7 @@ void loop() {
     dsp_tick = micros();
     // returned float should be between -1 and 1 (should we checkit ?)
     // not forgetting to convert passed parameters to fixed (of course...)
-    int16_t val = fix_to_float(Processor_process(context, float_to_fix(sampleRate))) * 32767;
+    int16_t val = fix_to_float(Processor_process(context, float_to_fix(440.0/1000), float_to_fix(sampleRate/1000))) * 32767;
     dsp_time += micros() - dsp_tick;
     //Serial.println(val);
     i2s.write(val);
