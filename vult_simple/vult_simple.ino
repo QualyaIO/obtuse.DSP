@@ -1,5 +1,6 @@
 
-// WARNING: need to change Mozzi code, MozziGuts_impl_RP2040.h and substitude all reference to IRQ 0 to IRQ 1 (plus inst0 -> inst1)
+// WARNING: need this bit to fix issues with vult template, not retrieving 32bit otherwise -- but only workes with fixed version, for real leplace with pgm_read_float
+#define pgm_read_word(addr) pgm_read_dword(addr)
 
 
 /*** Vult ***/
@@ -119,13 +120,11 @@ void loop() {
 
   //  buffers hard-coded of size 16 in I2S (unless i2s.setBuffers() is called), make sure there are at least two of them free in the audio circular buffer (of buffers)
   while (i2s.availableForWrite() > 32) {
-    fix16_t val = Processor_process(context, sampleRate);
-   /* Serial.print(val);
-    Serial.print(" ");*/
-    Serial.print(fix_to_float(val));
- /*   Serial.print(" ");
-    Serial.print((int16_t)(val / 2));*/
-    Serial.println();
+    // as long as float is really between -1 and 1, int part of fixed will be on -65536/65535 range (should we checkit ?)
+    // not forgetting to convert passed parameters to fixed (of course...)
+    fix16_t val_fix = Processor_process(context, float_to_fix(sampleRate));
+    int16_t val = (int16_t)(val_fix / 2);
+    //Serial.println(val);
     i2s.write(val);
     i2s.write(val);
   }
