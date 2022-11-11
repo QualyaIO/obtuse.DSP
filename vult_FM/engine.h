@@ -59,6 +59,7 @@ static_inline void Sinus_wav_process_init(Sinus_wav__ctx_type_3 &_output_){
 
 static_inline fix16_t Sinus_wav_process(Sinus_wav__ctx_type_3 &_ctx){
    _ctx.phase = (_ctx.phase + _ctx.step);
+   _ctx.phase = (_ctx.phase % int_to_fix(Sinus_wav_sin_wave_samples()));
    return Sinus_wav_sin_wave(0,fix_to_int(_ctx.phase));
 }
 

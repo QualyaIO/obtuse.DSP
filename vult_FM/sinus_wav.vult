@@ -19,6 +19,7 @@ fun process() {
 
    // advance time
    phase = phase + step;
+   phase = phase % real(sin_wave_samples());
    // loop in sample
    return sin_wave(0, int(phase));
 }
