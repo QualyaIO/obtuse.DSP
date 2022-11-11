@@ -37,7 +37,8 @@ void Engine_setSamplerate(Engine__ctx_type_0 &_ctx, fix16_t newFs){
    if(newFs > 0x0 /* 0.000000 */){
       _ctx.fs = newFs;
    }
-   _ctx.cbase = fix_div(0x70a3 /* 0.440000 */,_ctx.fs);
+   _ctx.cbase = fix_div(int_to_fix(Sinus_wav_getSize(_ctx.carrier)),_ctx.fs);
+   _ctx.cbase = fix_mul(0x70a3 /* 0.440000 */,_ctx.cbase);
    Sinus_wav_setSamplerate(_ctx.carrier,newFs);
    Sinus_wav_setSamplerate(_ctx.modulator,newFs);
 }

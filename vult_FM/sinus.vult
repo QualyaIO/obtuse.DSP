@@ -1,9 +1,9 @@
 
+// FIXME: user bigger range as input to improve frequencies range -- E.g. as much as table size? Add getSize() below
 fun sine_table(x) @[table(size=1024,min=0.0,max=1.0)] {
    return sin(6.283185307179586 * x);
 }
 
-// expect values of desired frequency and current sampring rate in kHz to avoid fixed float limits ([1/32767 ..32767]... probably)
 fun process() {
    // audio sampling rate
    mem fs: real;
@@ -22,6 +22,7 @@ fun process() {
    return sine_table(phase);
 }
 // seter for parameters
+// expect values of desired frequency and current sampring rate in kHz. Beware fixed float limits ([1/32767 ..32767]... probably), e.g. with 44.100 hz a freq below around 5hz will not work, and low range will be probably off. Prefare wav version for lower resolution.
 and setFrequency(newFreq:real) {
    freq = newFreq;
    step = freq/fs;

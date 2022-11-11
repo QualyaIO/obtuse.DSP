@@ -9,14 +9,16 @@ fun process() {
     // computing change of thep for carrier
     val cstep : real =  modulator:Sinus_wav.process() * cbase;
     _ = carrier:Sinus_wav.setStep(cstep);
-   val c = carrier:Sinus_wav.process();
-   return c;
+    val c = carrier:Sinus_wav.process();
+    return c;
 }
 and setSamplerate(newFs:real) {
    if (newFs > 0.0) {
       fs = newFs;
    }
-   cbase = 0.440 / fs;
+   // make sure of the order of the operation to stay within fixed float limits
+   cbase =  real(carrier:Sinus_wav.getSize()) / fs;
+   cbase = cbase * 0.440;
    _ = carrier:Sinus_wav.setSamplerate(newFs);
    _ = modulator:Sinus_wav.setSamplerate(newFs);
 }

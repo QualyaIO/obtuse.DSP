@@ -59,9 +59,19 @@ static_inline void Sinus_wav_process_init(Sinus_wav__ctx_type_3 &_output_){
 
 static_inline fix16_t Sinus_wav_process(Sinus_wav__ctx_type_3 &_ctx){
    _ctx.phase = (_ctx.phase + _ctx.step);
-   _ctx.phase = (_ctx.phase % Sinus_wav_sin_wave_samples());
    return Sinus_wav_sin_wave(0,_ctx.phase);
 }
+
+typedef Sinus_wav__ctx_type_3 Sinus_wav_getSize_type;
+
+static_inline void Sinus_wav_getSize_init(Sinus_wav__ctx_type_3 &_output_){
+   Sinus_wav__ctx_type_3_init(_output_);
+   return ;
+}
+
+static_inline int Sinus_wav_getSize(Sinus_wav__ctx_type_3 &_ctx){
+   return Sinus_wav_sin_wave_samples();
+};
 
 typedef Sinus_wav__ctx_type_3 Sinus_wav_setStep_type;
 
@@ -71,8 +81,20 @@ static_inline void Sinus_wav_setStep_init(Sinus_wav__ctx_type_3 &_output_){
 }
 
 static_inline void Sinus_wav_setStep(Sinus_wav__ctx_type_3 &_ctx, fix16_t newStep){
-   newStep = (newStep % 0x10000 /* 1.000000 */);
-   _ctx.step = fix_to_int(fix_mul(newStep,int_to_fix(Sinus_wav_sin_wave_samples())));
+   _ctx.step = fix_to_int(newStep);
+};
+
+typedef Sinus_wav__ctx_type_3 Sinus_wav_updateStep_type;
+
+static_inline void Sinus_wav_updateStep_init(Sinus_wav__ctx_type_3 &_output_){
+   Sinus_wav__ctx_type_3_init(_output_);
+   return ;
+}
+
+static_inline void Sinus_wav_updateStep(Sinus_wav__ctx_type_3 &_ctx){
+   fix16_t stepRatio;
+   stepRatio = fix_mul(0x5ce /* 0.022676 */,int_to_fix(Sinus_wav_getSize(_ctx)));
+   Sinus_wav_setStep(_ctx,fix_mul(_ctx.freq,stepRatio));
 }
 
 typedef Sinus_wav__ctx_type_3 Sinus_wav_setFrequency_type;
@@ -84,7 +106,7 @@ static_inline void Sinus_wav_setFrequency_init(Sinus_wav__ctx_type_3 &_output_){
 
 static_inline void Sinus_wav_setFrequency(Sinus_wav__ctx_type_3 &_ctx, fix16_t newFreq){
    _ctx.freq = newFreq;
-   Sinus_wav_setStep(_ctx,fix_div(_ctx.freq,_ctx.fs));
+   Sinus_wav_updateStep(_ctx);
 }
 
 typedef Sinus_wav__ctx_type_3 Sinus_wav_setSamplerate_type;
@@ -98,7 +120,7 @@ static_inline void Sinus_wav_setSamplerate(Sinus_wav__ctx_type_3 &_ctx, fix16_t 
    if(newFs > 0x0 /* 0.000000 */){
       _ctx.fs = newFs;
    }
-   Sinus_wav_setStep(_ctx,fix_div(_ctx.freq,_ctx.fs));
+   Sinus_wav_updateStep(_ctx);
 }
 
 typedef Sinus_wav__ctx_type_3 Sinus_wav_default_type;
