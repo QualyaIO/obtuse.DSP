@@ -26,7 +26,7 @@ void Engine__ctx_type_0_init(Engine__ctx_type_0 &_output_){
 
 fix16_t Engine_process(Engine__ctx_type_0 &_ctx){
    fix16_t cstep;
-   cstep = fix_mul(_ctx.cbase,Sinus_wav_process(_ctx.modulator));
+   cstep = (_ctx.cbase + fix_mul(_ctx.cbase,Sinus_wav_process(_ctx.modulator)));
    Sinus_wav_setStep(_ctx.carrier,cstep);
    fix16_t c;
    c = Sinus_wav_process(_ctx.carrier);

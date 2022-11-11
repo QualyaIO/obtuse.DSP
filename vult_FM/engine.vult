@@ -7,7 +7,7 @@ fun process() {
     mem cbase: real;
 
     // computing change of thep for carrier
-    val cstep : real =  modulator:Sinus_wav.process() * cbase;
+    val cstep : real =  cbase + modulator:Sinus_wav.process() * cbase;
     _ = carrier:Sinus_wav.setStep(cstep);
     val c = carrier:Sinus_wav.process();
     return c;
