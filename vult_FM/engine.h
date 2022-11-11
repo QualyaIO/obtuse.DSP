@@ -42,8 +42,8 @@ static_inline int Sinus_wav_index(Sinus_wav__ctx_type_2 &_ctx){
 }
 
 typedef struct Sinus_wav__ctx_type_3 {
-   int step;
-   int phase;
+   fix16_t step;
+   fix16_t phase;
    fix16_t fs;
    fix16_t freq;
 } Sinus_wav__ctx_type_3;
@@ -59,7 +59,7 @@ static_inline void Sinus_wav_process_init(Sinus_wav__ctx_type_3 &_output_){
 
 static_inline fix16_t Sinus_wav_process(Sinus_wav__ctx_type_3 &_ctx){
    _ctx.phase = (_ctx.phase + _ctx.step);
-   return Sinus_wav_sin_wave(0,_ctx.phase);
+   return Sinus_wav_sin_wave(0,fix_to_int(_ctx.phase));
 }
 
 typedef Sinus_wav__ctx_type_3 Sinus_wav_getSize_type;
@@ -81,7 +81,7 @@ static_inline void Sinus_wav_setStep_init(Sinus_wav__ctx_type_3 &_output_){
 }
 
 static_inline void Sinus_wav_setStep(Sinus_wav__ctx_type_3 &_ctx, fix16_t newStep){
-   _ctx.step = fix_to_int(newStep);
+   _ctx.step = newStep;
 };
 
 typedef Sinus_wav__ctx_type_3 Sinus_wav_updateStep_type;
@@ -93,7 +93,7 @@ static_inline void Sinus_wav_updateStep_init(Sinus_wav__ctx_type_3 &_output_){
 
 static_inline void Sinus_wav_updateStep(Sinus_wav__ctx_type_3 &_ctx){
    fix16_t stepRatio;
-   stepRatio = fix_mul(0x5ce /* 0.022676 */,int_to_fix(Sinus_wav_getSize(_ctx)));
+   stepRatio = fix_div(int_to_fix(Sinus_wav_getSize(_ctx)),_ctx.fs);
    Sinus_wav_setStep(_ctx,fix_mul(_ctx.freq,stepRatio));
 }
 

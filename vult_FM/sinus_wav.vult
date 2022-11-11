@@ -13,14 +13,14 @@ fun process() {
    // sinus frequency
    mem freq: real;
    // [0..8k[ in the wavetable
-   mem phase: int;
+   mem phase: real;
    // going that much through wavetable at each call
-   mem step: int;
+   mem step: real;
 
    // advance time
    phase = phase + step;
    // loop in sample
-   return sin_wave(0, phase);
+   return sin_wave(0, int(phase));
 }
 // size of wavetable (int)
 and getSize() {
@@ -30,12 +30,12 @@ and getSize() {
 // for outside, expect step between 0 and size
 and setStep(newStep:real) {
     // do not check, modulo will be applied later
-    step = int(newStep);
+    step = newStep;
 }
 // called internally when Samplerate or frequency is altered
 and updateStep() {
     // we don't want any line to be outside [1/32767 .. 32767] to avoid fixed float limits
-    val stepRatio = real(getSize()) / 44.1;
+    val stepRatio = real(getSize()) / fs;
    _ = setStep(stepRatio*freq);
 }
 // seter for parameters. expect values of desired frequency and current sampring rate in kHz to avoid fixed float limits ([1/32767 ..32767]... probably)

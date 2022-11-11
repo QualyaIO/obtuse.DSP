@@ -4,8 +4,8 @@
 
 void Sinus_wav__ctx_type_3_init(Sinus_wav__ctx_type_3 &_output_){
    Sinus_wav__ctx_type_3 _ctx;
-   _ctx.step = 0;
-   _ctx.phase = 0;
+   _ctx.step = 0x0 /* 0.000000 */;
+   _ctx.phase = 0x0 /* 0.000000 */;
    _ctx.fs = 0x0 /* 0.000000 */;
    _ctx.freq = 0x0 /* 0.000000 */;
    Sinus_wav_default(_ctx);
