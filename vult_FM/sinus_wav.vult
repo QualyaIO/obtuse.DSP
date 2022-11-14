@@ -2,11 +2,6 @@
 // note that wavetable should be big enough to avoid fixed float limits upon later computations (let say at least 100)
 external sin_wave(channel:int, index:int) : real @[wave(channels=1, file="sinus_8k.wav")];
 
-fun index() {
-   mem i = (i + 1) % sin_wave_samples();
-   return i;
-}
-
 fun process() {
    // audio sampling rate
    mem fs: real;
@@ -50,9 +45,9 @@ and setFrequency(newFreq:real) {
    step = stepRatio*freq;
    _ = updateStep();
 }
-// setting base phase [0..size[ -- we won't check here, beware!
+// setting *base* phase [0..size[ -- we won't check here, beware!
 and setPhase(newPhase: real) {
-   phase_base = real(getSize()) * newPhase;
+   phase_base = newPhase;
 }
 and default() @[init] {
    // default sampling rate (in kHz)

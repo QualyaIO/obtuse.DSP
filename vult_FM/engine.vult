@@ -3,11 +3,13 @@
 fun process() {
     // audio sampling rate
     mem fs: real;
+    // to speedup computations
+    mem carrier_half_phase;
+    // HACK: using a temp variable force vult to put that in cpp and halves computation times (???)
+    val carrier_phase = (modulator:Sinus_wav.process() + 1.0) * carrier_half_phase;
 
-    // computing change of thep for carrier
-    //_ = carrier:Sinus_wav.setFrequency(0.440 + 0.440 * modulator:Sinus_wav.process());
-    // keep -1..1 range for more efficiency, albeit twice the effect
-    _ = carrier:Sinus_wav.setPhase((modulator:Sinus_wav.process() + 1.0)/2.0);
+    // modulate the (base) phase of the carrier
+    _ = carrier:Sinus_wav.setPhase(carrier_phase);
     val c = carrier:Sinus_wav.process();
     return c;
 }
@@ -23,4 +25,6 @@ and default() @[init] {
     _ = setSamplerate(44.100);
     _ = carrier:Sinus_wav.setFrequency(0.440);
     _ = modulator:Sinus_wav.setFrequency(0.001);
+    // keeping in cache coeff
+    carrier_half_phase = real(carrier:Sinus_wav.getSize()) / 2.0;
 }
