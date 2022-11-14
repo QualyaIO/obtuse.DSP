@@ -35,24 +35,28 @@ and setStep(newStep:real) {
 }
 // called internally when Samplerate or frequency is altered
 and updateStep() {
-    // we don't want any line to be outside [1/32767 .. 32767] to avoid fixed float limits
-    val stepRatio = real(getSize()) / fs;
+    // base for computing step
+    mem stepRatio;
+    // both for efficiency and because we don't want any result to be outside [1/32767 .. 32767] to avoid fixed float limits we compute step in two... steps
    _ = setStep(stepRatio*freq);
 }
 // seter for parameters. expect values of desired frequency and current sampring rate in kHz to avoid fixed float limits ([1/32767 ..32767]... probably)
-and setFrequency(newFreq:real) {
-   freq = newFreq;
-   _ = updateStep();
-}
 and setSamplerate(newFs:real) {
    if (newFs > 0.0) {
       fs = newFs;
+      // update ratio when we update sampling rate
+      stepRatio = real(getSize()) / fs;
    }
    _ = updateStep();
 }
+and setFrequency(newFreq:real) {
+   freq = newFreq;
+   step = stepRatio*freq;
+   //_ = updateStep();
+}
 and default() @[init] {
-   // default frequency (in kHz)
-   _ = setFrequency(0.440);
    // default sampling rate (in kHz)
    _ = setSamplerate(44.1);
+   // default frequency (in kHz)
+   _ = setFrequency(0.440);
 }

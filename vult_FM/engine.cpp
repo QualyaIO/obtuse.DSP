@@ -4,6 +4,7 @@
 
 void Sinus_wav__ctx_type_3_init(Sinus_wav__ctx_type_3 &_output_){
    Sinus_wav__ctx_type_3 _ctx;
+   _ctx.stepRatio = 0x0 /* 0.000000 */;
    _ctx.step = 0x0 /* 0.000000 */;
    _ctx.phase = 0x0 /* 0.000000 */;
    _ctx.fs = 0x0 /* 0.000000 */;
@@ -13,34 +14,22 @@ void Sinus_wav__ctx_type_3_init(Sinus_wav__ctx_type_3 &_output_){
    return ;
 }
 
+void Sinus_wav_setSamplerate(Sinus_wav__ctx_type_3 &_ctx, fix16_t newFs){
+   if(newFs > 0x0 /* 0.000000 */){
+      _ctx.fs = newFs;
+      _ctx.stepRatio = fix_div(int_to_fix(Sinus_wav_getSize(_ctx)),_ctx.fs);
+   }
+   Sinus_wav_updateStep(_ctx);
+}
+
 void Engine__ctx_type_0_init(Engine__ctx_type_0 &_output_){
    Engine__ctx_type_0 _ctx;
    Sinus_wav__ctx_type_3_init(_ctx.modulator);
    _ctx.fs = 0x0 /* 0.000000 */;
-   _ctx.cbase = 0x0 /* 0.000000 */;
    Sinus_wav__ctx_type_3_init(_ctx.carrier);
    Engine_default(_ctx);
    _output_ = _ctx;
    return ;
-}
-
-fix16_t Engine_process(Engine__ctx_type_0 &_ctx){
-   fix16_t cstep;
-   cstep = (_ctx.cbase + fix_mul(_ctx.cbase,Sinus_wav_process(_ctx.modulator)));
-   Sinus_wav_setStep(_ctx.carrier,cstep);
-   fix16_t c;
-   c = Sinus_wav_process(_ctx.carrier);
-   return c;
-}
-
-void Engine_setSamplerate(Engine__ctx_type_0 &_ctx, fix16_t newFs){
-   if(newFs > 0x0 /* 0.000000 */){
-      _ctx.fs = newFs;
-   }
-   _ctx.cbase = fix_div(int_to_fix(Sinus_wav_getSize(_ctx.carrier)),_ctx.fs);
-   _ctx.cbase = fix_mul(0x70a3 /* 0.440000 */,_ctx.cbase);
-   Sinus_wav_setSamplerate(_ctx.carrier,newFs);
-   Sinus_wav_setSamplerate(_ctx.modulator,newFs);
 }
 
 

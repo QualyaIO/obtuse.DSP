@@ -42,6 +42,7 @@ static_inline int Sinus_wav_index(Sinus_wav__ctx_type_2 &_ctx){
 }
 
 typedef struct Sinus_wav__ctx_type_3 {
+   fix16_t stepRatio;
    fix16_t step;
    fix16_t phase;
    fix16_t fs;
@@ -93,10 +94,17 @@ static_inline void Sinus_wav_updateStep_init(Sinus_wav__ctx_type_3 &_output_){
 }
 
 static_inline void Sinus_wav_updateStep(Sinus_wav__ctx_type_3 &_ctx){
-   fix16_t stepRatio;
-   stepRatio = fix_div(int_to_fix(Sinus_wav_getSize(_ctx)),_ctx.fs);
-   Sinus_wav_setStep(_ctx,fix_mul(_ctx.freq,stepRatio));
+   Sinus_wav_setStep(_ctx,fix_mul(_ctx.freq,_ctx.stepRatio));
+};
+
+typedef Sinus_wav__ctx_type_3 Sinus_wav_setSamplerate_type;
+
+static_inline void Sinus_wav_setSamplerate_init(Sinus_wav__ctx_type_3 &_output_){
+   Sinus_wav__ctx_type_3_init(_output_);
+   return ;
 }
+
+void Sinus_wav_setSamplerate(Sinus_wav__ctx_type_3 &_ctx, fix16_t newFs);
 
 typedef Sinus_wav__ctx_type_3 Sinus_wav_setFrequency_type;
 
@@ -107,21 +115,7 @@ static_inline void Sinus_wav_setFrequency_init(Sinus_wav__ctx_type_3 &_output_){
 
 static_inline void Sinus_wav_setFrequency(Sinus_wav__ctx_type_3 &_ctx, fix16_t newFreq){
    _ctx.freq = newFreq;
-   Sinus_wav_updateStep(_ctx);
-}
-
-typedef Sinus_wav__ctx_type_3 Sinus_wav_setSamplerate_type;
-
-static_inline void Sinus_wav_setSamplerate_init(Sinus_wav__ctx_type_3 &_output_){
-   Sinus_wav__ctx_type_3_init(_output_);
-   return ;
-}
-
-static_inline void Sinus_wav_setSamplerate(Sinus_wav__ctx_type_3 &_ctx, fix16_t newFs){
-   if(newFs > 0x0 /* 0.000000 */){
-      _ctx.fs = newFs;
-   }
-   Sinus_wav_updateStep(_ctx);
+   _ctx.step = fix_mul(_ctx.freq,_ctx.stepRatio);
 }
 
 typedef Sinus_wav__ctx_type_3 Sinus_wav_default_type;
@@ -132,14 +126,13 @@ static_inline void Sinus_wav_default_init(Sinus_wav__ctx_type_3 &_output_){
 }
 
 static_inline void Sinus_wav_default(Sinus_wav__ctx_type_3 &_ctx){
-   Sinus_wav_setFrequency(_ctx,0x70a3 /* 0.440000 */);
    Sinus_wav_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
+   Sinus_wav_setFrequency(_ctx,0x70a3 /* 0.440000 */);
 }
 
 typedef struct Engine__ctx_type_0 {
    Sinus_wav__ctx_type_3 modulator;
    fix16_t fs;
-   fix16_t cbase;
    Sinus_wav__ctx_type_3 carrier;
 } Engine__ctx_type_0;
 
@@ -152,7 +145,12 @@ static_inline void Engine_process_init(Engine__ctx_type_0 &_output_){
    return ;
 }
 
-fix16_t Engine_process(Engine__ctx_type_0 &_ctx);
+static_inline fix16_t Engine_process(Engine__ctx_type_0 &_ctx){
+   Sinus_wav_setFrequency(_ctx.carrier,(0x70a3 /* 0.440000 */ + fix_mul(0x70a3 /* 0.440000 */,Sinus_wav_process(_ctx.modulator))));
+   fix16_t c;
+   c = Sinus_wav_process(_ctx.carrier);
+   return c;
+}
 
 typedef Engine__ctx_type_0 Engine_setSamplerate_type;
 
@@ -161,7 +159,13 @@ static_inline void Engine_setSamplerate_init(Engine__ctx_type_0 &_output_){
    return ;
 }
 
-void Engine_setSamplerate(Engine__ctx_type_0 &_ctx, fix16_t newFs);
+static_inline void Engine_setSamplerate(Engine__ctx_type_0 &_ctx, fix16_t newFs){
+   if(newFs > 0x0 /* 0.000000 */){
+      _ctx.fs = newFs;
+   }
+   Sinus_wav_setSamplerate(_ctx.carrier,_ctx.fs);
+   Sinus_wav_setSamplerate(_ctx.modulator,_ctx.fs);
+}
 
 typedef Engine__ctx_type_0 Engine_default_type;
 

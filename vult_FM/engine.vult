@@ -3,12 +3,9 @@
 fun process() {
     // audio sampling rate
     mem fs: real;
-    // carrier base frequency x samplee rate
-    mem cbase: real;
 
     // computing change of thep for carrier
-    val cstep : real =  cbase + modulator:Sinus_wav.process() * cbase;
-    _ = carrier:Sinus_wav.setStep(cstep);
+    _ = carrier:Sinus_wav.setFrequency(0.440 + 0.440 * modulator:Sinus_wav.process());
     val c = carrier:Sinus_wav.process();
     return c;
 }
@@ -16,11 +13,8 @@ and setSamplerate(newFs:real) {
    if (newFs > 0.0) {
       fs = newFs;
    }
-   // make sure of the order of the operation to stay within fixed float limits
-   cbase =  real(carrier:Sinus_wav.getSize()) / fs;
-   cbase = cbase * 0.440;
-   _ = carrier:Sinus_wav.setSamplerate(newFs);
-   _ = modulator:Sinus_wav.setSamplerate(newFs);
+   _ = carrier:Sinus_wav.setSamplerate(fs);
+   _ = modulator:Sinus_wav.setSamplerate(fs);
 }
 and default() @[init] {
     // default sampling rate (in kHz)
