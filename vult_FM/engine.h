@@ -44,6 +44,7 @@ static_inline int Sinus_wav_index(Sinus_wav__ctx_type_2 &_ctx){
 typedef struct Sinus_wav__ctx_type_3 {
    fix16_t stepRatio;
    fix16_t step;
+   fix16_t phase_base;
    fix16_t phase;
    fix16_t fs;
    fix16_t freq;
@@ -61,7 +62,7 @@ static_inline void Sinus_wav_process_init(Sinus_wav__ctx_type_3 &_output_){
 static_inline fix16_t Sinus_wav_process(Sinus_wav__ctx_type_3 &_ctx){
    _ctx.phase = (_ctx.phase + _ctx.step);
    _ctx.phase = (_ctx.phase % int_to_fix(Sinus_wav_sin_wave_samples()));
-   return Sinus_wav_sin_wave(0,fix_to_int(_ctx.phase));
+   return Sinus_wav_sin_wave(0,fix_to_int((_ctx.phase + _ctx.phase_base)));
 }
 
 typedef Sinus_wav__ctx_type_3 Sinus_wav_getSize_type;
@@ -75,17 +76,6 @@ static_inline int Sinus_wav_getSize(Sinus_wav__ctx_type_3 &_ctx){
    return Sinus_wav_sin_wave_samples();
 };
 
-typedef Sinus_wav__ctx_type_3 Sinus_wav_setStep_type;
-
-static_inline void Sinus_wav_setStep_init(Sinus_wav__ctx_type_3 &_output_){
-   Sinus_wav__ctx_type_3_init(_output_);
-   return ;
-}
-
-static_inline void Sinus_wav_setStep(Sinus_wav__ctx_type_3 &_ctx, fix16_t newStep){
-   _ctx.step = newStep;
-};
-
 typedef Sinus_wav__ctx_type_3 Sinus_wav_updateStep_type;
 
 static_inline void Sinus_wav_updateStep_init(Sinus_wav__ctx_type_3 &_output_){
@@ -94,7 +84,7 @@ static_inline void Sinus_wav_updateStep_init(Sinus_wav__ctx_type_3 &_output_){
 }
 
 static_inline void Sinus_wav_updateStep(Sinus_wav__ctx_type_3 &_ctx){
-   Sinus_wav_setStep(_ctx,fix_mul(_ctx.freq,_ctx.stepRatio));
+   _ctx.step = fix_mul(_ctx.freq,_ctx.stepRatio);
 };
 
 typedef Sinus_wav__ctx_type_3 Sinus_wav_setSamplerate_type;
@@ -116,6 +106,19 @@ static_inline void Sinus_wav_setFrequency_init(Sinus_wav__ctx_type_3 &_output_){
 static_inline void Sinus_wav_setFrequency(Sinus_wav__ctx_type_3 &_ctx, fix16_t newFreq){
    _ctx.freq = newFreq;
    _ctx.step = fix_mul(_ctx.freq,_ctx.stepRatio);
+   Sinus_wav_updateStep(_ctx);
+}
+
+typedef Sinus_wav__ctx_type_3 Sinus_wav_setPhase_type;
+
+static_inline void Sinus_wav_setPhase_init(Sinus_wav__ctx_type_3 &_output_){
+   Sinus_wav__ctx_type_3_init(_output_);
+   return ;
+}
+
+static_inline void Sinus_wav_setPhase(Sinus_wav__ctx_type_3 &_ctx, fix16_t newPhase){
+   newPhase = (newPhase % 0x10000 /* 1.000000 */);
+   _ctx.phase_base = fix_mul(newPhase,int_to_fix(Sinus_wav_getSize(_ctx)));
 }
 
 typedef Sinus_wav__ctx_type_3 Sinus_wav_default_type;
@@ -146,7 +149,7 @@ static_inline void Engine_process_init(Engine__ctx_type_0 &_output_){
 }
 
 static_inline fix16_t Engine_process(Engine__ctx_type_0 &_ctx){
-   Sinus_wav_setFrequency(_ctx.carrier,(0x70a3 /* 0.440000 */ + fix_mul(0x70a3 /* 0.440000 */,Sinus_wav_process(_ctx.modulator))));
+   Sinus_wav_setPhase(_ctx.carrier,((0x10000 /* 1.000000 */ + Sinus_wav_process(_ctx.modulator)) >> 1));
    fix16_t c;
    c = Sinus_wav_process(_ctx.carrier);
    return c;

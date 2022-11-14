@@ -12,33 +12,29 @@ fun process() {
    mem fs: real;
    // sinus frequency
    mem freq: real;
-   // [0..8k[ in the wavetable
+   // starting point for phase, [0..8k[ in the wavetable
+   mem phase_base: real;
+   // current phase
    mem phase: real;
    // going that much through wavetable at each call
    mem step: real;
 
-   // advance time
+   // advance time, keep range in check here to maximize precision
    phase = phase + step;
    phase = phase % real(sin_wave_samples());
    // loop in sample
-   return sin_wave(0, int(phase));
+   return sin_wave(0, int(phase_base + phase));
 }
 // size of wavetable (int)
 and getSize() {
     return sin_wave_samples();
-}
-// manually setting the step between each call, overriding frequency and samplerate for for effiency at times
-// for outside, expect step between 0 and size
-and setStep(newStep:real) {
-    // do not check, modulo will be applied later
-    step = newStep;
 }
 // called internally when Samplerate or frequency is altered
 and updateStep() {
     // base for computing step
     mem stepRatio;
     // both for efficiency and because we don't want any result to be outside [1/32767 .. 32767] to avoid fixed float limits we compute step in two... steps
-   _ = setStep(stepRatio*freq);
+    step = stepRatio*freq;
 }
 // seter for parameters. expect values of desired frequency and current sampring rate in kHz to avoid fixed float limits ([1/32767 ..32767]... probably)
 and setSamplerate(newFs:real) {
@@ -52,7 +48,11 @@ and setSamplerate(newFs:real) {
 and setFrequency(newFreq:real) {
    freq = newFreq;
    step = stepRatio*freq;
-   //_ = updateStep();
+   _ = updateStep();
+}
+// setting base phase [0..size[ -- we won't check here, beware!
+and setPhase(newPhase: real) {
+   phase_base = real(getSize()) * newPhase;
 }
 and default() @[init] {
    // default sampling rate (in kHz)

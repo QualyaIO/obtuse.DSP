@@ -5,7 +5,9 @@ fun process() {
     mem fs: real;
 
     // computing change of thep for carrier
-    _ = carrier:Sinus_wav.setFrequency(0.440 + 0.440 * modulator:Sinus_wav.process());
+    //_ = carrier:Sinus_wav.setFrequency(0.440 + 0.440 * modulator:Sinus_wav.process());
+    // keep -1..1 range for more efficiency, albeit twice the effect
+    _ = carrier:Sinus_wav.setPhase((modulator:Sinus_wav.process() + 1.0)/2.0);
     val c = carrier:Sinus_wav.process();
     return c;
 }
