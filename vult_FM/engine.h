@@ -111,9 +111,11 @@ static_inline void Sinus_wav_default(Sinus_wav__ctx_type_2 &_ctx){
 }
 
 typedef struct Engine__ctx_type_0 {
+   fix16_t modulatorRatio;
    Sinus_wav__ctx_type_2 modulator;
    fix16_t fs;
    fix16_t carrier_half_phase;
+   fix16_t carrierRatio;
    Sinus_wav__ctx_type_2 carrier;
 } Engine__ctx_type_0;
 
@@ -143,6 +145,51 @@ static_inline void Engine_setSamplerate(Engine__ctx_type_0 &_ctx, fix16_t newFs)
    Sinus_wav_setSamplerate(_ctx.modulator,_ctx.fs);
 }
 
+typedef Engine__ctx_type_0 Engine_setCarrierRatio_type;
+
+static_inline void Engine_setCarrierRatio_init(Engine__ctx_type_0 &_output_){
+   Engine__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void Engine_setCarrierRatio(Engine__ctx_type_0 &_ctx, fix16_t ratio){
+   _ctx.carrierRatio = ratio;
+};
+
+typedef Engine__ctx_type_0 Engine_setModulatorRatio_type;
+
+static_inline void Engine_setModulatorRatio_init(Engine__ctx_type_0 &_output_){
+   Engine__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void Engine_setModulatorRatio(Engine__ctx_type_0 &_ctx, fix16_t ratio){
+   _ctx.modulatorRatio = ratio;
+};
+
+typedef Engine__ctx_type_0 Engine_setModulatorLevel_type;
+
+static_inline void Engine_setModulatorLevel_init(Engine__ctx_type_0 &_output_){
+   Engine__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void Engine_setModulatorLevel(Engine__ctx_type_0 &_ctx, fix16_t level){
+   _ctx.carrier_half_phase = (fix_mul(level,int_to_fix(Sinus_wav_getSize(_ctx.carrier))) >> 1);
+};
+
+typedef Engine__ctx_type_0 Engine_setFrequency_type;
+
+static_inline void Engine_setFrequency_init(Engine__ctx_type_0 &_output_){
+   Engine__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void Engine_setFrequency(Engine__ctx_type_0 &_ctx, fix16_t freq){
+   Sinus_wav_setFrequency(_ctx.carrier,fix_mul(_ctx.carrierRatio,freq));
+   Sinus_wav_setFrequency(_ctx.modulator,fix_mul(_ctx.modulatorRatio,freq));
+}
+
 typedef Engine__ctx_type_0 Engine_default_type;
 
 static_inline void Engine_default_init(Engine__ctx_type_0 &_output_){
@@ -150,12 +197,7 @@ static_inline void Engine_default_init(Engine__ctx_type_0 &_output_){
    return ;
 }
 
-static_inline void Engine_default(Engine__ctx_type_0 &_ctx){
-   Engine_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
-   Sinus_wav_setFrequency(_ctx.carrier,0x70a3 /* 0.440000 */);
-   Sinus_wav_setFrequency(_ctx.modulator,0x41 /* 0.001000 */);
-   _ctx.carrier_half_phase = (int_to_fix(Sinus_wav_getSize(_ctx.carrier)) >> 1);
-}
+void Engine_default(Engine__ctx_type_0 &_ctx);
 
 
 

@@ -25,9 +25,11 @@ void Sinus_wav_setSamplerate(Sinus_wav__ctx_type_2 &_ctx, fix16_t newFs){
 
 void Engine__ctx_type_0_init(Engine__ctx_type_0 &_output_){
    Engine__ctx_type_0 _ctx;
+   _ctx.modulatorRatio = 0x0 /* 0.000000 */;
    Sinus_wav__ctx_type_2_init(_ctx.modulator);
    _ctx.fs = 0x0 /* 0.000000 */;
    _ctx.carrier_half_phase = 0x0 /* 0.000000 */;
+   _ctx.carrierRatio = 0x0 /* 0.000000 */;
    Sinus_wav__ctx_type_2_init(_ctx.carrier);
    Engine_default(_ctx);
    _output_ = _ctx;
@@ -41,6 +43,14 @@ fix16_t Engine_process(Engine__ctx_type_0 &_ctx){
    fix16_t c;
    c = Sinus_wav_process(_ctx.carrier);
    return c;
+}
+
+void Engine_default(Engine__ctx_type_0 &_ctx){
+   Engine_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
+   Engine_setCarrierRatio(_ctx,0x10000 /* 1.000000 */);
+   Engine_setModulatorRatio(_ctx,0x20000 /* 2.000000 */);
+   Engine_setModulatorLevel(_ctx,0x1999 /* 0.100000 */);
+   Engine_setFrequency(_ctx,0x70a3 /* 0.440000 */);
 }
 
 

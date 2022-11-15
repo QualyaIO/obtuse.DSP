@@ -1,4 +1,5 @@
 
+// FM with 2 operators, phase modulation
 
 fun process() {
     // audio sampling rate
@@ -20,11 +21,30 @@ and setSamplerate(newFs:real) {
    _ = carrier:Sinus_wav.setSamplerate(fs);
    _ = modulator:Sinus_wav.setSamplerate(fs);
 }
+// ratio for each operator. Keep in mind the max effective frequency, below samplingrate/2!
+and setCarrierRatio(ratio: real) {
+   mem carrierRatio = ratio;
+}
+and setModulatorRatio(ratio: real) {
+   mem modulatorRatio = ratio;
+}
+// effect of modulator [0..1]
+and setModulatorLevel(level: real) {
+    // directly manipulating the phase amount
+    carrier_half_phase = real(carrier:Sinus_wav.getSize()) / 2.0 * level;
+}
+// should be 0..niquist, in kHz
+and setFrequency(freq: real) {
+    _ = carrier:Sinus_wav.setFrequency(freq * carrierRatio);
+    _ = modulator:Sinus_wav.setFrequency(freq * modulatorRatio);
+}
 and default() @[init] {
     // default sampling rate (in kHz)
     _ = setSamplerate(44.100);
-    _ = carrier:Sinus_wav.setFrequency(0.440);
-    _ = modulator:Sinus_wav.setFrequency(0.001);
-    // keeping in cache coeff
-    carrier_half_phase = real(carrier:Sinus_wav.getSize()) / 2.0;
+    // config for operators
+    _ = setCarrierRatio(1.0);
+    _ = setModulatorRatio(2.0);
+    _ = setModulatorLevel(0.1);
+    // sarting with LA
+    _ = setFrequency(0.440);
 }
