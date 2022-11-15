@@ -7,116 +7,142 @@
 #include "vultin.h"
 #include "engine.tables.h"
 
-static_inline int Sinus_wav_sin_wave_samples(){
+static_inline int OSC_sin_wave_samples(){
    return 8000;
 };
 
-static_inline fix16_t Sinus_wav_sin_wave(int channel, int index){
+static_inline fix16_t OSC_sin_wave(int channel, int index){
    if(channel == 0){
-      return fix_wrap_array(Sinus_wav_sin_wave_chan_0)[(index % 8000)];
+      return fix_wrap_array(OSC_sin_wave_chan_0)[(index % 8000)];
    }
    return 0x0 /* 0.000000 */;
 }
 
-typedef struct Sinus_wav__ctx_type_2 {
+typedef struct OSC__ctx_type_2 {
+   int wavetable;
    fix16_t stepRatio;
    fix16_t step;
    fix16_t phase_base;
    fix16_t phase;
    fix16_t fs;
    fix16_t freq;
-} Sinus_wav__ctx_type_2;
+} OSC__ctx_type_2;
 
-typedef Sinus_wav__ctx_type_2 Sinus_wav_process_type;
+typedef OSC__ctx_type_2 OSC_get_sample_type;
 
-void Sinus_wav__ctx_type_2_init(Sinus_wav__ctx_type_2 &_output_);
+void OSC__ctx_type_2_init(OSC__ctx_type_2 &_output_);
 
-static_inline void Sinus_wav_process_init(Sinus_wav__ctx_type_2 &_output_){
-   Sinus_wav__ctx_type_2_init(_output_);
+static_inline void OSC_get_sample_init(OSC__ctx_type_2 &_output_){
+   OSC__ctx_type_2_init(_output_);
    return ;
 }
 
-static_inline fix16_t Sinus_wav_process(Sinus_wav__ctx_type_2 &_ctx){
-   _ctx.phase = (_ctx.phase + _ctx.step);
-   if(_ctx.phase > int_to_fix(Sinus_wav_sin_wave_samples())){
-      _ctx.phase = (_ctx.phase + (- int_to_fix(Sinus_wav_sin_wave_samples())));
+static_inline fix16_t OSC_get_sample(OSC__ctx_type_2 &_ctx, int index){
+   fix16_t sample;
+   if(_ctx.wavetable == 0){
+      sample = OSC_sin_wave(0,index);
    }
-   return Sinus_wav_sin_wave(0,fix_to_int((_ctx.phase + _ctx.phase_base)));
+   return sample;
 }
 
-typedef Sinus_wav__ctx_type_2 Sinus_wav_getSize_type;
+typedef OSC__ctx_type_2 OSC_getSize_type;
 
-static_inline void Sinus_wav_getSize_init(Sinus_wav__ctx_type_2 &_output_){
-   Sinus_wav__ctx_type_2_init(_output_);
+static_inline void OSC_getSize_init(OSC__ctx_type_2 &_output_){
+   OSC__ctx_type_2_init(_output_);
    return ;
 }
 
-static_inline int Sinus_wav_getSize(Sinus_wav__ctx_type_2 &_ctx){
-   return Sinus_wav_sin_wave_samples();
-};
+static_inline int OSC_getSize(OSC__ctx_type_2 &_ctx){
+   int size;
+   if(_ctx.wavetable == 0){
+      size = OSC_sin_wave_samples();
+   }
+   return size;
+}
 
-typedef Sinus_wav__ctx_type_2 Sinus_wav_updateStep_type;
+typedef OSC__ctx_type_2 OSC_process_type;
 
-static_inline void Sinus_wav_updateStep_init(Sinus_wav__ctx_type_2 &_output_){
-   Sinus_wav__ctx_type_2_init(_output_);
+static_inline void OSC_process_init(OSC__ctx_type_2 &_output_){
+   OSC__ctx_type_2_init(_output_);
    return ;
 }
 
-static_inline void Sinus_wav_updateStep(Sinus_wav__ctx_type_2 &_ctx){
+fix16_t OSC_process(OSC__ctx_type_2 &_ctx);
+
+typedef OSC__ctx_type_2 OSC_updateStep_type;
+
+static_inline void OSC_updateStep_init(OSC__ctx_type_2 &_output_){
+   OSC__ctx_type_2_init(_output_);
+   return ;
+}
+
+static_inline void OSC_updateStep(OSC__ctx_type_2 &_ctx){
    _ctx.step = fix_mul(_ctx.freq,_ctx.stepRatio);
 };
 
-typedef Sinus_wav__ctx_type_2 Sinus_wav_setSamplerate_type;
+typedef OSC__ctx_type_2 OSC_setSamplerate_type;
 
-static_inline void Sinus_wav_setSamplerate_init(Sinus_wav__ctx_type_2 &_output_){
-   Sinus_wav__ctx_type_2_init(_output_);
+static_inline void OSC_setSamplerate_init(OSC__ctx_type_2 &_output_){
+   OSC__ctx_type_2_init(_output_);
    return ;
 }
 
-void Sinus_wav_setSamplerate(Sinus_wav__ctx_type_2 &_ctx, fix16_t newFs);
+void OSC_setSamplerate(OSC__ctx_type_2 &_ctx, fix16_t newFs);
 
-typedef Sinus_wav__ctx_type_2 Sinus_wav_setFrequency_type;
+typedef OSC__ctx_type_2 OSC_setFrequency_type;
 
-static_inline void Sinus_wav_setFrequency_init(Sinus_wav__ctx_type_2 &_output_){
-   Sinus_wav__ctx_type_2_init(_output_);
+static_inline void OSC_setFrequency_init(OSC__ctx_type_2 &_output_){
+   OSC__ctx_type_2_init(_output_);
    return ;
 }
 
-static_inline void Sinus_wav_setFrequency(Sinus_wav__ctx_type_2 &_ctx, fix16_t newFreq){
+static_inline void OSC_setFrequency(OSC__ctx_type_2 &_ctx, fix16_t newFreq){
    _ctx.freq = newFreq;
-   Sinus_wav_updateStep(_ctx);
+   OSC_updateStep(_ctx);
 }
 
-typedef Sinus_wav__ctx_type_2 Sinus_wav_setPhase_type;
+typedef OSC__ctx_type_2 OSC_setPhase_type;
 
-static_inline void Sinus_wav_setPhase_init(Sinus_wav__ctx_type_2 &_output_){
-   Sinus_wav__ctx_type_2_init(_output_);
+static_inline void OSC_setPhase_init(OSC__ctx_type_2 &_output_){
+   OSC__ctx_type_2_init(_output_);
    return ;
 }
 
-static_inline void Sinus_wav_setPhase(Sinus_wav__ctx_type_2 &_ctx, fix16_t newPhase){
+static_inline void OSC_setPhase(OSC__ctx_type_2 &_ctx, fix16_t newPhase){
    _ctx.phase_base = newPhase;
 };
 
-typedef Sinus_wav__ctx_type_2 Sinus_wav_default_type;
+typedef OSC__ctx_type_2 OSC_setWavetable_type;
 
-static_inline void Sinus_wav_default_init(Sinus_wav__ctx_type_2 &_output_){
-   Sinus_wav__ctx_type_2_init(_output_);
+static_inline void OSC_setWavetable_init(OSC__ctx_type_2 &_output_){
+   OSC__ctx_type_2_init(_output_);
    return ;
 }
 
-static_inline void Sinus_wav_default(Sinus_wav__ctx_type_2 &_ctx){
-   Sinus_wav_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
-   Sinus_wav_setFrequency(_ctx,0x70a3 /* 0.440000 */);
+static_inline void OSC_setWavetable(OSC__ctx_type_2 &_ctx, int index){
+   _ctx.wavetable = index;
+};
+
+typedef OSC__ctx_type_2 OSC_default_type;
+
+static_inline void OSC_default_init(OSC__ctx_type_2 &_output_){
+   OSC__ctx_type_2_init(_output_);
+   return ;
+}
+
+static_inline void OSC_default(OSC__ctx_type_2 &_ctx){
+   OSC_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
+   OSC_setWavetable(_ctx,0);
+   OSC_setFrequency(_ctx,0x70a3 /* 0.440000 */);
 }
 
 typedef struct Engine__ctx_type_0 {
    fix16_t modulatorRatio;
-   Sinus_wav__ctx_type_2 modulator;
+   OSC__ctx_type_2 modulator;
    fix16_t fs;
    fix16_t carrier_half_phase;
    fix16_t carrierRatio;
-   Sinus_wav__ctx_type_2 carrier;
+   OSC__ctx_type_2 carrier;
 } Engine__ctx_type_0;
 
 typedef Engine__ctx_type_0 Engine_process_type;
@@ -141,8 +167,8 @@ static_inline void Engine_setSamplerate(Engine__ctx_type_0 &_ctx, fix16_t newFs)
    if(newFs > 0x0 /* 0.000000 */){
       _ctx.fs = newFs;
    }
-   Sinus_wav_setSamplerate(_ctx.carrier,_ctx.fs);
-   Sinus_wav_setSamplerate(_ctx.modulator,_ctx.fs);
+   OSC_setSamplerate(_ctx.carrier,_ctx.fs);
+   OSC_setSamplerate(_ctx.modulator,_ctx.fs);
 }
 
 typedef Engine__ctx_type_0 Engine_setCarrierRatio_type;
@@ -175,7 +201,7 @@ static_inline void Engine_setModulatorLevel_init(Engine__ctx_type_0 &_output_){
 }
 
 static_inline void Engine_setModulatorLevel(Engine__ctx_type_0 &_ctx, fix16_t level){
-   _ctx.carrier_half_phase = (fix_mul(level,int_to_fix(Sinus_wav_getSize(_ctx.carrier))) >> 1);
+   _ctx.carrier_half_phase = (fix_mul(level,int_to_fix(OSC_getSize(_ctx.carrier))) >> 1);
 };
 
 typedef Engine__ctx_type_0 Engine_setFrequency_type;
@@ -186,8 +212,8 @@ static_inline void Engine_setFrequency_init(Engine__ctx_type_0 &_output_){
 }
 
 static_inline void Engine_setFrequency(Engine__ctx_type_0 &_ctx, fix16_t freq){
-   Sinus_wav_setFrequency(_ctx.carrier,fix_mul(_ctx.carrierRatio,freq));
-   Sinus_wav_setFrequency(_ctx.modulator,fix_mul(_ctx.modulatorRatio,freq));
+   OSC_setFrequency(_ctx.carrier,fix_mul(_ctx.carrierRatio,freq));
+   OSC_setFrequency(_ctx.modulator,fix_mul(_ctx.modulatorRatio,freq));
 }
 
 typedef Engine__ctx_type_0 Engine_default_type;

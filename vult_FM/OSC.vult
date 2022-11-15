@@ -1,8 +1,33 @@
 
+// oscillator, using waveables
+
 // note that wavetable should be big enough to avoid fixed float limits upon later computations (let say at least 100)
+
+// 0 -> sine
 external sin_wave(channel:int, index:int) : real @[wave(channels=1, file="sinus_8k.wav")];
 
-fun process() {
+
+// return value for current wavetable (first channel hard-coded), between [0..sample size[
+fun get_sample(index: int) {
+    // index of wavetable
+    mem wavetable;
+    // modulo will be taken care of by the generated code 
+    val sample;
+    if (wavetable == 0) {
+       sample = sin_wave(0, index);
+    }
+    return sample;
+}
+// size of selected wavetable (int)
+and getSize() {
+    val size;
+    if (wavetable == 0) {
+       size = sin_wave_samples();
+    }
+    return size;
+}
+// --> main function actually here, call default() first <--
+and process() {
    // audio sampling rate
    mem fs: real;
    // sinus frequency
@@ -17,15 +42,12 @@ fun process() {
    // advance time, keep range in check here to maximize precision
    phase = phase + step;
    // slightly more efficient than the more robust modulo
-   if (phase > real(sin_wave_samples())) {
-      phase = phase - real(sin_wave_samples());
+   val size = real(getSize());
+   if (phase > size) {
+      phase = phase - size;
    }
    // loop in sample
    return sin_wave(0, int(phase_base + phase));
-}
-// size of wavetable (int)
-and getSize() {
-    return sin_wave_samples();
 }
 // called internally when Samplerate or frequency is altered
 and updateStep() {
@@ -51,9 +73,15 @@ and setFrequency(newFreq:real) {
 and setPhase(newPhase: real) {
    phase_base = newPhase;
 }
+// see options at the top of the wive
+and setWavetable(index: int) {
+   wavetable = index; 
+}
 and default() @[init] {
    // default sampling rate (in kHz)
    _ = setSamplerate(44.1);
+   // default sine
+   _ = setWavetable(0);
    // default frequency (in kHz)
    _ = setFrequency(0.440);
 }

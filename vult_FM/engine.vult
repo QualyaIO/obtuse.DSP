@@ -7,19 +7,19 @@ fun process() {
     // to speedup computations
     mem carrier_half_phase;
     // HACK: using a temp variable force vult to put that in cpp and halves computation times (???)
-    val carrier_phase = (modulator:Sinus_wav.process() + 1.0) * carrier_half_phase;
+    val carrier_phase = (modulator:OSC.process() + 1.0) * carrier_half_phase;
 
     // modulate the (base) phase of the carrier
-    _ = carrier:Sinus_wav.setPhase(carrier_phase);
-    val c = carrier:Sinus_wav.process();
+    _ = carrier:OSC.setPhase(carrier_phase);
+    val c = carrier:OSC.process();
     return c;
 }
 and setSamplerate(newFs:real) {
    if (newFs > 0.0) {
       fs = newFs;
    }
-   _ = carrier:Sinus_wav.setSamplerate(fs);
-   _ = modulator:Sinus_wav.setSamplerate(fs);
+   _ = carrier:OSC.setSamplerate(fs);
+   _ = modulator:OSC.setSamplerate(fs);
 }
 // ratio for each operator. Keep in mind the max effective frequency, below samplingrate/2!
 and setCarrierRatio(ratio: real) {
@@ -31,12 +31,12 @@ and setModulatorRatio(ratio: real) {
 // effect of modulator [0..1]
 and setModulatorLevel(level: real) {
     // directly manipulating the phase amount
-    carrier_half_phase = real(carrier:Sinus_wav.getSize()) / 2.0 * level;
+    carrier_half_phase = real(carrier:OSC.getSize()) / 2.0 * level;
 }
 // should be 0..niquist, in kHz
 and setFrequency(freq: real) {
-    _ = carrier:Sinus_wav.setFrequency(freq * carrierRatio);
-    _ = modulator:Sinus_wav.setFrequency(freq * modulatorRatio);
+    _ = carrier:OSC.setFrequency(freq * carrierRatio);
+    _ = modulator:OSC.setFrequency(freq * modulatorRatio);
 }
 and default() @[init] {
     // default sampling rate (in kHz)
