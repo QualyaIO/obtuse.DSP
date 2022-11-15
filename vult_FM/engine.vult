@@ -38,6 +38,17 @@ and setFrequency(freq: real) {
     _ = carrier:OSC.setFrequency(freq * carrierRatio);
     _ = modulator:OSC.setFrequency(freq * modulatorRatio);
 }
+
+// midi-like interface
+
+// we don't check input values, yet
+and noteOn(note:int, velocity:int, channel:int){
+    _ = setFrequency(Util.noteToFrequency(note));
+}
+
+and noteOff(note:int,channel:int){ }
+
+// to be called on start
 and default() @[init] {
     // default sampling rate (in kHz)
     _ = setSamplerate(44.100);

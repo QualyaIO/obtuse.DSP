@@ -43,6 +43,14 @@ const int mclkMultiplier = 256; // typical for many DAC
 // counter for debug
 int tick = 0;
 
+// computing time spent on DPS
+unsigned long dsp_tick;
+unsigned long dsp_time;
+
+// playing notes
+unsigned long midi_tick;
+// starting C
+int current_note = 64;
 
 void setup() {
 
@@ -99,38 +107,26 @@ void setup() {
   /* Vult */
   // Init engine, then pass sample rate, not forgetting to convert passed parameters to fixed (of course...)
   Engine_default(context);
-  Engine_setSamplerate(context, float_to_fix(sampleRate/(float)1000));
+  Engine_setSamplerate(context, float_to_fix(sampleRate / (float)1000));
 }
 
-int nb_updates = 0;
-
-
-long loop_n = 0;
-// i2s and then buffer have elements
-long loop_i2s_a = 0;
-long loop_buf_a = 0;
-// buffer full
-long loop_buf_f = 0;
-// audio transmitted in this loop
-long loop_audio = 0;
-
-// computing time spent on DPS
-unsigned long dsp_tick;
-unsigned long dsp_time;
-
 void loop() {
-  loop_n++;
-
-  if (i2s.availableForWrite() > 32) {
-    loop_i2s_a++;
-    loop_audio++;
-
+  if (millis() - midi_tick >= 1000) {
+    Serial.print("New note: ");
+    current_note += 1;
+    // playing three octaves
+    if (current_note >= 63 + 3 * 12) {
+      // back to C
+      current_note = 64;
+    }
+    Serial.println(current_note);
+    Engine_noteOn(context, current_note, 0, 0);
+    midi_tick = millis();
   }
 
   //  buffers hard-coded of size 16 in I2S (unless i2s.setBuffers() is called), make sure there are at least two of them free in the audio circular buffer (of buffers)
   while (i2s.availableForWrite() > 32) {
     dsp_tick = micros();
-    //Serial.println("sample");
     // returned float should be between -1 and 1 (should we checkit ?)
     int16_t val = fix_to_float(Engine_process(context)) * 32767;
     //Serial.println(val);
@@ -145,40 +141,11 @@ void loop() {
   if (newTick - tick >= 1000000) {
     unsigned long st = micros();
     Serial.println("Running strong!");
-    Serial.print("loops with i2s available");
-    Serial.println( loop_i2s_a / (float) loop_n);
-    Serial.print("loops with buffer available");
-    Serial.println( loop_buf_a / (float) loop_n);
-    Serial.print("loops with buffer full");
-    Serial.println( loop_buf_f / (float) loop_n);
-    Serial.print("number of loops: ");
-    Serial.println(loop_n);
-
-    Serial.print("loops with audio transmitted");
-    Serial.println( loop_audio / (float) loop_n);
-
-    Serial.print("i2s available: ");
-    Serial.println(i2s.availableForWrite());
-
     Serial.print("DSP time (useconds): ");
     Serial.print(dsp_time);
     Serial.print(" ("); Serial.print((float)dsp_time / (newTick - tick)); Serial.println("% CPU)");
-    loop_n = 0;
-    loop_i2s_a = 0;
-    loop_buf_a = 0;
-    loop_buf_f = 0;
-    loop_audio = 0;
-    nb_updates = 0;
     dsp_time = 0;
-
     tick += 1000000;
-
-    // testing buffer to create pops
-    //delayMicroseconds(random(0, 2000));
-    loop_buf_f = 0;
-    unsigned long en = micros();
-    Serial.print("Time for debug (microseconds): ");
-    Serial.println(en - st);
   }
 
 }

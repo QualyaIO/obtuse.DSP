@@ -7,6 +7,10 @@
 #include "vultin.h"
 #include "engine.tables.h"
 
+static_inline fix16_t Util_noteToFrequency(int note){
+   return fix_mul(0x82d01 /* 8.175799 */,fix_exp(fix_mul(0xec9 /* 0.057762 */,int_to_fix(note))));
+};
+
 static_inline int OSC_sin_wave_samples(){
    return 8000;
 };
@@ -214,6 +218,27 @@ static_inline void Engine_setFrequency_init(Engine__ctx_type_0 &_output_){
 static_inline void Engine_setFrequency(Engine__ctx_type_0 &_ctx, fix16_t freq){
    OSC_setFrequency(_ctx.carrier,fix_mul(_ctx.carrierRatio,freq));
    OSC_setFrequency(_ctx.modulator,fix_mul(_ctx.modulatorRatio,freq));
+}
+
+typedef Engine__ctx_type_0 Engine_noteOn_type;
+
+static_inline void Engine_noteOn_init(Engine__ctx_type_0 &_output_){
+   Engine__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void Engine_noteOn(Engine__ctx_type_0 &_ctx, int note, int velocity, int channel){
+   Engine_setFrequency(_ctx,Util_noteToFrequency(note));
+};
+
+typedef Engine__ctx_type_0 Engine_noteOff_type;
+
+static_inline void Engine_noteOff_init(Engine__ctx_type_0 &_output_){
+   Engine__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void Engine_noteOff(Engine__ctx_type_0 &_ctx, int note, int channel){
 }
 
 typedef Engine__ctx_type_0 Engine_default_type;

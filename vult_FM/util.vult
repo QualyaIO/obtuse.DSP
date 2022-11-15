@@ -1,0 +1,7 @@
+
+// midi note to frequency, 440hz base, equal temperament, as per MIDI standard
+// TODO: use a table instead?
+fun noteToFrequency(note: int) {
+    //440. 2^((note - 69)/12.)
+    return 8.175798915643707 * exp(0.057762265046662105 * real(note)); 
+}
