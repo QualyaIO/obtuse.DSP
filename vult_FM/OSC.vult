@@ -73,6 +73,11 @@ and setFrequency(newFreq:real) {
 and setPhase(newPhase: real) {
    phase_base = newPhase;
 }
+// reset both base phase and current phase, typically used upon new note
+and resetPhase() {
+   phase = 0.0;
+   phase_base = 0.0;
+}
 // see options at the top of the wive
 and setWavetable(index: int) {
    wavetable = index; 

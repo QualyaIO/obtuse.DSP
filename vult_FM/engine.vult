@@ -41,8 +41,10 @@ and setFrequency(freq: real) {
 
 // midi-like interface
 
+// beginning of a note
 // we don't check input values, yet
 and noteOn(note:int, velocity:int, channel:int){
+    // set frequency... should we reset phase somehow? artifacts upon first tests
     _ = setFrequency(Util.noteToFrequency(note));
 }
 

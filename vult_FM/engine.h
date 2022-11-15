@@ -116,6 +116,18 @@ static_inline void OSC_setPhase(OSC__ctx_type_2 &_ctx, fix16_t newPhase){
    _ctx.phase_base = newPhase;
 };
 
+typedef OSC__ctx_type_2 OSC_resetPhase_type;
+
+static_inline void OSC_resetPhase_init(OSC__ctx_type_2 &_output_){
+   OSC__ctx_type_2_init(_output_);
+   return ;
+}
+
+static_inline void OSC_resetPhase(OSC__ctx_type_2 &_ctx){
+   _ctx.phase = 0x0 /* 0.000000 */;
+   _ctx.phase_base = 0x0 /* 0.000000 */;
+}
+
 typedef OSC__ctx_type_2 OSC_setWavetable_type;
 
 static_inline void OSC_setWavetable_init(OSC__ctx_type_2 &_output_){
