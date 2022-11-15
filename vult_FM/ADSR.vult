@@ -1,0 +1,58 @@
+// ADSR envelop, based on vult example
+
+fun process(gate:real) {
+   mem state;
+   mem out;
+   mem rate;
+   mem target;
+   mem scale;
+   mem s, a_rate, d_rate, r_rate;
+
+   // Magic numbers:
+   // 0.001 : scales the effect of input parameters
+   // 1024.0 : improves numeric precision in fixed-point
+
+   out = out + (target - out) * rate * 0.004;
+
+   val bgate = gate > 0.0;
+
+   // idle // release
+   if(state == 0) {
+      if(Util.edge(bgate)) {
+         state = 1; // goto attack
+         scale = gate / 5.0;
+      }
+      rate = r_rate;
+      target = 0.0;
+   }
+   // attack
+   if(state == 1) {
+      if(not(bgate)) state = 0; // goto release
+      if(out > 1024.0) state = 2; // goto decay
+      rate = a_rate;
+      target = 1.2 * 1024.0;
+   }
+   // decay // sustain
+   if (state == 2) {
+      if(not(bgate)) state = 0; // goto release
+      rate = d_rate;
+      target = s * 1024.0;
+   }
+
+   return Util.smooth(scale) * clip(out/1024.0,0.0,1.0);
+}
+and config(newA, newD, newS, newR) {
+   // sanity check
+   val a =  clip(newA, 0.0, 1.0);
+   val d =  clip(newD, 0.0, 1.0);
+   s =  clip(newS, 0.0, 1.0);
+   val r =  clip(newR, 0.0, 1.0);
+
+   // rates for ADR, S used as is for target
+   a_rate = 1.0 / (100.0 * a + 0.01);
+   d_rate = 1.0 / (100.0 * d + 0.01);
+   r_rate = 1.0 / (100.0 * r + 0.01);
+}
+and default() @[init] {
+   _ = config(0.0, 0.5, 1.0, 0.5);
+}

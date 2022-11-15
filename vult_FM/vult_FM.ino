@@ -51,6 +51,8 @@ unsigned long dsp_time;
 unsigned long midi_tick;
 // starting C
 int current_note = 64;
+// note on/off
+bool gate = false;
 
 void setup() {
 
@@ -111,7 +113,9 @@ void setup() {
 }
 
 void loop() {
-  if (millis() - midi_tick >= 100) {
+
+  // note on
+  if (!gate and millis() - midi_tick >= 1000) {
     Serial.print("New note: ");
     current_note += 1;
     // playing three octaves
@@ -122,6 +126,13 @@ void loop() {
     Serial.println(current_note);
     Engine_noteOn(context, current_note, 0, 0);
     midi_tick = millis();
+    gate = true;
+  }
+  if (gate and millis() - midi_tick >= 1000) {
+    Serial.println("note off");
+    Engine_noteOff(context, 0, 0);
+    midi_tick = millis();
+    gate = false;
   }
 
   //  buffers hard-coded of size 16 in I2S (unless i2s.setBuffers() is called), make sure there are at least two of them free in the audio circular buffer (of buffers)

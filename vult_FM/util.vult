@@ -5,3 +5,18 @@ fun noteToFrequency(note: int) {
     //0.440 x 2^((note - 69)/12.)
     return 0.008175798915643707 * exp(0.057762265046662105 * real(note)); 
 }
+
+// from vult examples
+fun edge(x:bool) : bool {
+   mem pre;
+   val ret = x && not(pre);
+   pre = x;
+   return ret;
+}
+
+// from vult examples
+fun smooth(input){
+   mem x;
+   x = x+(input-x)*0.005;
+   return x;
+}

@@ -1,13 +1,34 @@
 
 // FM with 2 operators, phase modulation
 
+// TODO: should we reset phase on noteoff, keep processing with env 0?
+
 fun process() {
+    // HACK: note that using at least a temp variable force vult to put that in cpp and halves computation times (???)
+
     // audio sampling rate
     mem fs: real;
+    // current gate
+    mem gate;
     // to speedup computations
     mem carrier_half_phase;
-    // HACK: using a temp variable force vult to put that in cpp and halves computation times (???)
-    val carrier_phase = (modulator:OSC.process() + 1.0) * carrier_half_phase;
+
+    // retrieve both envelopes
+    val modulator_env = modulatoradsr:ADSR.process(gate);
+    val carrier_env = carrieradsr:ADSR.process(gate);
+    // apply to wavetables
+    val modulator_val;
+    if (modulator_env > 0.0) {
+       modulator_val = (modulator:OSC.process() + 1.0) * modulator_env;
+    }
+
+
+    val carrier_val;
+    if (carrier_env > 0.0) {
+       carrier_val = (carrier:OSC.process() + 1.0) * modulator_env;
+    }
+
+    val carrier_phase = modulator_val * carrier_half_phase;
 
     // modulate the (base) phase of the carrier
     _ = carrier:OSC.setPhase(carrier_phase);
@@ -44,11 +65,14 @@ and setFrequency(freq: real) {
 // beginning of a note
 // we don't check input values, yet
 and noteOn(note:int, velocity:int, channel:int){
-    // set frequency... should we reset phase somehow? artifacts upon first tests
-    _ = setFrequency(Util.noteToFrequency(note));
+   // set frequency... should we reset phase somehow? artifacts upon first tests
+   _ = setFrequency(Util.noteToFrequency(note));
+   gate = 1.0;
 }
-
-and noteOff(note:int,channel:int){ }
+// note off whatever the on
+and noteOff(note:int, channel:int) {
+   gate = 0.0;
+}
 
 // to be called on start
 and default() @[init] {

@@ -11,6 +11,99 @@ static_inline fix16_t Util_noteToFrequency(int note){
    return fix_mul(0x217 /* 0.008176 */,fix_exp(fix_mul(0xec9 /* 0.057762 */,int_to_fix(note))));
 };
 
+typedef struct Util__ctx_type_1 {
+   uint8_t pre;
+} Util__ctx_type_1;
+
+typedef Util__ctx_type_1 Util_edge_type;
+
+static_inline void Util__ctx_type_1_init(Util__ctx_type_1 &_output_){
+   Util__ctx_type_1 _ctx;
+   _ctx.pre = false;
+   _output_ = _ctx;
+   return ;
+}
+
+static_inline void Util_edge_init(Util__ctx_type_1 &_output_){
+   Util__ctx_type_1_init(_output_);
+   return ;
+}
+
+static_inline uint8_t Util_edge(Util__ctx_type_1 &_ctx, uint8_t x){
+   uint8_t ret;
+   ret = (x && bool_not(_ctx.pre));
+   _ctx.pre = x;
+   return ret;
+}
+
+typedef struct Util__ctx_type_2 {
+   fix16_t x;
+} Util__ctx_type_2;
+
+typedef Util__ctx_type_2 Util_smooth_type;
+
+static_inline void Util__ctx_type_2_init(Util__ctx_type_2 &_output_){
+   Util__ctx_type_2 _ctx;
+   _ctx.x = 0x0 /* 0.000000 */;
+   _output_ = _ctx;
+   return ;
+}
+
+static_inline void Util_smooth_init(Util__ctx_type_2 &_output_){
+   Util__ctx_type_2_init(_output_);
+   return ;
+}
+
+static_inline fix16_t Util_smooth(Util__ctx_type_2 &_ctx, fix16_t input){
+   _ctx.x = (_ctx.x + fix_mul(0x147 /* 0.005000 */,(input + (- _ctx.x))));
+   return _ctx.x;
+}
+
+typedef struct ADSR__ctx_type_0 {
+   fix16_t target;
+   int state;
+   fix16_t scale;
+   fix16_t s;
+   fix16_t rate;
+   fix16_t r_rate;
+   fix16_t out;
+   fix16_t d_rate;
+   fix16_t a_rate;
+   Util__ctx_type_2 _inst955;
+   Util__ctx_type_1 _inst251;
+} ADSR__ctx_type_0;
+
+typedef ADSR__ctx_type_0 ADSR_process_type;
+
+void ADSR__ctx_type_0_init(ADSR__ctx_type_0 &_output_);
+
+static_inline void ADSR_process_init(ADSR__ctx_type_0 &_output_){
+   ADSR__ctx_type_0_init(_output_);
+   return ;
+}
+
+fix16_t ADSR_process(ADSR__ctx_type_0 &_ctx, fix16_t gate);
+
+typedef ADSR__ctx_type_0 ADSR_config_type;
+
+static_inline void ADSR_config_init(ADSR__ctx_type_0 &_output_){
+   ADSR__ctx_type_0_init(_output_);
+   return ;
+}
+
+void ADSR_config(ADSR__ctx_type_0 &_ctx, fix16_t newA, fix16_t newD, fix16_t newS, fix16_t newR);
+
+typedef ADSR__ctx_type_0 ADSR_default_type;
+
+static_inline void ADSR_default_init(ADSR__ctx_type_0 &_output_){
+   ADSR__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void ADSR_default(ADSR__ctx_type_0 &_ctx){
+   ADSR_config(_ctx,0x0 /* 0.000000 */,0x8000 /* 0.500000 */,0x10000 /* 1.000000 */,0x8000 /* 0.500000 */);
+};
+
 static_inline int OSC_sin_wave_samples(){
    return 8000;
 };
@@ -153,9 +246,12 @@ static_inline void OSC_default(OSC__ctx_type_2 &_ctx){
 }
 
 typedef struct Engine__ctx_type_0 {
+   ADSR__ctx_type_0 modulatoradsr;
    fix16_t modulatorRatio;
    OSC__ctx_type_2 modulator;
+   fix16_t gate;
    fix16_t fs;
+   ADSR__ctx_type_0 carrieradsr;
    fix16_t carrier_half_phase;
    fix16_t carrierRatio;
    OSC__ctx_type_2 carrier;
@@ -241,7 +337,8 @@ static_inline void Engine_noteOn_init(Engine__ctx_type_0 &_output_){
 
 static_inline void Engine_noteOn(Engine__ctx_type_0 &_ctx, int note, int velocity, int channel){
    Engine_setFrequency(_ctx,Util_noteToFrequency(note));
-};
+   _ctx.gate = 0x10000 /* 1.000000 */;
+}
 
 typedef Engine__ctx_type_0 Engine_noteOff_type;
 
@@ -251,7 +348,8 @@ static_inline void Engine_noteOff_init(Engine__ctx_type_0 &_output_){
 }
 
 static_inline void Engine_noteOff(Engine__ctx_type_0 &_ctx, int note, int channel){
-}
+   _ctx.gate = 0x0 /* 0.000000 */;
+};
 
 typedef Engine__ctx_type_0 Engine_default_type;
 
