@@ -13,10 +13,3 @@ fun edge(x:bool) : bool {
    pre = x;
    return ret;
 }
-
-// from vult examples
-fun smooth(input){
-   mem x;
-   x = x+(input-x)*0.005;
-   return x;
-}

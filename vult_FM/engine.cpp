@@ -5,64 +5,95 @@
 void ADSR__ctx_type_0_init(ADSR__ctx_type_0 &_output_){
    ADSR__ctx_type_0 _ctx;
    _ctx.target = 0x0 /* 0.000000 */;
+   _ctx.step = 0x0 /* 0.000000 */;
    _ctx.state = 0;
-   _ctx.scale = 0x0 /* 0.000000 */;
    _ctx.s = 0x0 /* 0.000000 */;
-   _ctx.rate = 0x0 /* 0.000000 */;
-   _ctx.r_rate = 0x0 /* 0.000000 */;
+   _ctx.r_step = 0x0 /* 0.000000 */;
+   _ctx.r = 0x0 /* 0.000000 */;
    _ctx.out = 0x0 /* 0.000000 */;
-   _ctx.d_rate = 0x0 /* 0.000000 */;
-   _ctx.a_rate = 0x0 /* 0.000000 */;
-   Util__ctx_type_2_init(_ctx._inst955);
-   Util__ctx_type_1_init(_ctx._inst251);
+   _ctx.fs = 0x0 /* 0.000000 */;
+   _ctx.d_step = 0x0 /* 0.000000 */;
+   _ctx.d = 0x0 /* 0.000000 */;
+   _ctx.a_target = 0x0 /* 0.000000 */;
+   _ctx.a_step = 0x0 /* 0.000000 */;
+   _ctx.a = 0x0 /* 0.000000 */;
+   Util__ctx_type_1_init(_ctx._inst151);
    ADSR_default(_ctx);
    _output_ = _ctx;
    return ;
 }
 
 fix16_t ADSR_process(ADSR__ctx_type_0 &_ctx, fix16_t gate){
-   _ctx.out = (_ctx.out + fix_mul(fix_mul(0x106 /* 0.004000 */,_ctx.rate),(_ctx.target + (- _ctx.out))));
+   _ctx.a_target = 0x10000 /* 1.000000 */;
+   fix16_t scale;
+   scale = 0x3e80000 /* 1000.000000 */;
+   _ctx.out = (_ctx.out + _ctx.step);
    uint8_t bgate;
    bgate = (gate > 0x0 /* 0.000000 */);
+   if(Util_edge(_ctx._inst151,bgate)){
+      _ctx.state = 1;
+      _ctx.target = fix_mul(_ctx.a_target,scale);
+      _ctx.step = fix_mul(_ctx.a_step,_ctx.target);
+   }
    if(_ctx.state == 0){
-      if(Util_edge(_ctx._inst251,bgate)){
-         _ctx.state = 1;
-         _ctx.scale = fix_mul(0x3333 /* 0.200000 */,gate);
-      }
-      _ctx.rate = _ctx.r_rate;
+      _ctx.step = 0x0 /* 0.000000 */;
       _ctx.target = 0x0 /* 0.000000 */;
    }
    if(_ctx.state == 1){
-      if(bool_not(bgate)){
-         _ctx.state = 0;
-      }
-      if(_ctx.out > 0x4000000 /* 1024.000000 */){
+      if(_ctx.out >= _ctx.target){
+         _ctx.out = 0x4000000 /* 1024.000000 */;
+         _ctx.target = fix_mul(_ctx.s,scale);
          _ctx.state = 2;
       }
-      _ctx.rate = _ctx.a_rate;
-      _ctx.target = 0x4cccccc /* 1228.800000 */;
+      if(bool_not(bgate)){
+         _ctx.state = 4;
+      }
    }
    if(_ctx.state == 2){
       if(bool_not(bgate)){
+         _ctx.state = 4;
+      }
+      _ctx.step = _ctx.d_step;
+      if(_ctx.out <= _ctx.target){
+         _ctx.out = _ctx.target;
+         _ctx.state = 4;
+      }
+   }
+   if(_ctx.state == 3){
+      _ctx.step = 0x0 /* 0.000000 */;
+      if(bool_not(bgate)){
+         _ctx.state = 4;
+      }
+   }
+   if(_ctx.state == 4){
+      _ctx.step = _ctx.r_step;
+      _ctx.target = 0x0 /* 0.000000 */;
+      if(_ctx.out <= 0x0 /* 0.000000 */){
+         _ctx.out = 0x0 /* 0.000000 */;
          _ctx.state = 0;
       }
-      _ctx.rate = _ctx.d_rate;
-      _ctx.target = (_ctx.s << 10);
    }
-   return fix_mul(Util_smooth(_ctx._inst955,_ctx.scale),fix_clip((_ctx.out >> 10),0x0 /* 0.000000 */,0x10000 /* 1.000000 */));
+   return fix_clip(fix_div(_ctx.out,scale),0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
+}
+
+void ADSR_updateSteps(ADSR__ctx_type_0 &_ctx){
+   fix16_t min_t;
+   min_t = 0x41 /* 0.001000 */;
+   fix16_t scale;
+   scale = 0x3e80000 /* 1000.000000 */;
+   _ctx.a_step = fix_div(fix_mul(_ctx.a_target,scale),fix_mul(_ctx.fs,(_ctx.a + min_t)));
+   _ctx.d_step = fix_div(fix_mul(scale,(_ctx.s + (- _ctx.a_target))),fix_mul(_ctx.fs,(_ctx.d + min_t)));
+   _ctx.r_step = fix_div(fix_mul(scale,(- _ctx.s)),fix_mul(_ctx.fs,(_ctx.r + min_t)));
 }
 
 void ADSR_config(ADSR__ctx_type_0 &_ctx, fix16_t newA, fix16_t newD, fix16_t newS, fix16_t newR){
-   fix16_t a;
-   a = fix_clip(newA,0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
-   fix16_t d;
-   d = fix_clip(newD,0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
+   fix16_t max_t;
+   max_t = 0x3c0000 /* 60.000000 */;
+   _ctx.a = fix_clip(newA,0x0 /* 0.000000 */,max_t);
+   _ctx.d = fix_clip(newD,0x0 /* 0.000000 */,max_t);
    _ctx.s = fix_clip(newS,0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
-   fix16_t r;
-   r = fix_clip(newR,0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
-   _ctx.a_rate = fix_div(0x10000 /* 1.000000 */,(0x28f /* 0.010000 */ + fix_mul(0x640000 /* 100.000000 */,a)));
-   _ctx.d_rate = fix_div(0x10000 /* 1.000000 */,(0x28f /* 0.010000 */ + fix_mul(0x640000 /* 100.000000 */,d)));
-   _ctx.r_rate = fix_div(0x10000 /* 1.000000 */,(0x28f /* 0.010000 */ + fix_mul(0x640000 /* 100.000000 */,r)));
+   _ctx.r = fix_clip(newR,0x0 /* 0.000000 */,max_t);
+   ADSR_updateSteps(_ctx);
 }
 
 void OSC__ctx_type_2_init(OSC__ctx_type_2 &_output_){

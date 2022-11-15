@@ -1,58 +1,123 @@
-// ADSR envelop, based on vult example
+// linear ADSR envelope
+// Magic numbers:
+// 1024.0 : improves numeric precision in fixed-point
 
 fun process(gate:real) {
+   // uber state machine
    mem state;
+   // target values
+   mem s, a_step, d_step, r_step;
+   // current output and then current step toward target
    mem out;
-   mem rate;
+   mem step;
+   // current target
    mem target;
-   mem scale;
-   mem s, a_rate, d_rate, r_rate;
+   // target for attack, just in case it could be changed at some point
+   // Note: if fore some reason becomes < s, adapt decay to check if we reach sustain "from below"
+   mem  a_target = 1.0;
+   // internal output and target x 1000 to deal with fixed point precision (also corresponds to the fact that samplerate is in kHz)
+   val scale = 1000.0;
 
-   // Magic numbers:
-   // 0.001 : scales the effect of input parameters
-   // 1024.0 : improves numeric precision in fixed-point
-
-   out = out + (target - out) * rate * 0.004;
+   out = out + step; 
 
    val bgate = gate > 0.0;
 
-   // idle // release
+   // new gate, goto attack
+   if(Util.edge(bgate)) {
+      state = 1;
+      target = a_target * scale;
+      step = a_step * target;
+   }
+
+   // idle
    if(state == 0) {
-      if(Util.edge(bgate)) {
-         state = 1; // goto attack
-         scale = gate / 5.0;
-      }
-      rate = r_rate;
+      step = 0.0;
       target = 0.0;
    }
    // attack
    if(state == 1) {
-      if(not(bgate)) state = 0; // goto release
-      if(out > 1024.0) state = 2; // goto decay
-      rate = a_rate;
-      target = 1.2 * 1024.0;
+      // peaked, going to decay
+      if(out >=  target) {
+         out = 1024.0;
+      	 target = s * scale;
+      	 state = 2;
+      }
+      // gate off, to go release
+      if (not(bgate)) {
+         state = 4;
+      }
    }
-   // decay // sustain
+   // decay
    if (state == 2) {
-      if(not(bgate)) state = 0; // goto release
-      rate = d_rate;
-      target = s * 1024.0;
+      if(not(bgate)) state = 4; // goto release
+      step = d_step;
+      if (out <= target) {
+         out = target;
+	 state = 4;
+      }
+
+   }
+   // sustain
+   if (state == 3) {
+      // just waiting for the gate to end
+      step = 0.0;
+      if(not(bgate)) state = 4; // goto release
    }
 
-   return Util.smooth(scale) * clip(out/1024.0,0.0,1.0);
-}
-and config(newA, newD, newS, newR) {
-   // sanity check
-   val a =  clip(newA, 0.0, 1.0);
-   val d =  clip(newD, 0.0, 1.0);
-   s =  clip(newS, 0.0, 1.0);
-   val r =  clip(newR, 0.0, 1.0);
+    // release
+   if(state == 4) {
+      step = r_step;
+      target = 0.0;
+      // back to idle
+      if (out <= 0.0) {
+         out = 0.0;
+	 state = 0;
+      }
+   }
 
-   // rates for ADR, S used as is for target
-   a_rate = 1.0 / (100.0 * a + 0.01);
-   d_rate = 1.0 / (100.0 * d + 0.01);
-   r_rate = 1.0 / (100.0 * r + 0.01);
+   return clip(out/scale,0.0,1.0);
 }
+// once sample rate change, we need to adapt 
+and updateSteps() {
+   mem a, d, r, fs;
+   // 0.001 to avoid division by 0 and smooth a tiny bit
+   val min_t = 0.001;
+   // scale to kHz
+   val scale = 1000.0;
+   // to stay within fixed point limit we don't want the left part too big (target value as precise as the scale let it be, around 0.01 threshold), and the right part too big (too much time) -- rember limit [1/32767 .. 32767]
+   a_step = a_target * scale / (fs * (a + min_t));
+   // decay will go from 1 to sustain
+   d_step = (s - a_target) * scale / (fs * (d + min_t));
+   // release from sustain to nothingness
+   r_step =  (-s * scale) / (fs * (r + min_t));
+}
+
+// current sampling rate in kHz
+// note: sample rate of ADSR can be different from audio to save on computations
+and setSamplerate(newFs:real) {
+   if (newFs > 0.0) {
+      fs = newFs;
+   }
+   _ = updateSteps();
+}
+
+
+// attack: time (s) to peak output at 1.0 -- limit to 60s (for fixed point sake)
+// decay: time (s) to get to sustain level -- limit to 60s
+// sustain: level when note is held (0..1)
+// release: time (s) to get from sustain level to 0 -- limit to 60s
+and config(newA, newD, newS, newR) {
+   val max_t = 60.0;
+   // sanity check
+   a =  clip(newA, 0.0, max_t);
+   d =  clip(newD, 0.0, max_t);
+   s =  clip(newS, 0.0, 1.0);
+   r =  clip(newR, 0.0, max_t);
+   // so heavy computations
+   _ = updateSteps();
+}
+
 and default() @[init] {
-   _ = config(0.0, 0.5, 1.0, 0.5);
+   _ = setSamplerate(44.1);
+   _ = config(1.0, 1.0, 0.8, 1.0);
 }

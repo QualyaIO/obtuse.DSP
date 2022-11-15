@@ -36,41 +36,21 @@ static_inline uint8_t Util_edge(Util__ctx_type_1 &_ctx, uint8_t x){
    return ret;
 }
 
-typedef struct Util__ctx_type_2 {
-   fix16_t x;
-} Util__ctx_type_2;
-
-typedef Util__ctx_type_2 Util_smooth_type;
-
-static_inline void Util__ctx_type_2_init(Util__ctx_type_2 &_output_){
-   Util__ctx_type_2 _ctx;
-   _ctx.x = 0x0 /* 0.000000 */;
-   _output_ = _ctx;
-   return ;
-}
-
-static_inline void Util_smooth_init(Util__ctx_type_2 &_output_){
-   Util__ctx_type_2_init(_output_);
-   return ;
-}
-
-static_inline fix16_t Util_smooth(Util__ctx_type_2 &_ctx, fix16_t input){
-   _ctx.x = (_ctx.x + fix_mul(0x147 /* 0.005000 */,(input + (- _ctx.x))));
-   return _ctx.x;
-}
-
 typedef struct ADSR__ctx_type_0 {
    fix16_t target;
+   fix16_t step;
    int state;
-   fix16_t scale;
    fix16_t s;
-   fix16_t rate;
-   fix16_t r_rate;
+   fix16_t r_step;
+   fix16_t r;
    fix16_t out;
-   fix16_t d_rate;
-   fix16_t a_rate;
-   Util__ctx_type_2 _inst955;
-   Util__ctx_type_1 _inst251;
+   fix16_t fs;
+   fix16_t d_step;
+   fix16_t d;
+   fix16_t a_target;
+   fix16_t a_step;
+   fix16_t a;
+   Util__ctx_type_1 _inst151;
 } ADSR__ctx_type_0;
 
 typedef ADSR__ctx_type_0 ADSR_process_type;
@@ -83,6 +63,29 @@ static_inline void ADSR_process_init(ADSR__ctx_type_0 &_output_){
 }
 
 fix16_t ADSR_process(ADSR__ctx_type_0 &_ctx, fix16_t gate);
+
+typedef ADSR__ctx_type_0 ADSR_updateSteps_type;
+
+static_inline void ADSR_updateSteps_init(ADSR__ctx_type_0 &_output_){
+   ADSR__ctx_type_0_init(_output_);
+   return ;
+}
+
+void ADSR_updateSteps(ADSR__ctx_type_0 &_ctx);
+
+typedef ADSR__ctx_type_0 ADSR_setSamplerate_type;
+
+static_inline void ADSR_setSamplerate_init(ADSR__ctx_type_0 &_output_){
+   ADSR__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void ADSR_setSamplerate(ADSR__ctx_type_0 &_ctx, fix16_t newFs){
+   if(newFs > 0x0 /* 0.000000 */){
+      _ctx.fs = newFs;
+   }
+   ADSR_updateSteps(_ctx);
+}
 
 typedef ADSR__ctx_type_0 ADSR_config_type;
 
@@ -101,8 +104,9 @@ static_inline void ADSR_default_init(ADSR__ctx_type_0 &_output_){
 }
 
 static_inline void ADSR_default(ADSR__ctx_type_0 &_ctx){
-   ADSR_config(_ctx,0x0 /* 0.000000 */,0x8000 /* 0.500000 */,0x10000 /* 1.000000 */,0x8000 /* 0.500000 */);
-};
+   ADSR_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
+   ADSR_config(_ctx,0x10000 /* 1.000000 */,0x10000 /* 1.000000 */,0xcccc /* 0.800000 */,0x10000 /* 1.000000 */);
+}
 
 static_inline int OSC_sin_wave_samples(){
    return 8000;

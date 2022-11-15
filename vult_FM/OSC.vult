@@ -56,7 +56,7 @@ and updateStep() {
     // both for efficiency and because we don't want any result to be outside [1/32767 .. 32767] to avoid fixed float limits we compute step in two... steps
     step = stepRatio*freq;
 }
-// seter for parameters. expect values of desired frequency and current sampring rate in kHz to avoid fixed float limits ([1/32767 ..32767]... probably)
+// seter for parameters. expect values of desired frequency and current sampling rate in kHz to avoid fixed float limits ([1/32767 ..32767]... probably)
 and setSamplerate(newFs:real) {
    if (newFs > 0.0) {
       fs = newFs;
