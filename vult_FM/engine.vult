@@ -76,6 +76,13 @@ and noteOff(note:int, channel:int) {
 
 // to be called on start
 and default() @[init] {
+    // init used items
+    // FIXME: not sure why if @init is set
+    _ = carrier:OSC.default();
+    _ = modulator:OSC.default();
+    _ = carrieradsr:ADSR.default();
+    _ = modulatoradsr:ADSR.default();
+    
     // default sampling rate (in kHz)
     _ = setSamplerate(44.100);
     // config for operators

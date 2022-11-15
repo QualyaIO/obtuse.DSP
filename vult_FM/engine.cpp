@@ -135,6 +135,10 @@ fix16_t Engine_process(Engine__ctx_type_0 &_ctx){
 }
 
 void Engine_default(Engine__ctx_type_0 &_ctx){
+   OSC_default(_ctx.carrier);
+   OSC_default(_ctx.modulator);
+   ADSR_default(_ctx.carrieradsr);
+   ADSR_default(_ctx.modulatoradsr);
    Engine_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    Engine_setCarrierRatio(_ctx,0x10000 /* 1.000000 */);
    Engine_setModulatorRatio(_ctx,0x20000 /* 2.000000 */);
