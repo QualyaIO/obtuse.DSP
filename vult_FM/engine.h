@@ -8,7 +8,7 @@
 #include "engine.tables.h"
 
 static_inline fix16_t Util_noteToFrequency(int note){
-   return fix_mul(0x82d01 /* 8.175799 */,fix_exp(fix_mul(0xec9 /* 0.057762 */,int_to_fix(note))));
+   return fix_mul(0x217 /* 0.008176 */,fix_exp(fix_mul(0xec9 /* 0.057762 */,int_to_fix(note))));
 };
 
 static_inline int OSC_sin_wave_samples(){

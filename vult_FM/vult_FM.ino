@@ -111,7 +111,7 @@ void setup() {
 }
 
 void loop() {
-  if (millis() - midi_tick >= 1000) {
+  if (millis() - midi_tick >= 100) {
     Serial.print("New note: ");
     current_note += 1;
     // playing three octaves
