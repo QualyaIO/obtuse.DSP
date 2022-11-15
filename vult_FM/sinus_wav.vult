@@ -16,7 +16,10 @@ fun process() {
 
    // advance time, keep range in check here to maximize precision
    phase = phase + step;
-   phase = phase % real(sin_wave_samples());
+   // slightly more efficient than the more robust modulo
+   if (phase > real(sin_wave_samples())) {
+      phase = phase - real(sin_wave_samples());
+   }
    // loop in sample
    return sin_wave(0, int(phase_base + phase));
 }
@@ -42,7 +45,6 @@ and setSamplerate(newFs:real) {
 }
 and setFrequency(newFreq:real) {
    freq = newFreq;
-   step = stepRatio*freq;
    _ = updateStep();
 }
 // setting *base* phase [0..size[ -- we won't check here, beware!
