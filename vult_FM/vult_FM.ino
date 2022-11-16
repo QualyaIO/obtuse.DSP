@@ -10,6 +10,27 @@
 // sole context used in vult, used to handle internal states
 Engine_process_type context;
 
+/*** MIDI ***/
+
+#include <Adafruit_TinyUSB.h>
+#include <MIDI.h>
+
+// USB MIDI object
+Adafruit_USBD_MIDI usb_midi;
+
+// Create a new instance of the Arduino MIDI Library,
+// and attach usb_midi as the transport.
+MIDI_CREATE_INSTANCE(Adafruit_USBD_MIDI, usb_midi, MIDI);
+
+// play by itself instead of MIDI input
+const bool autoplay = true;
+// playing notes
+unsigned long midi_tick;
+// starting C
+int current_note = 0;
+// note on/off
+bool gate = false;
+
 /*** SGTL ***/
 
 #include <I2S.h>
@@ -46,13 +67,6 @@ int tick = 0;
 // computing time spent on DPS
 unsigned long dsp_tick;
 unsigned long dsp_time;
-
-// playing notes
-unsigned long midi_tick;
-// starting C
-int current_note = 0;
-// note on/off
-bool gate = false;
 
 void setup() {
 
@@ -104,7 +118,22 @@ void setup() {
   Serial.print("volume: ");
   Serial.println(sgtl.volume(0.2));
 
-  delay(3000);
+  delay(1000);
+
+  /* MIDI */
+
+  usb_midi.setStringDescriptor("Vult_FM");
+
+  // Initialize MIDI, and listen to all MIDI channels
+  // This will also call usb_midi's begin()
+  MIDI.begin(MIDI_CHANNEL_OMNI);
+
+  // Attach the handleNoteOn function to the MIDI Library. It will
+  // be called whenever the Bluefruit receives MIDI Note On messages.
+  MIDI.setHandleNoteOn(handleNoteOn);
+
+  // Do the same for MIDI Note Off messages.
+  MIDI.setHandleNoteOff(handleNoteOff);
 
   /* Vult */
   // Init engine, then pass sample rate, not forgetting to convert passed parameters to fixed (of course...)
@@ -114,25 +143,28 @@ void setup() {
 
 void loop() {
 
-  // note on
-  if (!gate and millis() - midi_tick >= 50) {
-    Serial.print("New note: ");
-    current_note += 1;
-    // playing three octaves
-    if (current_note >= 128) {
-      // back to C
-      current_note = 0;
+  // generating notes if option set
+  if (autoplay) {
+    // note on
+    if (!gate and millis() - midi_tick >= 50) {
+      Serial.print("New note: ");
+      current_note += 1;
+      // playing three octaves
+      if (current_note >= 128) {
+        // back to C
+        current_note = 0;
+      }
+      Serial.println(current_note);
+      Engine_noteOn(context, current_note, 0, 0);
+      midi_tick = millis();
+      gate = true;
     }
-    Serial.println(current_note);
-    Engine_noteOn(context, current_note, 0, 0);
-    midi_tick = millis();
-    gate = true;
-  }
-  if (gate and millis() - midi_tick >= 50) {
-    Serial.println("note off");
-    Engine_noteOff(context, 0, 0);
-    midi_tick = millis();
-    gate = false;
+    if (gate and millis() - midi_tick >= 50) {
+      Serial.println("note off");
+      Engine_noteOff(context, 0, 0);
+      midi_tick = millis();
+      gate = false;
+    }
   }
 
   //  buffers hard-coded of size 16 in I2S (unless i2s.setBuffers() is called), make sure there are at least two of them free in the audio circular buffer (of buffers)
@@ -158,5 +190,30 @@ void loop() {
     dsp_time = 0;
     tick += 1000000;
   }
+}
 
+void handleNoteOn(byte channel, byte pitch, byte velocity)
+{
+  // Log when a note is pressed.
+  Serial.print("Note on: channel = ");
+  Serial.print(channel);
+
+  Serial.print(" pitch = ");
+  Serial.print(pitch);
+
+  Serial.print(" velocity = ");
+  Serial.println(velocity);
+}
+
+void handleNoteOff(byte channel, byte pitch, byte velocity)
+{
+  // Log when a note is released.
+  Serial.print("Note off: channel = ");
+  Serial.print(channel);
+
+  Serial.print(" pitch = ");
+  Serial.print(pitch);
+
+  Serial.print(" velocity = ");
+  Serial.println(velocity);
 }
