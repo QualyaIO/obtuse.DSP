@@ -50,7 +50,7 @@ unsigned long dsp_time;
 // playing notes
 unsigned long midi_tick;
 // starting C
-int current_note = 64;
+int current_note = 0;
 // note on/off
 bool gate = false;
 
@@ -115,20 +115,20 @@ void setup() {
 void loop() {
 
   // note on
-  if (!gate and millis() - midi_tick >= 2000) {
+  if (!gate and millis() - midi_tick >= 50) {
     Serial.print("New note: ");
     current_note += 1;
     // playing three octaves
-    if (current_note >= 63 + 3 * 12) {
+    if (current_note >= 128) {
       // back to C
-      current_note = 64;
+      current_note = 0;
     }
     Serial.println(current_note);
     Engine_noteOn(context, current_note, 0, 0);
     midi_tick = millis();
     gate = true;
   }
-  if (gate and millis() - midi_tick >= 3000) {
+  if (gate and millis() - midi_tick >= 50) {
     Serial.println("note off");
     Engine_noteOff(context, 0, 0);
     midi_tick = millis();
