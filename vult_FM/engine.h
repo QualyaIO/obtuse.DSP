@@ -139,13 +139,7 @@ static_inline void OSC_get_sample_init(OSC__ctx_type_2 &_output_){
    return ;
 }
 
-static_inline fix16_t OSC_get_sample(OSC__ctx_type_2 &_ctx, int index){
-   fix16_t sample;
-   if(_ctx.wavetable == 0){
-      sample = OSC_sin_wave(0,index);
-   }
-   return sample;
-}
+fix16_t OSC_get_sample(OSC__ctx_type_2 &_ctx, int index);
 
 typedef OSC__ctx_type_2 OSC_getSize_type;
 
@@ -154,13 +148,7 @@ static_inline void OSC_getSize_init(OSC__ctx_type_2 &_output_){
    return ;
 }
 
-static_inline int OSC_getSize(OSC__ctx_type_2 &_ctx){
-   int size;
-   if(_ctx.wavetable == 0){
-      size = OSC_sin_wave_samples();
-   }
-   return size;
-}
+int OSC_getSize(OSC__ctx_type_2 &_ctx);
 
 typedef OSC__ctx_type_2 OSC_process_type;
 

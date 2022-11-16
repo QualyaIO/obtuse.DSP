@@ -12,7 +12,7 @@ fun get_sample(index: int) {
     // index of wavetable
     mem wavetable;
     // modulo will be taken care of by the generated code 
-    val sample;
+    val sample = 0.0;
     if (wavetable == 0) {
        sample = sin_wave(0, index);
     }
@@ -20,7 +20,7 @@ fun get_sample(index: int) {
 }
 // size of selected wavetable (int)
 and getSize() {
-    val size;
+    val size = 0;
     if (wavetable == 0) {
        size = sin_wave_samples();
     }

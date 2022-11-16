@@ -13,8 +13,8 @@ fun process() {
     // to speedup computations
     mem carrier_half_phase;
 
-    // output value
-    val carrier_val;
+    // output value -- need to be explicitely initialized otherwise migth be random (?) producing audible clicks
+    val carrier_val = 0.0;
     // retrieve both envelopes
     val carrier_env = carrieradsr:ADSR.process(gate);
 
@@ -22,7 +22,7 @@ fun process() {
     if (carrier_env > 0.0) {
        val modulator_env = modulatoradsr:ADSR.process(gate);
        // apply to wavetables
-       val carrier_phase;
+       val carrier_phase = 0.0;
        // only modulate if we got level on modulator
        if (modulator_env > 0.0) {
           val modulator_val = (modulator:OSC.process() + 1.0) * modulator_env;

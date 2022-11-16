@@ -108,6 +108,24 @@ void OSC__ctx_type_2_init(OSC__ctx_type_2 &_output_){
    return ;
 }
 
+fix16_t OSC_get_sample(OSC__ctx_type_2 &_ctx, int index){
+   fix16_t sample;
+   sample = 0x0 /* 0.000000 */;
+   if(_ctx.wavetable == 0){
+      sample = OSC_sin_wave(0,index);
+   }
+   return sample;
+}
+
+int OSC_getSize(OSC__ctx_type_2 &_ctx){
+   int size;
+   size = 0;
+   if(_ctx.wavetable == 0){
+      size = OSC_sin_wave_samples();
+   }
+   return size;
+}
+
 fix16_t OSC_process(OSC__ctx_type_2 &_ctx){
    _ctx.phase = (_ctx.phase + _ctx.step);
    fix16_t size;
@@ -144,12 +162,14 @@ void Engine__ctx_type_0_init(Engine__ctx_type_0 &_output_){
 
 fix16_t Engine_process(Engine__ctx_type_0 &_ctx){
    fix16_t carrier_val;
+   carrier_val = 0x0 /* 0.000000 */;
    fix16_t carrier_env;
    carrier_env = ADSR_process(_ctx.carrieradsr,_ctx.gate);
    if(carrier_env > 0x0 /* 0.000000 */){
       fix16_t modulator_env;
       modulator_env = ADSR_process(_ctx.modulatoradsr,_ctx.gate);
       fix16_t carrier_phase;
+      carrier_phase = 0x0 /* 0.000000 */;
       if(modulator_env > 0x0 /* 0.000000 */){
          fix16_t modulator_val;
          modulator_val = fix_mul(modulator_env,(0x10000 /* 1.000000 */ + OSC_process(_ctx.modulator)));
