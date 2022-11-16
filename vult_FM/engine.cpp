@@ -24,7 +24,6 @@ void ADSR__ctx_type_0_init(ADSR__ctx_type_0 &_output_){
 }
 
 fix16_t ADSR_process(ADSR__ctx_type_0 &_ctx, fix16_t gate){
-   _ctx.a_target = 0x10000 /* 1.000000 */;
    fix16_t scale;
    scale = 0x3e80000 /* 1000.000000 */;
    _ctx.out = (_ctx.out + _ctx.step);
@@ -40,6 +39,7 @@ fix16_t ADSR_process(ADSR__ctx_type_0 &_ctx, fix16_t gate){
       _ctx.target = 0x0 /* 0.000000 */;
    }
    if(_ctx.state == 1){
+      _ctx.step = _ctx.a_step;
       if(_ctx.out >= _ctx.target){
          _ctx.out = 0x4000000 /* 1024.000000 */;
          _ctx.target = fix_mul(_ctx.s,scale);
@@ -79,11 +79,9 @@ fix16_t ADSR_process(ADSR__ctx_type_0 &_ctx, fix16_t gate){
 void ADSR_updateSteps(ADSR__ctx_type_0 &_ctx){
    fix16_t min_t;
    min_t = 0x41 /* 0.001000 */;
-   fix16_t scale;
-   scale = 0x3e80000 /* 1000.000000 */;
-   _ctx.a_step = fix_div(fix_mul(_ctx.a_target,scale),fix_mul(_ctx.fs,(_ctx.a + min_t)));
-   _ctx.d_step = fix_div(fix_mul(scale,(_ctx.s + (- _ctx.a_target))),fix_mul(_ctx.fs,(_ctx.d + min_t)));
-   _ctx.r_step = fix_div(fix_mul(scale,(- _ctx.s)),fix_mul(_ctx.fs,(_ctx.r + min_t)));
+   _ctx.a_step = fix_div(_ctx.a_target,fix_mul(_ctx.fs,(_ctx.a + min_t)));
+   _ctx.d_step = fix_div((_ctx.s + (- _ctx.a_target)),fix_mul(_ctx.fs,(_ctx.d + min_t)));
+   _ctx.r_step = fix_div((- _ctx.s),fix_mul(_ctx.fs,(_ctx.r + min_t)));
 }
 
 void ADSR_config(ADSR__ctx_type_0 &_ctx, fix16_t newA, fix16_t newD, fix16_t newS, fix16_t newR){
@@ -145,36 +143,46 @@ void Engine__ctx_type_0_init(Engine__ctx_type_0 &_output_){
 }
 
 fix16_t Engine_process(Engine__ctx_type_0 &_ctx){
-   fix16_t modulator_env;
-   modulator_env = ADSR_process(_ctx.modulatoradsr,_ctx.gate);
+   fix16_t carrier_val;
    fix16_t carrier_env;
    carrier_env = ADSR_process(_ctx.carrieradsr,_ctx.gate);
-   fix16_t modulator_val;
-   if(modulator_env > 0x0 /* 0.000000 */){
-      modulator_val = fix_mul(modulator_env,(0x10000 /* 1.000000 */ + OSC_process(_ctx.modulator)));
-   }
-   fix16_t carrier_val;
    if(carrier_env > 0x0 /* 0.000000 */){
-      carrier_val = fix_mul(modulator_env,(0x10000 /* 1.000000 */ + OSC_process(_ctx.carrier)));
+      fix16_t modulator_env;
+      modulator_env = ADSR_process(_ctx.modulatoradsr,_ctx.gate);
+      fix16_t carrier_phase;
+      if(modulator_env > 0x0 /* 0.000000 */){
+         fix16_t modulator_val;
+         modulator_val = fix_mul(modulator_env,(0x10000 /* 1.000000 */ + OSC_process(_ctx.modulator)));
+         carrier_phase = fix_mul(_ctx.carrier_half_phase,modulator_val);
+      }
+      OSC_setPhase(_ctx.carrier,carrier_phase);
+      carrier_val = fix_mul(carrier_env,OSC_process(_ctx.carrier));
    }
-   fix16_t carrier_phase;
-   carrier_phase = fix_mul(_ctx.carrier_half_phase,modulator_val);
-   OSC_setPhase(_ctx.carrier,carrier_phase);
-   fix16_t c;
-   c = OSC_process(_ctx.carrier);
-   return c;
+   return carrier_val;
+}
+
+void Engine_setSamplerate(Engine__ctx_type_0 &_ctx, fix16_t newFs){
+   if(newFs > 0x0 /* 0.000000 */){
+      _ctx.fs = newFs;
+   }
+   OSC_setSamplerate(_ctx.carrier,_ctx.fs);
+   OSC_setSamplerate(_ctx.modulator,_ctx.fs);
+   ADSR_setSamplerate(_ctx.carrieradsr,_ctx.fs);
+   ADSR_setSamplerate(_ctx.modulatoradsr,_ctx.fs);
 }
 
 void Engine_default(Engine__ctx_type_0 &_ctx){
+   Engine_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    OSC_default(_ctx.carrier);
    OSC_default(_ctx.modulator);
    ADSR_default(_ctx.carrieradsr);
    ADSR_default(_ctx.modulatoradsr);
-   Engine_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    Engine_setCarrierRatio(_ctx,0x10000 /* 1.000000 */);
    Engine_setModulatorRatio(_ctx,0x20000 /* 2.000000 */);
    Engine_setModulatorLevel(_ctx,0x1999 /* 0.100000 */);
    Engine_setFrequency(_ctx,0x70a3 /* 0.440000 */);
+   ADSR_setSamplerate(_ctx.carrieradsr,0x2c1999 /* 44.100000 */);
+   ADSR_setSamplerate(_ctx.modulatoradsr,0x2c1999 /* 44.100000 */);
 }
 
 

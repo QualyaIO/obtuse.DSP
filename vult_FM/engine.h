@@ -104,6 +104,7 @@ static_inline void ADSR_default_init(ADSR__ctx_type_0 &_output_){
 }
 
 static_inline void ADSR_default(ADSR__ctx_type_0 &_ctx){
+   _ctx.a_target = 0x10000 /* 1.000000 */;
    ADSR_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    ADSR_config(_ctx,0x10000 /* 1.000000 */,0x10000 /* 1.000000 */,0xcccc /* 0.800000 */,0x10000 /* 1.000000 */);
 }
@@ -279,13 +280,7 @@ static_inline void Engine_setSamplerate_init(Engine__ctx_type_0 &_output_){
    return ;
 }
 
-static_inline void Engine_setSamplerate(Engine__ctx_type_0 &_ctx, fix16_t newFs){
-   if(newFs > 0x0 /* 0.000000 */){
-      _ctx.fs = newFs;
-   }
-   OSC_setSamplerate(_ctx.carrier,_ctx.fs);
-   OSC_setSamplerate(_ctx.modulator,_ctx.fs);
-}
+void Engine_setSamplerate(Engine__ctx_type_0 &_ctx, fix16_t newFs);
 
 typedef Engine__ctx_type_0 Engine_setCarrierRatio_type;
 

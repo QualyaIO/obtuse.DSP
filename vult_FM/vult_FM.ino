@@ -115,7 +115,7 @@ void setup() {
 void loop() {
 
   // note on
-  if (!gate and millis() - midi_tick >= 1000) {
+  if (!gate and millis() - midi_tick >= 2000) {
     Serial.print("New note: ");
     current_note += 1;
     // playing three octaves
@@ -128,7 +128,7 @@ void loop() {
     midi_tick = millis();
     gate = true;
   }
-  if (gate and millis() - midi_tick >= 1000) {
+  if (gate and millis() - midi_tick >= 3000) {
     Serial.println("note off");
     Engine_noteOff(context, 0, 0);
     midi_tick = millis();

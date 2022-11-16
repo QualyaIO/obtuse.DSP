@@ -4,17 +4,19 @@
 
 fun process(gate:real) {
    // uber state machine
-   mem state;
+   mem state: int;
    // target values
-   mem s, a_step, d_step, r_step;
+   mem s: real;
+   mem a_step: real;
+   mem d_step: real;
+   mem r_step: real;
    // current output and then current step toward target
-   mem out;
-   mem step;
+   mem out: real;
+   mem step: real;
    // current target
-   mem target;
+   mem target: real;
    // target for attack, just in case it could be changed at some point
-   // Note: if fore some reason becomes < s, adapt decay to check if we reach sustain "from below"
-   mem  a_target = 1.0;
+   mem  a_target;
    // internal output and target x 1000 to deal with fixed point precision (also corresponds to the fact that samplerate is in kHz)
    val scale = 1000.0;
 
@@ -36,6 +38,7 @@ fun process(gate:real) {
    }
    // attack
    if(state == 1) {
+      step = a_step;
       // peaked, going to decay
       if(out >=  target) {
          out = 1024.0;
@@ -82,14 +85,13 @@ and updateSteps() {
    mem a, d, r, fs;
    // 0.001 to avoid division by 0 and smooth a tiny bit
    val min_t = 0.001;
-   // scale to kHz
-   val scale = 1000.0;
    // to stay within fixed point limit we don't want the left part too big (target value as precise as the scale let it be, around 0.01 threshold), and the right part too big (too much time) -- rember limit [1/32767 .. 32767]
-   a_step = a_target * scale / (fs * (a + min_t));
+   // Note: because target will be scaled to 1000, compensate for sample rate in kHz
+   a_step = a_target / (fs * (a + min_t));
    // decay will go from 1 to sustain
-   d_step = (s - a_target) * scale / (fs * (d + min_t));
+   d_step = (s - a_target) / (fs * (d + min_t));
    // release from sustain to nothingness
-   r_step =  (-s * scale) / (fs * (r + min_t));
+   r_step = (- s) / (fs * (r + min_t));
 }
 
 // current sampling rate in kHz
@@ -118,6 +120,8 @@ and config(newA, newD, newS, newR) {
 }
 
 and default() @[init] {
+   // Note: if fore some reason becomes < s, adapt decay to check if we reach sustain "from below" in process()
+   mem a_target = 1.0;
    _ = setSamplerate(44.1);
    _ = config(1.0, 1.0, 0.8, 1.0);
 }

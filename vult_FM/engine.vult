@@ -13,27 +13,27 @@ fun process() {
     // to speedup computations
     mem carrier_half_phase;
 
-    // retrieve both envelopes
-    val modulator_env = modulatoradsr:ADSR.process(gate);
-    val carrier_env = carrieradsr:ADSR.process(gate);
-    // apply to wavetables
-    val modulator_val;
-    if (modulator_env > 0.0) {
-       modulator_val = (modulator:OSC.process() + 1.0) * modulator_env;
-    }
-
-
+    // output value
     val carrier_val;
+    // retrieve both envelopes
+    val carrier_env = carrieradsr:ADSR.process(gate);
+
+    // only going forward if we got sound on the output
     if (carrier_env > 0.0) {
-       carrier_val = (carrier:OSC.process() + 1.0) * modulator_env;
+       val modulator_env = modulatoradsr:ADSR.process(gate);
+       // apply to wavetables
+       val carrier_phase;
+       // only modulate if we got level on modulator
+       if (modulator_env > 0.0) {
+          val modulator_val = (modulator:OSC.process() + 1.0) * modulator_env;
+	  carrier_phase = modulator_val * carrier_half_phase;
+       }
+       // modulate the (base) phase of the carrier
+       _ = carrier:OSC.setPhase(carrier_phase);
+       carrier_val = carrier:OSC.process() * carrier_env ;
     }
 
-    val carrier_phase = modulator_val * carrier_half_phase;
-
-    // modulate the (base) phase of the carrier
-    _ = carrier:OSC.setPhase(carrier_phase);
-    val c = carrier:OSC.process();
-    return c;
+    return carrier_val;
 }
 and setSamplerate(newFs:real) {
    if (newFs > 0.0) {
@@ -41,6 +41,8 @@ and setSamplerate(newFs:real) {
    }
    _ = carrier:OSC.setSamplerate(fs);
    _ = modulator:OSC.setSamplerate(fs);
+   _ = carrieradsr:ADSR.setSamplerate(fs);
+   _ = modulatoradsr:ADSR.setSamplerate(fs);
 }
 // ratio for each operator. Keep in mind the max effective frequency, below samplingrate/2!
 and setCarrierRatio(ratio: real) {
@@ -76,6 +78,9 @@ and noteOff(note:int, channel:int) {
 
 // to be called on start
 and default() @[init] {
+    // default sampling rate (in kHz)
+    _ = setSamplerate(44.100);
+
     // init used items
     // FIXME: not sure why if @init is set
     _ = carrier:OSC.default();
@@ -83,12 +88,14 @@ and default() @[init] {
     _ = carrieradsr:ADSR.default();
     _ = modulatoradsr:ADSR.default();
     
-    // default sampling rate (in kHz)
-    _ = setSamplerate(44.100);
     // config for operators
     _ = setCarrierRatio(1.0);
     _ = setModulatorRatio(2.0);
     _ = setModulatorLevel(0.1);
     // sarting with LA
     _ = setFrequency(0.440);
+
+    // config for ADSR
+    _ = carrieradsr:ADSR.setSamplerate(44.100);
+    _ = modulatoradsr:ADSR.setSamplerate(44.100);
 }
