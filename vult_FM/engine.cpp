@@ -66,13 +66,11 @@ void ADSR__ctx_type_0_init(ADSR__ctx_type_0 &_output_){
    return ;
 }
 
-fix16_t ADSR_process(ADSR__ctx_type_0 &_ctx, fix16_t gate){
+fix16_t ADSR_process(ADSR__ctx_type_0 &_ctx, uint8_t bgate){
    fix16_t scale;
    scale = 0x3e80000 /* 1000.000000 */;
    fix16_t scale_i;
    scale_i = 0x41 /* 0.001000 */;
-   uint8_t bgate;
-   bgate = (gate > 0x0 /* 0.000000 */);
    if(Util_edge(_ctx._inst151,bgate)){
       _ctx.state = 1;
       _ctx.target = fix_mul(_ctx.a_target,scale);
@@ -204,6 +202,7 @@ void Engine__ctx_type_0_init(Engine__ctx_type_0 &_output_){
    _ctx.modulator_env = 0x0 /* 0.000000 */;
    _ctx.modulatorRatio = 0x0 /* 0.000000 */;
    OSC__ctx_type_2_init(_ctx.modulator);
+   _ctx.gate = false;
    _ctx.fs = 0x0 /* 0.000000 */;
    _ctx.env_decimation_factor = 0;
    ADSR__ctx_type_0_init(_ctx.carrieradsr);
@@ -217,14 +216,6 @@ void Engine__ctx_type_0_init(Engine__ctx_type_0 &_output_){
 }
 
 fix16_t Engine_process(Engine__ctx_type_0 &_ctx){
-   fix16_t gate;
-   if(Notes_nbNotes(_ctx.playingnotes) > 0){
-      gate = 0x10000 /* 1.000000 */;
-   }
-   else
-   {
-      gate = 0x0 /* 0.000000 */;
-   }
    _ctx.n = (1 + _ctx.n);
    uint8_t update_env;
    update_env = true;
@@ -234,11 +225,11 @@ fix16_t Engine_process(Engine__ctx_type_0 &_ctx){
    fix16_t carrier_val;
    carrier_val = 0x0 /* 0.000000 */;
    if(update_env){
-      _ctx.carrier_env = ADSR_process(_ctx.carrieradsr,gate);
+      _ctx.carrier_env = ADSR_process(_ctx.carrieradsr,_ctx.gate);
    }
    if(_ctx.carrier_env > 0x0 /* 0.000000 */){
       if(update_env){
-         _ctx.modulator_env = ADSR_process(_ctx.modulatoradsr,gate);
+         _ctx.modulator_env = ADSR_process(_ctx.modulatoradsr,_ctx.gate);
       }
       fix16_t carrier_phase;
       carrier_phase = 0x0 /* 0.000000 */;
@@ -271,10 +262,16 @@ void Engine_setSamplerate(Engine__ctx_type_0 &_ctx, fix16_t newFs){
 void Engine_noteOff(Engine__ctx_type_0 &_ctx, int note, int channel){
    note = int_clip(note,0,127);
    Notes_noteOff(_ctx.playingnotes,note,channel);
-   int last_played;
-   last_played = Notes_lastNote(_ctx.playingnotes);
-   if(last_played > 0){
-      Engine_setFrequency(_ctx,Util_noteToFrequency(((-1) + last_played)));
+   if(Notes_nbNotes(_ctx.playingnotes) > 0){
+      int last_played;
+      last_played = Notes_lastNote(_ctx.playingnotes);
+      if(last_played > 0){
+         Engine_setFrequency(_ctx,Util_noteToFrequency(((-1) + last_played)));
+      }
+   }
+   else
+   {
+      _ctx.gate = false;
    }
 }
 

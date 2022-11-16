@@ -118,7 +118,7 @@ static_inline void ADSR_process_init(ADSR__ctx_type_0 &_output_){
    return ;
 }
 
-fix16_t ADSR_process(ADSR__ctx_type_0 &_ctx, fix16_t gate);
+fix16_t ADSR_process(ADSR__ctx_type_0 &_ctx, uint8_t bgate);
 
 typedef ADSR__ctx_type_0 ADSR_updateSteps_type;
 
@@ -301,6 +301,7 @@ typedef struct Engine__ctx_type_0 {
    fix16_t modulator_env;
    fix16_t modulatorRatio;
    OSC__ctx_type_2 modulator;
+   uint8_t gate;
    fix16_t fs;
    int env_decimation_factor;
    ADSR__ctx_type_0 carrieradsr;
@@ -386,6 +387,7 @@ static_inline void Engine_noteOn(Engine__ctx_type_0 &_ctx, int note, int velocit
    note = int_clip(note,0,127);
    Notes_noteOn(_ctx.playingnotes,note,velocity,channel);
    Engine_setFrequency(_ctx,Util_noteToFrequency(note));
+   _ctx.gate = true;
 }
 
 typedef Engine__ctx_type_0 Engine_noteOff_type;

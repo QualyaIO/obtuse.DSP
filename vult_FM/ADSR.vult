@@ -2,7 +2,7 @@
 // Magic numbers:
 // 1024.0 : improves numeric precision in fixed-point
 
-fun process(gate:real) {
+fun process(bgate:bool) {
    // uber state machine
    mem state: int;
    // target values
@@ -21,9 +21,6 @@ fun process(gate:real) {
    val scale = 1000.0;
    // ...faster to multiply by 1/1000...
    val scale_i = 0.001;
-
-
-   val bgate = gate > 0.0;
 
    // new gate, goto attack
    if(Util.edge(bgate)) {
