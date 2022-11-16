@@ -1,12 +1,13 @@
 
 // handling current notes and gates
+// Note: store history up to all 128 midi notes, if MIDI is spammed with lots on note on/off on the whole range processing will get slow
 
 
 fun default() @[init] {
     // how many notes are currently held
     mem nb_notes: int;
-    // which notes are active? (to prune duplicated note on/off)
-    mem notes: array(bool, 128);
+    // which notes are active? (to prune duplicated note on/off). Stores current number of notes when was on / position + 1 in last_notes
+    mem notes: array(int, 128);
 
     // order of appearance of notes (to go back to previous one when several are held)
     // for the sake of simplicity, notes will be 1 to 128 here (so we can keep track of note 0 at little cost)
@@ -18,18 +19,18 @@ and nbNotes() {
 }
 
 
-// beginning of a note
+// beginning of a note -- will effectively ignore duplicated noteOn for same note
 and noteOn(note:int, velocity:int, channel:int){
    // only 128 midi notes
    note = clip(note, 0, 127);
-   // add note to list if new
-   if (not(notes[note])) {
-      notes[note] = true;
+   // add note to list if new (does not point to last_notes)
+   if (notes[note] <= 0) {
       nb_notes = nb_notes + 1;
       // failsafe
       if (nb_notes > 128) {
          nb_notes = 128;
       }
+      notes[note] = nb_notes;
       last_notes[nb_notes-1] = note + 1;
    }
 }
@@ -39,10 +40,19 @@ and noteOff(note:int, channel:int) {
    // only 128 midi notes
    note = clip(note, 0, 127);
    // make sure the note was active before taking it into consideration
-   if (notes[note]) {
-      notes[note] = false;
-      // remove current note from (pseudo) stack
-      last_notes[nb_notes-1] = 0;
+   if (notes[note] > 0) {
+      // updates state
+      // fetch this note sequence number
+      val i = notes[note] - 1;
+      // update until current number
+      while (i < nb_notes) {
+         // move down last notes
+         last_notes[i] = last_notes[i+1];
+	 // update corresponding pointer in notes[]
+	 notes[last_notes[i] - 1] = i + 1;
+	 i = i + 1;
+      }
+      notes[note] = 0;
       nb_notes = nb_notes - 1;
       // failsafe
       if (nb_notes < 0) {

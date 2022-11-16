@@ -8,7 +8,7 @@
 #include "engine.tables.h"
 
 typedef struct Notes__ctx_type_0 {
-   uint8_t notes[128];
+   int notes[128];
    int nb_notes;
    int last_notes[128];
 } Notes__ctx_type_0;

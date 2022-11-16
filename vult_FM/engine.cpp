@@ -4,7 +4,7 @@
 
 void Notes__ctx_type_0_init(Notes__ctx_type_0 &_output_){
    Notes__ctx_type_0 _ctx;
-   bool_init_array(128,false,_ctx.notes);
+   int_init_array(128,0,_ctx.notes);
    _ctx.nb_notes = 0;
    int_init_array(128,0,_ctx.last_notes);
    Notes_default(_ctx);
@@ -14,21 +14,27 @@ void Notes__ctx_type_0_init(Notes__ctx_type_0 &_output_){
 
 void Notes_noteOn(Notes__ctx_type_0 &_ctx, int note, int velocity, int channel){
    note = int_clip(note,0,127);
-   if(bool_not(_ctx.notes[note])){
-      _ctx.notes[note] = true;
+   if(_ctx.notes[note] <= 0){
       _ctx.nb_notes = (1 + _ctx.nb_notes);
       if(_ctx.nb_notes > 128){
          _ctx.nb_notes = 128;
       }
+      _ctx.notes[note] = _ctx.nb_notes;
       _ctx.last_notes[((-1) + _ctx.nb_notes)] = (1 + note);
    }
 }
 
 void Notes_noteOff(Notes__ctx_type_0 &_ctx, int note, int channel){
    note = int_clip(note,0,127);
-   if(_ctx.notes[note]){
-      _ctx.notes[note] = false;
-      _ctx.last_notes[((-1) + _ctx.nb_notes)] = 0;
+   if(_ctx.notes[note] > 0){
+      int i;
+      i = ((-1) + _ctx.notes[note]);
+      while(i < _ctx.nb_notes){
+         _ctx.last_notes[i] = _ctx.last_notes[(1 + i)];
+         _ctx.notes[((-1) + _ctx.last_notes[i])] = (1 + i);
+         i = (1 + i);
+      }
+      _ctx.notes[note] = 0;
       _ctx.nb_notes = ((-1) + _ctx.nb_notes);
       if(_ctx.nb_notes < 0){
          _ctx.nb_notes = 0;
