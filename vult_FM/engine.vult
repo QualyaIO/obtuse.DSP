@@ -1,5 +1,5 @@
 
-// FM with 2 operators, phase modulation
+// FM with 2 operators, phase modulation, monophonic
 
 // TODO: should we reset phase on noteoff, keep processing with env 0?
 
@@ -8,15 +8,27 @@ fun process() {
 
     // audio sampling rate
     mem fs: real;
-    // current gate
-    mem gate;
+
+    // how many notes are currently held
+    mem nb_notes;
+    // which notes are active? (to prune duplicated note on/off)
+    mem notes: array(bool, 128);
+    // order of appearance of notes (to go back to previous one when several are held)
+    // for the sake of simplicity, notes will be 1 to 128 here (so we can keep track of note 0 at little cost)
+    mem last_notes: array(int, 128);
+    
     // prec-computed to speedup computations
     mem carrier_half_phase;
+
     // reduce cost of envelopes, only computes once in a while
     mem env_decimation_factor;
     mem carrier_env;
     mem modulator_env;
+    // number of iteration of this loop, for decimation
     mem n;
+
+    //  current gate (can be > 1 if several notes are held)
+    val gate = if nb_notes > 0 then 1.0 else 0.0;
 
     n = n + 1;
     val update_env:bool = true;
@@ -86,15 +98,46 @@ and setFrequency(freq: real) {
 // midi-like interface
 
 // beginning of a note
-// we don't check input values, yet
+// we don't check velocity, yet
 and noteOn(note:int, velocity:int, channel:int){
+   // only 128 midi notes
+   note = clip(note, 0, 127);
    // set frequency... should we reset phase somehow? artifacts upon first tests
    _ = setFrequency(Util.noteToFrequency(note));
-   gate = 1.0;
+   // add note to list if new
+   if (not(notes[note])) {
+      notes[note] = true;
+      nb_notes = nb_notes + 1;
+      // failsafe
+      if (nb_notes > 128) {
+         nb_notes = 128;
+      }
+      last_notes[nb_notes-1] = note + 1;
+   }
 }
-// note off whatever the on
+// note off whatever the channel, back to frequency of last still active note if any
 and noteOff(note:int, channel:int) {
-   gate = 0.0;
+   // only 128 midi notes
+   note = clip(note, 0, 127);
+   // make sure the note was active before taking it into consideration
+   if (notes[note]) {
+      notes[note] = false;
+      // remove current note from (pseudo) stack
+      last_notes[nb_notes-1] = 0;
+      nb_notes = nb_notes - 1;
+      // failsafe
+      if (nb_notes < 0) {
+         nb_notes = 0;
+      }
+      // activate last note if any
+      else if (nb_notes > 0) {
+         // here last notes coded on 1..128
+         val last_played = last_notes[nb_notes-1];
+	 if (last_played > 0) {
+            _ = setFrequency(Util.noteToFrequency(last_played - 1));
+	 }
+      }
+   }
 }
 
 // to be called on start

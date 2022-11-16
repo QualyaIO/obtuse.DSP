@@ -239,12 +239,14 @@ static_inline void OSC_default(OSC__ctx_type_2 &_ctx){
 }
 
 typedef struct Engine__ctx_type_0 {
+   uint8_t notes[128];
+   int nb_notes;
    int n;
    ADSR__ctx_type_0 modulatoradsr;
    fix16_t modulator_env;
    fix16_t modulatorRatio;
    OSC__ctx_type_2 modulator;
-   fix16_t gate;
+   int last_notes[128];
    fix16_t fs;
    int env_decimation_factor;
    ADSR__ctx_type_0 carrieradsr;
@@ -326,10 +328,7 @@ static_inline void Engine_noteOn_init(Engine__ctx_type_0 &_output_){
    return ;
 }
 
-static_inline void Engine_noteOn(Engine__ctx_type_0 &_ctx, int note, int velocity, int channel){
-   Engine_setFrequency(_ctx,Util_noteToFrequency(note));
-   _ctx.gate = 0x10000 /* 1.000000 */;
-}
+void Engine_noteOn(Engine__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 typedef Engine__ctx_type_0 Engine_noteOff_type;
 
@@ -338,9 +337,7 @@ static_inline void Engine_noteOff_init(Engine__ctx_type_0 &_output_){
    return ;
 }
 
-static_inline void Engine_noteOff(Engine__ctx_type_0 &_ctx, int note, int channel){
-   _ctx.gate = 0x0 /* 0.000000 */;
-};
+void Engine_noteOff(Engine__ctx_type_0 &_ctx, int note, int channel);
 
 typedef Engine__ctx_type_0 Engine_default_type;
 

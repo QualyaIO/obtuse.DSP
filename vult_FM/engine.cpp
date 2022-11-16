@@ -155,12 +155,14 @@ void OSC_setSamplerate(OSC__ctx_type_2 &_ctx, fix16_t newFs){
 
 void Engine__ctx_type_0_init(Engine__ctx_type_0 &_output_){
    Engine__ctx_type_0 _ctx;
+   bool_init_array(128,false,_ctx.notes);
+   _ctx.nb_notes = 0;
    _ctx.n = 0;
    ADSR__ctx_type_0_init(_ctx.modulatoradsr);
    _ctx.modulator_env = 0x0 /* 0.000000 */;
    _ctx.modulatorRatio = 0x0 /* 0.000000 */;
    OSC__ctx_type_2_init(_ctx.modulator);
-   _ctx.gate = 0x0 /* 0.000000 */;
+   int_init_array(128,0,_ctx.last_notes);
    _ctx.fs = 0x0 /* 0.000000 */;
    _ctx.env_decimation_factor = 0;
    ADSR__ctx_type_0_init(_ctx.carrieradsr);
@@ -174,6 +176,14 @@ void Engine__ctx_type_0_init(Engine__ctx_type_0 &_output_){
 }
 
 fix16_t Engine_process(Engine__ctx_type_0 &_ctx){
+   fix16_t gate;
+   if(_ctx.nb_notes > 0){
+      gate = 0x10000 /* 1.000000 */;
+   }
+   else
+   {
+      gate = 0x0 /* 0.000000 */;
+   }
    _ctx.n = (1 + _ctx.n);
    uint8_t update_env;
    update_env = true;
@@ -183,11 +193,11 @@ fix16_t Engine_process(Engine__ctx_type_0 &_ctx){
    fix16_t carrier_val;
    carrier_val = 0x0 /* 0.000000 */;
    if(update_env){
-      _ctx.carrier_env = ADSR_process(_ctx.carrieradsr,_ctx.gate);
+      _ctx.carrier_env = ADSR_process(_ctx.carrieradsr,gate);
    }
    if(_ctx.carrier_env > 0x0 /* 0.000000 */){
       if(update_env){
-         _ctx.modulator_env = ADSR_process(_ctx.modulatoradsr,_ctx.gate);
+         _ctx.modulator_env = ADSR_process(_ctx.modulatoradsr,gate);
       }
       fix16_t carrier_phase;
       carrier_phase = 0x0 /* 0.000000 */;
@@ -215,6 +225,41 @@ void Engine_setSamplerate(Engine__ctx_type_0 &_ctx, fix16_t newFs){
    }
    ADSR_setSamplerate(_ctx.carrieradsr,ADSR_fs);
    ADSR_setSamplerate(_ctx.modulatoradsr,ADSR_fs);
+}
+
+void Engine_noteOn(Engine__ctx_type_0 &_ctx, int note, int velocity, int channel){
+   note = int_clip(note,0,127);
+   Engine_setFrequency(_ctx,Util_noteToFrequency(note));
+   if(bool_not(_ctx.notes[note])){
+      _ctx.notes[note] = true;
+      _ctx.nb_notes = (1 + _ctx.nb_notes);
+      if(_ctx.nb_notes > 128){
+         _ctx.nb_notes = 128;
+      }
+      _ctx.last_notes[((-1) + _ctx.nb_notes)] = (1 + note);
+   }
+}
+
+void Engine_noteOff(Engine__ctx_type_0 &_ctx, int note, int channel){
+   note = int_clip(note,0,127);
+   if(_ctx.notes[note]){
+      _ctx.notes[note] = false;
+      _ctx.last_notes[((-1) + _ctx.nb_notes)] = 0;
+      _ctx.nb_notes = ((-1) + _ctx.nb_notes);
+      if(_ctx.nb_notes < 0){
+         _ctx.nb_notes = 0;
+      }
+      else
+      {
+         if(_ctx.nb_notes > 0){
+            int last_played;
+            last_played = _ctx.last_notes[((-1) + _ctx.nb_notes)];
+            if(last_played > 0){
+               Engine_setFrequency(_ctx,Util_noteToFrequency(((-1) + last_played)));
+            }
+         }
+      }
+   }
 }
 
 void Engine_default(Engine__ctx_type_0 &_ctx){
