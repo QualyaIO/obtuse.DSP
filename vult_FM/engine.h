@@ -106,7 +106,7 @@ static_inline void ADSR_default_init(ADSR__ctx_type_0 &_output_){
 static_inline void ADSR_default(ADSR__ctx_type_0 &_ctx){
    _ctx.a_target = 0x10000 /* 1.000000 */;
    ADSR_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
-   ADSR_config(_ctx,0x10000 /* 1.000000 */,0x10000 /* 1.000000 */,0xcccc /* 0.800000 */,0x10000 /* 1.000000 */);
+   ADSR_config(_ctx,0x0 /* 0.000000 */,0x0 /* 0.000000 */,0x8000 /* 0.500000 */,0x0 /* 0.000000 */);
 }
 
 static_inline int OSC_sin_wave_samples(){
@@ -239,13 +239,17 @@ static_inline void OSC_default(OSC__ctx_type_2 &_ctx){
 }
 
 typedef struct Engine__ctx_type_0 {
+   int n;
    ADSR__ctx_type_0 modulatoradsr;
+   fix16_t modulator_env;
    fix16_t modulatorRatio;
    OSC__ctx_type_2 modulator;
    fix16_t gate;
    fix16_t fs;
+   int env_decimation_factor;
    ADSR__ctx_type_0 carrieradsr;
    fix16_t carrier_half_phase;
+   fix16_t carrier_env;
    fix16_t carrierRatio;
    OSC__ctx_type_2 carrier;
 } Engine__ctx_type_0;
