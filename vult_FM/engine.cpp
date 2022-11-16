@@ -26,51 +26,58 @@ void ADSR__ctx_type_0_init(ADSR__ctx_type_0 &_output_){
 fix16_t ADSR_process(ADSR__ctx_type_0 &_ctx, fix16_t gate){
    fix16_t scale;
    scale = 0x3e80000 /* 1000.000000 */;
-   _ctx.out = (_ctx.out + _ctx.step);
    uint8_t bgate;
    bgate = (gate > 0x0 /* 0.000000 */);
    if(Util_edge(_ctx._inst151,bgate)){
       _ctx.state = 1;
       _ctx.target = fix_mul(_ctx.a_target,scale);
-      _ctx.step = fix_mul(_ctx.a_step,_ctx.target);
+      _ctx.step = _ctx.a_step;
    }
    if(_ctx.state == 0){
-      _ctx.step = 0x0 /* 0.000000 */;
-      _ctx.target = 0x0 /* 0.000000 */;
+      _ctx.out = 0x0 /* 0.000000 */;
+   }
+   else
+   {
+      _ctx.out = (_ctx.out + _ctx.step);
    }
    if(_ctx.state == 1){
-      _ctx.step = _ctx.a_step;
       if(_ctx.out >= _ctx.target){
-         _ctx.out = 0x4000000 /* 1024.000000 */;
+         _ctx.step = _ctx.d_step;
+         _ctx.out = _ctx.target;
          _ctx.target = fix_mul(_ctx.s,scale);
          _ctx.state = 2;
       }
       if(bool_not(bgate)){
+         _ctx.step = _ctx.r_step;
+         _ctx.target = 0x0 /* 0.000000 */;
          _ctx.state = 4;
       }
    }
    if(_ctx.state == 2){
       if(bool_not(bgate)){
+         _ctx.step = _ctx.r_step;
+         _ctx.target = 0x0 /* 0.000000 */;
          _ctx.state = 4;
       }
-      _ctx.step = _ctx.d_step;
       if(_ctx.out <= _ctx.target){
          _ctx.out = _ctx.target;
-         _ctx.state = 4;
+         _ctx.step = 0x0 /* 0.000000 */;
+         _ctx.state = 3;
       }
    }
    if(_ctx.state == 3){
-      _ctx.step = 0x0 /* 0.000000 */;
       if(bool_not(bgate)){
+         _ctx.step = _ctx.r_step;
+         _ctx.target = 0x0 /* 0.000000 */;
          _ctx.state = 4;
       }
    }
    if(_ctx.state == 4){
-      _ctx.step = _ctx.r_step;
-      _ctx.target = 0x0 /* 0.000000 */;
       if(_ctx.out <= 0x0 /* 0.000000 */){
          _ctx.out = 0x0 /* 0.000000 */;
          _ctx.state = 0;
+         _ctx.step = 0x0 /* 0.000000 */;
+         _ctx.target = 0x0 /* 0.000000 */;
       }
    }
    return fix_clip(fix_div(_ctx.out,scale),0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
