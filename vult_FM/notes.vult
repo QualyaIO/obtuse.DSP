@@ -1,0 +1,63 @@
+
+// handling current notes and gates
+
+
+fun default() @[init] {
+    // how many notes are currently held
+    mem nb_notes: int;
+    // which notes are active? (to prune duplicated note on/off)
+    mem notes: array(bool, 128);
+
+    // order of appearance of notes (to go back to previous one when several are held)
+    // for the sake of simplicity, notes will be 1 to 128 here (so we can keep track of note 0 at little cost)
+    mem last_notes: array(int, 128);
+}
+
+and nbNotes() {
+    return nb_notes;
+}
+
+
+// beginning of a note
+and noteOn(note:int, velocity:int, channel:int){
+   // only 128 midi notes
+   note = clip(note, 0, 127);
+   // add note to list if new
+   if (not(notes[note])) {
+      notes[note] = true;
+      nb_notes = nb_notes + 1;
+      // failsafe
+      if (nb_notes > 128) {
+         nb_notes = 128;
+      }
+      last_notes[nb_notes-1] = note + 1;
+   }
+}
+
+// note off whatever the channel, back to frequency of last still active note if any
+and noteOff(note:int, channel:int) {
+   // only 128 midi notes
+   note = clip(note, 0, 127);
+   // make sure the note was active before taking it into consideration
+   if (notes[note]) {
+      notes[note] = false;
+      // remove current note from (pseudo) stack
+      last_notes[nb_notes-1] = 0;
+      nb_notes = nb_notes - 1;
+      // failsafe
+      if (nb_notes < 0) {
+         nb_notes = 0;
+      }
+   }
+}
+
+// return a note number 1..128, 0 if nothing
+and lastNote() {
+   val last_played = 0;
+   // find last note if any
+   if (nb_notes > 0) {
+      // here last notes coded on 1..128
+      last_played = last_notes[nb_notes-1];
+   }
+   return last_played;
+}
