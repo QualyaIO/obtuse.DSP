@@ -19,6 +19,8 @@ fun process(gate:real) {
    mem  a_target;
    // internal output and target x 1000 to deal with fixed point precision (also corresponds to the fact that samplerate is in kHz)
    val scale = 1000.0;
+   // ...faster to multiply by 1/1000...
+   val scale_i = 0.001;
 
 
    val bgate = gate > 0.0;
@@ -90,7 +92,7 @@ fun process(gate:real) {
       }
    }
 
-   return clip(out/scale,0.0,1.0);
+   return clip(out * scale_i, 0.0, 1.0);
 }
 // once sample rate change, we need to adapt 
 and updateSteps() {

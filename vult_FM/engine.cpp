@@ -26,6 +26,8 @@ void ADSR__ctx_type_0_init(ADSR__ctx_type_0 &_output_){
 fix16_t ADSR_process(ADSR__ctx_type_0 &_ctx, fix16_t gate){
    fix16_t scale;
    scale = 0x3e80000 /* 1000.000000 */;
+   fix16_t scale_i;
+   scale_i = 0x41 /* 0.001000 */;
    uint8_t bgate;
    bgate = (gate > 0x0 /* 0.000000 */);
    if(Util_edge(_ctx._inst151,bgate)){
@@ -80,7 +82,7 @@ fix16_t ADSR_process(ADSR__ctx_type_0 &_ctx, fix16_t gate){
          _ctx.target = 0x0 /* 0.000000 */;
       }
    }
-   return fix_clip(fix_div(_ctx.out,scale),0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
+   return fix_clip(fix_mul(_ctx.out,scale_i),0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
 }
 
 void ADSR_updateSteps(ADSR__ctx_type_0 &_ctx){
