@@ -23,7 +23,7 @@ Adafruit_USBD_MIDI usb_midi;
 MIDI_CREATE_INSTANCE(Adafruit_USBD_MIDI, usb_midi, MIDI);
 
 // play by itself instead of MIDI input
-const bool autoplay = true;
+const bool autoplay = false;
 // playing notes
 unsigned long midi_tick;
 // starting C
@@ -73,6 +73,22 @@ void setup() {
   // set CPU speed for a good ratio with 256*fs, with a sampling rate set as 40000 in mozzi_config for me now
   set_sys_clock_khz(102400, true);
 
+  /* MIDI */
+  // not working?
+  usb_midi.setStringDescriptor("Vult_FM");
+
+  // Initialize MIDI, and listen to all MIDI channels
+  // This will also call usb_midi's begin()
+  MIDI.begin(MIDI_CHANNEL_OMNI);
+
+  // Attach the handleNoteOn function to the MIDI Library. It will
+  // be called whenever the Bluefruit receives MIDI Note On messages.
+  MIDI.setHandleNoteOn(handleNoteOn);
+
+  // Do the same for MIDI Note Off messages.
+  MIDI.setHandleNoteOff(handleNoteOff);
+
+  // NOTE: for some reason MIDI interface does not init if Serial.begin() is called beforehand -- at least there is too much time between Serial.begin and MIDI.begin, e.g. delay(1000) ??
   Serial.begin(115200);
   delay(1000);
   Serial.println("Let us go");
@@ -120,21 +136,6 @@ void setup() {
 
   delay(1000);
 
-  /* MIDI */
-
-  usb_midi.setStringDescriptor("Vult_FM");
-
-  // Initialize MIDI, and listen to all MIDI channels
-  // This will also call usb_midi's begin()
-  MIDI.begin(MIDI_CHANNEL_OMNI);
-
-  // Attach the handleNoteOn function to the MIDI Library. It will
-  // be called whenever the Bluefruit receives MIDI Note On messages.
-  MIDI.setHandleNoteOn(handleNoteOn);
-
-  // Do the same for MIDI Note Off messages.
-  MIDI.setHandleNoteOff(handleNoteOff);
-
   /* Vult */
   // Init engine, then pass sample rate, not forgetting to convert passed parameters to fixed (of course...)
   Engine_default(context);
@@ -179,6 +180,9 @@ void loop() {
     i2s.write(val);
   }
 
+  // read any new MIDI messages
+  MIDI.read();
+
   // debug
   int newTick = micros();
   if (newTick - tick >= 1000000) {
@@ -203,6 +207,8 @@ void handleNoteOn(byte channel, byte pitch, byte velocity)
 
   Serial.print(" velocity = ");
   Serial.println(velocity);
+
+  Engine_noteOn(context, pitch, 0, 0);
 }
 
 void handleNoteOff(byte channel, byte pitch, byte velocity)
@@ -216,4 +222,6 @@ void handleNoteOff(byte channel, byte pitch, byte velocity)
 
   Serial.print(" velocity = ");
   Serial.println(velocity);
+
+  Engine_noteOff(context, pitch, 0);
 }
