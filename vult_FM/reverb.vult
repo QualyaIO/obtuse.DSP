@@ -1,0 +1,24 @@
+
+// Attempt at creating reverb using the heavily-used Schroeder reverb
+
+
+// testing, consider fs 40000 and max delay 1s
+
+fun process(sample: real) {
+    mem buffer: array(real, 40000);
+    mem pos;
+    // attenuation for each pass
+    mem decay = 0.7;
+
+    // point to previous delay, 0.5s
+    val next_pos = (pos + size(buffer)/2) % size(buffer);
+
+    
+    buffer[next_pos] = sample * (1.0-decay) + buffer[pos] * (decay);
+    val ret = buffer[pos];
+    
+    pos = pos + 1;
+    pos = pos % size(buffer);
+
+    return ret;
+}

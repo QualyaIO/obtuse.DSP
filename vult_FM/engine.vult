@@ -89,7 +89,7 @@ and setFrequency(freq: real) {
 
 // midi-like interface
 
-// beginning of a note
+// beginning of a note -- will effectively ignore duplicated noteOn for same note
 // we don't check velocity, yet
 and noteOn(note:int, velocity:int, channel:int){
    // only 128 midi notes

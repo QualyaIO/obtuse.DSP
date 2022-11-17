@@ -7,6 +7,23 @@
 #include "vultin.h"
 #include "engine.tables.h"
 
+typedef struct Reverb__ctx_type_0 {
+   int pos;
+   fix16_t decay;
+   fix16_t buffer[40000];
+} Reverb__ctx_type_0;
+
+typedef Reverb__ctx_type_0 Reverb_process_type;
+
+void Reverb__ctx_type_0_init(Reverb__ctx_type_0 &_output_);
+
+static_inline void Reverb_process_init(Reverb__ctx_type_0 &_output_){
+   Reverb__ctx_type_0_init(_output_);
+   return ;
+}
+
+fix16_t Reverb_process(Reverb__ctx_type_0 &_ctx, fix16_t sample);
+
 typedef struct Notes__ctx_type_0 {
    int notes[128];
    int nb_notes;

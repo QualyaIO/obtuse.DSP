@@ -7,8 +7,10 @@
 
 #include "engine.h"
 
-// sole context used in vult, used to handle internal states
+// context for FM synth used in vult, used to handle internal states
 Engine_process_type context;
+// another for the filter
+Reverb_process_type reverb_context;
 
 /*** MIDI ***/
 
@@ -172,7 +174,7 @@ void loop() {
   while (i2s.availableForWrite() > 32) {
     dsp_tick = micros();
     // returned float should be between -1 and 1 (should we checkit ?)
-    int16_t val = fix_to_float(Engine_process(context)) * 32767;
+    int16_t val = fix_to_float(Reverb_process(reverb_context, Engine_process(context))) * 32767;
     //Serial.println(val);
     dsp_time += micros() - dsp_tick;
     //Serial.println(val);
