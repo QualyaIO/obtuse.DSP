@@ -78,9 +78,9 @@ unsigned long dsp_tick;
 unsigned long dsp_time;
 
 // same for cycle count
-unsigned long debug_cycle_tick;
-unsigned long dsp_cycle_count;
-unsigned long dsp_cycle_tick;
+long debug_cycle_tick;
+long dsp_cycle_count;
+long dsp_cycle_tick;
 
 
 void setup() {
@@ -189,23 +189,21 @@ void loop() {
   //  buffers hard-coded of size 16 in I2S (unless i2s.setBuffers() is called), make sure there are at least two of them free in the audio circular buffer (of buffers)
   while (i2s.availableForWrite() > (BUFFER_SIZE) * 2 + 16) {
     // process buffer
-    OSC_process_buffer(context, BUFFER_SIZE);
-
-
     dsp_tick = micros();
-    dsp_cycle_tick = rp2040.getCycleCount64();
+    dsp_cycle_tick = rp2040.getCycleCount();
 
+    OSC_process_buffer(context, BUFFER_SIZE);
     OSC_getBuffer(context, raw_buff);
 
     // two times to better compare with classical situation
-    for (int i = 0; i < BUFFER_SIZE; i++) {
+    for (size_t i = 0; i < BUFFER_SIZE; i++) {
       // returned float should be between -1 and 1 (should we checkit ?)
-      fix16_t v = raw_buff[i];
-      buff[i] = fix_to_float(v);// * 32767;
+      // shortcut, instead of fixed_to_float * 32767, *almost* the same and vastly improve perf with buffered version (???)
+      buff[i] =  raw_buff[i] / 2 - ( raw_buff[i] >> 16);
     }
-    dsp_time += micros() - dsp_tick;
-    dsp_cycle_count += rp2040.getCycleCount64() - dsp_cycle_tick;
 
+    dsp_cycle_count += rp2040.getCycleCount() - dsp_cycle_tick;
+    dsp_time += micros() - dsp_tick;
 
     for (int i = 0; i < BUFFER_SIZE; i++) {
       i2s.write(buff[i]);
@@ -214,17 +212,22 @@ void loop() {
   }
   /*
     while (i2s.availableForWrite() > 16) {
-      dsp_tick = micros();
-      // returned float should be between -1 and 1 (should we checkit ?)
-      fix16_t raw = OSC_process(context);
-      int16_t val = fix_to_float(raw) * 32767;
-      dsp_time += micros() - dsp_tick;
+    dsp_tick = micros();
+    dsp_cycle_tick = rp2040.getCycleCount();
 
-      i2s.write(val);
-      i2s.write(val);
+    // returned float should be between -1 and 1 (should we checkit ?)
+    fix16_t raw = OSC_process(context);
+    // shortcut, instead of fixed_to_float * 32767, *almost* the same
+    int16_t val =  raw / 2 - (raw >> 16);
 
-    }*/
+    dsp_cycle_count += rp2040.getCycleCount() - dsp_cycle_tick;
+    dsp_time += micros() - dsp_tick;
 
+    i2s.write(val);
+    i2s.write(val);
+
+    }
+  */
 
   // read any new MIDI messages
   MIDI.read();
@@ -232,18 +235,18 @@ void loop() {
   // debug
   int newTick = micros();
   if (newTick - tick >= 1000000) {
-    unsigned long cycle_count = rp2040.getCycleCount64() -  debug_cycle_tick;
+    unsigned long cycle_count = rp2040.getCycleCount() -  debug_cycle_tick;
     float dsp_cycle_ratio = (float) dsp_cycle_count / cycle_count;
     Serial.println("Running strong!");
     Serial.print("DSP time (useconds): ");
     Serial.print(dsp_time);
     Serial.print(" ("); Serial.print((float)dsp_time / (newTick - tick)); Serial.println("% CPU)");
-    Serial.print("CPU cycles ratio: "); Serial.println(dsp_cycle_ratio);
+    Serial.print("CPU cycles ratio: "); Serial.print(dsp_cycle_ratio); Serial.print(" (count: "); Serial.print(dsp_cycle_count); Serial.println(")");
 
     dsp_time = 0;
     tick += 1000000;
     dsp_cycle_count = 0;
-    debug_cycle_tick = rp2040.getCycleCount64();
+    debug_cycle_tick = rp2040.getCycleCount();
   }
 }
 
