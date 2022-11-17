@@ -12,7 +12,7 @@ void Reverb__ctx_type_0_init(Reverb__ctx_type_0 &_output_){
 }
 
 fix16_t Reverb_process(Reverb__ctx_type_0 &_ctx, fix16_t sample){
-   _ctx.decay = 0xb333 /* 0.700000 */;
+   _ctx.decay = 0x6666 /* 0.400000 */;
    int next_pos;
    next_pos = ((_ctx.pos + (40000 / 2)) % 40000);
    _ctx.buffer[next_pos] = (fix_mul(_ctx.decay,_ctx.buffer[_ctx.pos]) + fix_mul(sample,(0x10000 /* 1.000000 */ + (- _ctx.decay))));

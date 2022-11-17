@@ -8,7 +8,7 @@ fun process(sample: real) {
     mem buffer: array(real, 40000);
     mem pos;
     // attenuation for each pass
-    mem decay = 0.7;
+    mem decay = 0.4;
 
     // point to previous delay, 0.5s
     val next_pos = (pos + size(buffer)/2) % size(buffer);
