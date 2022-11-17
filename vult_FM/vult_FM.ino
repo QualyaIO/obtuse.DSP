@@ -226,8 +226,8 @@ void loop() {
     i2s.write(val);
     i2s.write(val);
 
-    }
-  */
+    }*/
+  
 
   // read any new MIDI messages
   MIDI.read();

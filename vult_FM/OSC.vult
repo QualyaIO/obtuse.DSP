@@ -26,71 +26,56 @@ and getSize() {
     }
     return size;
 }
+
+
+// --> main function actually here, call default() first <--
+and do() {
+   // audio sampling rate
+   mem fs: real;
+   // sinus frequency
+   mem freq: real;
+   // starting point for phase, [0..8k[ in the wavetable
+   mem phase_base: real;
+   // current phase
+   mem phase: real;
+   // going that much through wavetable at each call
+   mem step: real;
+
+   // slightly more efficient than the more robust modulo
+   mem rsize;
+
+   // advance time, keep range in check here to maximize precision
+   phase = phase + step;
+   if (phase > rsize) {
+      phase = phase - rsize;
+   }
+   // loop in sample
+   return sin_wave(0, int(phase_base + phase));
+}
+
 // buffered version, specify number of elements of the buffer to proceed (will be caped to acual max). 0: all elements
 // update the buffer, to be fetch afterward
 and process_buffer(nb: int) {
    mem buffer;
+   mem rsize = real(getSize());
    nb = clip(nb, 0, size(buffer));
    if (nb == 0) {
       nb = 56;
    }
 
-   // audio sampling rate
-   mem fs: real;
-   // sinus frequency
-   mem freq: real;
-   // starting point for phase, [0..8k[ in the wavetable
-   mem phase_base: real;
-   // current phase
-   mem phase: real;
-   // going that much through wavetable at each call
-   mem step: real;
-
-   // slightly more efficient than the more robust modulo
-   val size = real(getSize());
-
    val i = 0;
    while (i < nb) {
-      // advance time, keep range in check here to maximize precision
-      phase = phase + step;
-      if (phase > size) {
-         phase = phase - size;
-      }
       // loop in sample
-      buffer[i] = sin_wave(0, int(phase_base + phase));
+      buffer[i] = do();
       i = i + 1;
    }
 }
-// --> main function actually here, call default() first <--
 and process() {
-   // audio sampling rate
-   mem fs: real;
-   // sinus frequency
-   mem freq: real;
-   // starting point for phase, [0..8k[ in the wavetable
-   mem phase_base: real;
-   // current phase
-   mem phase: real;
-   // going that much through wavetable at each call
-   mem step: real;
-
-   // slightly more efficient than the more robust modulo
-   val size = real(getSize());
-
-   // advance time, keep range in check here to maximize precision
-   phase = phase + step;
-   if (phase > size) {
-      phase = phase - size;
-   }
-   // loop in sample
-   return sin_wave(0, int(phase_base + phase));
-   
-
-
-
-   //process_buffer(1);
-   //return buffer[0];
+   // in case user did not called init
+   mem rsize = real(getSize());
+   return do();
 }
+
 // called internally when Samplerate or frequency is altered
 and updateStep() {
     // base for computing step
