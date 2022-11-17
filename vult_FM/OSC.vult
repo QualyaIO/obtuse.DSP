@@ -26,8 +26,15 @@ and getSize() {
     }
     return size;
 }
-// --> main function actually here, call default() first <--
-and process() {
+// buffered version, specify number of elements of the buffer to proceed (will be caped to acual max). 0: all elements
+// update the buffer, to be fetch afterward
+and process_buffer(nb: int) {
+   mem buffer;
+   nb = clip(nb, 0, size(buffer));
+   if (nb == 0) {
+      nb = 56;
+   }
+
    // audio sampling rate
    mem fs: real;
    // sinus frequency
@@ -39,15 +46,26 @@ and process() {
    // going that much through wavetable at each call
    mem step: real;
 
-   // advance time, keep range in check here to maximize precision
-   phase = phase + step;
    // slightly more efficient than the more robust modulo
    val size = real(getSize());
-   if (phase > size) {
-      phase = phase - size;
+
+   val i = 0;
+   while (i < nb) {
+      // advance time, keep range in check here to maximize precision
+      phase = phase + step;
+      if (phase > size) {
+         phase = phase - size;
+      }
+      // loop in sample
+      buffer[i] = sin_wave(0, int(phase_base + phase));
+      i = i + 1;
    }
-   // loop in sample
-   return sin_wave(0, int(phase_base + phase));
+}
+// --> main function actually here, call default() first <--
+and process() {
+   mem buffer;
+   //process_buffer(1);
+   return 0.0;
 }
 // called internally when Samplerate or frequency is altered
 and updateStep() {
@@ -83,6 +101,8 @@ and setWavetable(index: int) {
    wavetable = index; 
 }
 and default() @[init] {
+   // will copy a new array
+   buffer = Util.buffer();
    // default sampling rate (in kHz)
    _ = setSamplerate(44.1);
    // default sine

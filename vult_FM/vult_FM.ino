@@ -8,9 +8,10 @@
 #include "engine.h"
 
 // context for FM synth used in vult, used to handle internal states
-Engine_process_type context;
+//Engine_process_type context;
+OSC_process_type context;
 // another for the filter
-Reverb_process_type reverb_context;
+//Reverb_process_type reverb_context;
 
 /*** MIDI ***/
 
@@ -140,41 +141,44 @@ void setup() {
 
   /* Vult */
   // Init engine, then pass sample rate, not forgetting to convert passed parameters to fixed (of course...)
-  Engine_default(context);
-  Engine_setSamplerate(context, float_to_fix(sampleRate / (float)1000));
+  //Engine_default(context);
+  //Engine_setSamplerate(context, float_to_fix(sampleRate / (float)1000));
+  OSC_default(context);
+  OSC_setSamplerate(context, float_to_fix(sampleRate / (float)1000));
 }
 
 void loop() {
-
-  // generating notes if option set
-  if (autoplay) {
-    // note on
-    if (!gate and millis() - midi_tick >= 50) {
-      Serial.print("New note: ");
-      current_note += 1;
-      // playing three octaves
-      if (current_note >= 128) {
-        // back to C
-        current_note = 0;
+  /*
+    // generating notes if option set
+    if (autoplay) {
+      // note on
+      if (!gate and millis() - midi_tick >= 50) {
+        Serial.print("New note: ");
+        current_note += 1;
+        // playing three octaves
+        if (current_note >= 128) {
+          // back to C
+          current_note = 0;
+        }
+        Serial.println(current_note);
+        Engine_noteOn(context, current_note, 0, 0);
+        midi_tick = millis();
+        gate = true;
       }
-      Serial.println(current_note);
-      Engine_noteOn(context, current_note, 0, 0);
-      midi_tick = millis();
-      gate = true;
+      if (gate and millis() - midi_tick >= 50) {
+        Serial.println("note off");
+        Engine_noteOff(context, 0, 0);
+        midi_tick = millis();
+        gate = false;
+      }
     }
-    if (gate and millis() - midi_tick >= 50) {
-      Serial.println("note off");
-      Engine_noteOff(context, 0, 0);
-      midi_tick = millis();
-      gate = false;
-    }
-  }
-
+  */
   //  buffers hard-coded of size 16 in I2S (unless i2s.setBuffers() is called), make sure there are at least two of them free in the audio circular buffer (of buffers)
   while (i2s.availableForWrite() > 32) {
     dsp_tick = micros();
     // returned float should be between -1 and 1 (should we checkit ?)
-    int16_t val = fix_to_float(Reverb_process(reverb_context, Engine_process(context))) * 32767;
+    //int16_t val = fix_to_float(Reverb_process(reverb_context, Engine_process(context))) * 32767;
+    int16_t val = fix_to_float(OSC_process(context)) * 32767;
     //Serial.println(val);
     dsp_time += micros() - dsp_tick;
     //Serial.println(val);
@@ -209,8 +213,8 @@ void handleNoteOn(byte channel, byte pitch, byte velocity)
 
   Serial.print(" velocity = ");
   Serial.println(velocity);
-
-  Engine_noteOn(context, pitch, 0, 0);
+  /*
+    Engine_noteOn(context, pitch, 0, 0);*/
 }
 
 void handleNoteOff(byte channel, byte pitch, byte velocity)
@@ -224,6 +228,6 @@ void handleNoteOff(byte channel, byte pitch, byte velocity)
 
   Serial.print(" velocity = ");
   Serial.println(velocity);
-
-  Engine_noteOff(context, pitch, 0);
+  /*
+    Engine_noteOff(context, pitch, 0);*/
 }

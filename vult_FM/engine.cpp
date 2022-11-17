@@ -180,6 +180,7 @@ void OSC__ctx_type_2_init(OSC__ctx_type_2 &_output_){
    _ctx.phase = 0x0 /* 0.000000 */;
    _ctx.fs = 0x0 /* 0.000000 */;
    _ctx.freq = 0x0 /* 0.000000 */;
+   fix_init_array(56,0x0 /* 0.000000 */,_ctx.buffer);
    OSC_default(_ctx);
    _output_ = _ctx;
    return ;
@@ -203,14 +204,23 @@ int OSC_getSize(OSC__ctx_type_2 &_ctx){
    return size;
 }
 
-fix16_t OSC_process(OSC__ctx_type_2 &_ctx){
-   _ctx.phase = (_ctx.phase + _ctx.step);
+void OSC_process_buffer(OSC__ctx_type_2 &_ctx, int nb){
+   nb = int_clip(nb,0,56);
+   if(nb == 0){
+      nb = 56;
+   }
    fix16_t size;
    size = int_to_fix(OSC_getSize(_ctx));
-   if(_ctx.phase > size){
-      _ctx.phase = (_ctx.phase + (- size));
+   int i;
+   i = 0;
+   while(i < nb){
+      _ctx.phase = (_ctx.phase + _ctx.step);
+      if(_ctx.phase > size){
+         _ctx.phase = (_ctx.phase + (- size));
+      }
+      _ctx.buffer[i] = OSC_sin_wave(0,fix_to_int((_ctx.phase + _ctx.phase_base)));
+      i = (1 + i);
    }
-   return OSC_sin_wave(0,fix_to_int((_ctx.phase + _ctx.phase_base)));
 }
 
 void OSC_setSamplerate(OSC__ctx_type_2 &_ctx, fix16_t newFs){
@@ -219,6 +229,70 @@ void OSC_setSamplerate(OSC__ctx_type_2 &_ctx, fix16_t newFs){
       _ctx.stepRatio = fix_div(int_to_fix(OSC_getSize(_ctx)),_ctx.fs);
    }
    OSC_updateStep(_ctx);
+}
+
+void OSC_default(OSC__ctx_type_2 &_ctx){
+   {
+      _ctx.buffer[0] = 0x0 /* 0.000000 */;
+      _ctx.buffer[1] = 0x0 /* 0.000000 */;
+      _ctx.buffer[2] = 0x0 /* 0.000000 */;
+      _ctx.buffer[3] = 0x0 /* 0.000000 */;
+      _ctx.buffer[4] = 0x0 /* 0.000000 */;
+      _ctx.buffer[5] = 0x0 /* 0.000000 */;
+      _ctx.buffer[6] = 0x0 /* 0.000000 */;
+      _ctx.buffer[7] = 0x0 /* 0.000000 */;
+      _ctx.buffer[8] = 0x0 /* 0.000000 */;
+      _ctx.buffer[9] = 0x0 /* 0.000000 */;
+      _ctx.buffer[10] = 0x0 /* 0.000000 */;
+      _ctx.buffer[11] = 0x0 /* 0.000000 */;
+      _ctx.buffer[12] = 0x0 /* 0.000000 */;
+      _ctx.buffer[13] = 0x0 /* 0.000000 */;
+      _ctx.buffer[14] = 0x0 /* 0.000000 */;
+      _ctx.buffer[15] = 0x0 /* 0.000000 */;
+      _ctx.buffer[16] = 0x0 /* 0.000000 */;
+      _ctx.buffer[17] = 0x0 /* 0.000000 */;
+      _ctx.buffer[18] = 0x0 /* 0.000000 */;
+      _ctx.buffer[19] = 0x0 /* 0.000000 */;
+      _ctx.buffer[20] = 0x0 /* 0.000000 */;
+      _ctx.buffer[21] = 0x0 /* 0.000000 */;
+      _ctx.buffer[22] = 0x0 /* 0.000000 */;
+      _ctx.buffer[23] = 0x0 /* 0.000000 */;
+      _ctx.buffer[24] = 0x0 /* 0.000000 */;
+      _ctx.buffer[25] = 0x0 /* 0.000000 */;
+      _ctx.buffer[26] = 0x0 /* 0.000000 */;
+      _ctx.buffer[27] = 0x0 /* 0.000000 */;
+      _ctx.buffer[28] = 0x0 /* 0.000000 */;
+      _ctx.buffer[29] = 0x0 /* 0.000000 */;
+      _ctx.buffer[30] = 0x0 /* 0.000000 */;
+      _ctx.buffer[31] = 0x0 /* 0.000000 */;
+      _ctx.buffer[32] = 0x0 /* 0.000000 */;
+      _ctx.buffer[33] = 0x0 /* 0.000000 */;
+      _ctx.buffer[34] = 0x0 /* 0.000000 */;
+      _ctx.buffer[35] = 0x0 /* 0.000000 */;
+      _ctx.buffer[36] = 0x0 /* 0.000000 */;
+      _ctx.buffer[37] = 0x0 /* 0.000000 */;
+      _ctx.buffer[38] = 0x0 /* 0.000000 */;
+      _ctx.buffer[39] = 0x0 /* 0.000000 */;
+      _ctx.buffer[40] = 0x0 /* 0.000000 */;
+      _ctx.buffer[41] = 0x0 /* 0.000000 */;
+      _ctx.buffer[42] = 0x0 /* 0.000000 */;
+      _ctx.buffer[43] = 0x0 /* 0.000000 */;
+      _ctx.buffer[44] = 0x0 /* 0.000000 */;
+      _ctx.buffer[45] = 0x0 /* 0.000000 */;
+      _ctx.buffer[46] = 0x0 /* 0.000000 */;
+      _ctx.buffer[47] = 0x0 /* 0.000000 */;
+      _ctx.buffer[48] = 0x0 /* 0.000000 */;
+      _ctx.buffer[49] = 0x0 /* 0.000000 */;
+      _ctx.buffer[50] = 0x0 /* 0.000000 */;
+      _ctx.buffer[51] = 0x0 /* 0.000000 */;
+      _ctx.buffer[52] = 0x0 /* 0.000000 */;
+      _ctx.buffer[53] = 0x0 /* 0.000000 */;
+      _ctx.buffer[54] = 0x0 /* 0.000000 */;
+      _ctx.buffer[55] = 0x0 /* 0.000000 */;
+   }
+   OSC_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
+   OSC_setWavetable(_ctx,0);
+   OSC_setFrequency(_ctx,0x70a3 /* 0.440000 */);
 }
 
 void Engine__ctx_type_0_init(Engine__ctx_type_0 &_output_){

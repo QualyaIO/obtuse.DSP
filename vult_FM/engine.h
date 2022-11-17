@@ -109,6 +109,12 @@ static_inline uint8_t Util_edge(Util__ctx_type_1 &_ctx, uint8_t x){
    return ret;
 }
 
+static_inline void Util_buffer(fix16_t (&_output_)[56]){
+   fix16_t buff[56];
+   fix_copy_array(56,_output_,buff);
+   return ;
+}
+
 typedef struct ADSR__ctx_type_0 {
    fix16_t target;
    fix16_t step;
@@ -201,6 +207,7 @@ typedef struct OSC__ctx_type_2 {
    fix16_t phase;
    fix16_t fs;
    fix16_t freq;
+   fix16_t buffer[56];
 } OSC__ctx_type_2;
 
 typedef OSC__ctx_type_2 OSC_get_sample_type;
@@ -223,6 +230,15 @@ static_inline void OSC_getSize_init(OSC__ctx_type_2 &_output_){
 
 int OSC_getSize(OSC__ctx_type_2 &_ctx);
 
+typedef OSC__ctx_type_2 OSC_process_buffer_type;
+
+static_inline void OSC_process_buffer_init(OSC__ctx_type_2 &_output_){
+   OSC__ctx_type_2_init(_output_);
+   return ;
+}
+
+void OSC_process_buffer(OSC__ctx_type_2 &_ctx, int nb);
+
 typedef OSC__ctx_type_2 OSC_process_type;
 
 static_inline void OSC_process_init(OSC__ctx_type_2 &_output_){
@@ -230,7 +246,9 @@ static_inline void OSC_process_init(OSC__ctx_type_2 &_output_){
    return ;
 }
 
-fix16_t OSC_process(OSC__ctx_type_2 &_ctx);
+static_inline fix16_t OSC_process(OSC__ctx_type_2 &_ctx){
+   return 0x0 /* 0.000000 */;
+};
 
 typedef OSC__ctx_type_2 OSC_updateStep_type;
 
@@ -305,11 +323,7 @@ static_inline void OSC_default_init(OSC__ctx_type_2 &_output_){
    return ;
 }
 
-static_inline void OSC_default(OSC__ctx_type_2 &_ctx){
-   OSC_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
-   OSC_setWavetable(_ctx,0);
-   OSC_setFrequency(_ctx,0x70a3 /* 0.440000 */);
-}
+void OSC_default(OSC__ctx_type_2 &_ctx);
 
 typedef struct Engine__ctx_type_0 {
    Notes__ctx_type_0 playingnotes;
