@@ -13,6 +13,11 @@ OSC_process_type context;
 // another for the filter
 //Reverb_process_type reverb_context;
 
+// sync with vult code
+#define BUFFER_SIZE 56
+
+fix16_t buff[BUFFER_SIZE];
+
 /*** MIDI ***/
 
 #include <Adafruit_TinyUSB.h>
@@ -173,9 +178,13 @@ void loop() {
       }
     }
   */
+  Serial.println(i2s.availableForWrite());
   //  buffers hard-coded of size 16 in I2S (unless i2s.setBuffers() is called), make sure there are at least two of them free in the audio circular buffer (of buffers)
-  while (i2s.availableForWrite() > 32) {
+  while (i2s.availableForWrite() > 56 + 16) {
     dsp_tick = micros();
+    // process buffer
+    OSC_process_buffer(context);
+    for (int i=0; i < 
     // returned float should be between -1 and 1 (should we checkit ?)
     //int16_t val = fix_to_float(Reverb_process(reverb_context, Engine_process(context))) * 32767;
     int16_t val = fix_to_float(OSC_process(context)) * 32767;

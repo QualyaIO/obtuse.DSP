@@ -63,9 +63,8 @@ and process_buffer(nb: int) {
 }
 // --> main function actually here, call default() first <--
 and process() {
-   mem buffer;
-   //process_buffer(1);
-   return 0.0;
+   process_buffer(1);
+   return buffer[0];
 }
 // called internally when Samplerate or frequency is altered
 and updateStep() {
