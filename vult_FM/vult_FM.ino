@@ -17,6 +17,7 @@ OSC_process_type context;
 #define BUFFER_SIZE 56
 
 int16_t buff[BUFFER_SIZE];
+fix16_t raw_buff[BUFFER_SIZE];
 
 /*** MIDI ***/
 
@@ -75,6 +76,12 @@ int tick = 0;
 // computing time spent on DPS
 unsigned long dsp_tick;
 unsigned long dsp_time;
+
+// same for cycle count
+unsigned long debug_cycle_tick;
+unsigned long dsp_cycle_count;
+unsigned long dsp_cycle_tick;
+
 
 void setup() {
 
@@ -184,17 +191,21 @@ void loop() {
     // process buffer
     OSC_process_buffer(context, BUFFER_SIZE);
 
-    fix16_t *arr  = context.buffer;
 
     dsp_tick = micros();
+    dsp_cycle_tick = rp2040.getCycleCount64();
+
+    OSC_getBuffer(context, raw_buff);
 
     // two times to better compare with classical situation
     for (int i = 0; i < BUFFER_SIZE; i++) {
       // returned float should be between -1 and 1 (should we checkit ?)
-      fix16_t v = arr[i];
-      buff[i] = fix_to_float(v) * 32767;
+      fix16_t v = raw_buff[i];
+      buff[i] = fix_to_float(v);// * 32767;
     }
     dsp_time += micros() - dsp_tick;
+    dsp_cycle_count += rp2040.getCycleCount64() - dsp_cycle_tick;
+
 
     for (int i = 0; i < BUFFER_SIZE; i++) {
       i2s.write(buff[i]);
@@ -221,13 +232,18 @@ void loop() {
   // debug
   int newTick = micros();
   if (newTick - tick >= 1000000) {
-    unsigned long st = micros();
+    unsigned long cycle_count = rp2040.getCycleCount64() -  debug_cycle_tick;
+    float dsp_cycle_ratio = (float) dsp_cycle_count / cycle_count;
     Serial.println("Running strong!");
     Serial.print("DSP time (useconds): ");
     Serial.print(dsp_time);
     Serial.print(" ("); Serial.print((float)dsp_time / (newTick - tick)); Serial.println("% CPU)");
+    Serial.print("CPU cycles ratio: "); Serial.println(dsp_cycle_ratio);
+
     dsp_time = 0;
     tick += 1000000;
+    dsp_cycle_count = 0;
+    debug_cycle_tick = rp2040.getCycleCount64();
   }
 }
 

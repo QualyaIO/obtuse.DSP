@@ -259,6 +259,18 @@ static_inline void OSC_updateStep(OSC__ctx_type_2 &_ctx){
    _ctx.step = fix_mul(_ctx.freq,_ctx.stepRatio);
 };
 
+typedef OSC__ctx_type_2 OSC_getBuffer_type;
+
+static_inline void OSC_getBuffer_init(OSC__ctx_type_2 &_output_){
+   OSC__ctx_type_2_init(_output_);
+   return ;
+}
+
+static_inline void OSC_getBuffer(OSC__ctx_type_2 &_ctx, fix16_t (&_output_)[56]){
+   fix_copy_array(56,_output_,_ctx.buffer);
+   return ;
+}
+
 typedef OSC__ctx_type_2 OSC_setSamplerate_type;
 
 static_inline void OSC_setSamplerate_init(OSC__ctx_type_2 &_output_){
