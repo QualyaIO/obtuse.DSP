@@ -181,16 +181,21 @@ void loop() {
 
   //  buffers hard-coded of size 16 in I2S (unless i2s.setBuffers() is called), make sure there are at least two of them free in the audio circular buffer (of buffers)
   while (i2s.availableForWrite() > (BUFFER_SIZE) * 2 + 16) {
-    dsp_tick = micros();
     // process buffer
     OSC_process_buffer(context, BUFFER_SIZE);
-    dsp_time += micros() - dsp_tick;
+
+    fix16_t *arr  = context.buffer;
+
+    dsp_tick = micros();
 
     // two times to better compare with classical situation
     for (int i = 0; i < BUFFER_SIZE; i++) {
       // returned float should be between -1 and 1 (should we checkit ?)
-      buff[i] = fix_to_float(context.buffer[i]) * 32767;
+      fix16_t v = arr[i];
+      buff[i] = fix_to_float(v) * 32767;
     }
+    dsp_time += micros() - dsp_tick;
+
     for (int i = 0; i < BUFFER_SIZE; i++) {
       i2s.write(buff[i]);
       i2s.write(buff[i]);
@@ -199,15 +204,16 @@ void loop() {
   /*
     while (i2s.availableForWrite() > 16) {
       dsp_tick = micros();
-      OSC_process(context);
       // returned float should be between -1 and 1 (should we checkit ?)
-      int16_t val = fix_to_float(OSC_process(context)) * 32767;
+      fix16_t raw = OSC_process(context);
+      int16_t val = fix_to_float(raw) * 32767;
       dsp_time += micros() - dsp_tick;
+
       i2s.write(val);
       i2s.write(val);
 
-    }
-  */
+    }*/
+
 
   // read any new MIDI messages
   MIDI.read();

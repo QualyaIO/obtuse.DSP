@@ -223,6 +223,16 @@ void OSC_process_buffer(OSC__ctx_type_2 &_ctx, int nb){
    }
 }
 
+fix16_t OSC_process(OSC__ctx_type_2 &_ctx){
+   fix16_t size;
+   size = int_to_fix(OSC_getSize(_ctx));
+   _ctx.phase = (_ctx.phase + _ctx.step);
+   if(_ctx.phase > size){
+      _ctx.phase = (_ctx.phase + (- size));
+   }
+   return OSC_sin_wave(0,fix_to_int((_ctx.phase + _ctx.phase_base)));
+}
+
 void OSC_setSamplerate(OSC__ctx_type_2 &_ctx, fix16_t newFs){
    if(newFs > 0x0 /* 0.000000 */){
       _ctx.fs = newFs;

@@ -246,10 +246,7 @@ static_inline void OSC_process_init(OSC__ctx_type_2 &_output_){
    return ;
 }
 
-static_inline fix16_t OSC_process(OSC__ctx_type_2 &_ctx){
-   OSC_process_buffer(_ctx,1);
-   return _ctx.buffer[0];
-}
+fix16_t OSC_process(OSC__ctx_type_2 &_ctx);
 
 typedef OSC__ctx_type_2 OSC_updateStep_type;
 
