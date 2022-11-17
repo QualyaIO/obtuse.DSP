@@ -176,7 +176,6 @@ void OSC__ctx_type_2_init(OSC__ctx_type_2 &_output_){
    _ctx.wavetable = 0;
    _ctx.stepRatio = 0x0 /* 0.000000 */;
    _ctx.step = 0x0 /* 0.000000 */;
-   _ctx.rsize = 0x0 /* 0.000000 */;
    _ctx.phase_base = 0x0 /* 0.000000 */;
    _ctx.phase = 0x0 /* 0.000000 */;
    _ctx.fs = 0x0 /* 0.000000 */;
@@ -206,15 +205,16 @@ int OSC_getSize(OSC__ctx_type_2 &_ctx){
 }
 
 void OSC_process_buffer(OSC__ctx_type_2 &_ctx, int nb){
-   _ctx.rsize = int_to_fix(OSC_getSize(_ctx));
-   nb = int_clip(nb,0,56);
-   if(nb == 0){
-      nb = 56;
-   }
+   fix16_t size;
+   size = int_to_fix(OSC_getSize(_ctx));
    int i;
    i = 0;
    while(i < nb){
-      _ctx.buffer[i] = OSC_do(_ctx);
+      _ctx.phase = (_ctx.phase + _ctx.step);
+      if(_ctx.phase > size){
+         _ctx.phase = (_ctx.phase + (- size));
+      }
+      _ctx.buffer[i] = OSC_sin_wave(0,fix_to_int((_ctx.phase + _ctx.phase_base)));
       i = (1 + i);
    }
 }

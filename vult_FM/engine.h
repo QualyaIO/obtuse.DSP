@@ -203,7 +203,6 @@ typedef struct OSC__ctx_type_2 {
    int wavetable;
    fix16_t stepRatio;
    fix16_t step;
-   fix16_t rsize;
    fix16_t phase_base;
    fix16_t phase;
    fix16_t fs;
@@ -231,21 +230,6 @@ static_inline void OSC_getSize_init(OSC__ctx_type_2 &_output_){
 
 int OSC_getSize(OSC__ctx_type_2 &_ctx);
 
-typedef OSC__ctx_type_2 OSC_do_type;
-
-static_inline void OSC_do_init(OSC__ctx_type_2 &_output_){
-   OSC__ctx_type_2_init(_output_);
-   return ;
-}
-
-static_inline fix16_t OSC_do(OSC__ctx_type_2 &_ctx){
-   _ctx.phase = (_ctx.phase + _ctx.step);
-   if(_ctx.phase > _ctx.rsize){
-      _ctx.phase = (_ctx.phase + (- _ctx.rsize));
-   }
-   return OSC_sin_wave(0,fix_to_int((_ctx.phase + _ctx.phase_base)));
-}
-
 typedef OSC__ctx_type_2 OSC_process_buffer_type;
 
 static_inline void OSC_process_buffer_init(OSC__ctx_type_2 &_output_){
@@ -263,8 +247,8 @@ static_inline void OSC_process_init(OSC__ctx_type_2 &_output_){
 }
 
 static_inline fix16_t OSC_process(OSC__ctx_type_2 &_ctx){
-   _ctx.rsize = int_to_fix(OSC_getSize(_ctx));
-   return OSC_do(_ctx);
+   OSC_process_buffer(_ctx,1);
+   return _ctx.buffer[0];
 }
 
 typedef OSC__ctx_type_2 OSC_updateStep_type;
