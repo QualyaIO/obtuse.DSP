@@ -17,6 +17,6 @@ fun edge(x:bool) : bool {
 // allocate an audio buffer
 // size tuned for current use, default non-blocking I2S buffer
 fun buffer() {
-  val buff : array(real, 56);
+  val buff : array(real, 256);
   return buff;
 }

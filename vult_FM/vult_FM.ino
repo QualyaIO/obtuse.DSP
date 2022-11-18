@@ -14,7 +14,7 @@ OSC_process_type context;
 //Reverb_process_type reverb_context;
 
 // sync with vult code
-#define BUFFER_SIZE 56
+#define BUFFER_SIZE 256
 
 int16_t buff[BUFFER_SIZE];
 fix16_t raw_buff[BUFFER_SIZE];
@@ -119,7 +119,8 @@ void setup() {
   }
 
   // inrcease buffers from default 8 buffers of 16 values
-  i2s.setBuffers(16, 16);
+  // here we want enough for our buffer, x2 because two channels, and one more to be not blocking... and one more just in case
+  i2s.setBuffers(66, 16);
   i2s.setBCLK(pBCLK);
   i2s.setDATA(pDOUT);
   i2s.setBitsPerSample(16); // instead of 16 to get expected clock for bclk ?

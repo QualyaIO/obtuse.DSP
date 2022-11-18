@@ -109,9 +109,9 @@ static_inline uint8_t Util_edge(Util__ctx_type_1 &_ctx, uint8_t x){
    return ret;
 }
 
-static_inline void Util_buffer(fix16_t (&_output_)[56]){
-   fix16_t buff[56];
-   fix_copy_array(56,_output_,buff);
+static_inline void Util_buffer(fix16_t (&_output_)[256]){
+   fix16_t buff[256];
+   fix_copy_array(256,_output_,buff);
    return ;
 }
 
@@ -207,7 +207,7 @@ typedef struct OSC__ctx_type_2 {
    fix16_t phase;
    fix16_t fs;
    fix16_t freq;
-   fix16_t buffer[56];
+   fix16_t buffer[256];
 } OSC__ctx_type_2;
 
 typedef OSC__ctx_type_2 OSC_get_sample_type;
@@ -269,8 +269,8 @@ static_inline void OSC_getBuffer_init(OSC__ctx_type_2 &_output_){
    return ;
 }
 
-static_inline void OSC_getBuffer(OSC__ctx_type_2 &_ctx, fix16_t (&_output_)[56]){
-   fix_copy_array(56,_output_,_ctx.buffer);
+static_inline void OSC_getBuffer(OSC__ctx_type_2 &_ctx, fix16_t (&_output_)[256]){
+   fix_copy_array(256,_output_,_ctx.buffer);
    return ;
 }
 
