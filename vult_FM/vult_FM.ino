@@ -217,7 +217,7 @@ void loop() {
     dsp_cycle_tick = rp2040.getCycleCount();
 
     // returned float should be between -1 and 1 (should we checkit ?)
-    fix16_t raw = OSC_process(context);
+    fix16_t raw = OSC_process_buffer(context, 1);
     // shortcut, instead of fixed_to_float * 32767, *almost* the same
     int16_t val =  raw / 2 - (raw >> 16);
 
@@ -227,8 +227,8 @@ void loop() {
     i2s.write(val);
     i2s.write(val);
 
-    }*/
-
+    }
+*/
 
   // read any new MIDI messages
   MIDI.read();

@@ -203,6 +203,7 @@ typedef struct OSC__ctx_type_2 {
    int wavetable;
    fix16_t stepRatio;
    fix16_t step;
+   fix16_t rsize;
    fix16_t phase_base;
    fix16_t phase;
    fix16_t fs;
@@ -210,25 +211,16 @@ typedef struct OSC__ctx_type_2 {
    fix16_t buffer[256];
 } OSC__ctx_type_2;
 
-typedef OSC__ctx_type_2 OSC_get_sample_type;
+typedef OSC__ctx_type_2 OSC_getSample_type;
 
 void OSC__ctx_type_2_init(OSC__ctx_type_2 &_output_);
 
-static_inline void OSC_get_sample_init(OSC__ctx_type_2 &_output_){
+static_inline void OSC_getSample_init(OSC__ctx_type_2 &_output_){
    OSC__ctx_type_2_init(_output_);
    return ;
 }
 
-fix16_t OSC_get_sample(OSC__ctx_type_2 &_ctx, int index);
-
-typedef OSC__ctx_type_2 OSC_getSize_type;
-
-static_inline void OSC_getSize_init(OSC__ctx_type_2 &_output_){
-   OSC__ctx_type_2_init(_output_);
-   return ;
-}
-
-int OSC_getSize(OSC__ctx_type_2 &_ctx);
+fix16_t OSC_getSample(OSC__ctx_type_2 &_ctx, int index);
 
 typedef OSC__ctx_type_2 OSC_process_buffer_type;
 
@@ -237,7 +229,7 @@ static_inline void OSC_process_buffer_init(OSC__ctx_type_2 &_output_){
    return ;
 }
 
-void OSC_process_buffer(OSC__ctx_type_2 &_ctx, int nb);
+fix16_t OSC_process_buffer(OSC__ctx_type_2 &_ctx, int nb);
 
 typedef OSC__ctx_type_2 OSC_process_type;
 
@@ -247,9 +239,8 @@ static_inline void OSC_process_init(OSC__ctx_type_2 &_output_){
 }
 
 static_inline fix16_t OSC_process(OSC__ctx_type_2 &_ctx){
-   OSC_process_buffer(_ctx,1);
-   return _ctx.buffer[0];
-}
+   return OSC_process_buffer(_ctx,1);
+};
 
 typedef OSC__ctx_type_2 OSC_updateStep_type;
 
@@ -326,7 +317,24 @@ static_inline void OSC_setWavetable_init(OSC__ctx_type_2 &_output_){
 }
 
 static_inline void OSC_setWavetable(OSC__ctx_type_2 &_ctx, int index){
-   _ctx.wavetable = index;
+   if(_ctx.wavetable == 0){
+      _ctx.rsize = int_to_fix(OSC_sin_wave_samples());
+   }
+   else
+   {
+      OSC_setWavetable(_ctx,0);
+   }
+};
+
+typedef OSC__ctx_type_2 OSC_getSize_type;
+
+static_inline void OSC_getSize_init(OSC__ctx_type_2 &_output_){
+   OSC__ctx_type_2_init(_output_);
+   return ;
+}
+
+static_inline int OSC_getSize(OSC__ctx_type_2 &_ctx){
+   return fix_to_int(_ctx.rsize);
 };
 
 typedef OSC__ctx_type_2 OSC_default_type;

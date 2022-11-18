@@ -8,7 +8,7 @@ external sin_wave(channel:int, index:int) : real @[wave(channels=1, file="sinus_
 
 
 // return value for current wavetable (first channel hard-coded), between [0..sample size[
-fun get_sample(index: int) {
+fun getSample(index: int) {
     // index of wavetable
     mem wavetable;
     // modulo will be taken care of by the generated code 
@@ -18,26 +18,17 @@ fun get_sample(index: int) {
     }
     return sample;
 }
-// size of selected wavetable (int)
-and getSize() {
-    val size = 0;
-    if (wavetable == 0) {
-       size = sin_wave_samples();
-    }
-    return size;
-}
-
 
 // --> main function actually here, call default() first <--
 // buffered version, specify number of elements of the buffer to proceed (will be caped to acual max). 0: all elements
-// update the buffer, to be fetch afterward
+// update the buffer, to be fetch afterward, returns last sample
 and process_buffer(nb: int) {
    mem buffer;
    nb = clip(nb, 0, size(buffer));
    if (nb == 0) {
       nb = 256;
    }
-
+   
    // audio sampling rate
    mem fs: real;
    // sinus frequency
@@ -49,26 +40,30 @@ and process_buffer(nb: int) {
    // going that much through wavetable at each call
    mem step: real;
 
-   // slightly more efficient than the more robust modulo
-   val size = real(getSize());
+   // absolutely needs init to set that, converted to real to speedup
+   mem rsize: real;
 
    val i = 0;
+   val v = 0.0;
    while (i < nb) {
       // advance time, keep range in check here to maximize precision
       phase = phase + step;
-      if (phase > size) {
-         phase = phase - size;
+      // slightly more efficient than the more robust modulo
+      if (phase > rsize) {
+         phase = phase - rsize;
       }
       // loop in sample
-      buffer[i] = sin_wave(0, int(phase_base + phase));
+      v = getSample(int(phase_base + phase));
+      buffer[i] = v;
       i = i + 1;
    }
+
+   return v;
 }
 
 // non-buffered version
 and process() {
-   process_buffer(1);
-   return buffer[0];
+   return process_buffer(1);
 }
 
 // called internally when Samplerate or frequency is altered
@@ -86,7 +81,7 @@ and setSamplerate(newFs:real) {
    if (newFs > 0.0) {
       fs = newFs;
       // update ratio when we update sampling rate
-      stepRatio = real(getSize()) / fs;
+      stepRatio = rsize / fs;
    }
    _ = updateStep();
 }
@@ -103,9 +98,20 @@ and resetPhase() {
    phase = 0.0;
    phase_base = 0.0;
 }
-// see options at the top of the wive
+// see options at the top of the file
+// reset to 0 if invalid wavetable is selected
 and setWavetable(index: int) {
-   wavetable = index; 
+    if (wavetable == 0) {
+       rsize = real(sin_wave_samples());
+    }
+    // sefault to sine
+    else {
+       setWavetable(0);
+    }
+}
+// size of selected wavetable (int)
+and getSize() : int {
+    return int(rsize);
 }
 and default() @[init] {
    // will copy a new array

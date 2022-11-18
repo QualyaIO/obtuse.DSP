@@ -176,6 +176,7 @@ void OSC__ctx_type_2_init(OSC__ctx_type_2 &_output_){
    _ctx.wavetable = 0;
    _ctx.stepRatio = 0x0 /* 0.000000 */;
    _ctx.step = 0x0 /* 0.000000 */;
+   _ctx.rsize = 0x0 /* 0.000000 */;
    _ctx.phase_base = 0x0 /* 0.000000 */;
    _ctx.phase = 0x0 /* 0.000000 */;
    _ctx.fs = 0x0 /* 0.000000 */;
@@ -186,7 +187,7 @@ void OSC__ctx_type_2_init(OSC__ctx_type_2 &_output_){
    return ;
 }
 
-fix16_t OSC_get_sample(OSC__ctx_type_2 &_ctx, int index){
+fix16_t OSC_getSample(OSC__ctx_type_2 &_ctx, int index){
    fix16_t sample;
    sample = 0x0 /* 0.000000 */;
    if(_ctx.wavetable == 0){
@@ -195,38 +196,31 @@ fix16_t OSC_get_sample(OSC__ctx_type_2 &_ctx, int index){
    return sample;
 }
 
-int OSC_getSize(OSC__ctx_type_2 &_ctx){
-   int size;
-   size = 0;
-   if(_ctx.wavetable == 0){
-      size = OSC_sin_wave_samples();
-   }
-   return size;
-}
-
-void OSC_process_buffer(OSC__ctx_type_2 &_ctx, int nb){
+fix16_t OSC_process_buffer(OSC__ctx_type_2 &_ctx, int nb){
    nb = int_clip(nb,0,256);
    if(nb == 0){
       nb = 256;
    }
-   fix16_t size;
-   size = int_to_fix(OSC_getSize(_ctx));
    int i;
    i = 0;
+   fix16_t v;
+   v = 0x0 /* 0.000000 */;
    while(i < nb){
       _ctx.phase = (_ctx.phase + _ctx.step);
-      if(_ctx.phase > size){
-         _ctx.phase = (_ctx.phase + (- size));
+      if(_ctx.phase > _ctx.rsize){
+         _ctx.phase = (_ctx.phase + (- _ctx.rsize));
       }
-      _ctx.buffer[i] = OSC_sin_wave(0,fix_to_int((_ctx.phase + _ctx.phase_base)));
+      v = OSC_getSample(_ctx,fix_to_int((_ctx.phase + _ctx.phase_base)));
+      _ctx.buffer[i] = v;
       i = (1 + i);
    }
+   return v;
 }
 
 void OSC_setSamplerate(OSC__ctx_type_2 &_ctx, fix16_t newFs){
    if(newFs > 0x0 /* 0.000000 */){
       _ctx.fs = newFs;
-      _ctx.stepRatio = fix_div(int_to_fix(OSC_getSize(_ctx)),_ctx.fs);
+      _ctx.stepRatio = fix_div(_ctx.rsize,_ctx.fs);
    }
    OSC_updateStep(_ctx);
 }
