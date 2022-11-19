@@ -235,7 +235,7 @@ static_inline void OSC_process_buffer_init(OSC__ctx_type_2 &_output_){
    return ;
 }
 
-fix16_t OSC_process_buffer(OSC__ctx_type_2 &_ctx, int nb, fix16_t (&phase_bases)[256]);
+fix16_t OSC_process_buffer(OSC__ctx_type_2 &_ctx, int nb, fix16_t (&env)[256], fix16_t (&phase_shift)[256], fix16_t phase_shift_level);
 
 typedef OSC__ctx_type_2 OSC_process_type;
 
@@ -368,6 +368,7 @@ typedef struct Engine__ctx_type_0 {
    fix16_t modulator_env;
    fix16_t modulatorRatio;
    OSC__ctx_type_2 modulator;
+   fix16_t level;
    uint8_t gate;
    fix16_t fs;
    int env_decimation_factor;
@@ -377,9 +378,11 @@ typedef struct Engine__ctx_type_0 {
    fix16_t carrierRatio;
    OSC__ctx_type_2 carrier;
    fix16_t buffer_modulator_phase[256];
+   fix16_t buffer_modulator_env_short[256];
    fix16_t buffer_modulator_env[256];
    fix16_t buffer_modulator[256];
    fix16_t buffer_carrier_phase[256];
+   fix16_t buffer_carrier_env_short[256];
    fix16_t buffer_carrier_env[256];
    fix16_t buffer[256];
 } Engine__ctx_type_0;
@@ -456,9 +459,10 @@ static_inline void Engine_setModulatorLevel_init(Engine__ctx_type_0 &_output_){
    return ;
 }
 
-static_inline void Engine_setModulatorLevel(Engine__ctx_type_0 &_ctx, fix16_t level){
-   _ctx.carrier_half_phase = (fix_mul(level,int_to_fix(OSC_getSize(_ctx.carrier))) >> 1);
-};
+static_inline void Engine_setModulatorLevel(Engine__ctx_type_0 &_ctx, fix16_t newLevel){
+   _ctx.level = newLevel;
+   _ctx.carrier_half_phase = (fix_mul(_ctx.level,int_to_fix(OSC_getSize(_ctx.carrier))) >> 1);
+}
 
 typedef Engine__ctx_type_0 Engine_setFrequency_type;
 

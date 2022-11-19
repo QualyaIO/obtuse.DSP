@@ -16,6 +16,8 @@ fun process_buffer(nb: int) {
     if (nb == 0) {
        nb = size(buffer);
     }
+    // amount of phase modulation
+    mem level;
 
     // audio sampling rate
     mem fs: real;
@@ -28,7 +30,9 @@ fun process_buffer(nb: int) {
     mem carrier_env;
     mem modulator_env;
 
-    // buffers for envelops
+    // buffers for envelops, decimated and the full 
+    mem buffer_carrier_env_short;
+    mem buffer_modulator_env_short;
     mem buffer_carrier_env;
     mem buffer_modulator_env;
     // number of iterations since last decimation
@@ -42,49 +46,38 @@ fun process_buffer(nb: int) {
     // retrieve envelopes
     if (nb_env > 0) {
        _ = carrieradsr:ADSR.process_buffer(gate, nb_env);
-       _ = carrieradsr:ADSR.copyTo(buffer_carrier_env, nb_env);
+       _ = carrieradsr:ADSR.copyTo(buffer_carrier_env_short, nb_env);
        _ = modulatoradsr:ADSR.process_buffer(gate, nb_env);
-       _ = modulatoradsr:ADSR.copyTo(buffer_modulator_env, nb_env);
+       _ = modulatoradsr:ADSR.copyTo(buffer_modulator_env_short, nb_env);
     }
 
-    // retrieve modulation
-    // FIME: can we here find a way to not calling when the corresponding envelope is 0?
-    _ = modulator:OSC.process_buffer(nb, buffer_modulator_phase);
-    _ = modulator:OSC.copyTo(buffer_modulator, nb);
-    // update phase values
-    // will go through two buffers
+    // expand carrier envelop and retrieve to full version
+    // FIXME: do not do that at all if decimation 1
     val i = 0;
     val i_env = 0;
-    // we will re-use n afterwards for carrier
-    val nn = n;
-    while (i < nb) {
-       // advance and update envelope
-       nn = (nn + 1) % env_decimation_factor;
-       if (nn == 0) {
-          modulator_env = buffer_modulator_env[i_env];
-          i_env = i_env + 1;
-       }
-       buffer_carrier_phase[i] = (buffer_modulator[i] + 1.0) * modulator_env * carrier_half_phase;
-       i = i + 1;
-    }
-
-    // apply to carrier
-    // FIXME: pass volume directly?
-    _ = carrier:OSC.process_buffer(nb, buffer_carrier_phase);
-    _ = carrier:OSC.copyTo(buffer, nb);
-    i = 0;
-    i_env = 0;
-    // apply enveloppe
     while (i < nb) {
        // advance and update envelope
        n = (n + 1) % env_decimation_factor;
        if (n == 0) {
-          carrier_env = buffer_carrier_env[i_env];
+          modulator_env = buffer_modulator_env_short[i_env];
+	  carrier_env = buffer_carrier_env_short[i_env];
           i_env = i_env + 1;
        }
-       buffer[i] = buffer[i] * carrier_env;
+       buffer_modulator_env[i] = modulator_env;
+       buffer_carrier_env[i] = carrier_env;
        i = i + 1;
     }
+
+
+    // retrieve modulation
+    // FIME: can we here find a way to not calling when the corresponding envelope is 0?
+    _ = modulator:OSC.process_buffer(nb, buffer_modulator_env, buffer_modulator_phase, 0.0);
+    _ = modulator:OSC.copyTo(buffer_modulator, nb);
+
+    // apply to carrier
+    // FIXME: pass volume directly?
+    _ = carrier:OSC.process_buffer(nb, buffer_carrier_env, buffer_carrier_phase, level);
+    _ = carrier:OSC.copyTo(buffer, nb);
 }
 // FIXME: obviously broken at the moment
 and process() {
@@ -116,7 +109,8 @@ and setModulatorRatio(ratio: real) {
    mem modulatorRatio = ratio;
 }
 // effect of modulator [0..1]
-and setModulatorLevel(level: real) {
+and setModulatorLevel(newLevel: real) {
+    level = newLevel;
     // directly manipulating the phase amount
     carrier_half_phase = real(carrier:OSC.getSize()) / 2.0 * level;
 }
@@ -160,6 +154,8 @@ and default() @[init] {
     // will copy new arrays
     buffer = Util.buffer();
     buffer_modulator = Util.buffer();
+    buffer_carrier_env_short = Util.buffer();
+    buffer_modulator_env_short = Util.buffer();
     buffer_carrier_env = Util.buffer();
     buffer_modulator_env = Util.buffer();
     buffer_carrier_phase = Util.buffer();

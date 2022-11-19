@@ -22,9 +22,11 @@ fun getSample(index: int) {
 // --> main function actually here, call default() first <--
 // buffered version, specify number of elements of the buffer to proceed (will be caped to acual max). 0: all elements
 // update the buffer, to be fetch afterward, returns last sample
-// phase bases: specify the point of reference of the phase for each sample
+// env: envelope to apply (0..1)
+// phase shift: specify how to shift the base phase (-1 to 1, 0 center of phase) -- FIXME so that 0 does not change anything?
+// phase_shift_level: by how much we apply phase shift (0..1)
 // FIXME: not check for phase_bases size, no option to by-pass
-and process_buffer(nb: int, phase_bases: array(real, 256)) {
+and process_buffer(nb: int, env: array(real, 256), phase_shift: array(real, 256), phase_shift_level: real) {
    mem buffer;
    nb = clip(nb, 0, size(buffer));
    if (nb == 0) {
@@ -45,6 +47,10 @@ and process_buffer(nb: int, phase_bases: array(real, 256)) {
    // absolutely needs init to set that, converted to real to speedup
    mem rsize: real;
 
+   // base for phase shift
+   val half_phase = rsize / 2.0;
+   val phase_range = half_phase * phase_shift_level;
+
    val i = 0;
    val v = 0.0;
    while (i < nb) {
@@ -56,7 +62,7 @@ and process_buffer(nb: int, phase_bases: array(real, 256)) {
       }
       // loop in sample
       //v = getSample(int(phase_base + phase));
-      v = getSample(int(phase_bases[i] + phase));
+      v = getSample(int(half_phase + phase_range * phase_shift[i]  + phase)) * env[i];
       buffer[i] = v;
       i = i + 1;
    }
