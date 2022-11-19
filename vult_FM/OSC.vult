@@ -52,7 +52,6 @@ and process_buffer(nb: int, env: array(real, 256), phase_shift: array(real, 256)
    val phase_range = half_phase * phase_shift_level;
 
    val i = 0;
-   val v = 0.0;
    while (i < nb) {
       // advance time, keep range in check here to maximize precision
       phase = phase + step;
@@ -62,13 +61,33 @@ and process_buffer(nb: int, env: array(real, 256), phase_shift: array(real, 256)
       }
       // loop in sample
       //v = getSample(int(phase_base + phase));
-      v = getSample(int(half_phase + phase_range * phase_shift[i]  + phase)) * env[i];
-      buffer[i] = v;
+      buffer[i]  = getSample(int(half_phase + phase_range * phase_shift[i]  + phase)) * env[i];
       i = i + 1;
    }
-
-   return v;
 }
+
+and process_buffer_simple(nb: int, env: array(real, 256)) {
+   mem buffer;
+   nb = clip(nb, 0, size(buffer));
+   if (nb == 0) {
+      nb = size(buffer);
+   }
+   
+   val i = 0;
+   while (i < nb) {
+      // advance time, keep range in check here to maximize precision
+      phase = phase + step;
+      // slightly more efficient than the more robust modulo
+      if (phase > rsize) {
+         phase = phase - rsize;
+      }
+      // loop in sample
+      //v = getSample(int(phase_base + phase));
+      buffer[i]  = getSample(int(phase_base + phase)) * env[i];
+      i = i + 1;
+   }
+}
+
 
 // non-buffered version... FIXME: not supported anymore
 and process() {

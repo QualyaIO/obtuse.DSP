@@ -32,7 +32,7 @@ Adafruit_USBD_MIDI usb_midi;
 MIDI_CREATE_INSTANCE(Adafruit_USBD_MIDI, usb_midi, MIDI);
 
 // play by itself instead of MIDI input
-const bool autoplay = false;
+const bool autoplay =  true;
 // playing notes
 unsigned long midi_tick;
 // starting C
@@ -161,31 +161,31 @@ void setup() {
 }
 
 void loop() {
-  /*
-    // generating notes if option set
-    if (autoplay) {
-      // note on
-      if (!gate and millis() - midi_tick >= 50) {
-        Serial.print("New note: ");
-        current_note += 1;
-        // playing three octaves
-        if (current_note >= 128) {
-          // back to C
-          current_note = 0;
-        }
-        Serial.println(current_note);
-        Engine_noteOn(context, current_note, 0, 0);
-        midi_tick = millis();
-        gate = true;
+
+  // generating notes if option set
+  if (autoplay) {
+    // note on
+    if (!gate and millis() - midi_tick >= 50) {
+      Serial.print("New note: ");
+      current_note += 1;
+      // playing three octaves
+      if (current_note >= 128) {
+        // back to C
+        current_note = 0;
       }
-      if (gate and millis() - midi_tick >= 50) {
-        Serial.println("note off");
-        Engine_noteOff(context, 0, 0);
-        midi_tick = millis();
-        gate = false;
-      }
+      Serial.println(current_note);
+      Engine_noteOn(context, current_note, 0, 0);
+      midi_tick = millis();
+      gate = true;
     }
-  */
+    if (gate and millis() - midi_tick >= 50) {
+      Serial.println("note off");
+      Engine_noteOff(context, 0, 0);
+      midi_tick = millis();
+      gate = false;
+    }
+  }
+
 
   //  buffers hard-coded of size 16 in I2S (unless i2s.setBuffers() is called), make sure there are at least two of them free in the audio circular buffer (of buffers)
   while (i2s.availableForWrite() > (BUFFER_SIZE) * 2 + 16) {
@@ -230,7 +230,7 @@ void loop() {
     i2s.write(val);
 
     }
-*/
+  */
 
   // read any new MIDI messages
   MIDI.read();

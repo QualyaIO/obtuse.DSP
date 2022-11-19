@@ -235,7 +235,16 @@ static_inline void OSC_process_buffer_init(OSC__ctx_type_2 &_output_){
    return ;
 }
 
-fix16_t OSC_process_buffer(OSC__ctx_type_2 &_ctx, int nb, fix16_t (&env)[256], fix16_t (&phase_shift)[256], fix16_t phase_shift_level);
+void OSC_process_buffer(OSC__ctx_type_2 &_ctx, int nb, fix16_t (&env)[256], fix16_t (&phase_shift)[256], fix16_t phase_shift_level);
+
+typedef OSC__ctx_type_2 OSC_process_buffer_simple_type;
+
+static_inline void OSC_process_buffer_simple_init(OSC__ctx_type_2 &_output_){
+   OSC__ctx_type_2_init(_output_);
+   return ;
+}
+
+void OSC_process_buffer_simple(OSC__ctx_type_2 &_ctx, int nb, fix16_t (&env)[256]);
 
 typedef OSC__ctx_type_2 OSC_process_type;
 

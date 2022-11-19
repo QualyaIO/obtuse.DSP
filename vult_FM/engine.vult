@@ -71,7 +71,7 @@ fun process_buffer(nb: int) {
 
     // retrieve modulation
     // FIME: can we here find a way to not calling when the corresponding envelope is 0?
-    _ = modulator:OSC.process_buffer(nb, buffer_modulator_env, buffer_modulator_phase, 0.0);
+    _ = modulator:OSC.process_buffer_simple(nb, buffer_modulator_env);
     _ = modulator:OSC.copyTo(buffer_modulator, nb);
 
     // apply to carrier

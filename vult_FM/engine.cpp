@@ -491,7 +491,7 @@ fix16_t OSC_getSample(OSC__ctx_type_2 &_ctx, int index){
    return sample;
 }
 
-fix16_t OSC_process_buffer(OSC__ctx_type_2 &_ctx, int nb, fix16_t (&env)[256], fix16_t (&phase_shift)[256], fix16_t phase_shift_level){
+void OSC_process_buffer(OSC__ctx_type_2 &_ctx, int nb, fix16_t (&env)[256], fix16_t (&phase_shift)[256], fix16_t phase_shift_level){
    nb = int_clip(nb,0,256);
    if(nb == 0){
       nb = 256;
@@ -502,18 +502,31 @@ fix16_t OSC_process_buffer(OSC__ctx_type_2 &_ctx, int nb, fix16_t (&env)[256], f
    phase_range = fix_mul(half_phase,phase_shift_level);
    int i;
    i = 0;
-   fix16_t v;
-   v = 0x0 /* 0.000000 */;
    while(i < nb){
       _ctx.phase = (_ctx.phase + _ctx.step);
       if(_ctx.phase > _ctx.rsize){
          _ctx.phase = (_ctx.phase + (- _ctx.rsize));
       }
-      v = fix_mul(env[i],OSC_getSample(_ctx,fix_to_int((_ctx.phase + half_phase + fix_mul(phase_range,phase_shift[i])))));
-      _ctx.buffer[i] = v;
+      _ctx.buffer[i] = fix_mul(env[i],OSC_getSample(_ctx,fix_to_int((_ctx.phase + half_phase + fix_mul(phase_range,phase_shift[i])))));
       i = (1 + i);
    }
-   return v;
+}
+
+void OSC_process_buffer_simple(OSC__ctx_type_2 &_ctx, int nb, fix16_t (&env)[256]){
+   nb = int_clip(nb,0,256);
+   if(nb == 0){
+      nb = 256;
+   }
+   int i;
+   i = 0;
+   while(i < nb){
+      _ctx.phase = (_ctx.phase + _ctx.step);
+      if(_ctx.phase > _ctx.rsize){
+         _ctx.phase = (_ctx.phase + (- _ctx.rsize));
+      }
+      _ctx.buffer[i] = fix_mul(env[i],OSC_getSample(_ctx,fix_to_int((_ctx.phase + _ctx.phase_base))));
+      i = (1 + i);
+   }
 }
 
 void OSC_setSamplerate(OSC__ctx_type_2 &_ctx, fix16_t newFs){
@@ -867,7 +880,7 @@ void Engine_process_buffer(Engine__ctx_type_0 &_ctx, int nb){
       _ctx.buffer_carrier_env[i] = _ctx.carrier_env;
       i = (1 + i);
    }
-   OSC_process_buffer(_ctx.modulator,nb,_ctx.buffer_modulator_env,_ctx.buffer_modulator_phase,0x0 /* 0.000000 */);
+   OSC_process_buffer_simple(_ctx.modulator,nb,_ctx.buffer_modulator_env);
    OSC_copyTo(_ctx.modulator,_ctx.buffer_modulator,nb);
    OSC_process_buffer(_ctx.carrier,nb,_ctx.buffer_carrier_env,_ctx.buffer_carrier_phase,_ctx.level);
    OSC_copyTo(_ctx.carrier,_ctx.buffer,nb);
