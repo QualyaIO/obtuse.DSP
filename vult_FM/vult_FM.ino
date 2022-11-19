@@ -11,13 +11,14 @@
 Engine_process_type context;
 //OSC_process_type context;
 // another for the filter
-//Reverb_process_type reverb_context;
+Reverb_process_type context_reverb;
 
 // sync with vult code
 #define BUFFER_SIZE 256
 
 int16_t buff[BUFFER_SIZE];
 fix16_t raw_buff[BUFFER_SIZE];
+fix16_t reverb_buff[BUFFER_SIZE];
 
 /*** MIDI ***/
 
@@ -158,6 +159,7 @@ void setup() {
   Engine_setSamplerate(context, float_to_fix(sampleRate / (float)1000));
   //OSC_default(context);
   //OSC_setSamplerate(context, float_to_fix(sampleRate / (float)1000));
+  Reverb_default(context_reverb);
 }
 
 void loop() {
@@ -196,13 +198,14 @@ void loop() {
     //OSC_process_buffer(context, BUFFER_SIZE);
     //OSC_getBuffer(context, raw_buff);
     Engine_process_buffer(context, BUFFER_SIZE);
-    Engine_getBuffer(context, raw_buff);
-
+    //Engine_getBuffer(context, raw_buff);
+    Reverb_process_buffer(context_reverb, BUFFER_SIZE, context.buffer);
+    Reverb_getBuffer(context_reverb, reverb_buff);
     // two times to better compare with classical situation
     for (size_t i = 0; i < BUFFER_SIZE; i++) {
       // returned float should be between -1 and 1 (should we checkit ?)
       // shortcut, instead of fixed_to_float * 32767, *almost* the same and vastly improve perf with buffered version (???)
-      buff[i] =  raw_buff[i] / 2 - ( raw_buff[i] >> 16);
+      buff[i] =  reverb_buff[i] / 2 - ( reverb_buff[i] >> 16);
     }
 
     dsp_cycle_count += rp2040.getCycleCount() - dsp_cycle_tick;

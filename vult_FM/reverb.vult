@@ -22,3 +22,57 @@ fun process(sample: real) {
 
     return ret;
 }
+
+and process_buffer(nb: int, input: array(real, 256)) {
+    mem buffer_d;
+    nb = clip(nb, 0, size(buffer));
+    if (nb == 0) {
+       nb = size(buffer);
+    }
+
+    mem pos;
+    // attenuation for each pass
+    mem decay = 0.4;
+
+    val delay = size(buffer)/2;
+    val s = size(buffer);
+
+    // point to previous delay, 0.5s
+    val next_pos;
+
+    val i = 0;
+    while (i < nb) {
+       next_pos = (pos + delay) % s;
+       buffer[next_pos] = input[i] * (1.0-decay) + buffer[pos] * (decay);
+       buffer_d[i] = buffer[next_pos];
+       pos = pos + 1;
+       pos = pos % size(buffer);
+       i = i + 1;
+    }
+}
+// copy current buffer to another one up to desired number (0 for max)
+// too bad we have to hard-code size here
+and getBuffer() {
+   return buffer_d;
+}
+and copyTo(oBuffer:array(real, 256), nb: int){
+   // ensure we won't overflow
+   val min_size = size(oBuffer);
+   if (size(buffer_d) < min_size) {
+      min_size = size(buffer_d);
+   }
+   nb = clip(nb, 0, min_size);
+   if (nb == 0) {
+      nb = min_size;
+   }
+   val i = 0;
+   while (i < nb) {
+      oBuffer[i] = buffer_d[i];
+      i = i + 1;
+   }
+}
+
+and default() @[init] {
+   // output values (with delay), will copy a new array
+   buffer_d = Util.buffer();
+}

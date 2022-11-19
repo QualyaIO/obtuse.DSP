@@ -7,9 +7,45 @@
 #include "vultin.h"
 #include "engine.tables.h"
 
+static_inline fix16_t Util_noteToFrequency(int note){
+   return fix_mul(0x217 /* 0.008176 */,fix_exp(fix_mul(0xec9 /* 0.057762 */,int_to_fix(note))));
+};
+
+typedef struct Util__ctx_type_1 {
+   uint8_t pre;
+} Util__ctx_type_1;
+
+typedef Util__ctx_type_1 Util_edge_type;
+
+static_inline void Util__ctx_type_1_init(Util__ctx_type_1 &_output_){
+   Util__ctx_type_1 _ctx;
+   _ctx.pre = false;
+   _output_ = _ctx;
+   return ;
+}
+
+static_inline void Util_edge_init(Util__ctx_type_1 &_output_){
+   Util__ctx_type_1_init(_output_);
+   return ;
+}
+
+static_inline uint8_t Util_edge(Util__ctx_type_1 &_ctx, uint8_t x){
+   uint8_t ret;
+   ret = (x && bool_not(_ctx.pre));
+   _ctx.pre = x;
+   return ret;
+}
+
+static_inline void Util_buffer(fix16_t (&_output_)[256]){
+   fix16_t buff[256];
+   fix_copy_array(256,_output_,buff);
+   return ;
+}
+
 typedef struct Reverb__ctx_type_0 {
    int pos;
    fix16_t decay;
+   fix16_t buffer_d[256];
    fix16_t buffer[40000];
 } Reverb__ctx_type_0;
 
@@ -23,6 +59,45 @@ static_inline void Reverb_process_init(Reverb__ctx_type_0 &_output_){
 }
 
 fix16_t Reverb_process(Reverb__ctx_type_0 &_ctx, fix16_t sample);
+
+typedef Reverb__ctx_type_0 Reverb_process_buffer_type;
+
+static_inline void Reverb_process_buffer_init(Reverb__ctx_type_0 &_output_){
+   Reverb__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Reverb_process_buffer(Reverb__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256]);
+
+typedef Reverb__ctx_type_0 Reverb_getBuffer_type;
+
+static_inline void Reverb_getBuffer_init(Reverb__ctx_type_0 &_output_){
+   Reverb__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void Reverb_getBuffer(Reverb__ctx_type_0 &_ctx, fix16_t (&_output_)[256]){
+   fix_copy_array(256,_output_,_ctx.buffer_d);
+   return ;
+}
+
+typedef Reverb__ctx_type_0 Reverb_copyTo_type;
+
+static_inline void Reverb_copyTo_init(Reverb__ctx_type_0 &_output_){
+   Reverb__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Reverb_copyTo(Reverb__ctx_type_0 &_ctx, fix16_t (&oBuffer)[256], int nb);
+
+typedef Reverb__ctx_type_0 Reverb_default_type;
+
+static_inline void Reverb_default_init(Reverb__ctx_type_0 &_output_){
+   Reverb__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Reverb_default(Reverb__ctx_type_0 &_ctx);
 
 typedef struct Notes__ctx_type_0 {
    int notes[128];
@@ -79,41 +154,6 @@ static_inline void Notes_lastNote_init(Notes__ctx_type_0 &_output_){
 }
 
 int Notes_lastNote(Notes__ctx_type_0 &_ctx);
-
-static_inline fix16_t Util_noteToFrequency(int note){
-   return fix_mul(0x217 /* 0.008176 */,fix_exp(fix_mul(0xec9 /* 0.057762 */,int_to_fix(note))));
-};
-
-typedef struct Util__ctx_type_1 {
-   uint8_t pre;
-} Util__ctx_type_1;
-
-typedef Util__ctx_type_1 Util_edge_type;
-
-static_inline void Util__ctx_type_1_init(Util__ctx_type_1 &_output_){
-   Util__ctx_type_1 _ctx;
-   _ctx.pre = false;
-   _output_ = _ctx;
-   return ;
-}
-
-static_inline void Util_edge_init(Util__ctx_type_1 &_output_){
-   Util__ctx_type_1_init(_output_);
-   return ;
-}
-
-static_inline uint8_t Util_edge(Util__ctx_type_1 &_ctx, uint8_t x){
-   uint8_t ret;
-   ret = (x && bool_not(_ctx.pre));
-   _ctx.pre = x;
-   return ret;
-}
-
-static_inline void Util_buffer(fix16_t (&_output_)[256]){
-   fix16_t buff[256];
-   fix_copy_array(256,_output_,buff);
-   return ;
-}
 
 typedef struct ADSR__ctx_type_0 {
    fix16_t target;
