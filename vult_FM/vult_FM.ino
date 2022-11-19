@@ -8,8 +8,8 @@
 #include "engine.h"
 
 // context for FM synth used in vult, used to handle internal states
-//Engine_process_type context;
-OSC_process_type context;
+Engine_process_type context;
+//OSC_process_type context;
 // another for the filter
 //Reverb_process_type reverb_context;
 
@@ -154,10 +154,10 @@ void setup() {
 
   /* Vult */
   // Init engine, then pass sample rate, not forgetting to convert passed parameters to fixed (of course...)
-  //Engine_default(context);
-  //Engine_setSamplerate(context, float_to_fix(sampleRate / (float)1000));
-  OSC_default(context);
-  OSC_setSamplerate(context, float_to_fix(sampleRate / (float)1000));
+  Engine_default(context);
+  Engine_setSamplerate(context, float_to_fix(sampleRate / (float)1000));
+  //OSC_default(context);
+  //OSC_setSamplerate(context, float_to_fix(sampleRate / (float)1000));
 }
 
 void loop() {
@@ -193,8 +193,10 @@ void loop() {
     dsp_tick = micros();
     dsp_cycle_tick = rp2040.getCycleCount();
 
-    OSC_process_buffer(context, BUFFER_SIZE);
-    OSC_getBuffer(context, raw_buff);
+    //OSC_process_buffer(context, BUFFER_SIZE);
+    //OSC_getBuffer(context, raw_buff);
+    Engine_process_buffer(context, BUFFER_SIZE);
+    Engine_getBuffer(context, raw_buff);
 
     // two times to better compare with classical situation
     for (size_t i = 0; i < BUFFER_SIZE; i++) {

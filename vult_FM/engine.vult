@@ -3,8 +3,19 @@
 
 // TODO: should we reset phase on noteoff, keep processing with env 0?
 
-fun process() {
-    // HACK: note that using at least a temp variable force vult to put that in cpp and halves computation times (???)
+// For future reference, note that using at least a temp variable in process() force vult to put that in cpp and halves computation times (???)
+
+// update the buffer, to be fetch afterward, returns last sample
+fun process_buffer(nb: int) {
+    mem buffer;
+    mem buffer_modulator;
+    mem buffer_carrier_phase;
+    // actully not used, but to comply with current OSC implementation
+    mem buffer_modulator_phase;
+    nb = clip(nb, 0, size(buffer));
+    if (nb == 0) {
+       nb = size(buffer);
+    }
 
     // audio sampling rate
     mem fs: real;
@@ -12,47 +23,75 @@ fun process() {
     // prec-computed to speedup computations
     mem carrier_half_phase;
 
-    // reduce cost of envelopes, only computes once in a while
-    mem env_decimation_factor;
+    // reduce cost of envelopes, only computes once in a while (by default no decimation)
+    mem env_decimation_factor = if env_decimation_factor <= 0 then 1 else env_decimation_factor; 
     mem carrier_env;
     mem modulator_env;
-    // number of iteration of this loop, for decimation
-    mem n;
 
+    // buffers for envelops
+    mem buffer_carrier_env;
+    mem buffer_modulator_env;
+    // number of iterations since last decimation
+    mem n;
     //  current gate (can be > 1 if several notes are held)
     mem gate : bool;
 
-    n = n + 1;
-    val update_env:bool = true;
-    if (env_decimation_factor > 0) {
-       update_env = n % env_decimation_factor == 0;
+    // compute number of samples for this buffer's decimation
+    val nb_env = (n + nb) / env_decimation_factor;
+
+    // retrieve envelopes
+    if (nb_env > 0) {
+       _ = carrieradsr:ADSR.process_buffer(gate, nb_env);
+       _ = carrieradsr:ADSR.copyTo(buffer_carrier_env, nb_env);
+       _ = modulatoradsr:ADSR.process_buffer(gate, nb_env);
+       _ = modulatoradsr:ADSR.copyTo(buffer_modulator_env, nb_env);
     }
 
-    // output value -- need to be explicitely initialized otherwise migth be random (?) producing audible clicks
-    val carrier_val = 0.0;
-    // retrieve main envelope
-    if (update_env) {
-       carrier_env = carrieradsr:ADSR.process(gate);
-    }
-
-    // only going forward if we got sound on the output
-    if (carrier_env > 0.0) {
-       if (update_env) {
-           modulator_env = modulatoradsr:ADSR.process(gate);
+    // retrieve modulation
+    // FIME: can we here find a way to not calling when the corresponding envelope is 0?
+    _ = modulator:OSC.process_buffer(nb, buffer_modulator_phase);
+    _ = modulator:OSC.copyTo(buffer_modulator, nb);
+    // update phase values
+    // will go through two buffers
+    val i = 0;
+    val i_env = 0;
+    // we will re-use n afterwards for carrier
+    val nn = n;
+    while (i < nb) {
+       // advance and update envelope
+       nn = (nn + 1) % env_decimation_factor;
+       if (nn == 0) {
+          modulator_env = buffer_modulator_env[i_env];
+          i_env = i_env + 1;
        }
-       // apply to wavetables
-       val carrier_phase = 0.0;
-       // only modulate if we got level on modulator
-       if (modulator_env > 0.0) {
-          val modulator_val = (modulator:OSC.process() + 1.0) * modulator_env;
-	  carrier_phase = modulator_val * carrier_half_phase;
-       }
-       // modulate the (base) phase of the carrier
-       _ = carrier:OSC.setPhase(carrier_phase);
-       carrier_val = carrier:OSC.process() * carrier_env ;
+       buffer_carrier_phase[i] = (buffer_modulator[i] + 1.0) * modulator_env * carrier_half_phase;
+       i = i + 1;
     }
 
-    return carrier_val;
+    // apply to carrier
+    // FIXME: pass volume directly?
+    _ = carrier:OSC.process_buffer(nb, buffer_carrier_phase);
+    _ = carrier:OSC.copyTo(buffer, nb);
+    i = 0;
+    i_env = 0;
+    // apply enveloppe
+    while (i < nb) {
+       // advance and update envelope
+       n = (n + 1) % env_decimation_factor;
+       if (n == 0) {
+          carrier_env = buffer_carrier_env[i_env];
+          i_env = i_env + 1;
+       }
+       buffer[i] = buffer[i] * carrier_env;
+       i = i + 1;
+    }
+}
+// FIXME: obviously broken at the moment
+and process() {
+    return 0.0;
+}
+and getBuffer() {
+   return buffer;
 }
 and setSamplerate(newFs:real) {
    if (newFs > 0.0) {
@@ -118,6 +157,14 @@ and noteOff(note:int, channel:int) {
 
 // to be called on start
 and default() @[init] {
+    // will copy new arrays
+    buffer = Util.buffer();
+    buffer_modulator = Util.buffer();
+    buffer_carrier_env = Util.buffer();
+    buffer_modulator_env = Util.buffer();
+    buffer_carrier_phase = Util.buffer();
+    buffer_modulator_phase = Util.buffer();
+
     // should be a divisor of sample rate
     env_decimation_factor = 3;
 

@@ -2,7 +2,14 @@
 // Magic numbers:
 // 1024.0 : improves numeric precision in fixed-point
 
-fun process(bgate:bool) {
+// one gate for the whole buffer at the moment
+fun process_buffer(bgate:bool, nb:int) {
+   mem buffer;
+   nb = clip(nb, 0, size(buffer));
+   if (nb == 0) {
+      nb = size(buffer);
+   }
+
    // uber state machine
    mem state: int;
    // target values
@@ -22,74 +29,81 @@ fun process(bgate:bool) {
    // ...faster to multiply by 1/1000...
    val scale_i = 0.001;
 
-   // new gate, goto attack
-   if(Util.edge(bgate)) {
-      state = 1;
-      target = a_target * scale;
-      step = a_step;
-   }
+   val i = 0;
+   val v = 0.0;
+   while (i < nb) {
 
-   // idle, really nothing to do 
-   if(state == 0) {
-     out = 0.0;
-   }
-   else {
-     out = out + step; 
-   }
-   // attack
-   if(state == 1) {
-      // peaked, going to decay
-      if(out >=  target) {
-         step = d_step;
-         out = target;
-      	 target = s * scale;
-      	 state = 2;
-      }
-      // gate off, to go release
-      if (not(bgate)) {
-         step = r_step;
-         target = 0.0;
-         state = 4;
-      }
-   }
-   // decay
-   if (state == 2) {
-      // gate off, to go release
-      if (not(bgate)) {
-         step = r_step;
-         target = 0.0;
-         state = 4;
-      }
-      // target reached, go to sustain
-      if (out <= target) {
-         out = target;
-         step = 0.0;
-	 state = 3;
+      // new gate, goto attack
+      if(Util.edge(bgate)) {
+         state = 1;
+         target = a_target * scale;
+         step = a_step;
       }
 
-   }
-   // sustain
-   if (state == 3) {
-      // just waiting for the gate to end, go to release
-      if (not(bgate)) {
-         step = r_step;
-         target = 0.0;
-         state = 4;
+      // idle, really nothing to do 
+      if(state == 0) {
+        out = 0.0;
       }
-   }
-
-    // release
-   if(state == 4) {
-      // back to idle
-      if (out <= 0.0) {
-         out = 0.0;
-	 state = 0;
-         step = 0.0;
-         target = 0.0;
+      else {
+        out = out + step; 
       }
-   }
+      // attack
+      if(state == 1) {
+         // peaked, going to decay
+         if(out >=  target) {
+            step = d_step;
+            out = target;
+         	 target = s * scale;
+         	 state = 2;
+         }
+         // gate off, to go release
+         if (not(bgate)) {
+            step = r_step;
+            target = 0.0;
+            state = 4;
+         }
+      }
+      // decay
+      if (state == 2) {
+         // gate off, to go release
+         if (not(bgate)) {
+            step = r_step;
+            target = 0.0;
+            state = 4;
+         }
+         // target reached, go to sustain
+         if (out <= target) {
+            out = target;
+            step = 0.0;
+	    state = 3;
+         }
 
-   return clip(out * scale_i, 0.0, 1.0);
+      }
+      // sustain
+      if (state == 3) {
+         // just waiting for the gate to end, go to release
+         if (not(bgate)) {
+            step = r_step;
+            target = 0.0;
+            state = 4;
+         }
+      }
+   
+       // release
+      if(state == 4) {
+         // back to idle
+         if (out <= 0.0) {
+            out = 0.0;
+   	 state = 0;
+            step = 0.0;
+            target = 0.0;
+         }
+      }
+   
+      v = clip(out * scale_i, 0.0, 1.0);
+      buffer[i] = v;
+      i = i + 1;
+   }
 }
 // once sample rate change, we need to adapt 
 and updateSteps() {
@@ -131,7 +145,28 @@ and config(newA, newD, newS, newR) {
    _ = updateSteps();
 }
 
+// copy current buffer to another one up to desired number (0 for max)
+// too bad we have to hard-code size here
+and copyTo(oBuffer:array(real, 256), nb: int){
+   // ensure we won't overflow
+   val min_size = size(oBuffer);
+   if (size(buffer) < min_size) {
+      min_size = size(buffer);
+   }
+   nb = clip(nb, 0, min_size);
+   if (nb == 0) {
+      nb = min_size;
+   }
+   val i = 0;
+   while (i < nb) {
+      oBuffer[i] = buffer[i];
+      i = i + 1;
+   }
+}
+
 and default() @[init] {
+   // will copy new arrays
+   buffer = Util.buffer();
    // Note: if fore some reason becomes < s, adapt decay to check if we reach sustain "from below" in process()
    mem a_target = 1.0;
    _ = setSamplerate(44.1);
