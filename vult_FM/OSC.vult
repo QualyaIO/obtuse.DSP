@@ -5,7 +5,7 @@
 // note that wavetable should be big enough to avoid fixed float limits upon later computations (let say at least 100)
 
 // 0 -> sine
-external sin_wave(channel:int, index:int) : real @[wave(channels=1, file="sinus_8k.wav")];
+external sin_wave(channel:int, index:int) : real @[wave(channels=1, file="sinus_2048.wav")];
 
 // return value for current wavetable (first channel hard-coded), between [0..sample size[
 fun getSample(index: int) {

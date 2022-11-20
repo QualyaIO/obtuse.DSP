@@ -245,12 +245,12 @@ static_inline void ADSR_default_init(ADSR__ctx_type_0 &_output_){
 void ADSR_default(ADSR__ctx_type_0 &_ctx);
 
 static_inline int OSC_sin_wave_samples(){
-   return 8000;
+   return 2048;
 };
 
 static_inline fix16_t OSC_sin_wave(int channel, int index){
    if(channel == 0){
-      return fix_wrap_array(OSC_sin_wave_chan_0)[(index % 8000)];
+      return fix_wrap_array(OSC_sin_wave_chan_0)[(index % 2048)];
    }
    return 0x0 /* 0.000000 */;
 }
