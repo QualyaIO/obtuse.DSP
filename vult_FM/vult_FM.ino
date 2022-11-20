@@ -191,7 +191,7 @@ void loop() {
 
 
   //  buffers hard-coded of size 16 in I2S (unless i2s.setBuffers() is called), make sure there are at least two of them free in the audio circular buffer (of buffers)
-  while (i2s.availableForWrite() > (BUFFER_SIZE) * 2 + 16) {
+  /*while (i2s.availableForWrite() > (BUFFER_SIZE) * 2 + 16) {
     // process buffer
     dsp_tick = micros();
     dsp_cycle_tick = rp2040.getCycleCount();
@@ -217,25 +217,25 @@ void loop() {
       i2s.write(buff[i]);
       i2s.write(buff[i]);
     }
-  }
-  /*
-    while (i2s.availableForWrite() > 16) {
+    }*/
+  // need two sample above last buffer to avoid blocking
+  while (i2s.availableForWrite() > 17) {
     dsp_tick = micros();
     dsp_cycle_tick = rp2040.getCycleCount();
 
     // returned float should be between -1 and 1 (should we checkit ?)
-    fix16_t raw = OSC_process_buffer(context, 1);
+    fix16_t raw = Engine_process(context);
+    fix16_t val = Reverb_process(context_reverb, raw);
+
     // shortcut, instead of fixed_to_float * 32767, *almost* the same
-    int16_t val =  raw / 2 - (raw >> 16);
+    val =  val / 2 - (val >> 16);
 
     dsp_cycle_count += rp2040.getCycleCount() - dsp_cycle_tick;
     dsp_time += micros() - dsp_tick;
 
     i2s.write(val);
     i2s.write(val);
-
-    }
-  */
+  }
 
   // read any new MIDI messages
   MIDI.read();
