@@ -6,7 +6,7 @@
 // For future reference, note that using at least a temp variable in process() force vult to put that in cpp and halves computation times (???)
 
 
-// FIXME: obviously broken at the moment
+// FIXME: obvious duplicated code
 fun process() {
     // audio sampling rate
     mem fs: real;
