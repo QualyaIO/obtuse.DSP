@@ -171,11 +171,21 @@ typedef struct ADSR__ctx_type_0 {
    fix16_t a_step;
    fix16_t a;
    Util__ctx_type_1 _inst351;
+   Util__ctx_type_1 _inst151;
 } ADSR__ctx_type_0;
 
-typedef ADSR__ctx_type_0 ADSR_process_buffer_type;
+typedef ADSR__ctx_type_0 ADSR_process_type;
 
 void ADSR__ctx_type_0_init(ADSR__ctx_type_0 &_output_);
+
+static_inline void ADSR_process_init(ADSR__ctx_type_0 &_output_){
+   ADSR__ctx_type_0_init(_output_);
+   return ;
+}
+
+fix16_t ADSR_process(ADSR__ctx_type_0 &_ctx, uint8_t bgate);
+
+typedef ADSR__ctx_type_0 ADSR_process_buffer_type;
 
 static_inline void ADSR_process_buffer_init(ADSR__ctx_type_0 &_output_){
    ADSR__ctx_type_0_init(_output_);
@@ -268,6 +278,21 @@ static_inline void OSC_getSample_init(OSC__ctx_type_2 &_output_){
 
 fix16_t OSC_getSample(OSC__ctx_type_2 &_ctx, int index);
 
+typedef OSC__ctx_type_2 OSC_process_type;
+
+static_inline void OSC_process_init(OSC__ctx_type_2 &_output_){
+   OSC__ctx_type_2_init(_output_);
+   return ;
+}
+
+static_inline fix16_t OSC_process(OSC__ctx_type_2 &_ctx){
+   _ctx.phase = (_ctx.phase + _ctx.step);
+   if(_ctx.phase > _ctx.rsize){
+      _ctx.phase = (_ctx.phase + (- _ctx.rsize));
+   }
+   return OSC_sin_wave(0,fix_to_int((_ctx.phase + _ctx.phase_base)));
+}
+
 typedef OSC__ctx_type_2 OSC_process_buffer_type;
 
 static_inline void OSC_process_buffer_init(OSC__ctx_type_2 &_output_){
@@ -285,17 +310,6 @@ static_inline void OSC_process_buffer_simple_init(OSC__ctx_type_2 &_output_){
 }
 
 void OSC_process_buffer_simple(OSC__ctx_type_2 &_ctx, int nb, fix16_t (&env)[256]);
-
-typedef OSC__ctx_type_2 OSC_process_type;
-
-static_inline void OSC_process_init(OSC__ctx_type_2 &_output_){
-   OSC__ctx_type_2_init(_output_);
-   return ;
-}
-
-static_inline fix16_t OSC_process(OSC__ctx_type_2 &_ctx){
-   return 0x0 /* 0.000000 */;
-};
 
 typedef OSC__ctx_type_2 OSC_updateStep_type;
 
@@ -426,7 +440,6 @@ typedef struct Engine__ctx_type_0 {
    fix16_t carrier_env;
    fix16_t carrierRatio;
    OSC__ctx_type_2 carrier;
-   fix16_t buffer_modulator_phase[256];
    fix16_t buffer_modulator_env_short[256];
    fix16_t buffer_modulator_env[256];
    fix16_t buffer_modulator[256];
@@ -436,9 +449,18 @@ typedef struct Engine__ctx_type_0 {
    fix16_t buffer[256];
 } Engine__ctx_type_0;
 
-typedef Engine__ctx_type_0 Engine_process_buffer_type;
+typedef Engine__ctx_type_0 Engine_process_type;
 
 void Engine__ctx_type_0_init(Engine__ctx_type_0 &_output_);
+
+static_inline void Engine_process_init(Engine__ctx_type_0 &_output_){
+   Engine__ctx_type_0_init(_output_);
+   return ;
+}
+
+fix16_t Engine_process(Engine__ctx_type_0 &_ctx);
+
+typedef Engine__ctx_type_0 Engine_process_buffer_type;
 
 static_inline void Engine_process_buffer_init(Engine__ctx_type_0 &_output_){
    Engine__ctx_type_0_init(_output_);
@@ -446,17 +468,6 @@ static_inline void Engine_process_buffer_init(Engine__ctx_type_0 &_output_){
 }
 
 void Engine_process_buffer(Engine__ctx_type_0 &_ctx, int nb);
-
-typedef Engine__ctx_type_0 Engine_process_type;
-
-static_inline void Engine_process_init(Engine__ctx_type_0 &_output_){
-   Engine__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline fix16_t Engine_process(Engine__ctx_type_0 &_ctx){
-   return 0x0 /* 0.000000 */;
-};
 
 typedef Engine__ctx_type_0 Engine_getBuffer_type;
 

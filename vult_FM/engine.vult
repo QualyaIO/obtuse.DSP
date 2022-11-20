@@ -5,13 +5,63 @@
 
 // For future reference, note that using at least a temp variable in process() force vult to put that in cpp and halves computation times (???)
 
-// update the buffer, to be fetch afterward, returns last sample
-fun process_buffer(nb: int) {
+
+// FIXME: obviously broken at the moment
+fun process() {
+    // audio sampling rate
+    mem fs: real;
+    
+    // prec-computed to speedup computations
+    mem carrier_half_phase;
+
+    // reduce cost of envelopes, only computes once in a while
+    mem env_decimation_factor;
+    mem carrier_env;
+    mem modulator_env;
+    // number of iteration of this loop, for decimation
+    mem n;
+
+    //  current gate (can be > 1 if several notes are held)
+    mem gate : bool;
+
+    n = n + 1;
+    val update_env:bool = true;
+    if (env_decimation_factor > 0) {
+       update_env = n % env_decimation_factor == 0;
+    }
+
+    // output value -- need to be explicitely initialized otherwise migth be random (?) producing audible clicks
+    val carrier_val = 0.0;
+    // retrieve main envelope
+    if (update_env) {
+       carrier_env = carrieradsr:ADSR.process(gate);
+    }
+
+    // only going forward if we got sound on the output
+    if (carrier_env > 0.0) {
+       if (update_env) {
+           modulator_env = modulatoradsr:ADSR.process(gate);
+       }
+       // apply to wavetables
+       val carrier_phase = 0.0;
+       // only modulate if we got level on modulator
+       if (modulator_env > 0.0) {
+          val modulator_val = (modulator:OSC.process() + 1.0) * modulator_env;
+	  carrier_phase = modulator_val * carrier_half_phase;
+       }
+       // modulate the (base) phase of the carrier
+       _ = carrier:OSC.setPhase(carrier_phase);
+       carrier_val = carrier:OSC.process() * carrier_env ;
+    }
+
+    return carrier_val;
+}
+
+// update the buffer, to be fetch afterward
+and process_buffer(nb: int) {
     mem buffer;
     mem buffer_modulator;
     mem buffer_carrier_phase;
-    // actully not used, but to comply with current OSC implementation
-    mem buffer_modulator_phase;
     nb = clip(nb, 0, size(buffer));
     if (nb == 0) {
        nb = size(buffer);
@@ -19,26 +69,11 @@ fun process_buffer(nb: int) {
     // amount of phase modulation
     mem level;
 
-    // audio sampling rate
-    mem fs: real;
-    
-    // prec-computed to speedup computations
-    mem carrier_half_phase;
-
-    // reduce cost of envelopes, only computes once in a while (by default no decimation)
-    mem env_decimation_factor = if env_decimation_factor <= 0 then 1 else env_decimation_factor; 
-    mem carrier_env;
-    mem modulator_env;
-
     // buffers for envelops, decimated and the full 
     mem buffer_carrier_env_short;
     mem buffer_modulator_env_short;
     mem buffer_carrier_env;
     mem buffer_modulator_env;
-    // number of iterations since last decimation
-    mem n;
-    //  current gate (can be > 1 if several notes are held)
-    mem gate : bool;
 
     // compute number of samples for this buffer's decimation
     val nb_env = (n + nb) / env_decimation_factor;
@@ -78,10 +113,6 @@ fun process_buffer(nb: int) {
     // FIXME: pass volume directly?
     _ = carrier:OSC.process_buffer(nb, buffer_carrier_env, buffer_carrier_phase, level);
     _ = carrier:OSC.copyTo(buffer, nb);
-}
-// FIXME: obviously broken at the moment
-and process() {
-    return 0.0;
 }
 and getBuffer() {
    return buffer;
@@ -159,7 +190,6 @@ and default() @[init] {
     buffer_carrier_env = Util.buffer();
     buffer_modulator_env = Util.buffer();
     buffer_carrier_phase = Util.buffer();
-    buffer_modulator_phase = Util.buffer();
 
     // should be a divisor of sample rate
     env_decimation_factor = 3;

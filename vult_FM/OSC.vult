@@ -1,11 +1,11 @@
 
 // oscillator, using waveables
+// TODO: dublicate code here as well between process and process_buffer (and "simple" version! for sake of efficiency)
 
 // note that wavetable should be big enough to avoid fixed float limits upon later computations (let say at least 100)
 
 // 0 -> sine
 external sin_wave(channel:int, index:int) : real @[wave(channels=1, file="sinus_8k.wav")];
-
 
 // return value for current wavetable (first channel hard-coded), between [0..sample size[
 fun getSample(index: int) {
@@ -18,6 +18,32 @@ fun getSample(index: int) {
     }
     return sample;
 }
+
+
+// non-buffered version
+and process() {
+   // audio sampling rate
+   mem fs: real;
+   // sinus frequency
+   mem freq: real;
+   // starting point for phase, [0..8k[ in the wavetable
+   mem phase_base: real;
+   // current phase
+   mem phase: real;
+   // going that much through wavetable at each call
+   mem step: real;
+   // absolutely needs init to set that, converted to real to speedup
+   mem rsize: real;
+
+   // advance time, keep range in check here to maximize precision
+   phase = phase + step;
+   if (phase > rsize) {
+      phase = phase - rsize;
+   }
+   // loop in sample
+   return sin_wave(0, int(phase_base + phase));
+}
+
 
 // --> main function actually here, call default() first <--
 // buffered version, specify number of elements of the buffer to proceed (will be caped to acual max). 0: all elements
@@ -33,20 +59,6 @@ and process_buffer(nb: int, env: array(real, 256), phase_shift: array(real, 256)
       nb = size(buffer);
    }
    
-   // audio sampling rate
-   mem fs: real;
-   // sinus frequency
-   mem freq: real;
-   // starting point for phase, [0..8k[ in the wavetable
-   mem phase_base: real;
-   // current phase
-   mem phase: real;
-   // going that much through wavetable at each call
-   mem step: real;
-
-   // absolutely needs init to set that, converted to real to speedup
-   mem rsize: real;
-
    // base for phase shift
    val half_phase = rsize / 2.0;
    val phase_range = half_phase * phase_shift_level;
@@ -66,8 +78,8 @@ and process_buffer(nb: int, env: array(real, 256), phase_shift: array(real, 256)
    }
 }
 
+// without envelop this one
 and process_buffer_simple(nb: int, env: array(real, 256)) {
-   mem buffer;
    nb = clip(nb, 0, size(buffer));
    if (nb == 0) {
       nb = size(buffer);
@@ -88,11 +100,6 @@ and process_buffer_simple(nb: int, env: array(real, 256)) {
    }
 }
 
-
-// non-buffered version... FIXME: not supported anymore
-and process() {
-   return 0.0;
-}
 
 // called internally when Samplerate or frequency is altered
 and updateStep() {

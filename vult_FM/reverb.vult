@@ -8,11 +8,10 @@ fun process(sample: real) {
     mem buffer: array(real, 40000);
     mem pos;
     // attenuation for each pass
-    mem decay = 0.4;
+    mem decay;
 
     // point to previous delay, 0.5s
     val next_pos = (pos + size(buffer)/2) % size(buffer);
-
     
     buffer[next_pos] = sample * (1.0-decay) + buffer[pos] * (decay);
     val ret = buffer[pos];
@@ -25,14 +24,10 @@ fun process(sample: real) {
 
 and process_buffer(nb: int, input: array(real, 256)) {
     mem buffer_d;
-    nb = clip(nb, 0, size(buffer));
+    nb = clip(nb, 0, size(buffer_d));
     if (nb == 0) {
-       nb = size(buffer);
+       nb = size(buffer_d);
     }
-
-    mem pos;
-    // attenuation for each pass
-    mem decay = 0.4;
 
     val delay = size(buffer)/2;
     val s = size(buffer);
@@ -75,4 +70,5 @@ and copyTo(oBuffer:array(real, 256), nb: int){
 and default() @[init] {
    // output values (with delay), will copy a new array
    buffer_d = Util.buffer();
+   decay = 0.4;
 }
