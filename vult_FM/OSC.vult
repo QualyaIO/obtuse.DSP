@@ -41,7 +41,7 @@ and process() {
       phase = phase - rsize;
    }
    // loop in sample
-   return sin_wave(0, int(phase_base + phase));
+   return getSample(int(phase_base + phase));
 }
 
 
@@ -78,7 +78,7 @@ and process_buffer(nb: int, env: array(real, 256), phase_shift: array(real, 256)
    }
 }
 
-// without envelop this one
+// without phase this one
 and process_buffer_simple(nb: int, env: array(real, 256)) {
    nb = clip(nb, 0, size(buffer));
    if (nb == 0) {
@@ -96,6 +96,28 @@ and process_buffer_simple(nb: int, env: array(real, 256)) {
       // loop in sample
       //v = getSample(int(phase_base + phase));
       buffer[i]  = getSample(int(phase_base + phase)) * env[i];
+      i = i + 1;
+   }
+}
+
+// without envelop nor phase this one
+and process_buffer_simplest(nb: int) {
+   nb = clip(nb, 0, size(buffer));
+   if (nb == 0) {
+      nb = size(buffer);
+   }
+   
+   val i = 0;
+   while (i < nb) {
+      // advance time, keep range in check here to maximize precision
+      phase = phase + step;
+      // slightly more efficient than the more robust modulo
+      if (phase > rsize) {
+         phase = phase - rsize;
+      }
+      // loop in sample
+      //v = getSample(int(phase_base + phase));
+      buffer[i]  = getSample(int(phase_base + phase));
       i = i + 1;
    }
 }

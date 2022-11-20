@@ -135,7 +135,7 @@ static_inline void Notes_noteOn_init(Notes__ctx_type_0 &_output_){
    return ;
 }
 
-void Notes_noteOn(Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
+uint8_t Notes_noteOn(Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 typedef Notes__ctx_type_0 Notes_noteOff_type;
 
@@ -144,7 +144,7 @@ static_inline void Notes_noteOff_init(Notes__ctx_type_0 &_output_){
    return ;
 }
 
-void Notes_noteOff(Notes__ctx_type_0 &_ctx, int note, int channel);
+uint8_t Notes_noteOff(Notes__ctx_type_0 &_ctx, int note, int channel);
 
 typedef Notes__ctx_type_0 Notes_lastNote_type;
 
@@ -290,7 +290,7 @@ static_inline fix16_t OSC_process(OSC__ctx_type_2 &_ctx){
    if(_ctx.phase > _ctx.rsize){
       _ctx.phase = (_ctx.phase + (- _ctx.rsize));
    }
-   return OSC_sin_wave(0,fix_to_int((_ctx.phase + _ctx.phase_base)));
+   return OSC_getSample(_ctx,fix_to_int((_ctx.phase + _ctx.phase_base)));
 }
 
 typedef OSC__ctx_type_2 OSC_process_buffer_type;
@@ -310,6 +310,15 @@ static_inline void OSC_process_buffer_simple_init(OSC__ctx_type_2 &_output_){
 }
 
 void OSC_process_buffer_simple(OSC__ctx_type_2 &_ctx, int nb, fix16_t (&env)[256]);
+
+typedef OSC__ctx_type_2 OSC_process_buffer_simplest_type;
+
+static_inline void OSC_process_buffer_simplest_init(OSC__ctx_type_2 &_output_){
+   OSC__ctx_type_2_init(_output_);
+   return ;
+}
+
+void OSC_process_buffer_simplest(OSC__ctx_type_2 &_ctx, int nb);
 
 typedef OSC__ctx_type_2 OSC_updateStep_type;
 
@@ -543,12 +552,7 @@ static_inline void Engine_noteOn_init(Engine__ctx_type_0 &_output_){
    return ;
 }
 
-static_inline void Engine_noteOn(Engine__ctx_type_0 &_ctx, int note, int velocity, int channel){
-   note = int_clip(note,0,127);
-   Notes_noteOn(_ctx.playingnotes,note,velocity,channel);
-   Engine_setFrequency(_ctx,Util_noteToFrequency(note));
-   _ctx.gate = true;
-}
+void Engine_noteOn(Engine__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 typedef Engine__ctx_type_0 Engine_noteOff_type;
 

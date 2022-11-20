@@ -336,7 +336,7 @@ void Notes__ctx_type_0_init(Notes__ctx_type_0 &_output_){
    return ;
 }
 
-void Notes_noteOn(Notes__ctx_type_0 &_ctx, int note, int velocity, int channel){
+uint8_t Notes_noteOn(Notes__ctx_type_0 &_ctx, int note, int velocity, int channel){
    note = int_clip(note,0,127);
    if(_ctx.notes[note] <= 0){
       _ctx.nb_notes = (1 + _ctx.nb_notes);
@@ -345,10 +345,12 @@ void Notes_noteOn(Notes__ctx_type_0 &_ctx, int note, int velocity, int channel){
       }
       _ctx.notes[note] = _ctx.nb_notes;
       _ctx.last_notes[((-1) + _ctx.nb_notes)] = (1 + note);
+      return true;
    }
+   return false;
 }
 
-void Notes_noteOff(Notes__ctx_type_0 &_ctx, int note, int channel){
+uint8_t Notes_noteOff(Notes__ctx_type_0 &_ctx, int note, int channel){
    note = int_clip(note,0,127);
    if(_ctx.notes[note] > 0){
       int i;
@@ -363,7 +365,9 @@ void Notes_noteOff(Notes__ctx_type_0 &_ctx, int note, int channel){
       if(_ctx.nb_notes < 0){
          _ctx.nb_notes = 0;
       }
+      return true;
    }
+   return false;
 }
 
 int Notes_lastNote(Notes__ctx_type_0 &_ctx){
@@ -892,6 +896,23 @@ void OSC_process_buffer_simple(OSC__ctx_type_2 &_ctx, int nb, fix16_t (&env)[256
    }
 }
 
+void OSC_process_buffer_simplest(OSC__ctx_type_2 &_ctx, int nb){
+   nb = int_clip(nb,0,256);
+   if(nb == 0){
+      nb = 256;
+   }
+   int i;
+   i = 0;
+   while(i < nb){
+      _ctx.phase = (_ctx.phase + _ctx.step);
+      if(_ctx.phase > _ctx.rsize){
+         _ctx.phase = (_ctx.phase + (- _ctx.rsize));
+      }
+      _ctx.buffer[i] = OSC_getSample(_ctx,fix_to_int((_ctx.phase + _ctx.phase_base)));
+      i = (1 + i);
+   }
+}
+
 void OSC_setSamplerate(OSC__ctx_type_2 &_ctx, fix16_t newFs){
    if(newFs > 0x0 /* 0.000000 */){
       _ctx.fs = newFs;
@@ -1289,19 +1310,28 @@ void Engine_setSamplerate(Engine__ctx_type_0 &_ctx, fix16_t newFs){
    ADSR_setSamplerate(_ctx.modulatoradsr,ADSR_fs);
 }
 
+void Engine_noteOn(Engine__ctx_type_0 &_ctx, int note, int velocity, int channel){
+   note = int_clip(note,0,127);
+   if(Notes_noteOn(_ctx.playingnotes,note,velocity,channel)){
+      Engine_setFrequency(_ctx,Util_noteToFrequency(note));
+      _ctx.gate = true;
+   }
+}
+
 void Engine_noteOff(Engine__ctx_type_0 &_ctx, int note, int channel){
    note = int_clip(note,0,127);
-   Notes_noteOff(_ctx.playingnotes,note,channel);
-   if(Notes_nbNotes(_ctx.playingnotes) > 0){
-      int last_played;
-      last_played = Notes_lastNote(_ctx.playingnotes);
-      if(last_played > 0){
-         Engine_setFrequency(_ctx,Util_noteToFrequency(((-1) + last_played)));
+   if(Notes_noteOff(_ctx.playingnotes,note,channel)){
+      if(Notes_nbNotes(_ctx.playingnotes) > 0){
+         int last_played;
+         last_played = Notes_lastNote(_ctx.playingnotes);
+         if(last_played > 0){
+            Engine_setFrequency(_ctx,Util_noteToFrequency(((-1) + last_played)));
+         }
       }
-   }
-   else
-   {
-      _ctx.gate = false;
+      else
+      {
+         _ctx.gate = false;
+      }
    }
 }
 

@@ -9,7 +9,7 @@
 
 // context for FM synth used in vult, used to handle internal states
 Engine_process_type context;
-//OSC_process_type context;
+//OSC_process_type context_osc;
 // another for the filter
 Reverb_process_type context_reverb;
 
@@ -157,8 +157,8 @@ void setup() {
   // Init engine, then pass sample rate, not forgetting to convert passed parameters to fixed (of course...)
   Engine_default(context);
   Engine_setSamplerate(context, float_to_fix(sampleRate / (float)1000));
-  //OSC_default(context);
-  //OSC_setSamplerate(context, float_to_fix(sampleRate / (float)1000));
+  //OSC_default(context_osc);
+  //OSC_setSamplerate(context_osc, float_to_fix(sampleRate / (float)1000));
   Reverb_default(context_reverb);
 }
 
@@ -177,12 +177,13 @@ void loop() {
       }
       Serial.println(current_note);
       Engine_noteOn(context, current_note, 0, 0);
+      //OSC_setFrequency(context_osc, Util_noteToFrequency(current_note));
       midi_tick = millis();
       gate = true;
     }
     if (gate and millis() - midi_tick >= 50) {
       Serial.println("note off");
-      Engine_noteOff(context, 0, 0);
+      Engine_noteOff(context, current_note, 0);
       midi_tick = millis();
       gate = false;
     }
@@ -195,10 +196,10 @@ void loop() {
     dsp_tick = micros();
     dsp_cycle_tick = rp2040.getCycleCount();
 
-    //OSC_process_buffer(context, BUFFER_SIZE);
-    //OSC_getBuffer(context, raw_buff);
+    //OSC_process_buffer_simplest(context_osc, BUFFER_SIZE);
+    //OSC_getBuffer(context_osc, raw_buff);
     Engine_process_buffer(context, BUFFER_SIZE);
-    //Engine_getBuffer(context, raw_buff);
+    Engine_getBuffer(context, raw_buff);
     Reverb_process_buffer(context_reverb, BUFFER_SIZE, context.buffer);
     Reverb_getBuffer(context_reverb, reverb_buff);
     // two times to better compare with classical situation
@@ -206,6 +207,7 @@ void loop() {
       // returned float should be between -1 and 1 (should we checkit ?)
       // shortcut, instead of fixed_to_float * 32767, *almost* the same and vastly improve perf with buffered version (???)
       buff[i] =  reverb_buff[i] / 2 - ( reverb_buff[i] >> 16);
+      //buff[i] =  raw_buff[i] / 2 - ( reverb_buff[i] >> 16);
     }
 
     dsp_cycle_count += rp2040.getCycleCount() - dsp_cycle_tick;

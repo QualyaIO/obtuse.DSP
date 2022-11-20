@@ -158,25 +158,29 @@ and setFrequency(freq: real) {
 and noteOn(note:int, velocity:int, channel:int){
    // only 128 midi notes
    note = clip(note, 0, 127);
-   _ = playingnotes:Notes.noteOn(note, velocity, channel);
-   // set frequency... should we reset phase somehow? artifacts upon first tests
-   _ = setFrequency(Util.noteToFrequency(note));
-   // gate, no mater what
-   gate = true;
+   // only acts if action taken into account
+   if (playingnotes:Notes.noteOn(note, velocity, channel)) {
+       // set frequency... should we reset phase somehow? artifacts upon first tests
+       _ = setFrequency(Util.noteToFrequency(note));
+       // gate, no mater what
+       gate = true;
+   }
 }
 // note off whatever the channel, back to frequency of last still active note if any
 and noteOff(note:int, channel:int) {
    // only 128 midi notes
    note = clip(note, 0, 127);
-   _ = playingnotes:Notes.noteOff(note, channel);
-   // still gate on-going if there are note held, and switch to last
-   if (playingnotes:Notes.nbNotes() > 0) {
-      val last_played = playingnotes:Notes.lastNote();
-      if (last_played > 0) {
-         _ = setFrequency(Util.noteToFrequency(last_played - 1));
+   // only acts if action taken into account
+   if (playingnotes:Notes.noteOff(note, channel)) {
+      // still gate on-going if there are note held, and switch to last
+      if (playingnotes:Notes.nbNotes() > 0){
+         val last_played = playingnotes:Notes.lastNote();
+         if (last_played > 0) {
+            _ = setFrequency(Util.noteToFrequency(last_played - 1));
+         }
+      } else {
+         gate = false;
       }
-   } else {
-      gate = false;
    }
 }
 

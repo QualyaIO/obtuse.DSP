@@ -20,7 +20,8 @@ and nbNotes() {
 
 
 // beginning of a note -- will effectively ignore duplicated noteOn for same note
-and noteOn(note:int, velocity:int, channel:int){
+// return true if note indeed turned on, false otherwise
+and noteOn(note:int, velocity:int, channel:int): bool {
    // only 128 midi notes
    note = clip(note, 0, 127);
    // add note to list if new (does not point to last_notes)
@@ -32,11 +33,14 @@ and noteOn(note:int, velocity:int, channel:int){
       }
       notes[note] = nb_notes;
       last_notes[nb_notes-1] = note + 1;
+      return true;
    }
+   return false;
 }
 
 // note off whatever the channel, back to frequency of last still active note if any
-and noteOff(note:int, channel:int) {
+// return true if note indeed turned off, false otherwise
+and noteOff(note:int, channel:int): bool {
    // only 128 midi notes
    note = clip(note, 0, 127);
    // make sure the note was active before taking it into consideration
@@ -58,7 +62,9 @@ and noteOff(note:int, channel:int) {
       if (nb_notes < 0) {
          nb_notes = 0;
       }
+      return true;
    }
+   return false;
 }
 
 // return a note number 1..128, 0 if nothing
