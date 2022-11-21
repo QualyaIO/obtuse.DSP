@@ -42,208 +42,6 @@ static_inline void Util_buffer(fix16_t (&_output_)[256]){
    return ;
 }
 
-typedef struct Reverb__ctx_type_0 {
-   int pos;
-   fix16_t decay;
-   fix16_t buffer_d[256];
-   fix16_t buffer[40000];
-} Reverb__ctx_type_0;
-
-typedef Reverb__ctx_type_0 Reverb_process_type;
-
-void Reverb__ctx_type_0_init(Reverb__ctx_type_0 &_output_);
-
-static_inline void Reverb_process_init(Reverb__ctx_type_0 &_output_){
-   Reverb__ctx_type_0_init(_output_);
-   return ;
-}
-
-fix16_t Reverb_process(Reverb__ctx_type_0 &_ctx, fix16_t sample);
-
-typedef Reverb__ctx_type_0 Reverb_process_buffer_type;
-
-static_inline void Reverb_process_buffer_init(Reverb__ctx_type_0 &_output_){
-   Reverb__ctx_type_0_init(_output_);
-   return ;
-}
-
-void Reverb_process_buffer(Reverb__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256]);
-
-typedef Reverb__ctx_type_0 Reverb_getBuffer_type;
-
-static_inline void Reverb_getBuffer_init(Reverb__ctx_type_0 &_output_){
-   Reverb__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void Reverb_getBuffer(Reverb__ctx_type_0 &_ctx, fix16_t (&_output_)[256]){
-   fix_copy_array(256,_output_,_ctx.buffer_d);
-   return ;
-}
-
-typedef Reverb__ctx_type_0 Reverb_copyTo_type;
-
-static_inline void Reverb_copyTo_init(Reverb__ctx_type_0 &_output_){
-   Reverb__ctx_type_0_init(_output_);
-   return ;
-}
-
-void Reverb_copyTo(Reverb__ctx_type_0 &_ctx, fix16_t (&oBuffer)[256], int nb);
-
-typedef Reverb__ctx_type_0 Reverb_default_type;
-
-static_inline void Reverb_default_init(Reverb__ctx_type_0 &_output_){
-   Reverb__ctx_type_0_init(_output_);
-   return ;
-}
-
-void Reverb_default(Reverb__ctx_type_0 &_ctx);
-
-typedef struct Notes__ctx_type_0 {
-   int notes[128];
-   int nb_notes;
-   int last_notes[128];
-} Notes__ctx_type_0;
-
-typedef Notes__ctx_type_0 Notes_default_type;
-
-void Notes__ctx_type_0_init(Notes__ctx_type_0 &_output_);
-
-static_inline void Notes_default_init(Notes__ctx_type_0 &_output_){
-   Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void Notes_default(Notes__ctx_type_0 &_ctx){
-}
-
-typedef Notes__ctx_type_0 Notes_nbNotes_type;
-
-static_inline void Notes_nbNotes_init(Notes__ctx_type_0 &_output_){
-   Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline int Notes_nbNotes(Notes__ctx_type_0 &_ctx){
-   return _ctx.nb_notes;
-};
-
-typedef Notes__ctx_type_0 Notes_noteOn_type;
-
-static_inline void Notes_noteOn_init(Notes__ctx_type_0 &_output_){
-   Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-uint8_t Notes_noteOn(Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
-
-typedef Notes__ctx_type_0 Notes_noteOff_type;
-
-static_inline void Notes_noteOff_init(Notes__ctx_type_0 &_output_){
-   Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-uint8_t Notes_noteOff(Notes__ctx_type_0 &_ctx, int note, int channel);
-
-typedef Notes__ctx_type_0 Notes_lastNote_type;
-
-static_inline void Notes_lastNote_init(Notes__ctx_type_0 &_output_){
-   Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-int Notes_lastNote(Notes__ctx_type_0 &_ctx);
-
-typedef struct ADSR__ctx_type_0 {
-   fix16_t target;
-   fix16_t step;
-   int state;
-   fix16_t s;
-   fix16_t r_step;
-   fix16_t r;
-   fix16_t out;
-   fix16_t fs;
-   fix16_t d_step;
-   fix16_t d;
-   fix16_t buffer[256];
-   fix16_t a_target;
-   fix16_t a_step;
-   fix16_t a;
-   Util__ctx_type_1 _inst351;
-   Util__ctx_type_1 _inst151;
-} ADSR__ctx_type_0;
-
-typedef ADSR__ctx_type_0 ADSR_process_type;
-
-void ADSR__ctx_type_0_init(ADSR__ctx_type_0 &_output_);
-
-static_inline void ADSR_process_init(ADSR__ctx_type_0 &_output_){
-   ADSR__ctx_type_0_init(_output_);
-   return ;
-}
-
-fix16_t ADSR_process(ADSR__ctx_type_0 &_ctx, uint8_t bgate);
-
-typedef ADSR__ctx_type_0 ADSR_process_buffer_type;
-
-static_inline void ADSR_process_buffer_init(ADSR__ctx_type_0 &_output_){
-   ADSR__ctx_type_0_init(_output_);
-   return ;
-}
-
-void ADSR_process_buffer(ADSR__ctx_type_0 &_ctx, uint8_t bgate, int nb);
-
-typedef ADSR__ctx_type_0 ADSR_updateSteps_type;
-
-static_inline void ADSR_updateSteps_init(ADSR__ctx_type_0 &_output_){
-   ADSR__ctx_type_0_init(_output_);
-   return ;
-}
-
-void ADSR_updateSteps(ADSR__ctx_type_0 &_ctx);
-
-typedef ADSR__ctx_type_0 ADSR_setSamplerate_type;
-
-static_inline void ADSR_setSamplerate_init(ADSR__ctx_type_0 &_output_){
-   ADSR__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void ADSR_setSamplerate(ADSR__ctx_type_0 &_ctx, fix16_t newFs){
-   if(newFs > 0x0 /* 0.000000 */){
-      _ctx.fs = newFs;
-   }
-   ADSR_updateSteps(_ctx);
-}
-
-typedef ADSR__ctx_type_0 ADSR_config_type;
-
-static_inline void ADSR_config_init(ADSR__ctx_type_0 &_output_){
-   ADSR__ctx_type_0_init(_output_);
-   return ;
-}
-
-void ADSR_config(ADSR__ctx_type_0 &_ctx, fix16_t newA, fix16_t newD, fix16_t newS, fix16_t newR);
-
-typedef ADSR__ctx_type_0 ADSR_copyTo_type;
-
-static_inline void ADSR_copyTo_init(ADSR__ctx_type_0 &_output_){
-   ADSR__ctx_type_0_init(_output_);
-   return ;
-}
-
-void ADSR_copyTo(ADSR__ctx_type_0 &_ctx, fix16_t (&oBuffer)[256], int nb);
-
-typedef ADSR__ctx_type_0 ADSR_default_type;
-
-static_inline void ADSR_default_init(ADSR__ctx_type_0 &_output_){
-   ADSR__ctx_type_0_init(_output_);
-   return ;
-}
-
-void ADSR_default(ADSR__ctx_type_0 &_ctx);
-
 static_inline int OSC_sin_wave_samples(){
    return 2048;
 };
@@ -433,7 +231,152 @@ static_inline void OSC_default_init(OSC__ctx_type_2 &_output_){
 
 void OSC_default(OSC__ctx_type_2 &_ctx);
 
-typedef struct Engine__ctx_type_0 {
+typedef struct Notes__ctx_type_0 {
+   int notes[128];
+   int nb_notes;
+   int last_notes[128];
+} Notes__ctx_type_0;
+
+typedef Notes__ctx_type_0 Notes_default_type;
+
+void Notes__ctx_type_0_init(Notes__ctx_type_0 &_output_);
+
+static_inline void Notes_default_init(Notes__ctx_type_0 &_output_){
+   Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void Notes_default(Notes__ctx_type_0 &_ctx){
+}
+
+typedef Notes__ctx_type_0 Notes_nbNotes_type;
+
+static_inline void Notes_nbNotes_init(Notes__ctx_type_0 &_output_){
+   Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int Notes_nbNotes(Notes__ctx_type_0 &_ctx){
+   return _ctx.nb_notes;
+};
+
+typedef Notes__ctx_type_0 Notes_noteOn_type;
+
+static_inline void Notes_noteOn_init(Notes__ctx_type_0 &_output_){
+   Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+uint8_t Notes_noteOn(Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
+
+typedef Notes__ctx_type_0 Notes_noteOff_type;
+
+static_inline void Notes_noteOff_init(Notes__ctx_type_0 &_output_){
+   Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+uint8_t Notes_noteOff(Notes__ctx_type_0 &_ctx, int note, int channel);
+
+typedef Notes__ctx_type_0 Notes_lastNote_type;
+
+static_inline void Notes_lastNote_init(Notes__ctx_type_0 &_output_){
+   Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+int Notes_lastNote(Notes__ctx_type_0 &_ctx);
+
+typedef struct ADSR__ctx_type_0 {
+   fix16_t target;
+   fix16_t step;
+   int state;
+   fix16_t s;
+   fix16_t r_step;
+   fix16_t r;
+   fix16_t out;
+   fix16_t fs;
+   fix16_t d_step;
+   fix16_t d;
+   fix16_t buffer[256];
+   fix16_t a_target;
+   fix16_t a_step;
+   fix16_t a;
+   Util__ctx_type_1 _inst351;
+   Util__ctx_type_1 _inst151;
+} ADSR__ctx_type_0;
+
+typedef ADSR__ctx_type_0 ADSR_process_type;
+
+void ADSR__ctx_type_0_init(ADSR__ctx_type_0 &_output_);
+
+static_inline void ADSR_process_init(ADSR__ctx_type_0 &_output_){
+   ADSR__ctx_type_0_init(_output_);
+   return ;
+}
+
+fix16_t ADSR_process(ADSR__ctx_type_0 &_ctx, uint8_t bgate);
+
+typedef ADSR__ctx_type_0 ADSR_process_buffer_type;
+
+static_inline void ADSR_process_buffer_init(ADSR__ctx_type_0 &_output_){
+   ADSR__ctx_type_0_init(_output_);
+   return ;
+}
+
+void ADSR_process_buffer(ADSR__ctx_type_0 &_ctx, uint8_t bgate, int nb);
+
+typedef ADSR__ctx_type_0 ADSR_updateSteps_type;
+
+static_inline void ADSR_updateSteps_init(ADSR__ctx_type_0 &_output_){
+   ADSR__ctx_type_0_init(_output_);
+   return ;
+}
+
+void ADSR_updateSteps(ADSR__ctx_type_0 &_ctx);
+
+typedef ADSR__ctx_type_0 ADSR_setSamplerate_type;
+
+static_inline void ADSR_setSamplerate_init(ADSR__ctx_type_0 &_output_){
+   ADSR__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void ADSR_setSamplerate(ADSR__ctx_type_0 &_ctx, fix16_t newFs){
+   if(newFs > 0x0 /* 0.000000 */){
+      _ctx.fs = newFs;
+   }
+   ADSR_updateSteps(_ctx);
+}
+
+typedef ADSR__ctx_type_0 ADSR_config_type;
+
+static_inline void ADSR_config_init(ADSR__ctx_type_0 &_output_){
+   ADSR__ctx_type_0_init(_output_);
+   return ;
+}
+
+void ADSR_config(ADSR__ctx_type_0 &_ctx, fix16_t newA, fix16_t newD, fix16_t newS, fix16_t newR);
+
+typedef ADSR__ctx_type_0 ADSR_copyTo_type;
+
+static_inline void ADSR_copyTo_init(ADSR__ctx_type_0 &_output_){
+   ADSR__ctx_type_0_init(_output_);
+   return ;
+}
+
+void ADSR_copyTo(ADSR__ctx_type_0 &_ctx, fix16_t (&oBuffer)[256], int nb);
+
+typedef ADSR__ctx_type_0 ADSR_default_type;
+
+static_inline void ADSR_default_init(ADSR__ctx_type_0 &_output_){
+   ADSR__ctx_type_0_init(_output_);
+   return ;
+}
+
+void ADSR_default(ADSR__ctx_type_0 &_ctx);
+
+typedef struct FM__ctx_type_0 {
    Notes__ctx_type_0 playingnotes;
    int n;
    ADSR__ctx_type_0 modulatoradsr;
@@ -456,121 +399,178 @@ typedef struct Engine__ctx_type_0 {
    fix16_t buffer_carrier_env_short[256];
    fix16_t buffer_carrier_env[256];
    fix16_t buffer[256];
-} Engine__ctx_type_0;
+} FM__ctx_type_0;
 
-typedef Engine__ctx_type_0 Engine_process_type;
+typedef FM__ctx_type_0 FM_process_type;
 
-void Engine__ctx_type_0_init(Engine__ctx_type_0 &_output_);
+void FM__ctx_type_0_init(FM__ctx_type_0 &_output_);
 
-static_inline void Engine_process_init(Engine__ctx_type_0 &_output_){
-   Engine__ctx_type_0_init(_output_);
+static_inline void FM_process_init(FM__ctx_type_0 &_output_){
+   FM__ctx_type_0_init(_output_);
    return ;
 }
 
-fix16_t Engine_process(Engine__ctx_type_0 &_ctx);
+fix16_t FM_process(FM__ctx_type_0 &_ctx);
 
-typedef Engine__ctx_type_0 Engine_process_buffer_type;
+typedef FM__ctx_type_0 FM_process_buffer_type;
 
-static_inline void Engine_process_buffer_init(Engine__ctx_type_0 &_output_){
-   Engine__ctx_type_0_init(_output_);
+static_inline void FM_process_buffer_init(FM__ctx_type_0 &_output_){
+   FM__ctx_type_0_init(_output_);
    return ;
 }
 
-void Engine_process_buffer(Engine__ctx_type_0 &_ctx, int nb);
+void FM_process_buffer(FM__ctx_type_0 &_ctx, int nb);
 
-typedef Engine__ctx_type_0 Engine_getBuffer_type;
+typedef FM__ctx_type_0 FM_getBuffer_type;
 
-static_inline void Engine_getBuffer_init(Engine__ctx_type_0 &_output_){
-   Engine__ctx_type_0_init(_output_);
+static_inline void FM_getBuffer_init(FM__ctx_type_0 &_output_){
+   FM__ctx_type_0_init(_output_);
    return ;
 }
 
-static_inline void Engine_getBuffer(Engine__ctx_type_0 &_ctx, fix16_t (&_output_)[256]){
+static_inline void FM_getBuffer(FM__ctx_type_0 &_ctx, fix16_t (&_output_)[256]){
    fix_copy_array(256,_output_,_ctx.buffer);
    return ;
 }
 
-typedef Engine__ctx_type_0 Engine_setSamplerate_type;
+typedef FM__ctx_type_0 FM_setSamplerate_type;
 
-static_inline void Engine_setSamplerate_init(Engine__ctx_type_0 &_output_){
-   Engine__ctx_type_0_init(_output_);
+static_inline void FM_setSamplerate_init(FM__ctx_type_0 &_output_){
+   FM__ctx_type_0_init(_output_);
    return ;
 }
 
-void Engine_setSamplerate(Engine__ctx_type_0 &_ctx, fix16_t newFs);
+void FM_setSamplerate(FM__ctx_type_0 &_ctx, fix16_t newFs);
 
-typedef Engine__ctx_type_0 Engine_setCarrierRatio_type;
+typedef FM__ctx_type_0 FM_setCarrierRatio_type;
 
-static_inline void Engine_setCarrierRatio_init(Engine__ctx_type_0 &_output_){
-   Engine__ctx_type_0_init(_output_);
+static_inline void FM_setCarrierRatio_init(FM__ctx_type_0 &_output_){
+   FM__ctx_type_0_init(_output_);
    return ;
 }
 
-static_inline void Engine_setCarrierRatio(Engine__ctx_type_0 &_ctx, fix16_t ratio){
+static_inline void FM_setCarrierRatio(FM__ctx_type_0 &_ctx, fix16_t ratio){
    _ctx.carrierRatio = ratio;
 };
 
-typedef Engine__ctx_type_0 Engine_setModulatorRatio_type;
+typedef FM__ctx_type_0 FM_setModulatorRatio_type;
 
-static_inline void Engine_setModulatorRatio_init(Engine__ctx_type_0 &_output_){
-   Engine__ctx_type_0_init(_output_);
+static_inline void FM_setModulatorRatio_init(FM__ctx_type_0 &_output_){
+   FM__ctx_type_0_init(_output_);
    return ;
 }
 
-static_inline void Engine_setModulatorRatio(Engine__ctx_type_0 &_ctx, fix16_t ratio){
+static_inline void FM_setModulatorRatio(FM__ctx_type_0 &_ctx, fix16_t ratio){
    _ctx.modulatorRatio = ratio;
 };
 
-typedef Engine__ctx_type_0 Engine_setModulatorLevel_type;
+typedef FM__ctx_type_0 FM_setModulatorLevel_type;
 
-static_inline void Engine_setModulatorLevel_init(Engine__ctx_type_0 &_output_){
-   Engine__ctx_type_0_init(_output_);
+static_inline void FM_setModulatorLevel_init(FM__ctx_type_0 &_output_){
+   FM__ctx_type_0_init(_output_);
    return ;
 }
 
-static_inline void Engine_setModulatorLevel(Engine__ctx_type_0 &_ctx, fix16_t newLevel){
+static_inline void FM_setModulatorLevel(FM__ctx_type_0 &_ctx, fix16_t newLevel){
    _ctx.level = newLevel;
    _ctx.carrier_half_phase = (fix_mul(_ctx.level,int_to_fix(OSC_getSize(_ctx.carrier))) >> 1);
 }
 
-typedef Engine__ctx_type_0 Engine_setFrequency_type;
+typedef FM__ctx_type_0 FM_setFrequency_type;
 
-static_inline void Engine_setFrequency_init(Engine__ctx_type_0 &_output_){
-   Engine__ctx_type_0_init(_output_);
+static_inline void FM_setFrequency_init(FM__ctx_type_0 &_output_){
+   FM__ctx_type_0_init(_output_);
    return ;
 }
 
-static_inline void Engine_setFrequency(Engine__ctx_type_0 &_ctx, fix16_t freq){
+static_inline void FM_setFrequency(FM__ctx_type_0 &_ctx, fix16_t freq){
    OSC_setFrequency(_ctx.carrier,fix_mul(_ctx.carrierRatio,freq));
    OSC_setFrequency(_ctx.modulator,fix_mul(_ctx.modulatorRatio,freq));
 }
 
-typedef Engine__ctx_type_0 Engine_noteOn_type;
+typedef FM__ctx_type_0 FM_noteOn_type;
 
-static_inline void Engine_noteOn_init(Engine__ctx_type_0 &_output_){
-   Engine__ctx_type_0_init(_output_);
+static_inline void FM_noteOn_init(FM__ctx_type_0 &_output_){
+   FM__ctx_type_0_init(_output_);
    return ;
 }
 
-void Engine_noteOn(Engine__ctx_type_0 &_ctx, int note, int velocity, int channel);
+void FM_noteOn(FM__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
-typedef Engine__ctx_type_0 Engine_noteOff_type;
+typedef FM__ctx_type_0 FM_noteOff_type;
 
-static_inline void Engine_noteOff_init(Engine__ctx_type_0 &_output_){
-   Engine__ctx_type_0_init(_output_);
+static_inline void FM_noteOff_init(FM__ctx_type_0 &_output_){
+   FM__ctx_type_0_init(_output_);
    return ;
 }
 
-void Engine_noteOff(Engine__ctx_type_0 &_ctx, int note, int channel);
+void FM_noteOff(FM__ctx_type_0 &_ctx, int note, int channel);
 
-typedef Engine__ctx_type_0 Engine_default_type;
+typedef FM__ctx_type_0 FM_default_type;
 
-static_inline void Engine_default_init(Engine__ctx_type_0 &_output_){
-   Engine__ctx_type_0_init(_output_);
+static_inline void FM_default_init(FM__ctx_type_0 &_output_){
+   FM__ctx_type_0_init(_output_);
    return ;
 }
 
-void Engine_default(Engine__ctx_type_0 &_ctx);
+void FM_default(FM__ctx_type_0 &_ctx);
+
+typedef struct Reverb__ctx_type_0 {
+   int pos;
+   fix16_t decay;
+   fix16_t buffer_d[256];
+   fix16_t buffer[40000];
+} Reverb__ctx_type_0;
+
+typedef Reverb__ctx_type_0 Reverb_process_type;
+
+void Reverb__ctx_type_0_init(Reverb__ctx_type_0 &_output_);
+
+static_inline void Reverb_process_init(Reverb__ctx_type_0 &_output_){
+   Reverb__ctx_type_0_init(_output_);
+   return ;
+}
+
+fix16_t Reverb_process(Reverb__ctx_type_0 &_ctx, fix16_t sample);
+
+typedef Reverb__ctx_type_0 Reverb_process_buffer_type;
+
+static_inline void Reverb_process_buffer_init(Reverb__ctx_type_0 &_output_){
+   Reverb__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Reverb_process_buffer(Reverb__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256]);
+
+typedef Reverb__ctx_type_0 Reverb_getBuffer_type;
+
+static_inline void Reverb_getBuffer_init(Reverb__ctx_type_0 &_output_){
+   Reverb__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void Reverb_getBuffer(Reverb__ctx_type_0 &_ctx, fix16_t (&_output_)[256]){
+   fix_copy_array(256,_output_,_ctx.buffer_d);
+   return ;
+}
+
+typedef Reverb__ctx_type_0 Reverb_copyTo_type;
+
+static_inline void Reverb_copyTo_init(Reverb__ctx_type_0 &_output_){
+   Reverb__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Reverb_copyTo(Reverb__ctx_type_0 &_ctx, fix16_t (&oBuffer)[256], int nb);
+
+typedef Reverb__ctx_type_0 Reverb_default_type;
+
+static_inline void Reverb_default_init(Reverb__ctx_type_0 &_output_){
+   Reverb__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Reverb_default(Reverb__ctx_type_0 &_ctx);
 
 
 
