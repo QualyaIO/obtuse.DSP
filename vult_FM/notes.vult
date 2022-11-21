@@ -1,6 +1,7 @@
 
 // handling current notes and gates
 // Note: store history up to all 128 midi notes, if MIDI is spammed with lots on note on/off on the whole range processing will get slow
+// Note: also used in polyphony, as a hack to handle voices
 
 // set polpyphonic (true flag) or monophonic (false flag)
 // monophonic: keep track of currently play notes
@@ -28,6 +29,16 @@ and nbNotes() {
     return nb_notes;
 }
 
+// return a note number 1..128, 0 if nothing
+and firstNote() {
+   val first_played = 0;
+   // find last note if any
+   if (nb_notes > 0) {
+      // here last notes coded on 1..128
+      first_played = last_notes[0];
+   }
+   return first_played;
+}
 
 // return a note number 1..128, 0 if nothing
 and lastNote() {

@@ -1,0 +1,137 @@
+
+// abstract handling of polyvoice synths (e.g. FM).
+// Note: does not take midi channel into account at this level
+// TODO: back to monophonic if number of voices is 1
+
+fun process() {
+   // If voices are currently playng on not -- and max number of voices
+   mem voices;
+   // how many voices we support at the moment?
+   mem number_voices;
+   // what voice (if any) number are associated to
+   mem notes;
+}
+
+
+// send note on to selected inactive voice
+// Note: should be call internally, DON'T update inner states, only forward info
+and _sendNoteOn(voice:int, note:int, velocity: int, channel:int) {
+   // check against max size of voices, not number_voices, in case we try to fix something
+   if (voice >= 0 && voice < size(voices)) {
+       // a tad tedious, as many context as we handle voices, and test all possible synth
+       if (voice == 0) {
+           _ = voice0:FM.noteOn(note, velocity, channel);
+       }
+       else if (voice == 1) {
+           _ = voice1:FM.noteOn(note, velocity, channel);
+       }
+       else if (voice == 2) {
+           _ = voice2:FM.noteOn(note, velocity, channel);
+       }
+       else if (voice == 3) {
+           _ = voice3:FM.noteOn(note, velocity, channel);
+       }
+   }
+}
+
+// send note off to selected active voice
+// Note: should be call internally, DON'T update inner states, only forward info
+and _sendNoteOff(voice:int, note:int, channel:int) {
+   // check against max size of voices, not number_voices, in case we try to fix something
+   if (voice >= 0 && voice < size(voices)) {
+       // a tad tedious, as many context as we handle voices, and test all possible synth
+       if (voice == 0) {
+           _ = voice0:FM.noteOff(note, channel);
+       }
+       else if (voice == 1) {
+           _ = voice1:FM.noteOff(note, channel);
+       }
+       else if (voice == 2) {
+           _ = voice2:FM.noteOff(note, channel);
+       }
+       else if (voice == 3) {
+           _ = voice3:FM.noteOff(note, channel);
+       }
+   }
+}
+
+// transmit noteOff to corresponding voice, update inner states active/inactive voice
+and noteOff(note:int, channel:int) {
+   // only 128 midi notes (and max voice)
+   note = clip(note, 0, 127);
+   // corresponding voice stored as voice+1
+   val v = notes[note];
+   // is this note really playing on a voice?
+   if (v > 0 && v < size(voices)) {
+      // remove voice from active
+      // channel 0, just because
+      if (voicesactive:Notes.noteOff(v - 1, 0)) {
+          // disable voice
+          _ = _sendNoteOff(v - 1, note, channel);
+          // update arrays
+          notes[note] = 0;
+	  voices[v-1] = 0;
+	  // add voice to inactive (127 velocity, just because)
+	  _ = voicesinactive:Notes.noteOn(v - 1, 127, 0);
+      }
+   }
+}
+
+// transmit noteOn to new voice (oldest inactive). If none, will turn off and steal oldest active. update inner states active/inactive voice
+and noteOn(note:int, velocity:int, channel:int){
+   // only 128 midi notes
+   note = clip(note, 0, 127);
+   // ignore note if already with a voice
+   if (notes[note] <= 0) {
+      // at least one free voice, take the oldest
+      // todo: check both active and inactive status?
+      val v = voicesinactive:Notes.firstNote();
+      // no active voice, we will steal one
+      if (v <= 0) {
+         val active_v = voicesactive:Notes.firstNote();
+	 // check we do indeed have one (the opposity would be a bug)
+	 if (active_v > 0) {
+	    // disable this voice (with arbitrary channel)
+	    _ = noteOff(voices[v-1], 0);
+	 }
+      }
+      // ne we should have at least one inactive voice
+      v = voicesinactive:Notes.firstNote();
+      if (v > 0) {
+         // voice removed successfully from inactive ones and added to active ones (arbitrary channel 0 and velocity 127)
+         if (voicesinactive:Notes.noteOff(v - 1, 0) && voicesactive:Notes.noteOn(v - 1, 127, 0)) {
+	    // forward info
+	    _ = _sendNoteOn(v - 1, note, velocity, channel);
+            // update arrays
+            notes[note] = v - 1;
+            voices[v-1] = note;
+         }
+      }
+   }
+}
+
+// setter for the number of voices, from 0 (disable) to max size of inner buffer
+and setNbVoices(nbvoices: int) {
+   nbvoices = clip(nbvoices, 0, size(voices));
+   // turn off voices that will be unused, highest voice first
+   val i = voicesactive:Notes.nbNotes();
+   while(i > nbvoices) {
+      // get note of current voice and turn it off (with arbitrary channel)
+      noteOff(voices[i-1], 0);
+   }
+   number_voices = nbvoices;
+}
+
+and default() @[init] {
+   mem voices: array(int, 4);
+   number_voices = if number_voices == 0 then size(voices) else number_voices;
+    // which notes are active, if so to which voice? (to select voice and prune duplicated note on/off). Stores voice number + 1
+   mem notes: array(int, 128);
+
+   // monophonic algo used to keep track of active voices...
+   _ = voicesactive:Notes.default();
+   _ = voicesactive:Notes.setPoly(false);
+   // and same for disabled voices
+   _ = voicesinactive:Notes.default();
+   _ = voicesinactive:Notes.setPoly(false);
+}

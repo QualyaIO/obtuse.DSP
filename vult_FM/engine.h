@@ -7,6 +7,84 @@
 #include "vultin.h"
 #include "engine.tables.h"
 
+typedef struct Notes__ctx_type_0 {
+   uint8_t poly;
+   int notes[128];
+   int nb_notes;
+   int last_notes[128];
+} Notes__ctx_type_0;
+
+typedef Notes__ctx_type_0 Notes_setPoly_type;
+
+void Notes__ctx_type_0_init(Notes__ctx_type_0 &_output_);
+
+static_inline void Notes_setPoly_init(Notes__ctx_type_0 &_output_){
+   Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void Notes_setPoly(Notes__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.poly = flag;
+};
+
+typedef Notes__ctx_type_0 Notes_default_type;
+
+static_inline void Notes_default_init(Notes__ctx_type_0 &_output_){
+   Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void Notes_default(Notes__ctx_type_0 &_ctx){
+   Notes_setPoly(_ctx,false);
+};
+
+typedef Notes__ctx_type_0 Notes_nbNotes_type;
+
+static_inline void Notes_nbNotes_init(Notes__ctx_type_0 &_output_){
+   Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int Notes_nbNotes(Notes__ctx_type_0 &_ctx){
+   return _ctx.nb_notes;
+};
+
+typedef Notes__ctx_type_0 Notes_firstNote_type;
+
+static_inline void Notes_firstNote_init(Notes__ctx_type_0 &_output_){
+   Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+int Notes_firstNote(Notes__ctx_type_0 &_ctx);
+
+typedef Notes__ctx_type_0 Notes_lastNote_type;
+
+static_inline void Notes_lastNote_init(Notes__ctx_type_0 &_output_){
+   Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+int Notes_lastNote(Notes__ctx_type_0 &_ctx);
+
+typedef Notes__ctx_type_0 Notes_noteOn_type;
+
+static_inline void Notes_noteOn_init(Notes__ctx_type_0 &_output_){
+   Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+uint8_t Notes_noteOn(Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
+
+typedef Notes__ctx_type_0 Notes_noteOff_type;
+
+static_inline void Notes_noteOff_init(Notes__ctx_type_0 &_output_){
+   Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+uint8_t Notes_noteOff(Notes__ctx_type_0 &_ctx, int note, int channel);
+
 static_inline fix16_t Util_noteToFrequency(int note){
    return fix_mul(0x217 /* 0.008176 */,fix_exp(fix_mul(0xec9 /* 0.057762 */,int_to_fix(note))));
 };
@@ -230,75 +308,6 @@ static_inline void OSC_default_init(OSC__ctx_type_2 &_output_){
 }
 
 void OSC_default(OSC__ctx_type_2 &_ctx);
-
-typedef struct Notes__ctx_type_0 {
-   uint8_t poly;
-   int notes[128];
-   int nb_notes;
-   int last_notes[128];
-} Notes__ctx_type_0;
-
-typedef Notes__ctx_type_0 Notes_setPoly_type;
-
-void Notes__ctx_type_0_init(Notes__ctx_type_0 &_output_);
-
-static_inline void Notes_setPoly_init(Notes__ctx_type_0 &_output_){
-   Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void Notes_setPoly(Notes__ctx_type_0 &_ctx, uint8_t flag){
-   _ctx.poly = flag;
-};
-
-typedef Notes__ctx_type_0 Notes_default_type;
-
-static_inline void Notes_default_init(Notes__ctx_type_0 &_output_){
-   Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void Notes_default(Notes__ctx_type_0 &_ctx){
-   Notes_setPoly(_ctx,false);
-};
-
-typedef Notes__ctx_type_0 Notes_nbNotes_type;
-
-static_inline void Notes_nbNotes_init(Notes__ctx_type_0 &_output_){
-   Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline int Notes_nbNotes(Notes__ctx_type_0 &_ctx){
-   return _ctx.nb_notes;
-};
-
-typedef Notes__ctx_type_0 Notes_lastNote_type;
-
-static_inline void Notes_lastNote_init(Notes__ctx_type_0 &_output_){
-   Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-int Notes_lastNote(Notes__ctx_type_0 &_ctx);
-
-typedef Notes__ctx_type_0 Notes_noteOn_type;
-
-static_inline void Notes_noteOn_init(Notes__ctx_type_0 &_output_){
-   Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-uint8_t Notes_noteOn(Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
-
-typedef Notes__ctx_type_0 Notes_noteOff_type;
-
-static_inline void Notes_noteOff_init(Notes__ctx_type_0 &_output_){
-   Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-uint8_t Notes_noteOff(Notes__ctx_type_0 &_ctx, int note, int channel);
 
 typedef struct ADSR__ctx_type_0 {
    fix16_t target;
@@ -538,6 +547,84 @@ static_inline void FM_default_init(FM__ctx_type_0 &_output_){
 }
 
 void FM_default(FM__ctx_type_0 &_ctx);
+
+typedef struct Voice__ctx_type_0 {
+   Notes__ctx_type_0 voicesinactive;
+   Notes__ctx_type_0 voicesactive;
+   int voices[4];
+   FM__ctx_type_0 voice3;
+   FM__ctx_type_0 voice2;
+   FM__ctx_type_0 voice1;
+   FM__ctx_type_0 voice0;
+   int number_voices;
+   int notes[128];
+} Voice__ctx_type_0;
+
+typedef Voice__ctx_type_0 Voice_process_type;
+
+void Voice__ctx_type_0_init(Voice__ctx_type_0 &_output_);
+
+static_inline void Voice_process_init(Voice__ctx_type_0 &_output_){
+   Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void Voice_process(Voice__ctx_type_0 &_ctx){
+}
+
+typedef Voice__ctx_type_0 Voice__sendNoteOn_type;
+
+static_inline void Voice__sendNoteOn_init(Voice__ctx_type_0 &_output_){
+   Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Voice__sendNoteOn(Voice__ctx_type_0 &_ctx, int voice, int note, int velocity, int channel);
+
+typedef Voice__ctx_type_0 Voice__sendNoteOff_type;
+
+static_inline void Voice__sendNoteOff_init(Voice__ctx_type_0 &_output_){
+   Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Voice__sendNoteOff(Voice__ctx_type_0 &_ctx, int voice, int note, int channel);
+
+typedef Voice__ctx_type_0 Voice_noteOff_type;
+
+static_inline void Voice_noteOff_init(Voice__ctx_type_0 &_output_){
+   Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Voice_noteOff(Voice__ctx_type_0 &_ctx, int note, int channel);
+
+typedef Voice__ctx_type_0 Voice_noteOn_type;
+
+static_inline void Voice_noteOn_init(Voice__ctx_type_0 &_output_){
+   Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Voice_noteOn(Voice__ctx_type_0 &_ctx, int note, int velocity, int channel);
+
+typedef Voice__ctx_type_0 Voice_setNbVoices_type;
+
+static_inline void Voice_setNbVoices_init(Voice__ctx_type_0 &_output_){
+   Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Voice_setNbVoices(Voice__ctx_type_0 &_ctx, int nbvoices);
+
+typedef Voice__ctx_type_0 Voice_default_type;
+
+static_inline void Voice_default_init(Voice__ctx_type_0 &_output_){
+   Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Voice_default(Voice__ctx_type_0 &_ctx);
 
 typedef struct Reverb__ctx_type_0 {
    int pos;

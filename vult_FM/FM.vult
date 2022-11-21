@@ -225,5 +225,5 @@ and default() @[init] {
 
     // monophonic by default
     _ = playingnotes:Notes.default();
-    _ = setPoly(true);
+    _ = setPoly(false);
 }
