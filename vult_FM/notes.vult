@@ -2,8 +2,15 @@
 // handling current notes and gates
 // Note: store history up to all 128 midi notes, if MIDI is spammed with lots on note on/off on the whole range processing will get slow
 
+// set polpyphonic (true flag) or monophonic (false flag)
+// monophonic: keep track of currently play notes
+// polyphonic: new note replace any previous
+// WARNING: should not call that mid-execution, inner states not uptated and will mostly behave erratically (TODO: do it)
+fun setPoly(flag: bool) {
+   mem poly : bool = flag;
+}
 
-fun default() @[init] {
+and default() @[init] {
     // how many notes are currently held
     mem nb_notes: int;
     // which notes are active? (to prune duplicated note on/off). Stores current number of notes when was on / position + 1 in last_notes
@@ -12,12 +19,26 @@ fun default() @[init] {
     // order of appearance of notes (to go back to previous one when several are held)
     // for the sake of simplicity, notes will be 1 to 128 here (so we can keep track of note 0 at little cost)
     mem last_notes: array(int, 128);
+
+    // menephonic by default
+    setPoly(false);
 }
 
 and nbNotes() {
     return nb_notes;
 }
 
+
+// return a note number 1..128, 0 if nothing
+and lastNote() {
+   val last_played = 0;
+   // find last note if any
+   if (nb_notes > 0) {
+      // here last notes coded on 1..128
+      last_played = last_notes[nb_notes-1];
+   }
+   return last_played;
+}
 
 // beginning of a note -- will effectively ignore duplicated noteOn for same note
 // return true if note indeed turned on, false otherwise
@@ -26,10 +47,21 @@ and noteOn(note:int, velocity:int, channel:int): bool {
    note = clip(note, 0, 127);
    // add note to list if new (does not point to last_notes)
    if (notes[note] <= 0) {
-      nb_notes = nb_notes + 1;
-      // failsafe
-      if (nb_notes > 128) {
-         nb_notes = 128;
+      // monophonic (default), save held notes
+      if (not(poly)) {
+         nb_notes = nb_notes + 1;
+         // failsafe
+         if (nb_notes > 128) {
+            nb_notes = 128;
+         }
+      }
+      // polyphonic: forget current note, if any, replace
+      else {
+         val last_note = lastNote();
+         if (last_note > 0) {
+            notes[last_note-1] = 0;
+	 }
+         nb_notes = 1;
       }
       notes[note] = nb_notes;
       last_notes[nb_notes-1] = note + 1;
@@ -45,35 +77,33 @@ and noteOff(note:int, channel:int): bool {
    note = clip(note, 0, 127);
    // make sure the note was active before taking it into consideration
    if (notes[note] > 0) {
-      // updates state
-      // fetch this note sequence number
-      val i = notes[note] - 1;
-      // update until current number
-      while (i < nb_notes) {
-         // move down last notes
-         last_notes[i] = last_notes[i+1];
-	 // update corresponding pointer in notes[]
-	 notes[last_notes[i] - 1] = i + 1;
-	 i = i + 1;
+      // if poly, just turn off the (hopefully) current note
+      if (poly) {
+         notes[note] = 0;
+	 nb_notes = 0;
       }
-      notes[note] = 0;
-      nb_notes = nb_notes - 1;
-      // failsafe
-      if (nb_notes < 0) {
-         nb_notes = 0;
+      // for monophony, updates state
+      else {
+         // fetch this note sequence number
+         val i = notes[note] - 1;
+         // update until current number
+         while (i < nb_notes) {
+            // move down last notes
+            last_notes[i] = last_notes[i+1];
+            // update corresponding pointer in notes[], unless we arrived at top
+	    if (last_notes[i] > 0) { 
+               notes[last_notes[i] - 1] = i + 1;
+	    }
+            i = i + 1;
+         }
+         notes[note] = 0;
+         nb_notes = nb_notes - 1;
+         // failsafe
+         if (nb_notes < 0) {
+            nb_notes = 0;
+         }
       }
       return true;
    }
    return false;
-}
-
-// return a note number 1..128, 0 if nothing
-and lastNote() {
-   val last_played = 0;
-   // find last note if any
-   if (nb_notes > 0) {
-      // here last notes coded on 1..128
-      last_played = last_notes[nb_notes-1];
-   }
-   return last_played;
 }

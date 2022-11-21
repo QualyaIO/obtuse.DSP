@@ -374,6 +374,7 @@ void OSC_default(OSC__ctx_type_2 &_ctx){
 
 void Notes__ctx_type_0_init(Notes__ctx_type_0 &_output_){
    Notes__ctx_type_0 _ctx;
+   _ctx.poly = false;
    int_init_array(128,0,_ctx.notes);
    _ctx.nb_notes = 0;
    int_init_array(128,0,_ctx.last_notes);
@@ -382,12 +383,32 @@ void Notes__ctx_type_0_init(Notes__ctx_type_0 &_output_){
    return ;
 }
 
+int Notes_lastNote(Notes__ctx_type_0 &_ctx){
+   int last_played;
+   last_played = 0;
+   if(_ctx.nb_notes > 0){
+      last_played = _ctx.last_notes[((-1) + _ctx.nb_notes)];
+   }
+   return last_played;
+}
+
 uint8_t Notes_noteOn(Notes__ctx_type_0 &_ctx, int note, int velocity, int channel){
    note = int_clip(note,0,127);
    if(_ctx.notes[note] <= 0){
-      _ctx.nb_notes = (1 + _ctx.nb_notes);
-      if(_ctx.nb_notes > 128){
-         _ctx.nb_notes = 128;
+      if(bool_not(_ctx.poly)){
+         _ctx.nb_notes = (1 + _ctx.nb_notes);
+         if(_ctx.nb_notes > 128){
+            _ctx.nb_notes = 128;
+         }
+      }
+      else
+      {
+         int last_note;
+         last_note = Notes_lastNote(_ctx);
+         if(last_note > 0){
+            _ctx.notes[((-1) + last_note)] = 0;
+         }
+         _ctx.nb_notes = 1;
       }
       _ctx.notes[note] = _ctx.nb_notes;
       _ctx.last_notes[((-1) + _ctx.nb_notes)] = (1 + note);
@@ -399,30 +420,30 @@ uint8_t Notes_noteOn(Notes__ctx_type_0 &_ctx, int note, int velocity, int channe
 uint8_t Notes_noteOff(Notes__ctx_type_0 &_ctx, int note, int channel){
    note = int_clip(note,0,127);
    if(_ctx.notes[note] > 0){
-      int i;
-      i = ((-1) + _ctx.notes[note]);
-      while(i < _ctx.nb_notes){
-         _ctx.last_notes[i] = _ctx.last_notes[(1 + i)];
-         _ctx.notes[((-1) + _ctx.last_notes[i])] = (1 + i);
-         i = (1 + i);
-      }
-      _ctx.notes[note] = 0;
-      _ctx.nb_notes = ((-1) + _ctx.nb_notes);
-      if(_ctx.nb_notes < 0){
+      if(_ctx.poly){
+         _ctx.notes[note] = 0;
          _ctx.nb_notes = 0;
+      }
+      else
+      {
+         int i;
+         i = ((-1) + _ctx.notes[note]);
+         while(i < _ctx.nb_notes){
+            _ctx.last_notes[i] = _ctx.last_notes[(1 + i)];
+            if(_ctx.last_notes[i] > 0){
+               _ctx.notes[((-1) + _ctx.last_notes[i])] = (1 + i);
+            }
+            i = (1 + i);
+         }
+         _ctx.notes[note] = 0;
+         _ctx.nb_notes = ((-1) + _ctx.nb_notes);
+         if(_ctx.nb_notes < 0){
+            _ctx.nb_notes = 0;
+         }
       }
       return true;
    }
    return false;
-}
-
-int Notes_lastNote(Notes__ctx_type_0 &_ctx){
-   int last_played;
-   last_played = 0;
-   if(_ctx.nb_notes > 0){
-      last_played = _ctx.last_notes[((-1) + _ctx.nb_notes)];
-   }
-   return last_played;
 }
 
 void ADSR__ctx_type_0_init(ADSR__ctx_type_0 &_output_){
@@ -1000,7 +1021,7 @@ void FM_noteOff(FM__ctx_type_0 &_ctx, int note, int channel){
       if(Notes_nbNotes(_ctx.playingnotes) > 0){
          int last_played;
          last_played = Notes_lastNote(_ctx.playingnotes);
-         if(last_played > 0){
+         if((last_played > 0) && (last_played <= 128)){
             FM_setFrequency(_ctx,Util_noteToFrequency(((-1) + last_played)));
          }
       }
@@ -2828,6 +2849,8 @@ void FM_default(FM__ctx_type_0 &_ctx){
    FM_setModulatorRatio(_ctx,0x20000 /* 2.000000 */);
    FM_setModulatorLevel(_ctx,0x1999 /* 0.100000 */);
    FM_setFrequency(_ctx,0x70a3 /* 0.440000 */);
+   Notes_default(_ctx.playingnotes);
+   FM_setPoly(_ctx,true);
 }
 
 void Reverb__ctx_type_0_init(Reverb__ctx_type_0 &_output_){

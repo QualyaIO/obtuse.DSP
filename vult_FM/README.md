@@ -6,3 +6,4 @@ MIDI input: using https://github.com/FortySevenEffects/arduino_midi_library (tes
 TODO:
 
 - take into account pitchwheel
+- random crash with FM and monophonic??

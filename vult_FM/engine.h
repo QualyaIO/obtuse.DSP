@@ -232,14 +232,26 @@ static_inline void OSC_default_init(OSC__ctx_type_2 &_output_){
 void OSC_default(OSC__ctx_type_2 &_ctx);
 
 typedef struct Notes__ctx_type_0 {
+   uint8_t poly;
    int notes[128];
    int nb_notes;
    int last_notes[128];
 } Notes__ctx_type_0;
 
-typedef Notes__ctx_type_0 Notes_default_type;
+typedef Notes__ctx_type_0 Notes_setPoly_type;
 
 void Notes__ctx_type_0_init(Notes__ctx_type_0 &_output_);
+
+static_inline void Notes_setPoly_init(Notes__ctx_type_0 &_output_){
+   Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void Notes_setPoly(Notes__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.poly = flag;
+};
+
+typedef Notes__ctx_type_0 Notes_default_type;
 
 static_inline void Notes_default_init(Notes__ctx_type_0 &_output_){
    Notes__ctx_type_0_init(_output_);
@@ -247,7 +259,8 @@ static_inline void Notes_default_init(Notes__ctx_type_0 &_output_){
 }
 
 static_inline void Notes_default(Notes__ctx_type_0 &_ctx){
-}
+   Notes_setPoly(_ctx,false);
+};
 
 typedef Notes__ctx_type_0 Notes_nbNotes_type;
 
@@ -259,6 +272,15 @@ static_inline void Notes_nbNotes_init(Notes__ctx_type_0 &_output_){
 static_inline int Notes_nbNotes(Notes__ctx_type_0 &_ctx){
    return _ctx.nb_notes;
 };
+
+typedef Notes__ctx_type_0 Notes_lastNote_type;
+
+static_inline void Notes_lastNote_init(Notes__ctx_type_0 &_output_){
+   Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+int Notes_lastNote(Notes__ctx_type_0 &_ctx);
 
 typedef Notes__ctx_type_0 Notes_noteOn_type;
 
@@ -277,15 +299,6 @@ static_inline void Notes_noteOff_init(Notes__ctx_type_0 &_output_){
 }
 
 uint8_t Notes_noteOff(Notes__ctx_type_0 &_ctx, int note, int channel);
-
-typedef Notes__ctx_type_0 Notes_lastNote_type;
-
-static_inline void Notes_lastNote_init(Notes__ctx_type_0 &_output_){
-   Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-int Notes_lastNote(Notes__ctx_type_0 &_ctx);
 
 typedef struct ADSR__ctx_type_0 {
    fix16_t target;
@@ -487,6 +500,17 @@ static_inline void FM_setFrequency(FM__ctx_type_0 &_ctx, fix16_t freq){
    OSC_setFrequency(_ctx.carrier,fix_mul(_ctx.carrierRatio,freq));
    OSC_setFrequency(_ctx.modulator,fix_mul(_ctx.modulatorRatio,freq));
 }
+
+typedef FM__ctx_type_0 FM_setPoly_type;
+
+static_inline void FM_setPoly_init(FM__ctx_type_0 &_output_){
+   FM__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void FM_setPoly(FM__ctx_type_0 &_ctx, uint8_t flag){
+   Notes_setPoly(_ctx.playingnotes,flag);
+};
 
 typedef FM__ctx_type_0 FM_noteOn_type;
 

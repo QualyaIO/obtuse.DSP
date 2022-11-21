@@ -151,6 +151,13 @@ and setFrequency(freq: real) {
     _ = modulator:OSC.setFrequency(freq * modulatorRatio);
 }
 
+// set polpyphonic (true flag) or monophonic (false flag)
+// monophonic: will get back to former notes, if any, upon note off
+// polyphonic: does try to get back to held notes frequencies
+and setPoly(flag: bool) {
+   _ = playingnotes:Notes.setPoly(flag);
+}
+
 // midi-like interface
 
 // beginning of a note -- will effectively ignore duplicated noteOn for same note
@@ -175,7 +182,8 @@ and noteOff(note:int, channel:int) {
       // still gate on-going if there are note held, and switch to last
       if (playingnotes:Notes.nbNotes() > 0){
          val last_played = playingnotes:Notes.lastNote();
-         if (last_played > 0) {
+	 // check we do have a note -- and that it's in range
+         if (last_played > 0 && last_played <= 128) {
             _ = setFrequency(Util.noteToFrequency(last_played - 1));
          }
       } else {
@@ -214,4 +222,8 @@ and default() @[init] {
     _ = setModulatorLevel(0.1);
     // sarting with LA
     _ = setFrequency(0.440);
+
+    // monophonic by default
+    _ = playingnotes:Notes.default();
+    _ = setPoly(true);
 }

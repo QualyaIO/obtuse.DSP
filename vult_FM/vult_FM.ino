@@ -33,7 +33,7 @@ Adafruit_USBD_MIDI usb_midi;
 MIDI_CREATE_INSTANCE(Adafruit_USBD_MIDI, usb_midi, MIDI);
 
 // play by itself instead of MIDI input
-const bool autoplay =  true;
+const bool autoplay =  false;
 // playing notes
 unsigned long midi_tick;
 // starting C
@@ -201,8 +201,9 @@ void loop() {
       dsp_cycle_tick = rp2040.getCycleCount();
 
       // returned float should be between -1 and 1 (should we checkit ?)
-      fix16_t raw = FM_process(context);
-      fix16_t val = Reverb_process(context_reverb, raw);
+      //fix16_t raw = FM_process(context);
+      fix16_t val = FM_process(context);
+      //fix16_t val = Reverb_process(context_reverb, raw);
 
       // shortcut, instead of fixed_to_float * 32767, *almost* the same
       val =  val / 2 - (val >> 16);
@@ -224,14 +225,14 @@ void loop() {
       //OSC_getBuffer(context_osc, raw_buff);
       FM_process_buffer(context, BUFFER_SIZE);
       FM_getBuffer(context, raw_buff);
-      Reverb_process_buffer(context_reverb, BUFFER_SIZE, context.buffer);
-      Reverb_getBuffer(context_reverb, reverb_buff);
+      //Reverb_process_buffer(context_reverb, BUFFER_SIZE, context.buffer);
+      //Reverb_getBuffer(context_reverb, reverb_buff);
       // two times to better compare with classical situation
       for (size_t i = 0; i < BUFFER_SIZE; i++) {
         // returned float should be between -1 and 1 (should we checkit ?)
         // shortcut, instead of fixed_to_float * 32767, *almost* the same and vastly improve perf with buffered version (???)
-        buff[i] =  reverb_buff[i] / 2 - ( reverb_buff[i] >> 16);
-        //buff[i] =  raw_buff[i] / 2 - ( reverb_buff[i] >> 16);
+        //buff[i] =  reverb_buff[i] / 2 - ( reverb_buff[i] >> 16);
+        buff[i] =  raw_buff[i] / 2 - ( raw_buff[i] >> 16);
       }
 
       dsp_cycle_count += rp2040.getCycleCount() - dsp_cycle_tick;
