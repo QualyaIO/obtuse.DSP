@@ -68,7 +68,13 @@ uint8_t Notes_noteOff(Notes__ctx_type_0 &_ctx, int note, int channel){
          int i;
          i = ((-1) + _ctx.notes[note]);
          while(i < _ctx.nb_notes){
-            _ctx.last_notes[i] = _ctx.last_notes[(1 + i)];
+            if(i < 127){
+               _ctx.last_notes[i] = _ctx.last_notes[(1 + i)];
+            }
+            else
+            {
+               _ctx.last_notes[i] = 0;
+            }
             if(_ctx.last_notes[i] > 0){
                _ctx.notes[((-1) + _ctx.last_notes[i])] = (1 + i);
             }
@@ -3000,7 +3006,7 @@ void Voice_noteOff(Voice__ctx_type_0 &_ctx, int note, int channel){
    note = int_clip(note,0,127);
    int v;
    v = _ctx.notes[note];
-   if((v > 0) && (v < 4)){
+   if((v > 0) && (v <= 4)){
       if(Notes_noteOff(_ctx.voicesactive,((-1) + v),0)){
          Voice__sendNoteOff(_ctx,((-1) + v),note,channel);
          _ctx.notes[note] = 0;
@@ -3019,14 +3025,14 @@ void Voice_noteOn(Voice__ctx_type_0 &_ctx, int note, int velocity, int channel){
          int active_v;
          active_v = Notes_firstNote(_ctx.voicesactive);
          if(active_v > 0){
-            Voice_noteOff(_ctx,_ctx.voices[((-1) + v)],0);
+            Voice_noteOff(_ctx,_ctx.voices[((-1) + active_v)],0);
          }
       }
       v = Notes_firstNote(_ctx.voicesinactive);
       if(v > 0){
          if(Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)){
             Voice__sendNoteOn(_ctx,((-1) + v),note,velocity,channel);
-            _ctx.notes[note] = ((-1) + v);
+            _ctx.notes[note] = v;
             _ctx.voices[((-1) + v)] = note;
          }
       }
@@ -3037,8 +3043,15 @@ void Voice_setNbVoices(Voice__ctx_type_0 &_ctx, int nbvoices){
    nbvoices = int_clip(nbvoices,0,4);
    int i;
    i = Notes_nbNotes(_ctx.voicesactive);
-   while(i > nbvoices){
+   while((i > nbvoices) && (i > 0)){
       Voice_noteOff(_ctx,_ctx.voices[((-1) + i)],0);
+      Notes_noteOff(_ctx.voicesinactive,((-1) + i),0);
+      i = ((-1) + i);
+   }
+   i = Notes_nbNotes(_ctx.voicesinactive);
+   while(i < nbvoices){
+      Notes_noteOn(_ctx.voicesinactive,i,127,0);
+      i = (1 + i);
    }
    _ctx.number_voices = nbvoices;
    _ctx.voices_ratio = fix_div(0x10000 /* 1.000000 */,int_to_fix(_ctx.number_voices));

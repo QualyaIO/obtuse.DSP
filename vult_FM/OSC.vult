@@ -37,7 +37,7 @@ and process() {
 
    // advance time, keep range in check here to maximize precision
    phase = phase + step;
-   if (phase > rsize) {
+   while (phase > rsize) {
       phase = phase - rsize;
    }
    // loop in sample

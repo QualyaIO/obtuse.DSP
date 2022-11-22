@@ -186,7 +186,7 @@ and setNbVoices(nbvoices: int) {
    nbvoices = clip(nbvoices, 0, size(voices));
    // turn off voices that will be unused, highest voice first
    val i = voicesactive:Notes.nbNotes();
-   while(i > nbvoices) {
+   while(i > nbvoices && i > 0) {
       // get note of current voice and turn it off (with arbitrary channel)
       _ = noteOff(voices[i-1], 0);
       // also remove from inactive

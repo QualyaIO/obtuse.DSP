@@ -100,7 +100,11 @@ and noteOff(note:int, channel:int): bool {
          // update until current number
          while (i < nb_notes) {
             // move down last notes
-            last_notes[i] = last_notes[i+1];
+	    if (i < size(last_notes) - 1) {
+               last_notes[i] = last_notes[i+1];
+            } else {
+	       last_notes[i] = 0;
+	    }
             // update corresponding pointer in notes[], unless we arrived at top
 	    if (last_notes[i] > 0) { 
                notes[last_notes[i] - 1] = i + 1;

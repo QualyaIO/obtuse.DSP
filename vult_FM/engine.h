@@ -163,7 +163,7 @@ static_inline void OSC_process_init(OSC__ctx_type_2 &_output_){
 
 static_inline fix16_t OSC_process(OSC__ctx_type_2 &_ctx){
    _ctx.phase = (_ctx.phase + _ctx.step);
-   if(_ctx.phase > _ctx.rsize){
+   while(_ctx.phase > _ctx.rsize){
       _ctx.phase = (_ctx.phase + (- _ctx.rsize));
    }
    return OSC_getSample(_ctx,fix_to_int((_ctx.phase + _ctx.phase_base)));
