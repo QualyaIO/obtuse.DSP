@@ -165,6 +165,7 @@ void setup() {
   //OSC_default(context_osc);
   //OSC_setSamplerate(context_osc, float_to_fix(sampleRate / (float)1000));
   Reverb_default(context_reverb);
+  Reverb_setSamplerate(context_reverb, float_to_fix(sampleRate / (float)1000));
 }
 
 void loop() {
@@ -202,8 +203,8 @@ void loop() {
 
       // returned float should be between -1 and 1 (should we checkit ?)
       //fix16_t raw = FM_process(context);
-      fix16_t val = Voice_process(context);
-      //fix16_t val = Reverb_process(context_reverb, raw);
+      fix16_t raw = Voice_process(context);
+      fix16_t val = Reverb_process(context_reverb, raw);
 
       // shortcut, instead of fixed_to_float * 32767, *almost* the same
       val =  val / 2 - (val >> 16);
