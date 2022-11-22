@@ -133,7 +133,7 @@ and noteOff(note:int, channel:int) {
    // corresponding voice stored as voice+1
    val v = notes[note];
    // is this note really playing on a voice?
-   if (v > 0 && v < size(voices)) {
+   if (v > 0 && v <= size(voices)) {
       // remove voice from active
       // channel 0, just because
       if (voicesactive:Notes.noteOff(v - 1, 0)) {
@@ -163,7 +163,7 @@ and noteOn(note:int, velocity:int, channel:int){
 	 // check we do indeed have one (the opposity would be a bug)
 	 if (active_v > 0) {
 	    // disable this voice (with arbitrary channel)
-	    _ = noteOff(voices[v-1], 0);
+	    _ = noteOff(voices[active_v-1], 0);
 	 }
       }
       // ne we should have at least one inactive voice
@@ -174,7 +174,7 @@ and noteOn(note:int, velocity:int, channel:int){
 	    // forward info
 	    _ = _sendNoteOn(v - 1, note, velocity, channel);
             // update arrays
-            notes[note] = v - 1;
+            notes[note] = v;
             voices[v-1] = note;
          }
       }
@@ -188,8 +188,19 @@ and setNbVoices(nbvoices: int) {
    val i = voicesactive:Notes.nbNotes();
    while(i > nbvoices) {
       // get note of current voice and turn it off (with arbitrary channel)
-      noteOff(voices[i-1], 0);
+      _ = noteOff(voices[i-1], 0);
+      // also remove from inactive
+      _ = voicesinactive:Notes.noteOff(i - 1, 0);
+      i = i - 1;
    }
+   // turn on inactive voice, lowest first
+   i = voicesinactive:Notes.nbNotes();
+   while(i < nbvoices) {
+      _ = voicesinactive:Notes.noteOn(i, 127, 0);
+      i = i + 1;
+   }
+
+
    number_voices = nbvoices;
    voices_ratio  = 1.0/real(number_voices);
 }
