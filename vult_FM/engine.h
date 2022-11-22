@@ -551,26 +551,37 @@ void FM_default(FM__ctx_type_0 &_ctx);
 typedef struct Voice__ctx_type_0 {
    Notes__ctx_type_0 voicesinactive;
    Notes__ctx_type_0 voicesactive;
+   fix16_t voices_ratio;
    int voices[4];
-   FM__ctx_type_0 voice3;
-   FM__ctx_type_0 voice2;
-   FM__ctx_type_0 voice1;
-   FM__ctx_type_0 voice0;
+   FM__ctx_type_0 voice3FM;
+   FM__ctx_type_0 voice2FM;
+   FM__ctx_type_0 voice1FM;
+   FM__ctx_type_0 voice0FM;
+   int synth;
    int number_voices;
    int notes[128];
+   fix16_t fs;
 } Voice__ctx_type_0;
 
-typedef Voice__ctx_type_0 Voice_process_type;
+typedef Voice__ctx_type_0 Voice_getSample_type;
 
 void Voice__ctx_type_0_init(Voice__ctx_type_0 &_output_);
+
+static_inline void Voice_getSample_init(Voice__ctx_type_0 &_output_){
+   Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+fix16_t Voice_getSample(Voice__ctx_type_0 &_ctx, int voice);
+
+typedef Voice__ctx_type_0 Voice_process_type;
 
 static_inline void Voice_process_init(Voice__ctx_type_0 &_output_){
    Voice__ctx_type_0_init(_output_);
    return ;
 }
 
-static_inline void Voice_process(Voice__ctx_type_0 &_ctx){
-}
+fix16_t Voice_process(Voice__ctx_type_0 &_ctx);
 
 typedef Voice__ctx_type_0 Voice__sendNoteOn_type;
 
@@ -617,6 +628,24 @@ static_inline void Voice_setNbVoices_init(Voice__ctx_type_0 &_output_){
 
 void Voice_setNbVoices(Voice__ctx_type_0 &_ctx, int nbvoices);
 
+typedef Voice__ctx_type_0 Voice_setSamplerate_type;
+
+static_inline void Voice_setSamplerate_init(Voice__ctx_type_0 &_output_){
+   Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Voice_setSamplerate(Voice__ctx_type_0 &_ctx, fix16_t newFs);
+
+typedef Voice__ctx_type_0 Voice_selectSynth_type;
+
+static_inline void Voice_selectSynth_init(Voice__ctx_type_0 &_output_){
+   Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Voice_selectSynth(Voice__ctx_type_0 &_ctx, int nsynth);
+
 typedef Voice__ctx_type_0 Voice_default_type;
 
 static_inline void Voice_default_init(Voice__ctx_type_0 &_output_){
@@ -630,7 +659,7 @@ typedef struct Reverb__ctx_type_0 {
    int pos;
    fix16_t decay;
    fix16_t buffer_d[256];
-   fix16_t buffer[40000];
+   fix16_t buffer[20000];
 } Reverb__ctx_type_0;
 
 typedef Reverb__ctx_type_0 Reverb_process_type;

@@ -2866,37 +2866,95 @@ void Voice__ctx_type_0_init(Voice__ctx_type_0 &_output_){
    Voice__ctx_type_0 _ctx;
    Notes__ctx_type_0_init(_ctx.voicesinactive);
    Notes__ctx_type_0_init(_ctx.voicesactive);
+   _ctx.voices_ratio = 0x0 /* 0.000000 */;
    int_init_array(4,0,_ctx.voices);
-   FM__ctx_type_0_init(_ctx.voice3);
-   FM__ctx_type_0_init(_ctx.voice2);
-   FM__ctx_type_0_init(_ctx.voice1);
-   FM__ctx_type_0_init(_ctx.voice0);
+   FM__ctx_type_0_init(_ctx.voice3FM);
+   FM__ctx_type_0_init(_ctx.voice2FM);
+   FM__ctx_type_0_init(_ctx.voice1FM);
+   FM__ctx_type_0_init(_ctx.voice0FM);
+   _ctx.synth = 0;
    _ctx.number_voices = 0;
    int_init_array(128,0,_ctx.notes);
+   _ctx.fs = 0x0 /* 0.000000 */;
    Voice_default(_ctx);
    _output_ = _ctx;
    return ;
 }
 
-void Voice__sendNoteOn(Voice__ctx_type_0 &_ctx, int voice, int note, int velocity, int channel){
-   if((voice >= 0) && (voice < 4)){
+fix16_t Voice_getSample(Voice__ctx_type_0 &_ctx, int voice){
+   if(voice < _ctx.number_voices){
       if(voice == 0){
-         FM_noteOn(_ctx.voice0,note,velocity,channel);
+         if(_ctx.synth == 0){
+            return FM_process(_ctx.voice0FM);
+         }
       }
       else
       {
          if(voice == 1){
-            FM_noteOn(_ctx.voice1,note,velocity,channel);
+            if(_ctx.synth == 0){
+               return FM_process(_ctx.voice1FM);
+            }
          }
          else
          {
             if(voice == 2){
-               FM_noteOn(_ctx.voice2,note,velocity,channel);
+               if(_ctx.synth == 0){
+                  return FM_process(_ctx.voice2FM);
+               }
             }
             else
             {
                if(voice == 3){
-                  FM_noteOn(_ctx.voice3,note,velocity,channel);
+                  if(_ctx.synth == 0){
+                     return FM_process(_ctx.voice3FM);
+                  }
+               }
+            }
+         }
+      }
+   }
+   return 0x0 /* 0.000000 */;
+}
+
+fix16_t Voice_process(Voice__ctx_type_0 &_ctx){
+   fix16_t value;
+   value = 0x0 /* 0.000000 */;
+   int i;
+   i = 0;
+   while(i < _ctx.number_voices){
+      value = (value + Voice_getSample(_ctx,i));
+      i = (1 + i);
+   }
+   return fix_mul(_ctx.voices_ratio,value);
+}
+
+void Voice__sendNoteOn(Voice__ctx_type_0 &_ctx, int voice, int note, int velocity, int channel){
+   if((voice >= 0) && (voice < 4)){
+      if(voice == 0){
+         if(_ctx.synth == 0){
+            FM_noteOn(_ctx.voice0FM,note,velocity,channel);
+         }
+      }
+      else
+      {
+         if(voice == 1){
+            if(_ctx.synth == 0){
+               FM_noteOn(_ctx.voice1FM,note,velocity,channel);
+            }
+         }
+         else
+         {
+            if(voice == 2){
+               if(_ctx.synth == 0){
+                  FM_noteOn(_ctx.voice2FM,note,velocity,channel);
+               }
+            }
+            else
+            {
+               if(voice == 3){
+                  if(_ctx.synth == 0){
+                     FM_noteOn(_ctx.voice3FM,note,velocity,channel);
+                  }
                }
             }
          }
@@ -2907,22 +2965,30 @@ void Voice__sendNoteOn(Voice__ctx_type_0 &_ctx, int voice, int note, int velocit
 void Voice__sendNoteOff(Voice__ctx_type_0 &_ctx, int voice, int note, int channel){
    if((voice >= 0) && (voice < 4)){
       if(voice == 0){
-         FM_noteOff(_ctx.voice0,note,channel);
+         if(_ctx.synth == 0){
+            FM_noteOff(_ctx.voice0FM,note,channel);
+         }
       }
       else
       {
          if(voice == 1){
-            FM_noteOff(_ctx.voice1,note,channel);
+            if(_ctx.synth == 0){
+               FM_noteOff(_ctx.voice1FM,note,channel);
+            }
          }
          else
          {
             if(voice == 2){
-               FM_noteOff(_ctx.voice2,note,channel);
+               if(_ctx.synth == 0){
+                  FM_noteOff(_ctx.voice2FM,note,channel);
+               }
             }
             else
             {
                if(voice == 3){
-                  FM_noteOff(_ctx.voice3,note,channel);
+                  if(_ctx.synth == 0){
+                     FM_noteOff(_ctx.voice3FM,note,channel);
+                  }
                }
             }
          }
@@ -2975,16 +3041,47 @@ void Voice_setNbVoices(Voice__ctx_type_0 &_ctx, int nbvoices){
       Voice_noteOff(_ctx,_ctx.voices[((-1) + i)],0);
    }
    _ctx.number_voices = nbvoices;
+   _ctx.voices_ratio = fix_div(0x10000 /* 1.000000 */,int_to_fix(_ctx.number_voices));
+}
+
+void Voice_setSamplerate(Voice__ctx_type_0 &_ctx, fix16_t newFs){
+   if(newFs > 0x0 /* 0.000000 */){
+      _ctx.fs = newFs;
+   }
+   if(_ctx.synth == 0){
+      FM_setSamplerate(_ctx.voice0FM,_ctx.fs);
+      FM_setSamplerate(_ctx.voice1FM,_ctx.fs);
+      FM_setSamplerate(_ctx.voice2FM,_ctx.fs);
+      FM_setSamplerate(_ctx.voice3FM,_ctx.fs);
+   }
+}
+
+void Voice_selectSynth(Voice__ctx_type_0 &_ctx, int nsynth){
+   if(nsynth == 0){
+      nsynth = _ctx.synth;
+      FM_default(_ctx.voice0FM);
+      FM_setPoly(_ctx.voice0FM,true);
+      FM_default(_ctx.voice1FM);
+      FM_setPoly(_ctx.voice1FM,true);
+      FM_default(_ctx.voice2FM);
+      FM_setPoly(_ctx.voice2FM,true);
+      FM_default(_ctx.voice3FM);
+      FM_setPoly(_ctx.voice3FM,true);
+   }
+   Voice_setSamplerate(_ctx,_ctx.fs);
 }
 
 void Voice_default(Voice__ctx_type_0 &_ctx){
    if(_ctx.number_voices == 0){
       _ctx.number_voices = 4;
    }
+   Voice_setNbVoices(_ctx,_ctx.number_voices);
    Notes_default(_ctx.voicesactive);
    Notes_setPoly(_ctx.voicesactive,false);
    Notes_default(_ctx.voicesinactive);
    Notes_setPoly(_ctx.voicesinactive,false);
+   _ctx.fs = 0x2c1999 /* 44.100000 */;
+   Voice_selectSynth(_ctx,0);
 }
 
 void Reverb__ctx_type_0_init(Reverb__ctx_type_0 &_output_){
@@ -3000,12 +3097,12 @@ void Reverb__ctx_type_0_init(Reverb__ctx_type_0 &_output_){
 
 fix16_t Reverb_process(Reverb__ctx_type_0 &_ctx, fix16_t sample){
    int next_pos;
-   next_pos = ((_ctx.pos + (40000 / 2)) % 40000);
+   next_pos = ((_ctx.pos + (20000 / 2)) % 20000);
    _ctx.buffer[next_pos] = (fix_mul(_ctx.decay,_ctx.buffer[_ctx.pos]) + fix_mul(sample,(0x10000 /* 1.000000 */ + (- _ctx.decay))));
    fix16_t ret;
    ret = _ctx.buffer[_ctx.pos];
    _ctx.pos = (1 + _ctx.pos);
-   _ctx.pos = (_ctx.pos % 40000);
+   _ctx.pos = (_ctx.pos % 20000);
    return ret;
 }
 
@@ -3015,9 +3112,9 @@ void Reverb_process_buffer(Reverb__ctx_type_0 &_ctx, int nb, fix16_t (&input)[25
       nb = 256;
    }
    int delay;
-   delay = (40000 / 2);
+   delay = (20000 / 2);
    int s;
-   s = 40000;
+   s = 20000;
    int next_pos;
    int i;
    i = 0;
@@ -3026,7 +3123,7 @@ void Reverb_process_buffer(Reverb__ctx_type_0 &_ctx, int nb, fix16_t (&input)[25
       _ctx.buffer[next_pos] = (fix_mul(_ctx.decay,_ctx.buffer[_ctx.pos]) + fix_mul(input[i],(0x10000 /* 1.000000 */ + (- _ctx.decay))));
       _ctx.buffer_d[i] = _ctx.buffer[next_pos];
       _ctx.pos = (1 + _ctx.pos);
-      _ctx.pos = (_ctx.pos % 40000);
+      _ctx.pos = (_ctx.pos % 20000);
       i = (1 + i);
    }
 }

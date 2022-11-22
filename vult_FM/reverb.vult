@@ -2,10 +2,10 @@
 // Attempt at creating reverb using the heavily-used Schroeder reverb
 
 
-// testing, consider fs 40000 and max delay 1s
+// testing, consider fs 40000 and max delay 0.5s
 
 fun process(sample: real) {
-    mem buffer: array(real, 40000);
+    mem buffer: array(real, 20000);
     mem pos;
     // attenuation for each pass
     mem decay;

@@ -8,7 +8,7 @@
 #include "engine.h"
 
 // context for FM synth used in vult, used to handle internal states
-FM_process_type context;
+Voice_process_type context;
 //OSC_process_type context_osc;
 // another for the filter
 Reverb_process_type context_reverb;
@@ -160,8 +160,8 @@ void setup() {
 
   /* Vult */
   // Init FM, then pass sample rate, not forgetting to convert passed parameters to fixed (of course...)
-  FM_default(context);
-  FM_setSamplerate(context, float_to_fix(sampleRate / (float)1000));
+  Voice_default(context);
+  Voice_setSamplerate(context, float_to_fix(sampleRate / (float)1000));
   //OSC_default(context_osc);
   //OSC_setSamplerate(context_osc, float_to_fix(sampleRate / (float)1000));
   Reverb_default(context_reverb);
@@ -181,14 +181,14 @@ void loop() {
         current_note = 0;
       }
       Serial.println(current_note);
-      FM_noteOn(context, current_note, 0, 0);
+      Voice_noteOn(context, current_note, 0, 0);
       //OSC_setFrequency(context_osc, Util_noteToFrequency(current_note));
       midi_tick = millis();
       gate = true;
     }
     if (gate and millis() - midi_tick >= 50) {
       Serial.println("note off");
-      FM_noteOff(context, current_note, 0);
+      Voice_noteOff(context, current_note, 0);
       midi_tick = millis();
       gate = false;
     }
@@ -202,7 +202,7 @@ void loop() {
 
       // returned float should be between -1 and 1 (should we checkit ?)
       //fix16_t raw = FM_process(context);
-      fix16_t val = FM_process(context);
+      fix16_t val = Voice_process(context);
       //fix16_t val = Reverb_process(context_reverb, raw);
 
       // shortcut, instead of fixed_to_float * 32767, *almost* the same
@@ -223,8 +223,9 @@ void loop() {
 
       //OSC_process_buffer_simplest(context_osc, BUFFER_SIZE);
       //OSC_getBuffer(context_osc, raw_buff);
-      FM_process_buffer(context, BUFFER_SIZE);
-      FM_getBuffer(context, raw_buff);
+      // FIXME: buffer not supported for voice at the moment
+      //FM_process_buffer(context, BUFFER_SIZE);
+      //FM_getBuffer(context, raw_buff);
       //Reverb_process_buffer(context_reverb, BUFFER_SIZE, context.buffer);
       //Reverb_getBuffer(context_reverb, reverb_buff);
       // two times to better compare with classical situation
@@ -285,7 +286,7 @@ void handleNoteOn(byte channel, byte pitch, byte velocity)
 
   Serial.print(" velocity = ");
   Serial.println(velocity);
-  FM_noteOn(context, pitch, 0, 0);
+  Voice_noteOn(context, pitch, 0, 0);
 }
 
 void handleNoteOff(byte channel, byte pitch, byte velocity)
@@ -299,5 +300,5 @@ void handleNoteOff(byte channel, byte pitch, byte velocity)
 
   Serial.print(" velocity = ");
   Serial.println(velocity);
-  FM_noteOff(context, pitch, 0);
+  Voice_noteOff(context, pitch, 0);
 }
