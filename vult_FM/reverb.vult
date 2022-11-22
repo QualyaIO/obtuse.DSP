@@ -4,21 +4,32 @@
 // Implementation based on https://github.com/Rishikeshdaoo/Reverberator/ (e.g. magic numbers...)
 
 fun process(sample: real) {
-  return comb1:Comb.process(sample);
+  // average comb filters' output
+  val combs_filter = (comb0:Comb.process(sample) + comb1:Comb.process(sample) + comb2:Comb.process(sample) + comb3:Comb.process(sample)) * 0.25;
+  return combs_filter;
 }
 
 // pass-down parameters to combfilters
 and setDecay(newDecay: real) {
-  _ = comb1:Comb.setDecay(newDecay);
+  _ = comb0:Comb.setDecay(newDecay);
+  _ = comb1:Comb.setDecay(newDecay - 0.1313);
+  _ = comb2:Comb.setDecay(newDecay - 0.2743);
+  _ = comb3:Comb.setDecay(newDecay - 0.31);
 }
-and setDelay(delayms: int) {
-  _ = comb1:Comb.setDelay(delayms);
+and setDelay(delayms: real) {
+  _ = comb0:Comb.setDelay(delayms);
+  _ = comb1:Comb.setDelay(delayms - 11.73);
+  _ = comb2:Comb.setDelay(delayms + 19.31);
+  _ = comb3:Comb.setDelay(delayms - 7.97);
 }
 and setSamplerate(newFs:real) {
+  _ = comb0:Comb.setSamplerate(newFs);
   _ = comb1:Comb.setSamplerate(newFs);
+  _ = comb2:Comb.setSamplerate(newFs);
+  _ = comb3:Comb.setSamplerate(newFs);
 }
 and default() @[init] {
   _ = setSamplerate(44.100);
-  _ = setDelay(99);
+  _ = setDelay(99.0);
   _ = setDecay(0.29);
 }

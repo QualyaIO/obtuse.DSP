@@ -11611,13 +11611,16 @@ void Comb_default(Comb__ctx_type_0 &_ctx){
    }
    _ctx.decay = 0x6666 /* 0.400000 */;
    Comb_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
-   Comb_setDelay(_ctx,99);
+   Comb_setDelay(_ctx,0x630000 /* 99.000000 */);
    Comb_setDecay(_ctx,0x4a3d /* 0.290000 */);
 }
 
 void Reverb__ctx_type_0_init(Reverb__ctx_type_0 &_output_){
    Reverb__ctx_type_0 _ctx;
+   Comb__ctx_type_0_init(_ctx.comb3);
+   Comb__ctx_type_0_init(_ctx.comb2);
    Comb__ctx_type_0_init(_ctx.comb1);
+   Comb__ctx_type_0_init(_ctx.comb0);
    Reverb_default(_ctx);
    _output_ = _ctx;
    return ;
