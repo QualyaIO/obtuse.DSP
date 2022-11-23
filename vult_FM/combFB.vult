@@ -1,0 +1,116 @@
+
+// Comb filter, i.e. delay with decay
+// Here more specifically implements a feedback comb filter
+// Output will be kept to -1..1 range
+
+fun process(sample: real) {
+    // internal buffer, for delay
+    mem buffer;
+    // current position inside it
+    mem pos;
+    // how far in the buffer in samples we go
+    mem delay;
+    // attenuation for each pass
+    mem decay;
+    // multiplicator to keep output amplitude in check (direclty related to decay, computed once)
+    mem scale;
+
+    // buffer holds delayed signal 
+    val out = (sample + buffer[pos] * decay) * scale;
+    buffer[pos] = out;
+
+    // advance and loop on actual delay size    
+    pos = pos + 1;
+    pos = pos % delay;
+
+    return out;
+}
+
+// FIXME: not tested
+and process_buffer(nb: int, input: array(real, 256)) {
+    mem buffer_d;
+    nb = clip(nb, 0, size(buffer_d));
+    if (nb == 0) {
+       nb = size(buffer_d);
+    }
+
+    // filter output to be updated
+    val out;
+
+    val i = 0;
+    while (i < nb) {
+       out = (input[i] + buffer[pos] * decay) * scale;
+       buffer[pos] = out;
+       buffer_d[i] = out;
+       pos = pos + 1;
+       pos = pos % delay;
+       i = i + 1;
+    }
+}
+// copy current buffer to another one up to desired number (0 for max)
+// too bad we have to hard-code size here
+and getBuffer() {
+   return buffer_d;
+}
+and copyTo(oBuffer:array(real, 256), nb: int){
+   // ensure we won't overflow
+   val min_size = size(oBuffer);
+   if (size(buffer_d) < min_size) {
+      min_size = size(buffer_d);
+   }
+   nb = clip(nb, 0, min_size);
+   if (nb == 0) {
+      nb = min_size;
+   }
+   val i = 0;
+   while (i < nb) {
+      oBuffer[i] = buffer_d[i];
+      i = i + 1;
+   }
+}
+
+// setter for decay, here on
+and setDecay(newDecay: real) {
+  decay = clip(newDecay, 0.0, 1.0);
+  scale = 1.0 / (1.0 + decay);
+}
+
+// get max delay in ms
+and getMaxDelay() : real {
+  mem fs;
+  if (fs <= 0.0) {
+     return 0.0;
+  }
+  // we have frequency in kHz, directly get ms
+  return real(size(buffer)) / fs;
+}
+
+// change delay (in ms). Will be caped at max buffersize -- check that with getMaxDelay()
+// Warning: does *not* reset buffer upon change
+// Note: with fixed float cannot ask above 32767ms (just in case it would make sense to have a 30s buffer on a platform which needs fixed float)
+and setDelay(delayms: real) {
+   mem fs;
+   delayms = clip(delayms, 0.0, getMaxDelay());
+   // note: we have frequency in kHz, counterbalance delay in ms
+   delay = int(fs * real(delayms));
+   // failsafe
+   delay = clip(delay, 0, size(buffer));
+   // reset position in buffer
+   pos = 0;
+}
+
+// seter for parameters. expect values of desired frequency and current sampling rate in kHz to avoid fixed float limits ([1/32767 ..32767]... probably)
+and setSamplerate(newFs:real) {
+   if (newFs > 0.0) {
+      fs = newFs;
+   }
+}
+
+and default() @[init] {
+   buffer = Util.buffer_large();
+   // output values (with delay), will copy a new array
+   buffer_d = Util.buffer();
+   _ = setSamplerate(44.100);
+   _ = setDelay(99.0);
+   _ = setDecay(0.29);
+}

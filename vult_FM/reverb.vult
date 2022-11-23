@@ -1,44 +1,54 @@
 
 // Attempt at creating reverb using the heavily-used Schroeder reverb
 
-// Implementation based on https://github.com/Rishikeshdaoo/Reverberator/ (e.g. magic numbers...)
+// Note: 
+// Numbers from Schroeder reverberator SATREV, see Figure 3.6 https://ccrma.stanford.edu/~jos/pasp/Example_Schroeder_Reverberators.html 
+// comb0: 0.827 / 19.45ms (778 samples)
+// comb1: 0.805 / 22.525ms (901 samples)
+// comb2: 0.783 / 25.275ms (1011 samples)
+// comb3: 0.764 / 28.075ms (1123 samples)
+// allpass0: 0.7 / 3.125ms (125 samples)
+// allpass0: 0.7 / 1.05ms (42 samples)
 
 fun process(sample: real) {
   // average comb filters' output
-  val combs_filter = (comb0:Comb.process(sample) + comb1:Comb.process(sample) + comb2:Comb.process(sample) + comb3:Comb.process(sample)) * 0.25;
+  val combs_filter = (comb0:CombFB.process(sample) + comb1:CombFB.process(sample) + comb2:CombFB.process(sample) + comb3:CombFB.process(sample)) * 0.25;
   // apply allpass in series
   return allpass1:Allpass.process(allpass0:Allpass.process(combs_filter));
 }
 
 // pass-down parameters to combfilters
+// In theory [0..1], but will start to degenerate below 0.127 as it won't be sufficient for all filters, some will be default to 0.
 and setDecay(newDecay: real) {
-  _ = comb0:Comb.setDecay(newDecay);
-  _ = comb1:Comb.setDecay(newDecay - 0.1313);
-  _ = comb2:Comb.setDecay(newDecay - 0.2743);
-  _ = comb3:Comb.setDecay(newDecay - 0.31);
+  _ = comb0:CombFB.setDecay(newDecay);
+  _ = comb1:CombFB.setDecay(newDecay - 0.022);
+  _ = comb2:CombFB.setDecay(newDecay - 0.044);
+  _ = comb3:CombFB.setDecay(newDecay - 0.063);
   // fixed value for both all-pass??
-  _ = allpass0:Allpass.setDecay(0.131);
-  _ = allpass1:Allpass.setDecay(0.131);
+  _ = allpass0:Allpass.setDecay(newDecay - 0.127);
+  _ = allpass1:Allpass.setDecay(newDecay - 0.127);
 }
+
+// In the ory [0.. max buffer/fs] but will start to degenerate below
 and setDelay(delayms: real) {
-  _ = comb0:Comb.setDelay(delayms);
-  _ = comb1:Comb.setDelay(delayms - 11.73);
-  _ = comb2:Comb.setDelay(delayms + 19.31);
-  _ = comb3:Comb.setDelay(delayms - 7.97);
+  _ = comb0:CombFB.setDelay(delayms - 8.625);
+  _ = comb1:CombFB.setDelay(delayms - 5.55);
+  _ = comb2:CombFB.setDelay(delayms - 2.8);
+  _ = comb3:CombFB.setDelay(delayms);
   // fixed value for both all-pass??
-  _ = allpass0:Allpass.setDelay(89.27);
-  _ = allpass1:Allpass.setDelay(89.27);
+  _ = allpass0:Allpass.setDelay(delayms - 24.95);
+  _ = allpass1:Allpass.setDelay(delayms - 27.025);
 }
 and setSamplerate(newFs:real) {
-  _ = comb0:Comb.setSamplerate(newFs);
-  _ = comb1:Comb.setSamplerate(newFs);
-  _ = comb2:Comb.setSamplerate(newFs);
-  _ = comb3:Comb.setSamplerate(newFs);
+  _ = comb0:CombFB.setSamplerate(newFs);
+  _ = comb1:CombFB.setSamplerate(newFs);
+  _ = comb2:CombFB.setSamplerate(newFs);
+  _ = comb3:CombFB.setSamplerate(newFs);
   _ = allpass0:Allpass.setSamplerate(newFs);
   _ = allpass1:Allpass.setSamplerate(newFs);
 }
 and default() @[init] {
   _ = setSamplerate(44.100);
-  _ = setDelay(99.0);
-  _ = setDecay(0.29);
+  _ = setDelay(28.075);
+  _ = setDecay(0.827);
 }

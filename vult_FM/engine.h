@@ -661,7 +661,7 @@ static_inline void Voice_default_init(Voice__ctx_type_0 &_output_){
 
 void Voice_default(Voice__ctx_type_0 &_ctx);
 
-typedef struct Comb__ctx_type_0 {
+typedef struct CombFB__ctx_type_0 {
    fix16_t scale;
    int pos;
    fix16_t fs;
@@ -669,110 +669,110 @@ typedef struct Comb__ctx_type_0 {
    fix16_t decay;
    fix16_t buffer_d[256];
    fix16_t buffer[4096];
-} Comb__ctx_type_0;
+} CombFB__ctx_type_0;
 
-typedef Comb__ctx_type_0 Comb_process_type;
+typedef CombFB__ctx_type_0 CombFB_process_type;
 
-void Comb__ctx_type_0_init(Comb__ctx_type_0 &_output_);
+void CombFB__ctx_type_0_init(CombFB__ctx_type_0 &_output_);
 
-static_inline void Comb_process_init(Comb__ctx_type_0 &_output_){
-   Comb__ctx_type_0_init(_output_);
+static_inline void CombFB_process_init(CombFB__ctx_type_0 &_output_){
+   CombFB__ctx_type_0_init(_output_);
    return ;
 }
 
-fix16_t Comb_process(Comb__ctx_type_0 &_ctx, fix16_t sample);
+fix16_t CombFB_process(CombFB__ctx_type_0 &_ctx, fix16_t sample);
 
-typedef Comb__ctx_type_0 Comb_process_buffer_type;
+typedef CombFB__ctx_type_0 CombFB_process_buffer_type;
 
-static_inline void Comb_process_buffer_init(Comb__ctx_type_0 &_output_){
-   Comb__ctx_type_0_init(_output_);
+static_inline void CombFB_process_buffer_init(CombFB__ctx_type_0 &_output_){
+   CombFB__ctx_type_0_init(_output_);
    return ;
 }
 
-void Comb_process_buffer(Comb__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256]);
+void CombFB_process_buffer(CombFB__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256]);
 
-typedef Comb__ctx_type_0 Comb_getBuffer_type;
+typedef CombFB__ctx_type_0 CombFB_getBuffer_type;
 
-static_inline void Comb_getBuffer_init(Comb__ctx_type_0 &_output_){
-   Comb__ctx_type_0_init(_output_);
+static_inline void CombFB_getBuffer_init(CombFB__ctx_type_0 &_output_){
+   CombFB__ctx_type_0_init(_output_);
    return ;
 }
 
-static_inline void Comb_getBuffer(Comb__ctx_type_0 &_ctx, fix16_t (&_output_)[256]){
+static_inline void CombFB_getBuffer(CombFB__ctx_type_0 &_ctx, fix16_t (&_output_)[256]){
    fix_copy_array(256,_output_,_ctx.buffer_d);
    return ;
 }
 
-typedef Comb__ctx_type_0 Comb_copyTo_type;
+typedef CombFB__ctx_type_0 CombFB_copyTo_type;
 
-static_inline void Comb_copyTo_init(Comb__ctx_type_0 &_output_){
-   Comb__ctx_type_0_init(_output_);
+static_inline void CombFB_copyTo_init(CombFB__ctx_type_0 &_output_){
+   CombFB__ctx_type_0_init(_output_);
    return ;
 }
 
-void Comb_copyTo(Comb__ctx_type_0 &_ctx, fix16_t (&oBuffer)[256], int nb);
+void CombFB_copyTo(CombFB__ctx_type_0 &_ctx, fix16_t (&oBuffer)[256], int nb);
 
-typedef Comb__ctx_type_0 Comb_setDecay_type;
+typedef CombFB__ctx_type_0 CombFB_setDecay_type;
 
-static_inline void Comb_setDecay_init(Comb__ctx_type_0 &_output_){
-   Comb__ctx_type_0_init(_output_);
+static_inline void CombFB_setDecay_init(CombFB__ctx_type_0 &_output_){
+   CombFB__ctx_type_0_init(_output_);
    return ;
 }
 
-static_inline void Comb_setDecay(Comb__ctx_type_0 &_ctx, fix16_t newDecay){
+static_inline void CombFB_setDecay(CombFB__ctx_type_0 &_ctx, fix16_t newDecay){
    _ctx.decay = fix_clip(newDecay,0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
    _ctx.scale = fix_div(0x10000 /* 1.000000 */,(0x10000 /* 1.000000 */ + _ctx.decay));
 }
 
-typedef Comb__ctx_type_0 Comb_getMaxDelay_type;
+typedef CombFB__ctx_type_0 CombFB_getMaxDelay_type;
 
-static_inline void Comb_getMaxDelay_init(Comb__ctx_type_0 &_output_){
-   Comb__ctx_type_0_init(_output_);
+static_inline void CombFB_getMaxDelay_init(CombFB__ctx_type_0 &_output_){
+   CombFB__ctx_type_0_init(_output_);
    return ;
 }
 
-static_inline fix16_t Comb_getMaxDelay(Comb__ctx_type_0 &_ctx){
+static_inline fix16_t CombFB_getMaxDelay(CombFB__ctx_type_0 &_ctx){
    if(_ctx.fs <= 0x0 /* 0.000000 */){
       return 0x0 /* 0.000000 */;
    }
    return fix_div(0x10000000 /* 4096.000000 */,_ctx.fs);
 }
 
-typedef Comb__ctx_type_0 Comb_setDelay_type;
+typedef CombFB__ctx_type_0 CombFB_setDelay_type;
 
-static_inline void Comb_setDelay_init(Comb__ctx_type_0 &_output_){
-   Comb__ctx_type_0_init(_output_);
+static_inline void CombFB_setDelay_init(CombFB__ctx_type_0 &_output_){
+   CombFB__ctx_type_0_init(_output_);
    return ;
 }
 
-static_inline void Comb_setDelay(Comb__ctx_type_0 &_ctx, fix16_t delayms){
-   delayms = fix_clip(delayms,0x0 /* 0.000000 */,Comb_getMaxDelay(_ctx));
+static_inline void CombFB_setDelay(CombFB__ctx_type_0 &_ctx, fix16_t delayms){
+   delayms = fix_clip(delayms,0x0 /* 0.000000 */,CombFB_getMaxDelay(_ctx));
    _ctx.delay = fix_to_int(fix_mul(_ctx.fs,delayms));
    _ctx.delay = int_clip(_ctx.delay,0,4096);
    _ctx.pos = 0;
 }
 
-typedef Comb__ctx_type_0 Comb_setSamplerate_type;
+typedef CombFB__ctx_type_0 CombFB_setSamplerate_type;
 
-static_inline void Comb_setSamplerate_init(Comb__ctx_type_0 &_output_){
-   Comb__ctx_type_0_init(_output_);
+static_inline void CombFB_setSamplerate_init(CombFB__ctx_type_0 &_output_){
+   CombFB__ctx_type_0_init(_output_);
    return ;
 }
 
-static_inline void Comb_setSamplerate(Comb__ctx_type_0 &_ctx, fix16_t newFs){
+static_inline void CombFB_setSamplerate(CombFB__ctx_type_0 &_ctx, fix16_t newFs){
    if(newFs > 0x0 /* 0.000000 */){
       _ctx.fs = newFs;
    }
 };
 
-typedef Comb__ctx_type_0 Comb_default_type;
+typedef CombFB__ctx_type_0 CombFB_default_type;
 
-static_inline void Comb_default_init(Comb__ctx_type_0 &_output_){
-   Comb__ctx_type_0_init(_output_);
+static_inline void CombFB_default_init(CombFB__ctx_type_0 &_output_){
+   CombFB__ctx_type_0_init(_output_);
    return ;
 }
 
-void Comb_default(Comb__ctx_type_0 &_ctx);
+void CombFB_default(CombFB__ctx_type_0 &_ctx);
 
 typedef struct Allpass__ctx_type_0 {
    fix16_t scale;
@@ -889,10 +889,10 @@ static_inline void Allpass_default_init(Allpass__ctx_type_0 &_output_){
 void Allpass_default(Allpass__ctx_type_0 &_ctx);
 
 typedef struct Reverb__ctx_type_0 {
-   Comb__ctx_type_0 comb3;
-   Comb__ctx_type_0 comb2;
-   Comb__ctx_type_0 comb1;
-   Comb__ctx_type_0 comb0;
+   CombFB__ctx_type_0 comb3;
+   CombFB__ctx_type_0 comb2;
+   CombFB__ctx_type_0 comb1;
+   CombFB__ctx_type_0 comb0;
    Allpass__ctx_type_0 allpass1;
    Allpass__ctx_type_0 allpass0;
 } Reverb__ctx_type_0;
@@ -908,7 +908,7 @@ static_inline void Reverb_process_init(Reverb__ctx_type_0 &_output_){
 
 static_inline fix16_t Reverb_process(Reverb__ctx_type_0 &_ctx, fix16_t sample){
    fix16_t combs_filter;
-   combs_filter = ((Comb_process(_ctx.comb0,sample) + Comb_process(_ctx.comb1,sample) + Comb_process(_ctx.comb2,sample) + Comb_process(_ctx.comb3,sample)) >> 2);
+   combs_filter = ((CombFB_process(_ctx.comb0,sample) + CombFB_process(_ctx.comb1,sample) + CombFB_process(_ctx.comb2,sample) + CombFB_process(_ctx.comb3,sample)) >> 2);
    return Allpass_process(_ctx.allpass1,Allpass_process(_ctx.allpass0,combs_filter));
 }
 
@@ -948,8 +948,8 @@ static_inline void Reverb_default_init(Reverb__ctx_type_0 &_output_){
 
 static_inline void Reverb_default(Reverb__ctx_type_0 &_ctx){
    Reverb_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
-   Reverb_setDelay(_ctx,0x630000 /* 99.000000 */);
-   Reverb_setDecay(_ctx,0x4a3d /* 0.290000 */);
+   Reverb_setDelay(_ctx,0x1c1333 /* 28.075000 */);
+   Reverb_setDecay(_ctx,0xd3b6 /* 0.827000 */);
 }
 
 

@@ -3097,8 +3097,8 @@ void Voice_default(Voice__ctx_type_0 &_ctx){
    Voice_selectSynth(_ctx,0);
 }
 
-void Comb__ctx_type_0_init(Comb__ctx_type_0 &_output_){
-   Comb__ctx_type_0 _ctx;
+void CombFB__ctx_type_0_init(CombFB__ctx_type_0 &_output_){
+   CombFB__ctx_type_0 _ctx;
    _ctx.scale = 0x0 /* 0.000000 */;
    _ctx.pos = 0;
    _ctx.fs = 0x0 /* 0.000000 */;
@@ -3106,39 +3106,39 @@ void Comb__ctx_type_0_init(Comb__ctx_type_0 &_output_){
    _ctx.decay = 0x0 /* 0.000000 */;
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_d);
    ;
-   Comb_default(_ctx);
+   CombFB_default(_ctx);
    _output_ = _ctx;
    return ;
 }
 
-fix16_t Comb_process(Comb__ctx_type_0 &_ctx, fix16_t sample){
-   fix16_t decayed;
-   decayed = fix_mul(_ctx.decay,_ctx.buffer[_ctx.pos]);
-   _ctx.buffer[_ctx.pos] = sample;
+fix16_t CombFB_process(CombFB__ctx_type_0 &_ctx, fix16_t sample){
+   fix16_t out;
+   out = fix_mul(_ctx.scale,(sample + fix_mul(_ctx.decay,_ctx.buffer[_ctx.pos])));
+   _ctx.buffer[_ctx.pos] = out;
    _ctx.pos = (1 + _ctx.pos);
    _ctx.pos = (_ctx.pos % _ctx.delay);
-   return fix_mul(_ctx.scale,(decayed + sample));
+   return out;
 }
 
-void Comb_process_buffer(Comb__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256]){
+void CombFB_process_buffer(CombFB__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256]){
    nb = int_clip(nb,0,256);
    if(nb == 0){
       nb = 256;
    }
-   fix16_t decayed;
+   fix16_t out;
    int i;
    i = 0;
    while(i < nb){
-      decayed = fix_mul(_ctx.decay,_ctx.buffer[_ctx.pos]);
-      _ctx.buffer[_ctx.pos] = input[i];
-      _ctx.buffer_d[i] = fix_mul(_ctx.scale,(decayed + _ctx.buffer[_ctx.pos]));
+      out = fix_mul(_ctx.scale,(input[i] + fix_mul(_ctx.decay,_ctx.buffer[_ctx.pos])));
+      _ctx.buffer[_ctx.pos] = out;
+      _ctx.buffer_d[i] = out;
       _ctx.pos = (1 + _ctx.pos);
       _ctx.pos = (_ctx.pos % _ctx.delay);
       i = (1 + i);
    }
 }
 
-void Comb_copyTo(Comb__ctx_type_0 &_ctx, fix16_t (&oBuffer)[256], int nb){
+void CombFB_copyTo(CombFB__ctx_type_0 &_ctx, fix16_t (&oBuffer)[256], int nb){
    int min_size;
    min_size = 256;
    if(256 < min_size){
@@ -3156,7 +3156,7 @@ void Comb_copyTo(Comb__ctx_type_0 &_ctx, fix16_t (&oBuffer)[256], int nb){
    }
 }
 
-void Comb_default(Comb__ctx_type_0 &_ctx){
+void CombFB_default(CombFB__ctx_type_0 &_ctx){
    {
       _ctx.buffer[0] = 0x0 /* 0.000000 */;
       _ctx.buffer[1] = 0x0 /* 0.000000 */;
@@ -7513,9 +7513,9 @@ void Comb_default(Comb__ctx_type_0 &_ctx){
       _ctx.buffer_d[254] = 0x0 /* 0.000000 */;
       _ctx.buffer_d[255] = 0x0 /* 0.000000 */;
    }
-   Comb_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
-   Comb_setDelay(_ctx,0x630000 /* 99.000000 */);
-   Comb_setDecay(_ctx,0x4a3d /* 0.290000 */);
+   CombFB_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
+   CombFB_setDelay(_ctx,0x630000 /* 99.000000 */);
+   CombFB_setDecay(_ctx,0x4a3d /* 0.290000 */);
 }
 
 void Allpass__ctx_type_0_init(Allpass__ctx_type_0 &_output_){
@@ -16044,10 +16044,10 @@ void Allpass_default(Allpass__ctx_type_0 &_ctx){
 
 void Reverb__ctx_type_0_init(Reverb__ctx_type_0 &_output_){
    Reverb__ctx_type_0 _ctx;
-   Comb__ctx_type_0_init(_ctx.comb3);
-   Comb__ctx_type_0_init(_ctx.comb2);
-   Comb__ctx_type_0_init(_ctx.comb1);
-   Comb__ctx_type_0_init(_ctx.comb0);
+   CombFB__ctx_type_0_init(_ctx.comb3);
+   CombFB__ctx_type_0_init(_ctx.comb2);
+   CombFB__ctx_type_0_init(_ctx.comb1);
+   CombFB__ctx_type_0_init(_ctx.comb0);
    Allpass__ctx_type_0_init(_ctx.allpass1);
    Allpass__ctx_type_0_init(_ctx.allpass0);
    Reverb_default(_ctx);
@@ -16056,28 +16056,28 @@ void Reverb__ctx_type_0_init(Reverb__ctx_type_0 &_output_){
 }
 
 void Reverb_setDecay(Reverb__ctx_type_0 &_ctx, fix16_t newDecay){
-   Comb_setDecay(_ctx.comb0,newDecay);
-   Comb_setDecay(_ctx.comb1,(-0x219c /* -0.131300 */ + newDecay));
-   Comb_setDecay(_ctx.comb2,(-0x4638 /* -0.274300 */ + newDecay));
-   Comb_setDecay(_ctx.comb3,(-0x4f5c /* -0.310000 */ + newDecay));
-   Allpass_setDecay(_ctx.allpass0,0x2189 /* 0.131000 */);
-   Allpass_setDecay(_ctx.allpass1,0x2189 /* 0.131000 */);
+   CombFB_setDecay(_ctx.comb0,newDecay);
+   CombFB_setDecay(_ctx.comb1,(-0x5a1 /* -0.022000 */ + newDecay));
+   CombFB_setDecay(_ctx.comb2,(-0xb43 /* -0.044000 */ + newDecay));
+   CombFB_setDecay(_ctx.comb3,(-0x1020 /* -0.063000 */ + newDecay));
+   Allpass_setDecay(_ctx.allpass0,(-0x2083 /* -0.127000 */ + newDecay));
+   Allpass_setDecay(_ctx.allpass1,(-0x2083 /* -0.127000 */ + newDecay));
 }
 
 void Reverb_setDelay(Reverb__ctx_type_0 &_ctx, fix16_t delayms){
-   Comb_setDelay(_ctx.comb0,delayms);
-   Comb_setDelay(_ctx.comb1,(-0xbbae1 /* -11.730000 */ + delayms));
-   Comb_setDelay(_ctx.comb2,(0x134f5c /* 19.310000 */ + delayms));
-   Comb_setDelay(_ctx.comb3,(-0x7f851 /* -7.970000 */ + delayms));
-   Allpass_setDelay(_ctx.allpass0,0x59451e /* 89.270000 */);
-   Allpass_setDelay(_ctx.allpass1,0x59451e /* 89.270000 */);
+   CombFB_setDelay(_ctx.comb0,(-0x8a000 /* -8.625000 */ + delayms));
+   CombFB_setDelay(_ctx.comb1,(-0x58ccc /* -5.550000 */ + delayms));
+   CombFB_setDelay(_ctx.comb2,(-0x2cccc /* -2.800000 */ + delayms));
+   CombFB_setDelay(_ctx.comb3,delayms);
+   Allpass_setDelay(_ctx.allpass0,(-0x18f333 /* -24.950000 */ + delayms));
+   Allpass_setDelay(_ctx.allpass1,(-0x1b0666 /* -27.025000 */ + delayms));
 }
 
 void Reverb_setSamplerate(Reverb__ctx_type_0 &_ctx, fix16_t newFs){
-   Comb_setSamplerate(_ctx.comb0,newFs);
-   Comb_setSamplerate(_ctx.comb1,newFs);
-   Comb_setSamplerate(_ctx.comb2,newFs);
-   Comb_setSamplerate(_ctx.comb3,newFs);
+   CombFB_setSamplerate(_ctx.comb0,newFs);
+   CombFB_setSamplerate(_ctx.comb1,newFs);
+   CombFB_setSamplerate(_ctx.comb2,newFs);
+   CombFB_setSamplerate(_ctx.comb3,newFs);
    Allpass_setSamplerate(_ctx.allpass0,newFs);
    Allpass_setSamplerate(_ctx.allpass1,newFs);
 }
