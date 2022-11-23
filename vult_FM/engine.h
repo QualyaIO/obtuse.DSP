@@ -120,9 +120,9 @@ static_inline void Util_buffer(fix16_t (&_output_)[256]){
    return ;
 }
 
-static_inline void Util_buffer_large(fix16_t (&_output_)[8192]){
-   fix16_t buff[8192];
-   fix_copy_array(8192,_output_,buff);
+static_inline void Util_buffer_large(fix16_t (&_output_)[4096]){
+   fix16_t buff[4096];
+   fix_copy_array(4096,_output_,buff);
    return ;
 }
 
@@ -668,7 +668,7 @@ typedef struct Comb__ctx_type_0 {
    int delay;
    fix16_t decay;
    fix16_t buffer_d[256];
-   fix16_t buffer[8192];
+   fix16_t buffer[4096];
 } Comb__ctx_type_0;
 
 typedef Comb__ctx_type_0 Comb_process_type;
@@ -735,7 +735,7 @@ static_inline fix16_t Comb_getMaxDelay(Comb__ctx_type_0 &_ctx){
    if(_ctx.fs <= 0x0 /* 0.000000 */){
       return 0x0 /* 0.000000 */;
    }
-   return fix_div(0x20000000 /* 8192.000000 */,_ctx.fs);
+   return fix_div(0x10000000 /* 4096.000000 */,_ctx.fs);
 }
 
 typedef Comb__ctx_type_0 Comb_setDelay_type;
@@ -748,7 +748,7 @@ static_inline void Comb_setDelay_init(Comb__ctx_type_0 &_output_){
 static_inline void Comb_setDelay(Comb__ctx_type_0 &_ctx, fix16_t delayms){
    delayms = fix_clip(delayms,0x0 /* 0.000000 */,Comb_getMaxDelay(_ctx));
    _ctx.delay = fix_to_int(fix_mul(_ctx.fs,delayms));
-   _ctx.delay = int_clip(_ctx.delay,0,8192);
+   _ctx.delay = int_clip(_ctx.delay,0,4096);
    _ctx.pos = 0;
 }
 
@@ -774,11 +774,127 @@ static_inline void Comb_default_init(Comb__ctx_type_0 &_output_){
 
 void Comb_default(Comb__ctx_type_0 &_ctx);
 
+typedef struct Allpass__ctx_type_0 {
+   fix16_t scale;
+   int pos;
+   fix16_t fs;
+   int delay;
+   fix16_t decay;
+   fix16_t buffer_d[256];
+   fix16_t buffer_allpassed[4096];
+   fix16_t buffer[4096];
+} Allpass__ctx_type_0;
+
+typedef Allpass__ctx_type_0 Allpass_process_type;
+
+void Allpass__ctx_type_0_init(Allpass__ctx_type_0 &_output_);
+
+static_inline void Allpass_process_init(Allpass__ctx_type_0 &_output_){
+   Allpass__ctx_type_0_init(_output_);
+   return ;
+}
+
+fix16_t Allpass_process(Allpass__ctx_type_0 &_ctx, fix16_t sample);
+
+typedef Allpass__ctx_type_0 Allpass_process_buffer_type;
+
+static_inline void Allpass_process_buffer_init(Allpass__ctx_type_0 &_output_){
+   Allpass__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Allpass_process_buffer(Allpass__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256]);
+
+typedef Allpass__ctx_type_0 Allpass_getBuffer_type;
+
+static_inline void Allpass_getBuffer_init(Allpass__ctx_type_0 &_output_){
+   Allpass__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void Allpass_getBuffer(Allpass__ctx_type_0 &_ctx, fix16_t (&_output_)[256]){
+   fix_copy_array(256,_output_,_ctx.buffer_d);
+   return ;
+}
+
+typedef Allpass__ctx_type_0 Allpass_copyTo_type;
+
+static_inline void Allpass_copyTo_init(Allpass__ctx_type_0 &_output_){
+   Allpass__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Allpass_copyTo(Allpass__ctx_type_0 &_ctx, fix16_t (&oBuffer)[256], int nb);
+
+typedef Allpass__ctx_type_0 Allpass_setDecay_type;
+
+static_inline void Allpass_setDecay_init(Allpass__ctx_type_0 &_output_){
+   Allpass__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void Allpass_setDecay(Allpass__ctx_type_0 &_ctx, fix16_t newDecay){
+   _ctx.decay = fix_clip(newDecay,0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
+   _ctx.scale = fix_div(0x10000 /* 1.000000 */,(0x10000 /* 1.000000 */ + (_ctx.decay << 1)));
+}
+
+typedef Allpass__ctx_type_0 Allpass_getMaxDelay_type;
+
+static_inline void Allpass_getMaxDelay_init(Allpass__ctx_type_0 &_output_){
+   Allpass__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline fix16_t Allpass_getMaxDelay(Allpass__ctx_type_0 &_ctx){
+   if(_ctx.fs <= 0x0 /* 0.000000 */){
+      return 0x0 /* 0.000000 */;
+   }
+   return fix_div(0x10000000 /* 4096.000000 */,_ctx.fs);
+}
+
+typedef Allpass__ctx_type_0 Allpass_setDelay_type;
+
+static_inline void Allpass_setDelay_init(Allpass__ctx_type_0 &_output_){
+   Allpass__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void Allpass_setDelay(Allpass__ctx_type_0 &_ctx, fix16_t delayms){
+   delayms = fix_clip(delayms,0x0 /* 0.000000 */,Allpass_getMaxDelay(_ctx));
+   _ctx.delay = fix_to_int(fix_mul(_ctx.fs,delayms));
+   _ctx.delay = int_clip(_ctx.delay,0,4096);
+   _ctx.pos = 0;
+}
+
+typedef Allpass__ctx_type_0 Allpass_setSamplerate_type;
+
+static_inline void Allpass_setSamplerate_init(Allpass__ctx_type_0 &_output_){
+   Allpass__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void Allpass_setSamplerate(Allpass__ctx_type_0 &_ctx, fix16_t newFs){
+   if(newFs > 0x0 /* 0.000000 */){
+      _ctx.fs = newFs;
+   }
+};
+
+typedef Allpass__ctx_type_0 Allpass_default_type;
+
+static_inline void Allpass_default_init(Allpass__ctx_type_0 &_output_){
+   Allpass__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Allpass_default(Allpass__ctx_type_0 &_ctx);
+
 typedef struct Reverb__ctx_type_0 {
    Comb__ctx_type_0 comb3;
    Comb__ctx_type_0 comb2;
    Comb__ctx_type_0 comb1;
    Comb__ctx_type_0 comb0;
+   Allpass__ctx_type_0 allpass1;
+   Allpass__ctx_type_0 allpass0;
 } Reverb__ctx_type_0;
 
 typedef Reverb__ctx_type_0 Reverb_process_type;
@@ -793,7 +909,7 @@ static_inline void Reverb_process_init(Reverb__ctx_type_0 &_output_){
 static_inline fix16_t Reverb_process(Reverb__ctx_type_0 &_ctx, fix16_t sample){
    fix16_t combs_filter;
    combs_filter = ((Comb_process(_ctx.comb0,sample) + Comb_process(_ctx.comb1,sample) + Comb_process(_ctx.comb2,sample) + Comb_process(_ctx.comb3,sample)) >> 2);
-   return combs_filter;
+   return Allpass_process(_ctx.allpass1,Allpass_process(_ctx.allpass0,combs_filter));
 }
 
 typedef Reverb__ctx_type_0 Reverb_setDecay_type;
@@ -803,12 +919,7 @@ static_inline void Reverb_setDecay_init(Reverb__ctx_type_0 &_output_){
    return ;
 }
 
-static_inline void Reverb_setDecay(Reverb__ctx_type_0 &_ctx, fix16_t newDecay){
-   Comb_setDecay(_ctx.comb0,newDecay);
-   Comb_setDecay(_ctx.comb1,(-0x219c /* -0.131300 */ + newDecay));
-   Comb_setDecay(_ctx.comb2,(-0x4638 /* -0.274300 */ + newDecay));
-   Comb_setDecay(_ctx.comb3,(-0x4f5c /* -0.310000 */ + newDecay));
-}
+void Reverb_setDecay(Reverb__ctx_type_0 &_ctx, fix16_t newDecay);
 
 typedef Reverb__ctx_type_0 Reverb_setDelay_type;
 
@@ -817,12 +928,7 @@ static_inline void Reverb_setDelay_init(Reverb__ctx_type_0 &_output_){
    return ;
 }
 
-static_inline void Reverb_setDelay(Reverb__ctx_type_0 &_ctx, fix16_t delayms){
-   Comb_setDelay(_ctx.comb0,delayms);
-   Comb_setDelay(_ctx.comb1,(-0xbbae1 /* -11.730000 */ + delayms));
-   Comb_setDelay(_ctx.comb2,(0x134f5c /* 19.310000 */ + delayms));
-   Comb_setDelay(_ctx.comb3,(-0x7f851 /* -7.970000 */ + delayms));
-}
+void Reverb_setDelay(Reverb__ctx_type_0 &_ctx, fix16_t delayms);
 
 typedef Reverb__ctx_type_0 Reverb_setSamplerate_type;
 
@@ -831,12 +937,7 @@ static_inline void Reverb_setSamplerate_init(Reverb__ctx_type_0 &_output_){
    return ;
 }
 
-static_inline void Reverb_setSamplerate(Reverb__ctx_type_0 &_ctx, fix16_t newFs){
-   Comb_setSamplerate(_ctx.comb0,newFs);
-   Comb_setSamplerate(_ctx.comb1,newFs);
-   Comb_setSamplerate(_ctx.comb2,newFs);
-   Comb_setSamplerate(_ctx.comb3,newFs);
-}
+void Reverb_setSamplerate(Reverb__ctx_type_0 &_ctx, fix16_t newFs);
 
 typedef Reverb__ctx_type_0 Reverb_default_type;
 

@@ -6,7 +6,8 @@
 fun process(sample: real) {
   // average comb filters' output
   val combs_filter = (comb0:Comb.process(sample) + comb1:Comb.process(sample) + comb2:Comb.process(sample) + comb3:Comb.process(sample)) * 0.25;
-  return combs_filter;
+  // apply allpass in series
+  return allpass1:Allpass.process(allpass0:Allpass.process(combs_filter));
 }
 
 // pass-down parameters to combfilters
@@ -15,18 +16,26 @@ and setDecay(newDecay: real) {
   _ = comb1:Comb.setDecay(newDecay - 0.1313);
   _ = comb2:Comb.setDecay(newDecay - 0.2743);
   _ = comb3:Comb.setDecay(newDecay - 0.31);
+  // fixed value for both all-pass??
+  _ = allpass0:Allpass.setDecay(0.131);
+  _ = allpass1:Allpass.setDecay(0.131);
 }
 and setDelay(delayms: real) {
   _ = comb0:Comb.setDelay(delayms);
   _ = comb1:Comb.setDelay(delayms - 11.73);
   _ = comb2:Comb.setDelay(delayms + 19.31);
   _ = comb3:Comb.setDelay(delayms - 7.97);
+  // fixed value for both all-pass??
+  _ = allpass0:Allpass.setDelay(89.27);
+  _ = allpass1:Allpass.setDelay(89.27);
 }
 and setSamplerate(newFs:real) {
   _ = comb0:Comb.setSamplerate(newFs);
   _ = comb1:Comb.setSamplerate(newFs);
   _ = comb2:Comb.setSamplerate(newFs);
   _ = comb3:Comb.setSamplerate(newFs);
+  _ = allpass0:Allpass.setSamplerate(newFs);
+  _ = allpass1:Allpass.setSamplerate(newFs);
 }
 and default() @[init] {
   _ = setSamplerate(44.100);

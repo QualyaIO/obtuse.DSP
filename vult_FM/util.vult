@@ -23,6 +23,6 @@ fun buffer() {
 
 // allocate an audio buffer, this one for things like effects. Be wary of memory consumption -- and most probably avoid to put in PROGMEM in MCU
 fun buffer_large() {
-  val buff : array(real, 8192);
+  val buff : array(real, 4096);
   return buff;
 }
