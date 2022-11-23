@@ -154,7 +154,7 @@ void setup() {
   Serial.println("setup ok");
 
   Serial.print("volume: ");
-  Serial.println(sgtl.volume(0.2));
+  Serial.println(sgtl.volume(0.5));
 
   delay(1000);
 
@@ -166,6 +166,9 @@ void setup() {
   //OSC_setSamplerate(context_osc, float_to_fix(sampleRate / (float)1000));
   Reverb_default(context_reverb);
   Reverb_setSamplerate(context_reverb, float_to_fix(sampleRate / (float)1000));
+  Reverb_setDecay(context_reverb, float_to_fix(0.95));
+  Reverb_setDelay(context_reverb, float_to_fix(100.0));
+
 }
 
 void loop() {
@@ -205,9 +208,10 @@ void loop() {
       //fix16_t raw = FM_process(context);
       fix16_t raw = Voice_process(context);
       fix16_t val = Reverb_process(context_reverb, raw);
-
+      // wet / dry
+      fix16_t out = 0.5 * raw + 0.5 * val;
       // shortcut, instead of fixed_to_float * 32767, *almost* the same
-      val =  val / 2 - (val >> 16);
+      out =  out / 2 - (out >> 16);
 
       dsp_cycle_count += rp2040.getCycleCount() - dsp_cycle_tick;
       dsp_time += micros() - dsp_tick;

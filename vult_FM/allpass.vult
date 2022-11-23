@@ -18,7 +18,6 @@ fun process(sample: real) {
 
     // as per equation
     val out = decay * (sample - buffer_allpassed[pos]) + buffer[pos]; 
-    out = out * scale;
     // save to buffers
     buffer[pos] = sample;
     buffer_allpassed[pos] = out;
@@ -27,7 +26,7 @@ fun process(sample: real) {
     pos = pos + 1;
     pos = pos % delay;
 
-    return out;
+    return out * scale;
 }
 
 // FIXME: not tested
@@ -44,10 +43,9 @@ and process_buffer(nb: int, input: array(real, 256)) {
     val i = 0;
     while (i < nb) {
        out = decay * (input[i] - buffer_allpassed[pos]) + buffer[pos]; 
-       out = out * scale;
        buffer[pos] = input[i];
        buffer_allpassed[pos] = out;
-       buffer_d[i] = out;
+       buffer_d[i] = out * scale;
        pos = pos + 1;
        pos = pos % delay;
        i = i + 1;

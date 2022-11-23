@@ -3113,11 +3113,11 @@ void CombFB__ctx_type_0_init(CombFB__ctx_type_0 &_output_){
 
 fix16_t CombFB_process(CombFB__ctx_type_0 &_ctx, fix16_t sample){
    fix16_t out;
-   out = fix_mul(_ctx.scale,(sample + fix_mul(_ctx.decay,_ctx.buffer[_ctx.pos])));
+   out = (sample + fix_mul(_ctx.decay,_ctx.buffer[_ctx.pos]));
    _ctx.buffer[_ctx.pos] = out;
    _ctx.pos = (1 + _ctx.pos);
    _ctx.pos = (_ctx.pos % _ctx.delay);
-   return out;
+   return fix_mul(_ctx.scale,out);
 }
 
 void CombFB_process_buffer(CombFB__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256]){
@@ -7536,12 +7536,11 @@ void Allpass__ctx_type_0_init(Allpass__ctx_type_0 &_output_){
 fix16_t Allpass_process(Allpass__ctx_type_0 &_ctx, fix16_t sample){
    fix16_t out;
    out = (_ctx.buffer[_ctx.pos] + fix_mul(_ctx.decay,(sample + (- _ctx.buffer_allpassed[_ctx.pos]))));
-   out = fix_mul(_ctx.scale,out);
    _ctx.buffer[_ctx.pos] = sample;
    _ctx.buffer_allpassed[_ctx.pos] = out;
    _ctx.pos = (1 + _ctx.pos);
    _ctx.pos = (_ctx.pos % _ctx.delay);
-   return out;
+   return fix_mul(_ctx.scale,out);
 }
 
 void Allpass_process_buffer(Allpass__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256]){
@@ -7554,10 +7553,9 @@ void Allpass_process_buffer(Allpass__ctx_type_0 &_ctx, int nb, fix16_t (&input)[
    i = 0;
    while(i < nb){
       out = (_ctx.buffer[_ctx.pos] + fix_mul(_ctx.decay,(input[i] + (- _ctx.buffer_allpassed[_ctx.pos]))));
-      out = fix_mul(_ctx.scale,out);
       _ctx.buffer[_ctx.pos] = input[i];
       _ctx.buffer_allpassed[_ctx.pos] = out;
-      _ctx.buffer_d[i] = out;
+      _ctx.buffer_d[i] = fix_mul(_ctx.scale,out);
       _ctx.pos = (1 + _ctx.pos);
       _ctx.pos = (_ctx.pos % _ctx.delay);
       i = (1 + i);

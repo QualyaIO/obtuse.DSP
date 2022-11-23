@@ -16,14 +16,14 @@ fun process(sample: real) {
     mem scale;
 
     // buffer holds delayed signal 
-    val out = (sample + buffer[pos] * decay) * scale;
+    val out = sample + buffer[pos] * decay;
     buffer[pos] = out;
 
     // advance and loop on actual delay size    
     pos = pos + 1;
     pos = pos % delay;
 
-    return out;
+    return out * scale;
 }
 
 // FIXME: not tested
