@@ -79,8 +79,13 @@ and setDecay(newDecay: real) {
   scale = 1.0 / (1.0 + 2.0 * decay);
 }
 
+// get max delay in sampless
+and getMaxDelay() : int {
+  return size(buffer);
+}
+
 // get max delay in ms
-and getMaxDelay() : real {
+and getMaxDelayms() : real {
   mem fs;
   if (fs <= 0.0) {
      return 0.0;
@@ -89,18 +94,22 @@ and getMaxDelay() : real {
   return real(size(buffer)) / fs;
 }
 
-// change delay (in ms). Will be caped at max buffersize -- check that with getMaxDelay()
+// change delay (in samples). Will be caped at max buffersize -- check that with getMaxDelay()
 // Warning: does *not* reset buffer upon change
-// Note: with fixed float cannot ask above 32767ms (just in case it would make sense to have a 30s buffer on a platform which needs fixed float)
-and setDelay(delayms: real) {
+// Note: with fixed float cannot above 32767ms (just in case it would make sense to have a 30s buffer on a platform which needs fixed float).,
+and setDelay(newDelay: int) {
    mem fs;
-   delayms = clip(delayms, 0.0, getMaxDelay());
-   // note: we have frequency in kHz, counterbalance delay in ms
-   delay = int(fs * real(delayms));
-   // failsafe
-   delay = clip(delay, 0, size(buffer));
+   delay = clip(newDelay, 0, getMaxDelay());
    // reset position in buffer
    pos = 0;
+}
+
+// change delay (in miliseconds). Will be caped at max buffersize -- check that with getMaxDelayms()
+// Warning: does *not* reset buffer upon change
+// Note: with fixed float cannot ask above 32767ms (just in case it would make sense to have a 30s buffer on a platform which needs fixed float). Prefer setDelay (in samples) to go beyond
+and setDelayms(delayms: real) {
+   mem fs;
+   setDelay(int(fs * delayms));
 }
 
 // seter for parameters. expect values of desired frequency and current sampling rate in kHz to avoid fixed float limits ([1/32767 ..32767]... probably)
@@ -116,7 +125,6 @@ and default() @[init] {
    // output values (with delay), will copy a new array
    buffer_d = Util.buffer();
    _ = setSamplerate(44.100);
-   // yet more (dubious) magic number from example code
-   _ = setDelay(89.27);
-   _ = setDecay(0.131);
+   _ = setDelayms(50.0);
+   _ = setDecay(0.5);
 }

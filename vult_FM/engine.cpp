@@ -7514,8 +7514,8 @@ void CombFB_default(CombFB__ctx_type_0 &_ctx){
       _ctx.buffer_d[255] = 0x0 /* 0.000000 */;
    }
    CombFB_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
-   CombFB_setDelay(_ctx,0x630000 /* 99.000000 */);
-   CombFB_setDecay(_ctx,0x4a3d /* 0.290000 */);
+   CombFB_setDelayms(_ctx,0x320000 /* 50.000000 */);
+   CombFB_setDecay(_ctx,0x8000 /* 0.500000 */);
 }
 
 void Allpass__ctx_type_0_init(Allpass__ctx_type_0 &_output_){
@@ -16036,8 +16036,8 @@ void Allpass_default(Allpass__ctx_type_0 &_ctx){
       _ctx.buffer_d[255] = 0x0 /* 0.000000 */;
    }
    Allpass_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
-   Allpass_setDelay(_ctx,0x59451e /* 89.270000 */);
-   Allpass_setDecay(_ctx,0x2189 /* 0.131000 */);
+   Allpass_setDelayms(_ctx,0x320000 /* 50.000000 */);
+   Allpass_setDecay(_ctx,0x8000 /* 0.500000 */);
 }
 
 void Reverb__ctx_type_0_init(Reverb__ctx_type_0 &_output_){
@@ -16062,13 +16062,13 @@ void Reverb_setDecay(Reverb__ctx_type_0 &_ctx, fix16_t newDecay){
    Allpass_setDecay(_ctx.allpass1,(-0x2083 /* -0.127000 */ + newDecay));
 }
 
-void Reverb_setDelay(Reverb__ctx_type_0 &_ctx, fix16_t delayms){
-   CombFB_setDelay(_ctx.comb0,(-0x8a000 /* -8.625000 */ + delayms));
-   CombFB_setDelay(_ctx.comb1,(-0x58ccc /* -5.550000 */ + delayms));
-   CombFB_setDelay(_ctx.comb2,(-0x2cccc /* -2.800000 */ + delayms));
-   CombFB_setDelay(_ctx.comb3,delayms);
-   Allpass_setDelay(_ctx.allpass0,(-0x18f333 /* -24.950000 */ + delayms));
-   Allpass_setDelay(_ctx.allpass1,(-0x1b0666 /* -27.025000 */ + delayms));
+void Reverb_setDelayms(Reverb__ctx_type_0 &_ctx, fix16_t delayms){
+   CombFB_setDelayms(_ctx.comb0,(-0x8a000 /* -8.625000 */ + delayms));
+   CombFB_setDelayms(_ctx.comb1,(-0x58ccc /* -5.550000 */ + delayms));
+   CombFB_setDelayms(_ctx.comb2,(-0x2cccc /* -2.800000 */ + delayms));
+   CombFB_setDelayms(_ctx.comb3,delayms);
+   Allpass_setDelayms(_ctx.allpass0,(-0x18f333 /* -24.950000 */ + delayms));
+   Allpass_setDelayms(_ctx.allpass1,(-0x1b0666 /* -27.025000 */ + delayms));
 }
 
 void Reverb_setSamplerate(Reverb__ctx_type_0 &_ctx, fix16_t newFs){

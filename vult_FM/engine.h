@@ -731,7 +731,18 @@ static_inline void CombFB_getMaxDelay_init(CombFB__ctx_type_0 &_output_){
    return ;
 }
 
-static_inline fix16_t CombFB_getMaxDelay(CombFB__ctx_type_0 &_ctx){
+static_inline int CombFB_getMaxDelay(CombFB__ctx_type_0 &_ctx){
+   return 4096;
+};
+
+typedef CombFB__ctx_type_0 CombFB_getMaxDelayms_type;
+
+static_inline void CombFB_getMaxDelayms_init(CombFB__ctx_type_0 &_output_){
+   CombFB__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline fix16_t CombFB_getMaxDelayms(CombFB__ctx_type_0 &_ctx){
    if(_ctx.fs <= 0x0 /* 0.000000 */){
       return 0x0 /* 0.000000 */;
    }
@@ -745,12 +756,21 @@ static_inline void CombFB_setDelay_init(CombFB__ctx_type_0 &_output_){
    return ;
 }
 
-static_inline void CombFB_setDelay(CombFB__ctx_type_0 &_ctx, fix16_t delayms){
-   delayms = fix_clip(delayms,0x0 /* 0.000000 */,CombFB_getMaxDelay(_ctx));
-   _ctx.delay = fix_to_int(fix_mul(_ctx.fs,delayms));
-   _ctx.delay = int_clip(_ctx.delay,0,4096);
+static_inline void CombFB_setDelay(CombFB__ctx_type_0 &_ctx, int newDelay){
+   _ctx.delay = int_clip(newDelay,0,CombFB_getMaxDelay(_ctx));
    _ctx.pos = 0;
 }
+
+typedef CombFB__ctx_type_0 CombFB_setDelayms_type;
+
+static_inline void CombFB_setDelayms_init(CombFB__ctx_type_0 &_output_){
+   CombFB__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void CombFB_setDelayms(CombFB__ctx_type_0 &_ctx, fix16_t delayms){
+   CombFB_setDelay(_ctx,fix_to_int(fix_mul(_ctx.fs,delayms)));
+};
 
 typedef CombFB__ctx_type_0 CombFB_setSamplerate_type;
 
@@ -845,7 +865,18 @@ static_inline void Allpass_getMaxDelay_init(Allpass__ctx_type_0 &_output_){
    return ;
 }
 
-static_inline fix16_t Allpass_getMaxDelay(Allpass__ctx_type_0 &_ctx){
+static_inline int Allpass_getMaxDelay(Allpass__ctx_type_0 &_ctx){
+   return 4096;
+};
+
+typedef Allpass__ctx_type_0 Allpass_getMaxDelayms_type;
+
+static_inline void Allpass_getMaxDelayms_init(Allpass__ctx_type_0 &_output_){
+   Allpass__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline fix16_t Allpass_getMaxDelayms(Allpass__ctx_type_0 &_ctx){
    if(_ctx.fs <= 0x0 /* 0.000000 */){
       return 0x0 /* 0.000000 */;
    }
@@ -859,12 +890,21 @@ static_inline void Allpass_setDelay_init(Allpass__ctx_type_0 &_output_){
    return ;
 }
 
-static_inline void Allpass_setDelay(Allpass__ctx_type_0 &_ctx, fix16_t delayms){
-   delayms = fix_clip(delayms,0x0 /* 0.000000 */,Allpass_getMaxDelay(_ctx));
-   _ctx.delay = fix_to_int(fix_mul(_ctx.fs,delayms));
-   _ctx.delay = int_clip(_ctx.delay,0,4096);
+static_inline void Allpass_setDelay(Allpass__ctx_type_0 &_ctx, int newDelay){
+   _ctx.delay = int_clip(newDelay,0,Allpass_getMaxDelay(_ctx));
    _ctx.pos = 0;
 }
+
+typedef Allpass__ctx_type_0 Allpass_setDelayms_type;
+
+static_inline void Allpass_setDelayms_init(Allpass__ctx_type_0 &_output_){
+   Allpass__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void Allpass_setDelayms(Allpass__ctx_type_0 &_ctx, fix16_t delayms){
+   Allpass_setDelay(_ctx,fix_to_int(fix_mul(_ctx.fs,delayms)));
+};
 
 typedef Allpass__ctx_type_0 Allpass_setSamplerate_type;
 
@@ -921,14 +961,14 @@ static_inline void Reverb_setDecay_init(Reverb__ctx_type_0 &_output_){
 
 void Reverb_setDecay(Reverb__ctx_type_0 &_ctx, fix16_t newDecay);
 
-typedef Reverb__ctx_type_0 Reverb_setDelay_type;
+typedef Reverb__ctx_type_0 Reverb_setDelayms_type;
 
-static_inline void Reverb_setDelay_init(Reverb__ctx_type_0 &_output_){
+static_inline void Reverb_setDelayms_init(Reverb__ctx_type_0 &_output_){
    Reverb__ctx_type_0_init(_output_);
    return ;
 }
 
-void Reverb_setDelay(Reverb__ctx_type_0 &_ctx, fix16_t delayms);
+void Reverb_setDelayms(Reverb__ctx_type_0 &_ctx, fix16_t delayms);
 
 typedef Reverb__ctx_type_0 Reverb_setSamplerate_type;
 
@@ -948,7 +988,7 @@ static_inline void Reverb_default_init(Reverb__ctx_type_0 &_output_){
 
 static_inline void Reverb_default(Reverb__ctx_type_0 &_ctx){
    Reverb_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
-   Reverb_setDelay(_ctx,0x1c1333 /* 28.075000 */);
+   Reverb_setDelayms(_ctx,0x1c1333 /* 28.075000 */);
    Reverb_setDecay(_ctx,0xd3b6 /* 0.827000 */);
 }
 

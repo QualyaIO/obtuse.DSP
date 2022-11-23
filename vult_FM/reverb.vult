@@ -30,14 +30,14 @@ and setDecay(newDecay: real) {
 }
 
 // In the ory [0.. max buffer/fs] but will start to degenerate below
-and setDelay(delayms: real) {
-  _ = comb0:CombFB.setDelay(delayms - 8.625);
-  _ = comb1:CombFB.setDelay(delayms - 5.55);
-  _ = comb2:CombFB.setDelay(delayms - 2.8);
-  _ = comb3:CombFB.setDelay(delayms);
+and setDelayms(delayms: real) {
+  _ = comb0:CombFB.setDelayms(delayms - 8.625);
+  _ = comb1:CombFB.setDelayms(delayms - 5.55);
+  _ = comb2:CombFB.setDelayms(delayms - 2.8);
+  _ = comb3:CombFB.setDelayms(delayms);
   // fixed value for both all-pass??
-  _ = allpass0:Allpass.setDelay(delayms - 24.95);
-  _ = allpass1:Allpass.setDelay(delayms - 27.025);
+  _ = allpass0:Allpass.setDelayms(delayms - 24.95);
+  _ = allpass1:Allpass.setDelayms(delayms - 27.025);
 }
 and setSamplerate(newFs:real) {
   _ = comb0:CombFB.setSamplerate(newFs);
@@ -49,6 +49,6 @@ and setSamplerate(newFs:real) {
 }
 and default() @[init] {
   _ = setSamplerate(44.100);
-  _ = setDelay(28.075);
+  _ = setDelayms(28.075);
   _ = setDecay(0.827);
 }
