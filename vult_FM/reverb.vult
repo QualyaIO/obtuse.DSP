@@ -17,20 +17,8 @@ fun process(sample: real) {
   return allpass1:Allpass.process(allpass0:Allpass.process(combs_filter));
 }
 
-// pass-down parameters to combfilters
-// In theory [0..1], but will start to degenerate below 0.127 as it won't be sufficient for all filters, some will be default to 0.
-and setDecay(newDecay: real) {
-  _ = comb0:CombFB.setDecay(newDecay);
-  _ = comb1:CombFB.setDecay(newDecay - 0.022);
-  _ = comb2:CombFB.setDecay(newDecay - 0.044);
-  _ = comb3:CombFB.setDecay(newDecay - 0.063);
-  // fixed value for both all-pass??
-  _ = allpass0:Allpass.setDecay(0.7);
-  _ = allpass1:Allpass.setDecay(0.7);
-}
-
-// note: filters will update themselves the corresponding delay, no need to compute again
-// WARNING: will *not* update delays in ms when this is changed, hence to be called first
+// Set base for reverb and delay times, in kHz
+// WARNING: will *not* update delays in ms and reverb time in s when this is changed, hence to be called first
 and setSamplerate(newFs:real) {
   mem fs;
   if (newFs > 0.0) {
@@ -46,22 +34,59 @@ and setSamplerate(newFs:real) {
   _ = allpass1:Allpass.setSamplerate(newFs);
 }
 
+// how long it takes in *seconds* for reverb to reach -60db (i.e. T60 in the paper). Longer time: material of the room reflect more. Must be positive.
+and setReverbTime(newReverbtime: real) {
+  mem reverbtime: real;
+  // delay in samples for each comb filter
+  mem comb0delay: int;
+  mem comb1delay: int;
+  mem comb2delay: int;
+  mem comb3delay: int;
+  if (newReverbtime > 0.0) {
+     reverbtime = newReverbtime;
+     // delay / 1000 to compensate for fs in kHz + avoid fixed point boundaries (will be transcompiled as -0.003 * delay, good enough)
+     val comb0decay = pow(10.0, (-3.0 * (real(comb0delay) / 1000.0)) / (fs * reverbtime));
+     val comb1decay = pow(10.0, (-3.0 * (real(comb1delay) / 1000.0)) / (fs * reverbtime));
+     val comb2decay = pow(10.0, (-3.0 * (real(comb2delay) / 1000.0)) / (fs * reverbtime));
+     val comb3decay = pow(10.0, (-3.0 * (real(comb3delay) / 1000.0)) / (fs * reverbtime));
+     _ = comb0:CombFB.setDecay(comb0decay);
+     _ = comb1:CombFB.setDecay(comb1decay);
+     _ = comb2:CombFB.setDecay(comb2decay);
+     _ = comb3:CombFB.setDecay(comb3decay);
+  }
+}
+
+// How long in ms before first reflections occur. Longer time: bigger room. Note that reverb time is kept.
 // In theory [0.. max buffer/fs] but will start to degenerate below a certain threshold as some delays will be zeroed (below ~ 7.83ms at 44100hz)
+// In case of fixed float there will also be a hard upper bound, 32767/fs (as computations that will be performed in setReverbTime()
+// Will also update comb filters decay, to maintain reverb time (T60)
 // FIXME: this is actually wrong, should re-compute delay to be primed among them instead of keeping same spacing
 and setDelayms(delayms: real) {
-  // convert to delay in samples
+  // convert to delay in samples, used as ref for others filters
   val delay = int(fs * delayms);
-  _ = comb0:CombFB.setDelay(delay - 345);
-  _ = comb1:CombFB.setDelay(delay - 222);
-  _ = comb2:CombFB.setDelay(delay - 112);
-  _ = comb3:CombFB.setDelay(delay);
-  // fixed value for both all-pass??
-  _ = allpass0:Allpass.setDelay(125);
-  _ = allpass1:Allpass.setDelay(42);
+  comb3delay = clip(delay, 0, comb3:CombFB.getMaxDelay());
+  comb0delay = clip(comb3delay - 345, 0, comb0:CombFB.getMaxDelay());
+  comb1delay = clip(comb3delay - 222, 0, comb1:CombFB.getMaxDelay());
+  comb2delay = clip(comb3delay - 112, 0, comb2:CombFB.getMaxDelay());
+  _ = comb0:CombFB.setDelay(comb0delay);
+  _ = comb1:CombFB.setDelay(comb1delay);
+  _ = comb2:CombFB.setDelay(comb2delay);
+  _ = comb3:CombFB.setDelay(comb3delay);
+  // update comb filter. decay is adjusted to maintain reverb time (T60)
+  _ = setReverbTime(reverbtime);
 }
+
 and default() @[init] {
   _ = setSamplerate(44.100);
-  // for default parameters found in litteratures
+  // to approximate default parameters found in litteratures
+  reverbtime = 0.65;
+  // will also call setReverbTime()
   _ = setDelayms(1123.0/44.1);
-  _ = setDecay(0.827);
+
+  // fixed value for both all-pass
+  _ = allpass0:Allpass.setDecay(0.7);
+  _ = allpass1:Allpass.setDecay(0.7);
+  _ = allpass0:Allpass.setDelay(125);
+  _ = allpass1:Allpass.setDelay(42);
+
 }

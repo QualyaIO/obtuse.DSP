@@ -166,8 +166,8 @@ void setup() {
   //OSC_setSamplerate(context_osc, float_to_fix(sampleRate / (float)1000));
   Reverb_default(context_reverb);
   Reverb_setSamplerate(context_reverb, float_to_fix(sampleRate / (float)1000));
-  Reverb_setDecay(context_reverb, float_to_fix(0.95));
-  Reverb_setDelay(context_reverb, float_to_fix(100.0));
+  Reverb_setReverbTime(context_reverb, float_to_fix(10.0));
+  Reverb_setDelayms(context_reverb, float_to_fix(100.0));
 
 }
 

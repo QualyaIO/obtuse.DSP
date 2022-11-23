@@ -16042,25 +16042,21 @@ void Allpass_default(Allpass__ctx_type_0 &_ctx){
 
 void Reverb__ctx_type_0_init(Reverb__ctx_type_0 &_output_){
    Reverb__ctx_type_0 _ctx;
+   _ctx.reverbtime = 0x0 /* 0.000000 */;
    _ctx.fs = 0x0 /* 0.000000 */;
+   _ctx.comb3delay = 0;
    CombFB__ctx_type_0_init(_ctx.comb3);
+   _ctx.comb2delay = 0;
    CombFB__ctx_type_0_init(_ctx.comb2);
+   _ctx.comb1delay = 0;
    CombFB__ctx_type_0_init(_ctx.comb1);
+   _ctx.comb0delay = 0;
    CombFB__ctx_type_0_init(_ctx.comb0);
    Allpass__ctx_type_0_init(_ctx.allpass1);
    Allpass__ctx_type_0_init(_ctx.allpass0);
    Reverb_default(_ctx);
    _output_ = _ctx;
    return ;
-}
-
-void Reverb_setDecay(Reverb__ctx_type_0 &_ctx, fix16_t newDecay){
-   CombFB_setDecay(_ctx.comb0,newDecay);
-   CombFB_setDecay(_ctx.comb1,(-0x5a1 /* -0.022000 */ + newDecay));
-   CombFB_setDecay(_ctx.comb2,(-0xb43 /* -0.044000 */ + newDecay));
-   CombFB_setDecay(_ctx.comb3,(-0x1020 /* -0.063000 */ + newDecay));
-   Allpass_setDecay(_ctx.allpass0,0xb333 /* 0.700000 */);
-   Allpass_setDecay(_ctx.allpass1,0xb333 /* 0.700000 */);
 }
 
 void Reverb_setSamplerate(Reverb__ctx_type_0 &_ctx, fix16_t newFs){
@@ -16079,13 +16075,44 @@ void Reverb_setSamplerate(Reverb__ctx_type_0 &_ctx, fix16_t newFs){
    Allpass_setSamplerate(_ctx.allpass1,newFs);
 }
 
+void Reverb_setReverbTime(Reverb__ctx_type_0 &_ctx, fix16_t newReverbtime){
+   if(newReverbtime > 0x0 /* 0.000000 */){
+      _ctx.reverbtime = newReverbtime;
+      fix16_t comb0decay;
+      comb0decay = pow(0xa0000 /* 10.000000 */,fix_div(fix_mul(-0xc4 /* -0.003000 */,int_to_fix(_ctx.comb0delay)),fix_mul(_ctx.fs,_ctx.reverbtime)));
+      fix16_t comb1decay;
+      comb1decay = pow(0xa0000 /* 10.000000 */,fix_div(fix_mul(-0xc4 /* -0.003000 */,int_to_fix(_ctx.comb1delay)),fix_mul(_ctx.fs,_ctx.reverbtime)));
+      fix16_t comb2decay;
+      comb2decay = pow(0xa0000 /* 10.000000 */,fix_div(fix_mul(-0xc4 /* -0.003000 */,int_to_fix(_ctx.comb2delay)),fix_mul(_ctx.fs,_ctx.reverbtime)));
+      fix16_t comb3decay;
+      comb3decay = pow(0xa0000 /* 10.000000 */,fix_div(fix_mul(-0xc4 /* -0.003000 */,int_to_fix(_ctx.comb3delay)),fix_mul(_ctx.fs,_ctx.reverbtime)));
+      CombFB_setDecay(_ctx.comb0,comb0decay);
+      CombFB_setDecay(_ctx.comb1,comb1decay);
+      CombFB_setDecay(_ctx.comb2,comb2decay);
+      CombFB_setDecay(_ctx.comb3,comb3decay);
+   }
+}
+
 void Reverb_setDelayms(Reverb__ctx_type_0 &_ctx, fix16_t delayms){
    int delay;
    delay = fix_to_int(fix_mul(_ctx.fs,delayms));
-   CombFB_setDelay(_ctx.comb0,((-345) + delay));
-   CombFB_setDelay(_ctx.comb1,((-222) + delay));
-   CombFB_setDelay(_ctx.comb2,((-112) + delay));
-   CombFB_setDelay(_ctx.comb3,delay);
+   _ctx.comb3delay = int_clip(delay,0,CombFB_getMaxDelay(_ctx.comb3));
+   _ctx.comb0delay = int_clip(((-345) + _ctx.comb3delay),0,CombFB_getMaxDelay(_ctx.comb0));
+   _ctx.comb1delay = int_clip(((-222) + _ctx.comb3delay),0,CombFB_getMaxDelay(_ctx.comb1));
+   _ctx.comb2delay = int_clip(((-112) + _ctx.comb3delay),0,CombFB_getMaxDelay(_ctx.comb2));
+   CombFB_setDelay(_ctx.comb0,_ctx.comb0delay);
+   CombFB_setDelay(_ctx.comb1,_ctx.comb1delay);
+   CombFB_setDelay(_ctx.comb2,_ctx.comb2delay);
+   CombFB_setDelay(_ctx.comb3,_ctx.comb3delay);
+   Reverb_setReverbTime(_ctx,_ctx.reverbtime);
+}
+
+void Reverb_default(Reverb__ctx_type_0 &_ctx){
+   Reverb_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
+   _ctx.reverbtime = 0xa666 /* 0.650000 */;
+   Reverb_setDelayms(_ctx,0x197700 /* 25.464853 */);
+   Allpass_setDecay(_ctx.allpass0,0xb333 /* 0.700000 */);
+   Allpass_setDecay(_ctx.allpass1,0xb333 /* 0.700000 */);
    Allpass_setDelay(_ctx.allpass0,125);
    Allpass_setDelay(_ctx.allpass1,42);
 }
