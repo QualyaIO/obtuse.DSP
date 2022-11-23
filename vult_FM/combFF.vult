@@ -109,6 +109,7 @@ and setDelayms(delayms: real) {
 }
 
 // seter for parameters. expect values of desired frequency and current sampling rate in kHz to avoid fixed float limits ([1/32767 ..32767]... probably)
+// WARNING: will *not* update delay (as it could have been passed with samples directly or by ms), to be called first, and should manually ask to update if delay in ms is important
 and setSamplerate(newFs:real) {
    if (newFs > 0.0) {
       fs = newFs;

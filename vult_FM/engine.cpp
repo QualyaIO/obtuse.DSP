@@ -16042,6 +16042,7 @@ void Allpass_default(Allpass__ctx_type_0 &_ctx){
 
 void Reverb__ctx_type_0_init(Reverb__ctx_type_0 &_output_){
    Reverb__ctx_type_0 _ctx;
+   _ctx.fs = 0x0 /* 0.000000 */;
    CombFB__ctx_type_0_init(_ctx.comb3);
    CombFB__ctx_type_0_init(_ctx.comb2);
    CombFB__ctx_type_0_init(_ctx.comb1);
@@ -16058,26 +16059,35 @@ void Reverb_setDecay(Reverb__ctx_type_0 &_ctx, fix16_t newDecay){
    CombFB_setDecay(_ctx.comb1,(-0x5a1 /* -0.022000 */ + newDecay));
    CombFB_setDecay(_ctx.comb2,(-0xb43 /* -0.044000 */ + newDecay));
    CombFB_setDecay(_ctx.comb3,(-0x1020 /* -0.063000 */ + newDecay));
-   Allpass_setDecay(_ctx.allpass0,(-0x2083 /* -0.127000 */ + newDecay));
-   Allpass_setDecay(_ctx.allpass1,(-0x2083 /* -0.127000 */ + newDecay));
-}
-
-void Reverb_setDelayms(Reverb__ctx_type_0 &_ctx, fix16_t delayms){
-   CombFB_setDelayms(_ctx.comb0,(-0x8a000 /* -8.625000 */ + delayms));
-   CombFB_setDelayms(_ctx.comb1,(-0x58ccc /* -5.550000 */ + delayms));
-   CombFB_setDelayms(_ctx.comb2,(-0x2cccc /* -2.800000 */ + delayms));
-   CombFB_setDelayms(_ctx.comb3,delayms);
-   Allpass_setDelayms(_ctx.allpass0,(-0x18f333 /* -24.950000 */ + delayms));
-   Allpass_setDelayms(_ctx.allpass1,(-0x1b0666 /* -27.025000 */ + delayms));
+   Allpass_setDecay(_ctx.allpass0,0xb333 /* 0.700000 */);
+   Allpass_setDecay(_ctx.allpass1,0xb333 /* 0.700000 */);
 }
 
 void Reverb_setSamplerate(Reverb__ctx_type_0 &_ctx, fix16_t newFs){
+   if(newFs > 0x0 /* 0.000000 */){
+      _ctx.fs = newFs;
+   }
+   else
+   {
+      _ctx.fs = 0x2c1999 /* 44.100000 */;
+   }
    CombFB_setSamplerate(_ctx.comb0,newFs);
    CombFB_setSamplerate(_ctx.comb1,newFs);
    CombFB_setSamplerate(_ctx.comb2,newFs);
    CombFB_setSamplerate(_ctx.comb3,newFs);
    Allpass_setSamplerate(_ctx.allpass0,newFs);
    Allpass_setSamplerate(_ctx.allpass1,newFs);
+}
+
+void Reverb_setDelayms(Reverb__ctx_type_0 &_ctx, fix16_t delayms){
+   int delay;
+   delay = fix_to_int(fix_mul(_ctx.fs,delayms));
+   CombFB_setDelay(_ctx.comb0,((-345) + delay));
+   CombFB_setDelay(_ctx.comb1,((-222) + delay));
+   CombFB_setDelay(_ctx.comb2,((-112) + delay));
+   CombFB_setDelay(_ctx.comb3,delay);
+   Allpass_setDelay(_ctx.allpass0,125);
+   Allpass_setDelay(_ctx.allpass1,42);
 }
 
 

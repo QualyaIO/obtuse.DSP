@@ -3,12 +3,12 @@
 
 // Note: 
 // Numbers from Schroeder reverberator SATREV, see Figure 3.6 https://ccrma.stanford.edu/~jos/pasp/Example_Schroeder_Reverberators.html 
-// comb0: 0.827 / 19.45ms (778 samples)
-// comb1: 0.805 / 22.525ms (901 samples)
-// comb2: 0.783 / 25.275ms (1011 samples)
-// comb3: 0.764 / 28.075ms (1123 samples)
-// allpass0: 0.7 / 3.125ms (125 samples)
-// allpass0: 0.7 / 1.05ms (42 samples)
+// comb0: 0.827 / 778 samples
+// comb1: 0.805 / 901 samples
+// comb2: 0.783 / 1011 samples
+// comb3: 0.764 / 1123 sample
+// allpass0: 0.7 / 125 samples
+// allpass0: 0.7 / 42 samples
 
 fun process(sample: real) {
   // average comb filters' output
@@ -25,21 +25,19 @@ and setDecay(newDecay: real) {
   _ = comb2:CombFB.setDecay(newDecay - 0.044);
   _ = comb3:CombFB.setDecay(newDecay - 0.063);
   // fixed value for both all-pass??
-  _ = allpass0:Allpass.setDecay(newDecay - 0.127);
-  _ = allpass1:Allpass.setDecay(newDecay - 0.127);
+  _ = allpass0:Allpass.setDecay(0.7);
+  _ = allpass1:Allpass.setDecay(0.7);
 }
 
-// In the ory [0.. max buffer/fs] but will start to degenerate below
-and setDelayms(delayms: real) {
-  _ = comb0:CombFB.setDelayms(delayms - 8.625);
-  _ = comb1:CombFB.setDelayms(delayms - 5.55);
-  _ = comb2:CombFB.setDelayms(delayms - 2.8);
-  _ = comb3:CombFB.setDelayms(delayms);
-  // fixed value for both all-pass??
-  _ = allpass0:Allpass.setDelayms(delayms - 24.95);
-  _ = allpass1:Allpass.setDelayms(delayms - 27.025);
-}
+// note: filters will update themselves the corresponding delay, no need to compute again
+// WARNING: will *not* update delays in ms when this is changed, hence to be called first
 and setSamplerate(newFs:real) {
+  mem fs;
+  if (newFs > 0.0) {
+     fs = newFs;
+  } else {
+     fs = 44.1;
+  }
   _ = comb0:CombFB.setSamplerate(newFs);
   _ = comb1:CombFB.setSamplerate(newFs);
   _ = comb2:CombFB.setSamplerate(newFs);
@@ -47,8 +45,23 @@ and setSamplerate(newFs:real) {
   _ = allpass0:Allpass.setSamplerate(newFs);
   _ = allpass1:Allpass.setSamplerate(newFs);
 }
+
+// In theory [0.. max buffer/fs] but will start to degenerate below a certain threshold as some delays will be zeroed (below ~ 7.83ms at 44100hz)
+// FIXME: this is actually wrong, should re-compute delay to be primed among them instead of keeping same spacing
+and setDelayms(delayms: real) {
+  // convert to delay in samples
+  val delay = int(fs * delayms);
+  _ = comb0:CombFB.setDelay(delay - 345);
+  _ = comb1:CombFB.setDelay(delay - 222);
+  _ = comb2:CombFB.setDelay(delay - 112);
+  _ = comb3:CombFB.setDelay(delay);
+  // fixed value for both all-pass??
+  _ = allpass0:Allpass.setDelay(125);
+  _ = allpass1:Allpass.setDelay(42);
+}
 and default() @[init] {
   _ = setSamplerate(44.100);
-  _ = setDelayms(28.075);
+  // for default parameters found in litteratures
+  _ = setDelayms(1123.0/44.1);
   _ = setDecay(0.827);
 }

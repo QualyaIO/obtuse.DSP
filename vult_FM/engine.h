@@ -929,6 +929,7 @@ static_inline void Allpass_default_init(Allpass__ctx_type_0 &_output_){
 void Allpass_default(Allpass__ctx_type_0 &_ctx);
 
 typedef struct Reverb__ctx_type_0 {
+   fix16_t fs;
    CombFB__ctx_type_0 comb3;
    CombFB__ctx_type_0 comb2;
    CombFB__ctx_type_0 comb1;
@@ -961,15 +962,6 @@ static_inline void Reverb_setDecay_init(Reverb__ctx_type_0 &_output_){
 
 void Reverb_setDecay(Reverb__ctx_type_0 &_ctx, fix16_t newDecay);
 
-typedef Reverb__ctx_type_0 Reverb_setDelayms_type;
-
-static_inline void Reverb_setDelayms_init(Reverb__ctx_type_0 &_output_){
-   Reverb__ctx_type_0_init(_output_);
-   return ;
-}
-
-void Reverb_setDelayms(Reverb__ctx_type_0 &_ctx, fix16_t delayms);
-
 typedef Reverb__ctx_type_0 Reverb_setSamplerate_type;
 
 static_inline void Reverb_setSamplerate_init(Reverb__ctx_type_0 &_output_){
@@ -978,6 +970,15 @@ static_inline void Reverb_setSamplerate_init(Reverb__ctx_type_0 &_output_){
 }
 
 void Reverb_setSamplerate(Reverb__ctx_type_0 &_ctx, fix16_t newFs);
+
+typedef Reverb__ctx_type_0 Reverb_setDelayms_type;
+
+static_inline void Reverb_setDelayms_init(Reverb__ctx_type_0 &_output_){
+   Reverb__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Reverb_setDelayms(Reverb__ctx_type_0 &_ctx, fix16_t delayms);
 
 typedef Reverb__ctx_type_0 Reverb_default_type;
 
@@ -988,7 +989,7 @@ static_inline void Reverb_default_init(Reverb__ctx_type_0 &_output_){
 
 static_inline void Reverb_default(Reverb__ctx_type_0 &_ctx){
    Reverb_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
-   Reverb_setDelayms(_ctx,0x1c1333 /* 28.075000 */);
+   Reverb_setDelayms(_ctx,0x197700 /* 25.464853 */);
    Reverb_setDecay(_ctx,0xd3b6 /* 0.827000 */);
 }
 

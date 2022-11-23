@@ -105,7 +105,6 @@ and setDelay(newDelay: int) {
 }
 
 // change delay (in miliseconds). Will be caped at max buffersize -- check that with getMaxDelayms()
-// Warning: does *not* reset buffer upon change
 // Note: with fixed float cannot ask above 32767ms (just in case it would make sense to have a 30s buffer on a platform which needs fixed float). Prefer setDelay (in samples) to go beyond
 and setDelayms(delayms: real) {
    mem fs;
@@ -113,6 +112,7 @@ and setDelayms(delayms: real) {
 }
 
 // seter for parameters. expect values of desired frequency and current sampling rate in kHz to avoid fixed float limits ([1/32767 ..32767]... probably)
+// WARNING: will *not* update delay (as it could have been passed with samples directly or by ms), to be called first, and should manually ask to update if delay in ms is important
 and setSamplerate(newFs:real) {
    if (newFs > 0.0) {
       fs = newFs;
