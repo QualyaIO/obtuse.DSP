@@ -16078,14 +16078,16 @@ void Reverb_setSamplerate(Reverb__ctx_type_0 &_ctx, fix16_t newFs){
 void Reverb_setReverbTime(Reverb__ctx_type_0 &_ctx, fix16_t newReverbtime){
    if(newReverbtime > 0x0 /* 0.000000 */){
       _ctx.reverbtime = newReverbtime;
+      fix16_t log_base;
+      log_base = 0x24d76 /* 2.302585 */;
       fix16_t comb0decay;
-      comb0decay = pow(0xa0000 /* 10.000000 */,fix_div(fix_mul(-0xc4 /* -0.003000 */,int_to_fix(_ctx.comb0delay)),fix_mul(_ctx.fs,_ctx.reverbtime)));
+      comb0decay = fix_exp(fix_div(fix_mul(fix_mul(-0xc4 /* -0.003000 */,log_base),int_to_fix(_ctx.comb0delay)),fix_mul(_ctx.fs,_ctx.reverbtime)));
       fix16_t comb1decay;
-      comb1decay = pow(0xa0000 /* 10.000000 */,fix_div(fix_mul(-0xc4 /* -0.003000 */,int_to_fix(_ctx.comb1delay)),fix_mul(_ctx.fs,_ctx.reverbtime)));
+      comb1decay = fix_exp(fix_div(fix_mul(fix_mul(-0xc4 /* -0.003000 */,log_base),int_to_fix(_ctx.comb1delay)),fix_mul(_ctx.fs,_ctx.reverbtime)));
       fix16_t comb2decay;
-      comb2decay = pow(0xa0000 /* 10.000000 */,fix_div(fix_mul(-0xc4 /* -0.003000 */,int_to_fix(_ctx.comb2delay)),fix_mul(_ctx.fs,_ctx.reverbtime)));
+      comb2decay = fix_exp(fix_div(fix_mul(fix_mul(-0xc4 /* -0.003000 */,log_base),int_to_fix(_ctx.comb2delay)),fix_mul(_ctx.fs,_ctx.reverbtime)));
       fix16_t comb3decay;
-      comb3decay = pow(0xa0000 /* 10.000000 */,fix_div(fix_mul(-0xc4 /* -0.003000 */,int_to_fix(_ctx.comb3delay)),fix_mul(_ctx.fs,_ctx.reverbtime)));
+      comb3decay = fix_exp(fix_div(fix_mul(fix_mul(-0xc4 /* -0.003000 */,log_base),int_to_fix(_ctx.comb3delay)),fix_mul(_ctx.fs,_ctx.reverbtime)));
       CombFB_setDecay(_ctx.comb0,comb0decay);
       CombFB_setDecay(_ctx.comb1,comb1decay);
       CombFB_setDecay(_ctx.comb2,comb2decay);

@@ -44,11 +44,14 @@ and setReverbTime(newReverbtime: real) {
   mem comb3delay: int;
   if (newReverbtime > 0.0) {
      reverbtime = newReverbtime;
+     // pow is not handled properly, at least when transpiling fixed float, hence go with exp and set base 10 with ln(10)... which is not supported either through log(10).
+     // completely stupid, just a way to let vult compute ln(10) instead of just writing "2.302585092994046"
+     val log_base = log10(10.0)/log10(exp(1.0));
      // delay / 1000 to compensate for fs in kHz + avoid fixed point boundaries (will be transcompiled as -0.003 * delay, good enough)
-     val comb0decay = pow(10.0, (-3.0 * (real(comb0delay) / 1000.0)) / (fs * reverbtime));
-     val comb1decay = pow(10.0, (-3.0 * (real(comb1delay) / 1000.0)) / (fs * reverbtime));
-     val comb2decay = pow(10.0, (-3.0 * (real(comb2delay) / 1000.0)) / (fs * reverbtime));
-     val comb3decay = pow(10.0, (-3.0 * (real(comb3delay) / 1000.0)) / (fs * reverbtime));
+     val comb0decay = exp(log_base * (-3.0 * (real(comb0delay) / 1000.0)) / (fs * reverbtime));
+     val comb1decay = exp(log_base * (-3.0 * (real(comb1delay) / 1000.0)) / (fs * reverbtime));
+     val comb2decay = exp(log_base * (-3.0 * (real(comb2delay) / 1000.0)) / (fs * reverbtime));
+     val comb3decay = exp(log_base * (-3.0 * (real(comb3delay) / 1000.0)) / (fs * reverbtime));
      _ = comb0:CombFB.setDecay(comb0decay);
      _ = comb1:CombFB.setDecay(comb1decay);
      _ = comb2:CombFB.setDecay(comb2decay);
