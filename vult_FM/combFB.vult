@@ -39,9 +39,9 @@ and process_buffer(nb: int, input: array(real, 256)) {
 
     val i = 0;
     while (i < nb) {
-       out = (input[i] + buffer[pos] * decay) * scale;
+       out = (input[i] + buffer[pos] * decay);
        buffer[pos] = out;
-       buffer_d[i] = out;
+       buffer_d[i] = out * scale;
        pos = pos + 1;
        pos = pos % delay;
        i = i + 1;

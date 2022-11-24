@@ -4540,9 +4540,9 @@ void CombFB_process_buffer(CombFB__ctx_type_0 &_ctx, int nb, fix16_t (&input)[25
    int i;
    i = 0;
    while(i < nb){
-      out = fix_mul(_ctx.scale,(input[i] + fix_mul(_ctx.decay,_ctx.buffer[_ctx.pos])));
+      out = (input[i] + fix_mul(_ctx.decay,_ctx.buffer[_ctx.pos]));
       _ctx.buffer[_ctx.pos] = out;
-      _ctx.buffer_d[i] = out;
+      _ctx.buffer_d[i] = fix_mul(_ctx.scale,out);
       _ctx.pos = (1 + _ctx.pos);
       _ctx.pos = (_ctx.pos % _ctx.delay);
       i = (1 + i);
