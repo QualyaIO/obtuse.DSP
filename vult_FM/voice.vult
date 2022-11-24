@@ -63,8 +63,8 @@ and runVoice(voice: int, nb: int, buff: array(real, 256)) {
        }
        else if (voice == 3) {
            if (synth == 0) {
-   	      _ = voice2FM:FM.process_buffer(nb);
-	      _ = voice2FM:FM.copyTo(buff, nb);
+	      _ = voice3FM:FM.process_buffer(nb);
+	      _ = voice3FM:FM.copyTo(buff, nb);
 	   }
        }
    }
@@ -98,9 +98,10 @@ and process() {
    return value * voices_ratio;
 }
 
+// one buffer for all voice
 and process_buffer(nb: int) {
-   // temporary buffer to hold each voice
-   mem buffer_v;
+   // here used as temporary buffer to hold each voice
+   mem buffer_v0;
    // output values
    mem buffer_o;
    nb = clip(nb, 0, size(buffer_o));
@@ -111,9 +112,10 @@ and process_buffer(nb: int) {
    val v = 0;
    val i = 0;
    while (v < number_voices) {
-      _ = runVoice(v, nb, buffer_v);
+      _ = runVoice(v, nb, buffer_v0);
+      i = 0;
       while (i < nb) {
-         buffer_o[i] = buffer_o[i] + buffer_v[i];
+         buffer_o[i] = buffer_o[i] + buffer_v0[i];
          i = i + 1;
       }
       v = v + 1;
@@ -122,6 +124,27 @@ and process_buffer(nb: int) {
    i = 0;
    while (i < nb) {
       buffer_o[i] = buffer_o[i] * voices_ratio;
+      i = i + 1;
+   }
+}
+
+// several buffer
+and process_buffer_alt(nb: int) {
+   // temporary buffer to hold each voice
+   mem buffer_v0, buffer_v1, buffer_v2, buffer_v3;
+   // output values
+   mem buffer_o;
+   nb = clip(nb, 0, size(buffer_o));
+   if (nb == 0) {
+      nb = size(buffer_o);
+   }
+   _ = runVoice(0, nb, buffer_v0);
+   _ = runVoice(1, nb, buffer_v1);
+   _ = runVoice(2, nb, buffer_v2);
+   _ = runVoice(3, nb, buffer_v3);
+   val i = 0;
+   while (i < nb) {
+      buffer_o[i] = (buffer_v0[i] + buffer_v1[i] + buffer_v2[i] + buffer_v3[i]) * voices_ratio;
       i = i + 1;
    }
 }
@@ -316,7 +339,10 @@ and copyTo(oBuffer:array(real, 256), nb: int){
 }
 
 and default() @[init] {
-   buffer_v = Util.buffer();
+   buffer_v0 = Util.buffer();
+   buffer_v1 = Util.buffer();
+   buffer_v2 = Util.buffer();
+   buffer_v3 = Util.buffer();
    buffer_o = Util.buffer();
 
    mem voices: array(int, 4);

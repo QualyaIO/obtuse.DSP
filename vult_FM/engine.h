@@ -576,7 +576,10 @@ typedef struct Voice__ctx_type_0 {
    int number_voices;
    int notes[128];
    fix16_t fs;
-   fix16_t buffer_v[256];
+   fix16_t buffer_v3[256];
+   fix16_t buffer_v2[256];
+   fix16_t buffer_v1[256];
+   fix16_t buffer_v0[256];
    fix16_t buffer_o[256];
 } Voice__ctx_type_0;
 
@@ -617,6 +620,15 @@ static_inline void Voice_process_buffer_init(Voice__ctx_type_0 &_output_){
 }
 
 void Voice_process_buffer(Voice__ctx_type_0 &_ctx, int nb);
+
+typedef Voice__ctx_type_0 Voice_process_buffer_alt_type;
+
+static_inline void Voice_process_buffer_alt_init(Voice__ctx_type_0 &_output_){
+   Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Voice_process_buffer_alt(Voice__ctx_type_0 &_ctx, int nb);
 
 typedef Voice__ctx_type_0 Voice__sendNoteOn_type;
 

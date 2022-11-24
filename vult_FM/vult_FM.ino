@@ -62,7 +62,7 @@ MCLK mclk;
 #define pDOUT 22
 #define pMCLK 18 // pin 24
 
-const int sampleRate =  40000; //16000; // minimum for UDA1334A
+const int sampleRate =  20000; //16000; // minimum for UDA1334A
 const int mclkMultiplier = 256; // typical for many DAC
 
 
@@ -221,7 +221,7 @@ void loop() {
     }
   } else {
     //  buffers hard-coded of size 16 in I2S (unless i2s.setBuffers() is called), make sure there are at least two samples above that free in the audio circular buffer (of buffers)
-    while (i2s.availableForWrite() > (BUFFER_SIZE) * 2 + 17) {
+    while (i2s.availableForWrite() > (BUFFER_SIZE) * 2 + 17  ) {
       // process buffer
       dsp_tick = micros();
       dsp_cycle_tick = rp2040.getCycleCount();
@@ -240,15 +240,14 @@ void loop() {
         // returned float should be between -1 and 1 (should we checkit ?)
         // shortcut, instead of fixed_to_float * 32767, *almost* the same and vastly improve perf with buffered version (???)
         buff[i] =  reverb_buff[i] / 2 - ( reverb_buff[i] >> 16);
-        //buff[i] =  raw_buff[i] / 2 - ( raw_buff[i] >> 16);
       }
 
       dsp_cycle_count += rp2040.getCycleCount() - dsp_cycle_tick;
       dsp_time += micros() - dsp_tick;
 
+      int16_t v;
       for (int i = 0; i < BUFFER_SIZE; i++) {
-        i2s.write(buff[i]);
-        i2s.write(buff[i]);
+        i2s.write16(buff[i], buff[i]);
       }
     }
   }
