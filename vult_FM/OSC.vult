@@ -51,12 +51,12 @@ and process() {
 // env: envelope to apply (0..1)
 // phase shift: specify how to shift the base phase (-1 to 1, 0 center of phase) -- FIXME so that 0 does not change anything?
 // phase_shift_level: by how much we apply phase shift (0..1)
+// oBuffer: output buffer to copy data to
 // FIXME: not check for phase_bases size, no option to by-pass
-and process_buffer(nb: int, env: array(real, 256), phase_shift: array(real, 256), phase_shift_level: real) {
-   mem buffer;
-   nb = clip(nb, 0, size(buffer));
+and process_bufferTo(nb: int, env: array(real, 256), phase_shift: array(real, 256), phase_shift_level: real, oBuffer: array(real, 256)) {
+   nb = clip(nb, 0, size(oBuffer));
    if (nb == 0) {
-      nb = size(buffer);
+      nb = size(oBuffer);
    }
    
    // base for phase shift
@@ -73,16 +73,21 @@ and process_buffer(nb: int, env: array(real, 256), phase_shift: array(real, 256)
       }
       // loop in sample
       //v = getSample(int(phase_base + phase));
-      buffer[i]  = getSample(int(half_phase + phase_range * phase_shift[i]  + phase)) * env[i];
+      oBuffer[i]  = getSample(int(half_phase + phase_range * phase_shift[i]  + phase)) * env[i];
       i = i + 1;
    }
+}
+// retrocompatibility: using inner buffer
+and process_buffer(nb: int, env: array(real, 256), phase_shift: array(real, 256), phase_shift_level: real) {
+   mem buffer_o;
+   _ = process_bufferTo(nb, env, phase_shift, phase_shift_level, buffer_o);
 }
 
 // without phase this one
-and process_buffer_simple(nb: int, env: array(real, 256)) {
-   nb = clip(nb, 0, size(buffer));
+and process_bufferTo_simple(nb: int, env: array(real, 256), oBuffer: array(real, 256)) {
+   nb = clip(nb, 0, size(oBuffer));
    if (nb == 0) {
-      nb = size(buffer);
+      nb = size(oBuffer);
    }
    
    val i = 0;
@@ -95,16 +100,20 @@ and process_buffer_simple(nb: int, env: array(real, 256)) {
       }
       // loop in sample
       //v = getSample(int(phase_base + phase));
-      buffer[i]  = getSample(int(phase_base + phase)) * env[i];
+      oBuffer[i]  = getSample(int(phase_base + phase)) * env[i];
       i = i + 1;
    }
+}
+
+and process_buffer_simple(nb: int, env: array(real, 256)) {
+   _ = process_bufferTo_simple(nb, env, buffer_o);
 }
 
 // without envelop nor phase this one
-and process_buffer_simplest(nb: int) {
-   nb = clip(nb, 0, size(buffer));
+and process_bufferTo_simplest(nb: int, oBuffer: array(real, 256)) {
+   nb = clip(nb, 0, size(oBuffer));
    if (nb == 0) {
-      nb = size(buffer);
+      nb = size(oBuffer);
    }
    
    val i = 0;
@@ -117,11 +126,15 @@ and process_buffer_simplest(nb: int) {
       }
       // loop in sample
       //v = getSample(int(phase_base + phase));
-      buffer[i]  = getSample(int(phase_base + phase));
+      oBuffer[i]  = getSample(int(phase_base + phase));
       i = i + 1;
    }
 }
 
+
+and process_buffer_simplest(nb: int) {
+   _ = process_bufferTo_simplest(nb, buffer_o);
+}
 
 // called internally when Samplerate or frequency is altered
 and updateStep() {
@@ -131,7 +144,7 @@ and updateStep() {
     step = stepRatio*freq;
 }
 and getBuffer() {
-   return buffer;
+   return buffer_o;
 }
 // seter for parameters. expect values of desired frequency and current sampling rate in kHz to avoid fixed float limits ([1/32767 ..32767]... probably)
 and setSamplerate(newFs:real) {
@@ -175,8 +188,8 @@ and getSize() : int {
 and copyTo(oBuffer:array(real, 256), nb: int){
    // ensure we won't overflow
    val min_size = size(oBuffer);
-   if (size(buffer) < min_size) {
-      min_size = size(buffer);
+   if (size(buffer_o) < min_size) {
+      min_size = size(buffer_o);
    }
    nb = clip(nb, 0, min_size);
    if (nb == 0) {
@@ -184,13 +197,13 @@ and copyTo(oBuffer:array(real, 256), nb: int){
    }
    val i = 0;
    while (i < nb) {
-      oBuffer[i] = buffer[i];
+      oBuffer[i] = buffer_o[i];
       i = i + 1;
    }
 }
 and default() @[init] {
    // will copy a new array
-   buffer = Util.buffer();
+   mem buffer_o = Util.buffer();
    // default sampling rate (in kHz)
    _ = setSamplerate(44.1);
    // default sine

@@ -58,13 +58,12 @@ fun process() {
 }
 
 // update the buffer, to be fetch afterward
-and process_buffer(nb: int) {
-    mem buffer;
+and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
     mem buffer_modulator;
     mem buffer_carrier_phase;
-    nb = clip(nb, 0, size(buffer));
+    nb = clip(nb, 0, size(oBuffer));
     if (nb == 0) {
-       nb = size(buffer);
+       nb = size(oBuffer);
     }
     // amount of phase modulation
     mem level;
@@ -80,10 +79,8 @@ and process_buffer(nb: int) {
 
     // retrieve envelopes
     if (nb_env > 0) {
-       _ = carrieradsr:ADSR.process_buffer(gate, nb_env);
-       _ = carrieradsr:ADSR.copyTo(buffer_carrier_env_short, nb_env);
-       _ = modulatoradsr:ADSR.process_buffer(gate, nb_env);
-       _ = modulatoradsr:ADSR.copyTo(buffer_modulator_env_short, nb_env);
+       _ = carrieradsr:ADSR.process_bufferTo(gate, nb_env, buffer_carrier_env_short);
+       _ = modulatoradsr:ADSR.process_bufferTo(gate, nb_env, buffer_modulator_env_short);
     }
 
     // expand carrier envelop and retrieve to full version
@@ -106,23 +103,25 @@ and process_buffer(nb: int) {
 
     // retrieve modulation
     // FIME: can we here find a way to not calling when the corresponding envelope is 0?
-    _ = modulator:OSC.process_buffer_simple(nb, buffer_modulator_env);
-    _ = modulator:OSC.copyTo(buffer_modulator, nb);
+    _ = modulator:OSC.process_bufferTo_simple(nb, buffer_modulator_env, buffer_modulator);
 
     // apply to carrier
     // FIXME: pass volume directly?
-    _ = carrier:OSC.process_buffer(nb, buffer_carrier_env, buffer_carrier_phase, level);
-    _ = carrier:OSC.copyTo(buffer, nb);
+    _ = carrier:OSC.process_bufferTo(nb, buffer_carrier_env, buffer_carrier_phase, level, oBuffer);
+}
+and process_buffer(nb: int) {
+  mem buffer_o;
+  _ = process_bufferTo(nb, buffer_o);
 }
 and getBuffer() {
-   return buffer;
+   return buffer_o;
 }
 // copy output values to dest buffer
 and copyTo(oBuffer:array(real, 256), nb: int){
    // ensure we won't overflow
    val min_size = size(oBuffer);
-   if (size(buffer) < min_size) {
-      min_size = size(buffer);
+   if (size(buffer_o) < min_size) {
+      min_size = size(buffer_o);
    }
    nb = clip(nb, 0, min_size);
    if (nb == 0) {
@@ -130,7 +129,7 @@ and copyTo(oBuffer:array(real, 256), nb: int){
    }
    val i = 0;
    while (i < nb) {
-      oBuffer[i] = buffer[i];
+      oBuffer[i] = buffer_o[i];
       i = i + 1;
    }
 }
@@ -212,7 +211,7 @@ and noteOff(note:int, channel:int) {
 // to be called on start
 and default() @[init] {
     // will copy new arrays
-    buffer = Util.buffer();
+    buffer_o = Util.buffer();
     buffer_modulator = Util.buffer();
     buffer_carrier_env_short = Util.buffer();
     buffer_modulator_env_short = Util.buffer();

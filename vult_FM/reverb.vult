@@ -17,35 +17,32 @@ fun process(sample: real) {
   return allpass1:Allpass.process(allpass0:Allpass.process(combs_filter));
 }
 
-and process_buffer(nb: int, input: array(real, 256)) {
+and process_bufferTo(nb: int, input: array(real, 256), oBuffer: array(real, 256)) {
   // one buffer for each filter, one for output
-  mem buffer_c0, buffer_c1, buffer_c2, buffer_c3, buffer_a0, buffer_a1, buffer_o;
-  nb = clip(nb, 0, size(buffer_o));
+  mem buffer_c0, buffer_c1, buffer_c2, buffer_c3, buffer_a0, buffer_a1;
+  nb = clip(nb, 0, size(oBuffer));
   if (nb == 0) {
-     nb = size(buffer_o);
+     nb = size(oBuffer);
   }
   // run all combs in parallel
-  _ = comb0:CombFB.process_buffer(nb, input);
-  _ = comb0:CombFB.copyTo(buffer_c0, nb);
-  _ = comb1:CombFB.process_buffer(nb, input);
-  _ = comb1:CombFB.copyTo(buffer_c1, nb);
-  _ = comb2:CombFB.process_buffer(nb, input);
-  _ = comb2:CombFB.copyTo(buffer_c2, nb);
-  _ = comb3:CombFB.process_buffer(nb, input);
-  _ = comb3:CombFB.copyTo(buffer_c3, nb);
+  _ = comb0:CombFB.process_bufferTo(nb, input, buffer_c0);
+  _ = comb1:CombFB.process_bufferTo(nb, input, buffer_c1);
+  _ = comb2:CombFB.process_bufferTo(nb, input, buffer_c2);
+  _ = comb3:CombFB.process_bufferTo(nb, input, buffer_c3);
   // mix down
   val i = 0;
   while (i < nb) {
-    buffer_o[i] = (buffer_c0[i] + buffer_c1[i] + buffer_c2[i] + buffer_c3[i]) * 0.25;
+    oBuffer[i] = (buffer_c0[i] + buffer_c1[i] + buffer_c2[i] + buffer_c3[i]) * 0.25;
     i = i + 1;
   }
   // run allpass in series  
-  _ =  allpass0:Allpass.process_buffer(nb, buffer_o);
-  _ =  allpass0:Allpass.copyTo(buffer_o, nb);
-  _ =  allpass1:Allpass.process_buffer(nb, buffer_o);
-  _ =  allpass1:Allpass.copyTo(buffer_o, nb);
+  _ =  allpass0:Allpass.process_bufferTo(nb, oBuffer, oBuffer);
+  _ =  allpass1:Allpass.process_bufferTo(nb, oBuffer, oBuffer);
 }
-
+and process_buffer(nb: int, input: array(real, 256)) {
+    mem buffer_o;
+    _ = process_bufferTo(nb, input, buffer_o);
+}
 
 
 // Set base for reverb and delay times, in kHz

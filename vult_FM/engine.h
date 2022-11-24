@@ -146,7 +146,7 @@ typedef struct OSC__ctx_type_2 {
    fix16_t phase;
    fix16_t fs;
    fix16_t freq;
-   fix16_t buffer[256];
+   fix16_t buffer_o[256];
 } OSC__ctx_type_2;
 
 typedef OSC__ctx_type_2 OSC_getSample_type;
@@ -175,6 +175,15 @@ static_inline fix16_t OSC_process(OSC__ctx_type_2 &_ctx){
    return OSC_getSample(_ctx,fix_to_int((_ctx.phase + _ctx.phase_base)));
 }
 
+typedef OSC__ctx_type_2 OSC_process_bufferTo_type;
+
+static_inline void OSC_process_bufferTo_init(OSC__ctx_type_2 &_output_){
+   OSC__ctx_type_2_init(_output_);
+   return ;
+}
+
+void OSC_process_bufferTo(OSC__ctx_type_2 &_ctx, int nb, fix16_t (&env)[256], fix16_t (&phase_shift)[256], fix16_t phase_shift_level, fix16_t (&oBuffer)[256]);
+
 typedef OSC__ctx_type_2 OSC_process_buffer_type;
 
 static_inline void OSC_process_buffer_init(OSC__ctx_type_2 &_output_){
@@ -182,7 +191,18 @@ static_inline void OSC_process_buffer_init(OSC__ctx_type_2 &_output_){
    return ;
 }
 
-void OSC_process_buffer(OSC__ctx_type_2 &_ctx, int nb, fix16_t (&env)[256], fix16_t (&phase_shift)[256], fix16_t phase_shift_level);
+static_inline void OSC_process_buffer(OSC__ctx_type_2 &_ctx, int nb, fix16_t (&env)[256], fix16_t (&phase_shift)[256], fix16_t phase_shift_level){
+   OSC_process_bufferTo(_ctx,nb,env,phase_shift,phase_shift_level,_ctx.buffer_o);
+};
+
+typedef OSC__ctx_type_2 OSC_process_bufferTo_simple_type;
+
+static_inline void OSC_process_bufferTo_simple_init(OSC__ctx_type_2 &_output_){
+   OSC__ctx_type_2_init(_output_);
+   return ;
+}
+
+void OSC_process_bufferTo_simple(OSC__ctx_type_2 &_ctx, int nb, fix16_t (&env)[256], fix16_t (&oBuffer)[256]);
 
 typedef OSC__ctx_type_2 OSC_process_buffer_simple_type;
 
@@ -191,7 +211,18 @@ static_inline void OSC_process_buffer_simple_init(OSC__ctx_type_2 &_output_){
    return ;
 }
 
-void OSC_process_buffer_simple(OSC__ctx_type_2 &_ctx, int nb, fix16_t (&env)[256]);
+static_inline void OSC_process_buffer_simple(OSC__ctx_type_2 &_ctx, int nb, fix16_t (&env)[256]){
+   OSC_process_bufferTo_simple(_ctx,nb,env,_ctx.buffer_o);
+};
+
+typedef OSC__ctx_type_2 OSC_process_bufferTo_simplest_type;
+
+static_inline void OSC_process_bufferTo_simplest_init(OSC__ctx_type_2 &_output_){
+   OSC__ctx_type_2_init(_output_);
+   return ;
+}
+
+void OSC_process_bufferTo_simplest(OSC__ctx_type_2 &_ctx, int nb, fix16_t (&oBuffer)[256]);
 
 typedef OSC__ctx_type_2 OSC_process_buffer_simplest_type;
 
@@ -200,7 +231,9 @@ static_inline void OSC_process_buffer_simplest_init(OSC__ctx_type_2 &_output_){
    return ;
 }
 
-void OSC_process_buffer_simplest(OSC__ctx_type_2 &_ctx, int nb);
+static_inline void OSC_process_buffer_simplest(OSC__ctx_type_2 &_ctx, int nb){
+   OSC_process_bufferTo_simplest(_ctx,nb,_ctx.buffer_o);
+};
 
 typedef OSC__ctx_type_2 OSC_updateStep_type;
 
@@ -221,7 +254,7 @@ static_inline void OSC_getBuffer_init(OSC__ctx_type_2 &_output_){
 }
 
 static_inline void OSC_getBuffer(OSC__ctx_type_2 &_ctx, fix16_t (&_output_)[256]){
-   fix_copy_array(256,_output_,_ctx.buffer);
+   fix_copy_array(256,_output_,_ctx.buffer_o);
    return ;
 }
 
@@ -326,7 +359,7 @@ typedef struct ADSR__ctx_type_0 {
    fix16_t fs;
    fix16_t d_step;
    fix16_t d;
-   fix16_t buffer[256];
+   fix16_t buffer_o[256];
    fix16_t a_target;
    fix16_t a_step;
    fix16_t a;
@@ -345,6 +378,15 @@ static_inline void ADSR_process_init(ADSR__ctx_type_0 &_output_){
 
 fix16_t ADSR_process(ADSR__ctx_type_0 &_ctx, uint8_t bgate);
 
+typedef ADSR__ctx_type_0 ADSR_process_bufferTo_type;
+
+static_inline void ADSR_process_bufferTo_init(ADSR__ctx_type_0 &_output_){
+   ADSR__ctx_type_0_init(_output_);
+   return ;
+}
+
+void ADSR_process_bufferTo(ADSR__ctx_type_0 &_ctx, uint8_t bgate, int nb, fix16_t (&oBuffer)[256]);
+
 typedef ADSR__ctx_type_0 ADSR_process_buffer_type;
 
 static_inline void ADSR_process_buffer_init(ADSR__ctx_type_0 &_output_){
@@ -352,7 +394,9 @@ static_inline void ADSR_process_buffer_init(ADSR__ctx_type_0 &_output_){
    return ;
 }
 
-void ADSR_process_buffer(ADSR__ctx_type_0 &_ctx, uint8_t bgate, int nb);
+static_inline void ADSR_process_buffer(ADSR__ctx_type_0 &_ctx, uint8_t bgate, int nb){
+   ADSR_process_bufferTo(_ctx,bgate,nb,_ctx.buffer_o);
+};
 
 typedef ADSR__ctx_type_0 ADSR_updateSteps_type;
 
@@ -420,13 +464,13 @@ typedef struct FM__ctx_type_0 {
    fix16_t carrier_env;
    fix16_t carrierRatio;
    OSC__ctx_type_2 carrier;
+   fix16_t buffer_o[256];
    fix16_t buffer_modulator_env_short[256];
    fix16_t buffer_modulator_env[256];
    fix16_t buffer_modulator[256];
    fix16_t buffer_carrier_phase[256];
    fix16_t buffer_carrier_env_short[256];
    fix16_t buffer_carrier_env[256];
-   fix16_t buffer[256];
 } FM__ctx_type_0;
 
 typedef FM__ctx_type_0 FM_process_type;
@@ -440,6 +484,15 @@ static_inline void FM_process_init(FM__ctx_type_0 &_output_){
 
 fix16_t FM_process(FM__ctx_type_0 &_ctx);
 
+typedef FM__ctx_type_0 FM_process_bufferTo_type;
+
+static_inline void FM_process_bufferTo_init(FM__ctx_type_0 &_output_){
+   FM__ctx_type_0_init(_output_);
+   return ;
+}
+
+void FM_process_bufferTo(FM__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
+
 typedef FM__ctx_type_0 FM_process_buffer_type;
 
 static_inline void FM_process_buffer_init(FM__ctx_type_0 &_output_){
@@ -447,7 +500,9 @@ static_inline void FM_process_buffer_init(FM__ctx_type_0 &_output_){
    return ;
 }
 
-void FM_process_buffer(FM__ctx_type_0 &_ctx, int nb);
+static_inline void FM_process_buffer(FM__ctx_type_0 &_ctx, int nb){
+   FM_process_bufferTo(_ctx,nb,_ctx.buffer_o);
+};
 
 typedef FM__ctx_type_0 FM_getBuffer_type;
 
@@ -457,7 +512,7 @@ static_inline void FM_getBuffer_init(FM__ctx_type_0 &_output_){
 }
 
 static_inline void FM_getBuffer(FM__ctx_type_0 &_ctx, fix16_t (&_output_)[256]){
-   fix_copy_array(256,_output_,_ctx.buffer);
+   fix_copy_array(256,_output_,_ctx.buffer_o);
    return ;
 }
 
@@ -612,6 +667,15 @@ static_inline void Voice_process_init(Voice__ctx_type_0 &_output_){
 
 fix16_t Voice_process(Voice__ctx_type_0 &_ctx);
 
+typedef Voice__ctx_type_0 Voice_process_bufferTo_type;
+
+static_inline void Voice_process_bufferTo_init(Voice__ctx_type_0 &_output_){
+   Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Voice_process_bufferTo(Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
+
 typedef Voice__ctx_type_0 Voice_process_buffer_type;
 
 static_inline void Voice_process_buffer_init(Voice__ctx_type_0 &_output_){
@@ -619,7 +683,18 @@ static_inline void Voice_process_buffer_init(Voice__ctx_type_0 &_output_){
    return ;
 }
 
-void Voice_process_buffer(Voice__ctx_type_0 &_ctx, int nb);
+static_inline void Voice_process_buffer(Voice__ctx_type_0 &_ctx, int nb){
+   Voice_process_bufferTo(_ctx,nb,_ctx.buffer_o);
+};
+
+typedef Voice__ctx_type_0 Voice_process_bufferTo_alt_type;
+
+static_inline void Voice_process_bufferTo_alt_init(Voice__ctx_type_0 &_output_){
+   Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Voice_process_bufferTo_alt(Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
 
 typedef Voice__ctx_type_0 Voice_process_buffer_alt_type;
 
@@ -628,7 +703,9 @@ static_inline void Voice_process_buffer_alt_init(Voice__ctx_type_0 &_output_){
    return ;
 }
 
-void Voice_process_buffer_alt(Voice__ctx_type_0 &_ctx, int nb);
+static_inline void Voice_process_buffer_alt(Voice__ctx_type_0 &_ctx, int nb){
+   Voice_process_bufferTo_alt(_ctx,nb,_ctx.buffer_o);
+};
 
 typedef Voice__ctx_type_0 Voice__sendNoteOn_type;
 
@@ -729,7 +806,7 @@ typedef struct CombFB__ctx_type_0 {
    fix16_t fs;
    int delay;
    fix16_t decay;
-   fix16_t buffer_d[256];
+   fix16_t buffer_o[256];
    fix16_t buffer[4096];
 } CombFB__ctx_type_0;
 
@@ -744,6 +821,15 @@ static_inline void CombFB_process_init(CombFB__ctx_type_0 &_output_){
 
 fix16_t CombFB_process(CombFB__ctx_type_0 &_ctx, fix16_t sample);
 
+typedef CombFB__ctx_type_0 CombFB_process_bufferTo_type;
+
+static_inline void CombFB_process_bufferTo_init(CombFB__ctx_type_0 &_output_){
+   CombFB__ctx_type_0_init(_output_);
+   return ;
+}
+
+void CombFB_process_bufferTo(CombFB__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256], fix16_t (&oBuffer)[256]);
+
 typedef CombFB__ctx_type_0 CombFB_process_buffer_type;
 
 static_inline void CombFB_process_buffer_init(CombFB__ctx_type_0 &_output_){
@@ -751,7 +837,9 @@ static_inline void CombFB_process_buffer_init(CombFB__ctx_type_0 &_output_){
    return ;
 }
 
-void CombFB_process_buffer(CombFB__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256]);
+static_inline void CombFB_process_buffer(CombFB__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256]){
+   CombFB_process_bufferTo(_ctx,nb,input,_ctx.buffer_o);
+};
 
 typedef CombFB__ctx_type_0 CombFB_getBuffer_type;
 
@@ -761,7 +849,7 @@ static_inline void CombFB_getBuffer_init(CombFB__ctx_type_0 &_output_){
 }
 
 static_inline void CombFB_getBuffer(CombFB__ctx_type_0 &_ctx, fix16_t (&_output_)[256]){
-   fix_copy_array(256,_output_,_ctx.buffer_d);
+   fix_copy_array(256,_output_,_ctx.buffer_o);
    return ;
 }
 
@@ -862,7 +950,7 @@ typedef struct Allpass__ctx_type_0 {
    fix16_t fs;
    int delay;
    fix16_t decay;
-   fix16_t buffer_d[256];
+   fix16_t buffer_o[256];
    fix16_t buffer_allpassed[4096];
    fix16_t buffer[4096];
 } Allpass__ctx_type_0;
@@ -878,6 +966,15 @@ static_inline void Allpass_process_init(Allpass__ctx_type_0 &_output_){
 
 fix16_t Allpass_process(Allpass__ctx_type_0 &_ctx, fix16_t sample);
 
+typedef Allpass__ctx_type_0 Allpass_process_bufferTo_type;
+
+static_inline void Allpass_process_bufferTo_init(Allpass__ctx_type_0 &_output_){
+   Allpass__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Allpass_process_bufferTo(Allpass__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256], fix16_t (&oBuffer)[256]);
+
 typedef Allpass__ctx_type_0 Allpass_process_buffer_type;
 
 static_inline void Allpass_process_buffer_init(Allpass__ctx_type_0 &_output_){
@@ -885,7 +982,9 @@ static_inline void Allpass_process_buffer_init(Allpass__ctx_type_0 &_output_){
    return ;
 }
 
-void Allpass_process_buffer(Allpass__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256]);
+static_inline void Allpass_process_buffer(Allpass__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256]){
+   Allpass_process_bufferTo(_ctx,nb,input,_ctx.buffer_o);
+};
 
 typedef Allpass__ctx_type_0 Allpass_getBuffer_type;
 
@@ -895,7 +994,7 @@ static_inline void Allpass_getBuffer_init(Allpass__ctx_type_0 &_output_){
 }
 
 static_inline void Allpass_getBuffer(Allpass__ctx_type_0 &_ctx, fix16_t (&_output_)[256]){
-   fix_copy_array(256,_output_,_ctx.buffer_d);
+   fix_copy_array(256,_output_,_ctx.buffer_o);
    return ;
 }
 
@@ -1027,6 +1126,15 @@ static_inline fix16_t Reverb_process(Reverb__ctx_type_0 &_ctx, fix16_t sample){
    return Allpass_process(_ctx.allpass1,Allpass_process(_ctx.allpass0,combs_filter));
 }
 
+typedef Reverb__ctx_type_0 Reverb_process_bufferTo_type;
+
+static_inline void Reverb_process_bufferTo_init(Reverb__ctx_type_0 &_output_){
+   Reverb__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Reverb_process_bufferTo(Reverb__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256], fix16_t (&oBuffer)[256]);
+
 typedef Reverb__ctx_type_0 Reverb_process_buffer_type;
 
 static_inline void Reverb_process_buffer_init(Reverb__ctx_type_0 &_output_){
@@ -1034,7 +1142,9 @@ static_inline void Reverb_process_buffer_init(Reverb__ctx_type_0 &_output_){
    return ;
 }
 
-void Reverb_process_buffer(Reverb__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256]);
+static_inline void Reverb_process_buffer(Reverb__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256]){
+   Reverb_process_bufferTo(_ctx,nb,input,_ctx.buffer_o);
+};
 
 typedef Reverb__ctx_type_0 Reverb_setSamplerate_type;
 

@@ -84,7 +84,7 @@ long dsp_cycle_count;
 long dsp_cycle_tick;
 
 // for testing we will alternate between both versions of algo
-bool buffer_version = false;
+bool buffer_version = true;
 unsigned long switch_tick;
 // in ms, how often we switch between boht versions. 0 to disable
 int buffer_switch_time = 0;
@@ -212,11 +212,11 @@ void loop() {
       // wet / dry
       fix16_t out = 0.5 * raw + 0.5 * val;
       // shortcut, instead of fixed_to_float * 32767, *almost* the same
-      out =  out / 2 - (out >> 16);
+      int16_t out16 =  out / 2 - (out >> 16);
 
       dsp_cycle_count += rp2040.getCycleCount() - dsp_cycle_tick;
       dsp_time += micros() - dsp_tick;
-      i2s.write16(out, out);
+      i2s.write16(out16, out16);
 
     }
   } else {
@@ -231,15 +231,15 @@ void loop() {
       // FIXME: buffer not supported for voice at the moment
       //FM_process_buffer(context, BUFFER_SIZE);
       //FM_getBuffer(context, raw_buff);
-      Voice_process_buffer_alt(context, BUFFER_SIZE);
+      Voice_process_bufferTo_alt(context, BUFFER_SIZE, raw_buff);
       //Voice_getBuffer(context, raw_buff);
-      Reverb_process_buffer(context_reverb, BUFFER_SIZE, context.buffer_o);
+      Reverb_process_bufferTo(context_reverb, BUFFER_SIZE, raw_buff, reverb_buff);
       //Reverb_getBuffer(context_reverb, reverb_buff);
       // two times to better compare with classical situation
       fix16_t out;
       for (size_t i = 0; i < BUFFER_SIZE; i++) {
         // wet / dry
-        out = 0.5 * context.buffer_o[i] + 0.5 * context_reverb.buffer_o[i];
+        out = 0.5 * raw_buff[i] + 0.5 * reverb_buff[i];
         // returned float should be between -1 and 1 (should we checkit ?)
         // shortcut, instead of fixed_to_float * 32767, *almost* the same and vastly improve perf with buffered version (???)
         buff[i] = out / 2 - ( out >> 16);

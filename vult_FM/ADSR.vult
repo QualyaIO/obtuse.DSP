@@ -95,11 +95,10 @@ fun process(bgate:bool) {
 
 
 // one gate for the whole buffer at the moment
-and process_buffer(bgate:bool, nb:int) {
-   mem buffer;
-   nb = clip(nb, 0, size(buffer));
+and process_bufferTo(bgate:bool, nb:int, oBuffer: array(real, 256)) {
+   nb = clip(nb, 0, size(oBuffer));
    if (nb == 0) {
-      nb = size(buffer);
+      nb = size(oBuffer);
    }
 
    // internal output and target x 1000 to deal with fixed point precision (also corresponds to the fact that samplerate is in kHz)
@@ -178,9 +177,14 @@ and process_buffer(bgate:bool, nb:int) {
          }
       }
    
-      buffer[i] = clip(out * scale_i, 0.0, 1.0);
+      oBuffer[i] = clip(out * scale_i, 0.0, 1.0);
       i = i + 1;
    }
+}
+
+and process_buffer(bgate:bool, nb:int) {
+   mem buffer_o;
+   _ = process_bufferTo(bgate, nb, buffer_o);
 }
 
 // once sample rate change, we need to adapt 
@@ -228,8 +232,8 @@ and config(newA, newD, newS, newR) {
 and copyTo(oBuffer:array(real, 256), nb: int){
    // ensure we won't overflow
    val min_size = size(oBuffer);
-   if (size(buffer) < min_size) {
-      min_size = size(buffer);
+   if (size(buffer_o) < min_size) {
+      min_size = size(buffer_o);
    }
    nb = clip(nb, 0, min_size);
    if (nb == 0) {
@@ -237,14 +241,14 @@ and copyTo(oBuffer:array(real, 256), nb: int){
    }
    val i = 0;
    while (i < nb) {
-      oBuffer[i] = buffer[i];
+      oBuffer[i] = buffer_o[i];
       i = i + 1;
    }
 }
 
 and default() @[init] {
    // will copy new arrays
-   buffer = Util.buffer();
+   buffer_o = Util.buffer();
    // Note: if fore some reason becomes < s, adapt decay to check if we reach sustain "from below" in process()
    mem a_target = 1.0;
    _ = setSamplerate(44.1);

@@ -45,26 +45,22 @@ and runVoice(voice: int, nb: int, buff: array(real, 256)) {
    if (voice < number_voices) {
        if (voice == 0) {
            if (synth == 0) {
-   	      _ = voice0FM:FM.process_buffer(nb);
-              _ = voice0FM:FM.copyTo(buff, nb);
+	      _ = voice0FM:FM.process_bufferTo(nb, buff);
 	   }
        }
        else if (voice == 1) {
            if (synth == 0) {
-   	      _ = voice1FM:FM.process_buffer(nb);
-              _ = voice1FM:FM.copyTo(buff, nb);
+	      _ = voice1FM:FM.process_bufferTo(nb, buff);
 	   }
        }
        else if (voice == 2) {
            if (synth == 0) {
-   	      _ = voice2FM:FM.process_buffer(nb);
-              _ = voice2FM:FM.copyTo(buff, nb);
+              _ = voice2FM:FM.process_bufferTo(nb, buff);
 	   }
        }
        else if (voice == 3) {
            if (synth == 0) {
-	      _ = voice3FM:FM.process_buffer(nb);
-	      _ = voice3FM:FM.copyTo(buff, nb);
+              _ = voice3FM:FM.process_bufferTo(nb, buff);
 	   }
        }
    }
@@ -99,14 +95,12 @@ and process() {
 }
 
 // one buffer for all voice
-and process_buffer(nb: int) {
+and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
    // here used as temporary buffer to hold each voice
    mem buffer_v0;
-   // output values
-   mem buffer_o;
-   nb = clip(nb, 0, size(buffer_o));
+   nb = clip(nb, 0, size(oBuffer));
    if (nb == 0) {
-      nb = size(buffer_o);
+      nb = size(oBuffer);
    }
    // run all voices and add to output buffer
    val v = 0;
@@ -115,7 +109,7 @@ and process_buffer(nb: int) {
       _ = runVoice(v, nb, buffer_v0);
       i = 0;
       while (i < nb) {
-         buffer_o[i] = buffer_o[i] + buffer_v0[i];
+	oBuffer[i] = oBuffer[i] + oBuffer[i];
          i = i + 1;
       }
       v = v + 1;
@@ -123,20 +117,24 @@ and process_buffer(nb: int) {
    // scale down
    i = 0;
    while (i < nb) {
-      buffer_o[i] = buffer_o[i] * voices_ratio;
+      oBuffer[i] = oBuffer[i] * voices_ratio;
       i = i + 1;
    }
 }
 
+and process_buffer(nb: int) {
+    mem buffer_o;
+    _ = process_bufferTo(nb, buffer_o);
+}
+
 // several buffer
-and process_buffer_alt(nb: int) {
+// FIXME: only set for 4 voices
+and process_bufferTo_alt(nb: int, oBuffer: array(real, 256)) {
    // temporary buffer to hold each voice
    mem buffer_v0, buffer_v1, buffer_v2, buffer_v3;
-   // output values
-   mem buffer_o;
-   nb = clip(nb, 0, size(buffer_o));
+   nb = clip(nb, 0, size(oBuffer));
    if (nb == 0) {
-      nb = size(buffer_o);
+      nb = size(oBuffer);
    }
    _ = runVoice(0, nb, buffer_v0);
    _ = runVoice(1, nb, buffer_v1);
@@ -144,9 +142,13 @@ and process_buffer_alt(nb: int) {
    _ = runVoice(3, nb, buffer_v3);
    val i = 0;
    while (i < nb) {
-      buffer_o[i] = (buffer_v0[i] + buffer_v1[i] + buffer_v2[i] + buffer_v3[i]) * voices_ratio;
+      oBuffer[i] = (buffer_v0[i] + buffer_v1[i] + buffer_v2[i] + buffer_v3[i]) * voices_ratio;
       i = i + 1;
    }
+}
+
+and process_buffer_alt(nb: int) {
+    _ = process_bufferTo_alt(nb, buffer_o);
 }
 
 // send note on to selected inactive voice

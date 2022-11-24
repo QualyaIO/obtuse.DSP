@@ -26,12 +26,10 @@ fun process(sample: real) {
     return out * scale;
 }
 
-// FIXME: not tested
-and process_buffer(nb: int, input: array(real, 256)) {
-    mem buffer_d;
-    nb = clip(nb, 0, size(buffer_d));
+and process_bufferTo(nb: int, input: array(real, 256), oBuffer: array(real, 256)) {
+    nb = clip(nb, 0, size(oBuffer));
     if (nb == 0) {
-       nb = size(buffer_d);
+       nb = size(oBuffer);
     }
 
     // filter output to be updated
@@ -41,22 +39,26 @@ and process_buffer(nb: int, input: array(real, 256)) {
     while (i < nb) {
        out = (input[i] + buffer[pos] * decay);
        buffer[pos] = out;
-       buffer_d[i] = out * scale;
+       oBuffer[i] = out * scale;
        pos = pos + 1;
        pos = pos % delay;
        i = i + 1;
     }
 }
+and process_buffer(nb: int, input: array(real, 256)) {
+    mem buffer_o;
+    _ = process_bufferTo(nb, input, buffer_o);
+}
 // copy current buffer to another one up to desired number (0 for max)
 // too bad we have to hard-code size here
 and getBuffer() {
-   return buffer_d;
+   return buffer_o;
 }
 and copyTo(oBuffer:array(real, 256), nb: int){
    // ensure we won't overflow
    val min_size = size(oBuffer);
-   if (size(buffer_d) < min_size) {
-      min_size = size(buffer_d);
+   if (size(buffer_o) < min_size) {
+      min_size = size(buffer_o);
    }
    nb = clip(nb, 0, min_size);
    if (nb == 0) {
@@ -64,7 +66,7 @@ and copyTo(oBuffer:array(real, 256), nb: int){
    }
    val i = 0;
    while (i < nb) {
-      oBuffer[i] = buffer_d[i];
+      oBuffer[i] = buffer_o[i];
       i = i + 1;
    }
 }
@@ -120,7 +122,7 @@ and setSamplerate(newFs:real) {
 and default() @[init] {
    buffer = Util.buffer_large();
    // output values (with delay), will copy a new array
-   buffer_d = Util.buffer();
+   buffer_o = Util.buffer();
    _ = setSamplerate(44.100);
    _ = setDelayms(50.0);
    _ = setDecay(0.5);
