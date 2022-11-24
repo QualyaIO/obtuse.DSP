@@ -9,7 +9,8 @@
 
 // context for FM synth used in vult, used to handle internal states
 Voice_process_type context;
-//OSC_process_type context_osc;
+OSC_process_type context_osc;
+FM_process_type context_fm;
 // another for the filter
 Reverb_process_type context_reverb;
 
@@ -163,12 +164,14 @@ void setup() {
   // Init FM, then pass sample rate, not forgetting to convert passed parameters to fixed (of course...)
   Voice_default(context);
   Voice_setSamplerate(context, float_to_fix(sampleRate / (float)1000));
-  //OSC_default(context_osc);
-  //OSC_setSamplerate(context_osc, float_to_fix(sampleRate / (float)1000));
+  OSC_default(context_osc);
+  OSC_setSamplerate(context_osc, float_to_fix(sampleRate / (float)1000));
+  FM_default(context_fm);
+  FM_setSamplerate(context_fm, float_to_fix(sampleRate / (float)1000));
   Reverb_default(context_reverb);
   Reverb_setSamplerate(context_reverb, float_to_fix(sampleRate / (float)1000));
   Reverb_setReverbTime(context_reverb, float_to_fix(10.0));
-  Reverb_setDelayms(context_reverb, float_to_fix(100.0));
+  Reverb_setDelayms(context_reverb, float_to_fix(50.0));
 
 }
 
@@ -206,7 +209,9 @@ void loop() {
       dsp_cycle_tick = rp2040.getCycleCount();
 
       // returned float should be between -1 and 1 (should we checkit ?)
-      //fix16_t raw = FM_process(context);
+      //fix16_t raw = FM_process(context_fm);
+      //fix16_t raw = OSC_process(context_osc);
+
       fix16_t raw = Voice_process(context);
       fix16_t val = Reverb_process(context_reverb, raw);
       // wet / dry
@@ -226,15 +231,11 @@ void loop() {
       dsp_tick = micros();
       dsp_cycle_tick = rp2040.getCycleCount();
 
-      //OSC_process_buffer_simplest(context_osc, BUFFER_SIZE);
-      //OSC_getBuffer(context_osc, raw_buff);
+      //OSC_process_bufferTo_simplest(context_osc, BUFFER_SIZE, raw_buff);
       // FIXME: buffer not supported for voice at the moment
-      //FM_process_buffer(context, BUFFER_SIZE);
-      //FM_getBuffer(context, raw_buff);
+      //FM_process_bufferTo(context_fm, BUFFER_SIZE, raw_buff);
       Voice_process_bufferTo_alt(context, BUFFER_SIZE, raw_buff);
-      //Voice_getBuffer(context, raw_buff);
       Reverb_process_bufferTo(context_reverb, BUFFER_SIZE, raw_buff, reverb_buff);
-      //Reverb_getBuffer(context_reverb, reverb_buff);
       // two times to better compare with classical situation
       fix16_t out;
       for (size_t i = 0; i < BUFFER_SIZE; i++) {
@@ -248,7 +249,6 @@ void loop() {
       dsp_cycle_count += rp2040.getCycleCount() - dsp_cycle_tick;
       dsp_time += micros() - dsp_tick;
 
-      int16_t v;
       for (int i = 0; i < BUFFER_SIZE; i++) {
         i2s.write16(buff[i], buff[i]);
       }
@@ -295,6 +295,8 @@ void handleNoteOn(byte channel, byte pitch, byte velocity)
 
   Serial.print(" velocity = ");
   Serial.println(velocity);
+  //OSC_setFrequency(context_osc, Util_noteToFrequency(pitch));
+  //FM_noteOn(context_fm, pitch, 0, 0);
   Voice_noteOn(context, pitch, 0, 0);
 }
 
@@ -309,5 +311,7 @@ void handleNoteOff(byte channel, byte pitch, byte velocity)
 
   Serial.print(" velocity = ");
   Serial.println(velocity);
+  //OSC_setFrequency(context_osc, Util_noteToFrequency(1));
+  //FM_noteOff(context_fm, pitch, 0);
   Voice_noteOff(context, pitch, 0);
 }

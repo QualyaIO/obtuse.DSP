@@ -2,10 +2,10 @@
 // oscillator, using waveables
 // TODO: dublicate code here as well between process and process_buffer (and "simple" version! for sake of efficiency)
 
-// note that wavetable should be big enough to avoid fixed float limits upon later computations (let say at least 100)
+// note that wavetable should be big enough to avoid fixed float limits upon later computations (let say at least 100). Too small and audio artifacts will occur (e.g. sine 2048 not so great) too big and CPU will take a hit. 4096 hears a good tradeoff
 
-// 0 -> sine
-external sin_wave(channel:int, index:int) : real @[wave(channels=1, file="sinus_2048.wav")];
+// 0 -> sine,
+external sin_wave(channel:int, index:int) : real @[wave(channels=1, file="sinus_4096.wav")];
 
 // return value for current wavetable (first channel hard-coded), between [0..sample size[
 fun getSample(index: int) {

@@ -42,9 +42,9 @@ static_inline void Util_buffer(fix16_t (&_output_)[256]){
    return ;
 }
 
-static_inline void Util_buffer_large(fix16_t (&_output_)[4096]){
-   fix16_t buff[4096];
-   fix_copy_array(4096,_output_,buff);
+static_inline void Util_buffer_large(fix16_t (&_output_)[2048]){
+   fix16_t buff[2048];
+   fix_copy_array(2048,_output_,buff);
    return ;
 }
 
@@ -127,12 +127,12 @@ static_inline void Notes_noteOff_init(Notes__ctx_type_0 &_output_){
 uint8_t Notes_noteOff(Notes__ctx_type_0 &_ctx, int note, int channel);
 
 static_inline int OSC_sin_wave_samples(){
-   return 2048;
+   return 4096;
 };
 
 static_inline fix16_t OSC_sin_wave(int channel, int index){
    if(channel == 0){
-      return fix_wrap_array(OSC_sin_wave_chan_0)[(index % 2048)];
+      return fix_wrap_array(OSC_sin_wave_chan_0)[(index % 4096)];
    }
    return 0x0 /* 0.000000 */;
 }
@@ -468,7 +468,6 @@ typedef struct FM__ctx_type_0 {
    fix16_t buffer_modulator_env_short[256];
    fix16_t buffer_modulator_env[256];
    fix16_t buffer_modulator[256];
-   fix16_t buffer_carrier_phase[256];
    fix16_t buffer_carrier_env_short[256];
    fix16_t buffer_carrier_env[256];
 } FM__ctx_type_0;
@@ -807,7 +806,7 @@ typedef struct CombFB__ctx_type_0 {
    int delay;
    fix16_t decay;
    fix16_t buffer_o[256];
-   fix16_t buffer[4096];
+   fix16_t buffer[2048];
 } CombFB__ctx_type_0;
 
 typedef CombFB__ctx_type_0 CombFB_process_type;
@@ -882,7 +881,7 @@ static_inline void CombFB_getMaxDelay_init(CombFB__ctx_type_0 &_output_){
 }
 
 static_inline int CombFB_getMaxDelay(CombFB__ctx_type_0 &_ctx){
-   return 4096;
+   return 2048;
 };
 
 typedef CombFB__ctx_type_0 CombFB_getMaxDelayms_type;
@@ -896,7 +895,7 @@ static_inline fix16_t CombFB_getMaxDelayms(CombFB__ctx_type_0 &_ctx){
    if(_ctx.fs <= 0x0 /* 0.000000 */){
       return 0x0 /* 0.000000 */;
    }
-   return fix_div(0x10000000 /* 4096.000000 */,_ctx.fs);
+   return fix_div(0x8000000 /* 2048.000000 */,_ctx.fs);
 }
 
 typedef CombFB__ctx_type_0 CombFB_setDelay_type;
@@ -951,8 +950,8 @@ typedef struct Allpass__ctx_type_0 {
    int delay;
    fix16_t decay;
    fix16_t buffer_o[256];
-   fix16_t buffer_allpassed[4096];
-   fix16_t buffer[4096];
+   fix16_t buffer_allpassed[2048];
+   fix16_t buffer[2048];
 } Allpass__ctx_type_0;
 
 typedef Allpass__ctx_type_0 Allpass_process_type;
@@ -1027,7 +1026,7 @@ static_inline void Allpass_getMaxDelay_init(Allpass__ctx_type_0 &_output_){
 }
 
 static_inline int Allpass_getMaxDelay(Allpass__ctx_type_0 &_ctx){
-   return 4096;
+   return 2048;
 };
 
 typedef Allpass__ctx_type_0 Allpass_getMaxDelayms_type;
@@ -1041,7 +1040,7 @@ static_inline fix16_t Allpass_getMaxDelayms(Allpass__ctx_type_0 &_ctx){
    if(_ctx.fs <= 0x0 /* 0.000000 */){
       return 0x0 /* 0.000000 */;
    }
-   return fix_div(0x10000000 /* 4096.000000 */,_ctx.fs);
+   return fix_div(0x8000000 /* 2048.000000 */,_ctx.fs);
 }
 
 typedef Allpass__ctx_type_0 Allpass_setDelay_type;
