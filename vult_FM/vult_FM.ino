@@ -62,7 +62,7 @@ MCLK mclk;
 #define pDOUT 22
 #define pMCLK 18 // pin 24
 
-const int sampleRate =  20000; //16000; // minimum for UDA1334A
+const int sampleRate =  30000; //16000; // minimum for UDA1334A
 const int mclkMultiplier = 256; // typical for many DAC
 
 
@@ -92,7 +92,8 @@ int buffer_switch_time = 0;
 void setup() {
 
   // set CPU speed for a good ratio with 256*fs, with a sampling rate set as 40000 in mozzi_config for me now
-  set_sys_clock_khz(102400, true);
+  //set_sys_clock_khz(102400, true);
+  set_sys_clock_khz(153600, true); // this one for 30000hz
 
   /* MIDI */
   // not working?
@@ -215,9 +216,8 @@ void loop() {
 
       dsp_cycle_count += rp2040.getCycleCount() - dsp_cycle_tick;
       dsp_time += micros() - dsp_tick;
+      i2s.write16(out, out);
 
-      i2s.write(val);
-      i2s.write(val);
     }
   } else {
     //  buffers hard-coded of size 16 in I2S (unless i2s.setBuffers() is called), make sure there are at least two samples above that free in the audio circular buffer (of buffers)
