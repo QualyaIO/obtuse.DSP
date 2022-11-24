@@ -40,6 +40,37 @@ fun getSample(voice: int) {
    return 0.0;
 }
 
+// run buffer for specified voice (buffered version of getSample), filling specified buffer
+and runVoice(voice: int, nb: int, buff: array(real, 256)) {
+   if (voice < number_voices) {
+       if (voice == 0) {
+           if (synth == 0) {
+   	      _ = voice0FM:FM.process_buffer(nb);
+              _ = voice0FM:FM.copyTo(buff, nb);
+	   }
+       }
+       else if (voice == 1) {
+           if (synth == 0) {
+   	      _ = voice1FM:FM.process_buffer(nb);
+              _ = voice1FM:FM.copyTo(buff, nb);
+	   }
+       }
+       else if (voice == 2) {
+           if (synth == 0) {
+   	      _ = voice2FM:FM.process_buffer(nb);
+              _ = voice2FM:FM.copyTo(buff, nb);
+	   }
+       }
+       else if (voice == 3) {
+           if (synth == 0) {
+   	      _ = voice2FM:FM.process_buffer(nb);
+	      _ = voice2FM:FM.copyTo(buff, nb);
+	   }
+       }
+   }
+}
+
+
 // retrieve sample from all voices, mix
 and process() {
    // what synth is currently selected
@@ -67,6 +98,33 @@ and process() {
    return value * voices_ratio;
 }
 
+and process_buffer(nb: int) {
+   // temporary buffer to hold each voice
+   mem buffer_v;
+   // output values
+   mem buffer_o;
+   nb = clip(nb, 0, size(buffer_o));
+   if (nb == 0) {
+      nb = size(buffer_o);
+   }
+   // run all voices and add to output buffer
+   val v = 0;
+   val i = 0;
+   while (v < number_voices) {
+      _ = runVoice(v, nb, buffer_v);
+      while (i < nb) {
+         buffer_o[i] = buffer_o[i] + buffer_v[i];
+         i = i + 1;
+      }
+      v = v + 1;
+   }
+   // scale down
+   i = 0;
+   while (i < nb) {
+      buffer_o[i] = buffer_o[i] * voices_ratio;
+      i = i + 1;
+   }
+}
 
 // send note on to selected inactive voice
 // Note: should be call internally, DON'T update inner states, only forward info
@@ -235,7 +293,32 @@ and selectSynth(nsynth: int) {
    _ = setSamplerate(fs);
 }
 
+// retrieve output values from buffer
+and getBuffer() {
+   return buffer_o;
+}
+// copy output values to dest buffer
+and copyTo(oBuffer:array(real, 256), nb: int){
+   // ensure we won't overflow
+   val min_size = size(oBuffer);
+   if (size(buffer_o) < min_size) {
+      min_size = size(buffer_o);
+   }
+   nb = clip(nb, 0, min_size);
+   if (nb == 0) {
+      nb = min_size;
+   }
+   val i = 0;
+   while (i < nb) {
+      oBuffer[i] = buffer_o[i];
+      i = i + 1;
+   }
+}
+
 and default() @[init] {
+   buffer_v = Util.buffer();
+   buffer_o = Util.buffer();
+
    mem voices: array(int, 4);
    number_voices = if number_voices == 0 then size(voices) else number_voices;
     // which notes are active, if so to which voice? (to select voice and prune duplicated note on/off). Stores voice number + 1

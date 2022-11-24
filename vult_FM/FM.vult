@@ -117,6 +117,23 @@ and process_buffer(nb: int) {
 and getBuffer() {
    return buffer;
 }
+// copy output values to dest buffer
+and copyTo(oBuffer:array(real, 256), nb: int){
+   // ensure we won't overflow
+   val min_size = size(oBuffer);
+   if (size(buffer) < min_size) {
+      min_size = size(buffer);
+   }
+   nb = clip(nb, 0, min_size);
+   if (nb == 0) {
+      nb = min_size;
+   }
+   val i = 0;
+   while (i < nb) {
+      oBuffer[i] = buffer[i];
+      i = i + 1;
+   }
+}
 and setSamplerate(newFs:real) {
    if (newFs > 0.0) {
       fs = newFs;

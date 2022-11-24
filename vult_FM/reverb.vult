@@ -17,6 +17,37 @@ fun process(sample: real) {
   return allpass1:Allpass.process(allpass0:Allpass.process(combs_filter));
 }
 
+and process_buffer(nb: int, input: array(real, 256)) {
+  // one buffer for each filter, one for output
+  mem buffer_c0, buffer_c1, buffer_c2, buffer_c3, buffer_a0, buffer_a1, buffer_o;
+  nb = clip(nb, 0, size(buffer_o));
+  if (nb == 0) {
+     nb = size(buffer_o);
+  }
+  // run all combs in parallel
+  _ = comb0:CombFB.process_buffer(nb, input);
+  _ = comb0:CombFB.copyTo(buffer_c0, nb);
+  _ = comb1:CombFB.process_buffer(nb, input);
+  _ = comb1:CombFB.copyTo(buffer_c1, nb);
+  _ = comb2:CombFB.process_buffer(nb, input);
+  _ = comb2:CombFB.copyTo(buffer_c2, nb);
+  _ = comb3:CombFB.process_buffer(nb, input);
+  _ = comb3:CombFB.copyTo(buffer_c3, nb);
+  // mix down
+  val i = 0;
+  while (i < nb) {
+    buffer_o[i] = (buffer_c0[i] + buffer_c1[i] + buffer_c2[i] + buffer_c3[i]) * 0.25;
+    i = i + 1;
+  }
+  // run allpass in series  
+  _ =  allpass0:Allpass.process_buffer(nb, buffer_o);
+  _ =  allpass0:Allpass.copyTo(buffer_o, nb);
+  _ =  allpass1:Allpass.process_buffer(nb, buffer_o);
+  _ =  allpass1:Allpass.copyTo(buffer_o, nb);
+}
+
+
+
 // Set base for reverb and delay times, in kHz
 // WARNING: will *not* update delays in ms and reverb time in s when this is changed, hence to be called first
 and setSamplerate(newFs:real) {
@@ -79,7 +110,37 @@ and setDelayms(delayms: real) {
   _ = setReverbTime(reverbtime);
 }
 
+// retrieve output values from buffer
+and getBuffer() {
+   return buffer_o;
+}
+// copy output values to dest buffer
+and copyTo(oBuffer:array(real, 256), nb: int){
+   // ensure we won't overflow
+   val min_size = size(oBuffer);
+   if (size(buffer_o) < min_size) {
+      min_size = size(buffer_o);
+   }
+   nb = clip(nb, 0, min_size);
+   if (nb == 0) {
+      nb = min_size;
+   }
+   val i = 0;
+   while (i < nb) {
+      oBuffer[i] = buffer_o[i];
+      i = i + 1;
+   }
+}
+
 and default() @[init] {
+  // many buffers!
+  buffer_c0 = Util.buffer();
+  buffer_c1 = Util.buffer();
+  buffer_c2 = Util.buffer();
+  buffer_c3 = Util.buffer();
+  buffer_a0 = Util.buffer();
+  buffer_a1 = Util.buffer();
+  buffer_o = Util.buffer();
   _ = setSamplerate(44.100);
   // to approximate default parameters found in litteratures
   reverbtime = 0.65;

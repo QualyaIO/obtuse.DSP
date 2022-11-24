@@ -84,7 +84,7 @@ long dsp_cycle_count;
 long dsp_cycle_tick;
 
 // for testing we will alternate between both versions of algo
-bool buffer_version = false;
+bool buffer_version = true;
 unsigned long switch_tick;
 // in ms, how often we switch between boht versions. 0 to disable
 int buffer_switch_time = 0;
@@ -231,14 +231,16 @@ void loop() {
       // FIXME: buffer not supported for voice at the moment
       //FM_process_buffer(context, BUFFER_SIZE);
       //FM_getBuffer(context, raw_buff);
-      //Reverb_process_buffer(context_reverb, BUFFER_SIZE, context.buffer);
-      //Reverb_getBuffer(context_reverb, reverb_buff);
+      Voice_process_buffer(context, BUFFER_SIZE);
+      Voice_getBuffer(context, raw_buff);
+      Reverb_process_buffer(context_reverb, BUFFER_SIZE, context.buffer_o);
+      Reverb_getBuffer(context_reverb, reverb_buff);
       // two times to better compare with classical situation
       for (size_t i = 0; i < BUFFER_SIZE; i++) {
         // returned float should be between -1 and 1 (should we checkit ?)
         // shortcut, instead of fixed_to_float * 32767, *almost* the same and vastly improve perf with buffered version (???)
-        //buff[i] =  reverb_buff[i] / 2 - ( reverb_buff[i] >> 16);
-        buff[i] =  raw_buff[i] / 2 - ( raw_buff[i] >> 16);
+        buff[i] =  reverb_buff[i] / 2 - ( reverb_buff[i] >> 16);
+        //buff[i] =  raw_buff[i] / 2 - ( raw_buff[i] >> 16);
       }
 
       dsp_cycle_count += rp2040.getCycleCount() - dsp_cycle_tick;

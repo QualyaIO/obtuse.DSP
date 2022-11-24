@@ -7,6 +7,47 @@
 #include "vultin.h"
 #include "engine.tables.h"
 
+static_inline fix16_t Util_noteToFrequency(int note){
+   return fix_mul(0x217 /* 0.008176 */,fix_exp(fix_mul(0xec9 /* 0.057762 */,int_to_fix(note))));
+};
+
+typedef struct Util__ctx_type_1 {
+   uint8_t pre;
+} Util__ctx_type_1;
+
+typedef Util__ctx_type_1 Util_edge_type;
+
+static_inline void Util__ctx_type_1_init(Util__ctx_type_1 &_output_){
+   Util__ctx_type_1 _ctx;
+   _ctx.pre = false;
+   _output_ = _ctx;
+   return ;
+}
+
+static_inline void Util_edge_init(Util__ctx_type_1 &_output_){
+   Util__ctx_type_1_init(_output_);
+   return ;
+}
+
+static_inline uint8_t Util_edge(Util__ctx_type_1 &_ctx, uint8_t x){
+   uint8_t ret;
+   ret = (x && bool_not(_ctx.pre));
+   _ctx.pre = x;
+   return ret;
+}
+
+static_inline void Util_buffer(fix16_t (&_output_)[256]){
+   fix16_t buff[256];
+   fix_copy_array(256,_output_,buff);
+   return ;
+}
+
+static_inline void Util_buffer_large(fix16_t (&_output_)[4096]){
+   fix16_t buff[4096];
+   fix_copy_array(4096,_output_,buff);
+   return ;
+}
+
 typedef struct Notes__ctx_type_0 {
    uint8_t poly;
    int notes[128];
@@ -84,47 +125,6 @@ static_inline void Notes_noteOff_init(Notes__ctx_type_0 &_output_){
 }
 
 uint8_t Notes_noteOff(Notes__ctx_type_0 &_ctx, int note, int channel);
-
-static_inline fix16_t Util_noteToFrequency(int note){
-   return fix_mul(0x217 /* 0.008176 */,fix_exp(fix_mul(0xec9 /* 0.057762 */,int_to_fix(note))));
-};
-
-typedef struct Util__ctx_type_1 {
-   uint8_t pre;
-} Util__ctx_type_1;
-
-typedef Util__ctx_type_1 Util_edge_type;
-
-static_inline void Util__ctx_type_1_init(Util__ctx_type_1 &_output_){
-   Util__ctx_type_1 _ctx;
-   _ctx.pre = false;
-   _output_ = _ctx;
-   return ;
-}
-
-static_inline void Util_edge_init(Util__ctx_type_1 &_output_){
-   Util__ctx_type_1_init(_output_);
-   return ;
-}
-
-static_inline uint8_t Util_edge(Util__ctx_type_1 &_ctx, uint8_t x){
-   uint8_t ret;
-   ret = (x && bool_not(_ctx.pre));
-   _ctx.pre = x;
-   return ret;
-}
-
-static_inline void Util_buffer(fix16_t (&_output_)[256]){
-   fix16_t buff[256];
-   fix_copy_array(256,_output_,buff);
-   return ;
-}
-
-static_inline void Util_buffer_large(fix16_t (&_output_)[4096]){
-   fix16_t buff[4096];
-   fix_copy_array(4096,_output_,buff);
-   return ;
-}
 
 static_inline int OSC_sin_wave_samples(){
    return 2048;
@@ -461,6 +461,15 @@ static_inline void FM_getBuffer(FM__ctx_type_0 &_ctx, fix16_t (&_output_)[256]){
    return ;
 }
 
+typedef FM__ctx_type_0 FM_copyTo_type;
+
+static_inline void FM_copyTo_init(FM__ctx_type_0 &_output_){
+   FM__ctx_type_0_init(_output_);
+   return ;
+}
+
+void FM_copyTo(FM__ctx_type_0 &_ctx, fix16_t (&oBuffer)[256], int nb);
+
 typedef FM__ctx_type_0 FM_setSamplerate_type;
 
 static_inline void FM_setSamplerate_init(FM__ctx_type_0 &_output_){
@@ -567,6 +576,8 @@ typedef struct Voice__ctx_type_0 {
    int number_voices;
    int notes[128];
    fix16_t fs;
+   fix16_t buffer_v[256];
+   fix16_t buffer_o[256];
 } Voice__ctx_type_0;
 
 typedef Voice__ctx_type_0 Voice_getSample_type;
@@ -580,6 +591,15 @@ static_inline void Voice_getSample_init(Voice__ctx_type_0 &_output_){
 
 fix16_t Voice_getSample(Voice__ctx_type_0 &_ctx, int voice);
 
+typedef Voice__ctx_type_0 Voice_runVoice_type;
+
+static_inline void Voice_runVoice_init(Voice__ctx_type_0 &_output_){
+   Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Voice_runVoice(Voice__ctx_type_0 &_ctx, int voice, int nb, fix16_t (&buff)[256]);
+
 typedef Voice__ctx_type_0 Voice_process_type;
 
 static_inline void Voice_process_init(Voice__ctx_type_0 &_output_){
@@ -588,6 +608,15 @@ static_inline void Voice_process_init(Voice__ctx_type_0 &_output_){
 }
 
 fix16_t Voice_process(Voice__ctx_type_0 &_ctx);
+
+typedef Voice__ctx_type_0 Voice_process_buffer_type;
+
+static_inline void Voice_process_buffer_init(Voice__ctx_type_0 &_output_){
+   Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Voice_process_buffer(Voice__ctx_type_0 &_ctx, int nb);
 
 typedef Voice__ctx_type_0 Voice__sendNoteOn_type;
 
@@ -651,6 +680,27 @@ static_inline void Voice_selectSynth_init(Voice__ctx_type_0 &_output_){
 }
 
 void Voice_selectSynth(Voice__ctx_type_0 &_ctx, int nsynth);
+
+typedef Voice__ctx_type_0 Voice_getBuffer_type;
+
+static_inline void Voice_getBuffer_init(Voice__ctx_type_0 &_output_){
+   Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void Voice_getBuffer(Voice__ctx_type_0 &_ctx, fix16_t (&_output_)[256]){
+   fix_copy_array(256,_output_,_ctx.buffer_o);
+   return ;
+}
+
+typedef Voice__ctx_type_0 Voice_copyTo_type;
+
+static_inline void Voice_copyTo_init(Voice__ctx_type_0 &_output_){
+   Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Voice_copyTo(Voice__ctx_type_0 &_ctx, fix16_t (&oBuffer)[256], int nb);
 
 typedef Voice__ctx_type_0 Voice_default_type;
 
@@ -939,6 +989,13 @@ typedef struct Reverb__ctx_type_0 {
    CombFB__ctx_type_0 comb1;
    int comb0delay;
    CombFB__ctx_type_0 comb0;
+   fix16_t buffer_o[256];
+   fix16_t buffer_c3[256];
+   fix16_t buffer_c2[256];
+   fix16_t buffer_c1[256];
+   fix16_t buffer_c0[256];
+   fix16_t buffer_a1[256];
+   fix16_t buffer_a0[256];
    Allpass__ctx_type_0 allpass1;
    Allpass__ctx_type_0 allpass0;
 } Reverb__ctx_type_0;
@@ -957,6 +1014,15 @@ static_inline fix16_t Reverb_process(Reverb__ctx_type_0 &_ctx, fix16_t sample){
    combs_filter = ((CombFB_process(_ctx.comb0,sample) + CombFB_process(_ctx.comb1,sample) + CombFB_process(_ctx.comb2,sample) + CombFB_process(_ctx.comb3,sample)) >> 2);
    return Allpass_process(_ctx.allpass1,Allpass_process(_ctx.allpass0,combs_filter));
 }
+
+typedef Reverb__ctx_type_0 Reverb_process_buffer_type;
+
+static_inline void Reverb_process_buffer_init(Reverb__ctx_type_0 &_output_){
+   Reverb__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Reverb_process_buffer(Reverb__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256]);
 
 typedef Reverb__ctx_type_0 Reverb_setSamplerate_type;
 
@@ -984,6 +1050,27 @@ static_inline void Reverb_setDelayms_init(Reverb__ctx_type_0 &_output_){
 }
 
 void Reverb_setDelayms(Reverb__ctx_type_0 &_ctx, fix16_t delayms);
+
+typedef Reverb__ctx_type_0 Reverb_getBuffer_type;
+
+static_inline void Reverb_getBuffer_init(Reverb__ctx_type_0 &_output_){
+   Reverb__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void Reverb_getBuffer(Reverb__ctx_type_0 &_ctx, fix16_t (&_output_)[256]){
+   fix_copy_array(256,_output_,_ctx.buffer_o);
+   return ;
+}
+
+typedef Reverb__ctx_type_0 Reverb_copyTo_type;
+
+static_inline void Reverb_copyTo_init(Reverb__ctx_type_0 &_output_){
+   Reverb__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Reverb_copyTo(Reverb__ctx_type_0 &_ctx, fix16_t (&oBuffer)[256], int nb);
 
 typedef Reverb__ctx_type_0 Reverb_default_type;
 
