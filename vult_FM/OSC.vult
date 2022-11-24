@@ -68,7 +68,7 @@ and process_bufferTo(nb: int, env: array(real, 256), phase_shift: array(real, 25
       // advance time, keep range in check here to maximize precision
       phase = phase + step;
       // slightly more efficient than the more robust modulo
-      if (phase > rsize) {
+      while (phase > rsize) {
          phase = phase - rsize;
       }
       // loop in sample
@@ -95,7 +95,7 @@ and process_bufferTo_simple(nb: int, env: array(real, 256), oBuffer: array(real,
       // advance time, keep range in check here to maximize precision
       phase = phase + step;
       // slightly more efficient than the more robust modulo
-      if (phase > rsize) {
+      while (phase > rsize) {
          phase = phase - rsize;
       }
       // loop in sample
@@ -121,7 +121,7 @@ and process_bufferTo_simplest(nb: int, oBuffer: array(real, 256)) {
       // advance time, keep range in check here to maximize precision
       phase = phase + step;
       // slightly more efficient than the more robust modulo
-      if (phase > rsize) {
+      while (phase > rsize) {
          phase = phase - rsize;
       }
       // loop in sample

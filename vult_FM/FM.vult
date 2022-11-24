@@ -60,7 +60,6 @@ fun process() {
 // update the buffer, to be fetch afterward
 and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
     mem buffer_modulator;
-    mem buffer_carrier_phase;
     nb = clip(nb, 0, size(oBuffer));
     if (nb == 0) {
        nb = size(oBuffer);
@@ -107,7 +106,7 @@ and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
 
     // apply to carrier
     // FIXME: pass volume directly?
-    _ = carrier:OSC.process_bufferTo(nb, buffer_carrier_env, buffer_carrier_phase, level, oBuffer);
+    _ = carrier:OSC.process_bufferTo(nb, buffer_carrier_env, buffer_modulator, level, oBuffer);
 }
 and process_buffer(nb: int) {
   mem buffer_o;
@@ -217,7 +216,6 @@ and default() @[init] {
     buffer_modulator_env_short = Util.buffer();
     buffer_carrier_env = Util.buffer();
     buffer_modulator_env = Util.buffer();
-    buffer_carrier_phase = Util.buffer();
 
     // should be a divisor of sample rate
     env_decimation_factor = 3;
