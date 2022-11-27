@@ -114,9 +114,9 @@ void Sampler__ctx_type_2_init(Sampler__ctx_type_2 &_output_){
 
 fix16_t Sampler_process(Sampler__ctx_type_2 &_ctx){
    _ctx.pos = (_ctx.pos + _ctx.step);
-   while(_ctx.pos >= 0x10000 /* 1.000000 */){
-      _ctx.posBase = (1 + _ctx.posBase);
-      _ctx.pos = (-0x10000 /* -1.000000 */ + _ctx.pos);
+   while(_ctx.pos >= 0x4000000 /* 1024.000000 */){
+      _ctx.posBase = (1024 + _ctx.posBase);
+      _ctx.pos = (-0x4000000 /* -1024.000000 */ + _ctx.pos);
    }
    int idx;
    idx = (_ctx.posBase + fix_to_int(_ctx.pos));

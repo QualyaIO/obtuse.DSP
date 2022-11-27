@@ -25,9 +25,9 @@ and process() {
 
   // advance time, keep range in check here to maximize precision
   pos = pos + step;
-  while (pos >= 1.0) {
-    posBase = posBase + 1;
-    pos = pos - 1.0;
+  while (pos >= 1024.0) {
+    posBase = posBase + 1024;
+    pos = pos - 1024.0;
   }
   val idx = posBase + int(pos);
   // will stop and reset note once reach the end
