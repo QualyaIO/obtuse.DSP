@@ -141,10 +141,11 @@ typedef struct Sampler__ctx_type_2 {
    fix16_t stepRatio;
    fix16_t step;
    int state;
+   int size;
    fix16_t sampleFs;
    fix16_t sampleFreq;
-   fix16_t rsize;
-   fix16_t pos;
+   fix16_t posFract;
+   int pos;
    Notes__ctx_type_0 playingnotes;
    uint8_t gate;
    fix16_t fs;

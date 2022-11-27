@@ -96,10 +96,11 @@ void Sampler__ctx_type_2_init(Sampler__ctx_type_2 &_output_){
    _ctx.stepRatio = 0x0 /* 0.000000 */;
    _ctx.step = 0x0 /* 0.000000 */;
    _ctx.state = 0;
+   _ctx.size = 0;
    _ctx.sampleFs = 0x0 /* 0.000000 */;
    _ctx.sampleFreq = 0x0 /* 0.000000 */;
-   _ctx.rsize = 0x0 /* 0.000000 */;
-   _ctx.pos = 0x0 /* 0.000000 */;
+   _ctx.posFract = 0x0 /* 0.000000 */;
+   _ctx.pos = 0;
    Notes__ctx_type_0_init(_ctx.playingnotes);
    _ctx.gate = false;
    _ctx.fs = 0x0 /* 0.000000 */;
@@ -111,17 +112,20 @@ void Sampler__ctx_type_2_init(Sampler__ctx_type_2 &_output_){
 }
 
 fix16_t Sampler_process(Sampler__ctx_type_2 &_ctx){
-   _ctx.sampleFs = 0x2c1999 /* 44.100000 */;
-   _ctx.sampleFreq = 0x42f8 /* 0.261600 */;
-   _ctx.pos = (_ctx.pos + _ctx.step);
-   if(_ctx.pos > _ctx.rsize){
-      _ctx.state = 0;
-      _ctx.pos = 0x0 /* 0.000000 */;
+   _ctx.posFract = (_ctx.posFract + _ctx.step);
+   if(_ctx.posFract >= 0x10000 /* 1.000000 */){
+      _ctx.pos = (_ctx.pos + fix_to_int(fix_floor(_ctx.posFract)));
+      _ctx.posFract = (_ctx.posFract + (- fix_floor(_ctx.posFract)));
+      if(_ctx.pos > _ctx.size){
+         _ctx.state = 0;
+         _ctx.pos = 0;
+         _ctx.posFract = 0x0 /* 0.000000 */;
+      }
    }
    fix16_t value;
    value = 0x0 /* 0.000000 */;
    if(_ctx.state == 1){
-      value = Sampler_getSample(_ctx,fix_to_int(_ctx.pos));
+      value = Sampler_getSample(_ctx,_ctx.pos);
    }
    return value;
 }
@@ -134,13 +138,18 @@ void Sampler_process_bufferTo(Sampler__ctx_type_2 &_ctx, int nb, fix16_t (&oBuff
    int i;
    i = 0;
    while(i < nb){
-      _ctx.pos = (_ctx.pos + _ctx.step);
-      if(_ctx.pos > _ctx.rsize){
-         _ctx.state = 0;
-         _ctx.pos = 0x0 /* 0.000000 */;
+      _ctx.posFract = (_ctx.posFract + _ctx.step);
+      if(_ctx.posFract >= 0x10000 /* 1.000000 */){
+         _ctx.pos = (_ctx.pos + fix_to_int(fix_floor(_ctx.posFract)));
+         _ctx.posFract = (_ctx.posFract + (- fix_floor(_ctx.posFract)));
+         if(_ctx.pos > _ctx.size){
+            _ctx.state = 0;
+            _ctx.pos = 0;
+            _ctx.posFract = 0x0 /* 0.000000 */;
+         }
       }
       if(_ctx.state == 1){
-         oBuffer[i] = Sampler_getSample(_ctx,fix_to_int(_ctx.pos));
+         oBuffer[i] = Sampler_getSample(_ctx,_ctx.pos);
       }
       else
       {
@@ -163,7 +172,8 @@ void Sampler_noteOn(Sampler__ctx_type_2 &_ctx, int note, int velocity, int chann
    if(Notes_noteOn(_ctx.playingnotes,note,velocity,channel)){
       Sampler_setFrequency(_ctx,Util_noteToFrequency(note));
       _ctx.gate = true;
-      _ctx.pos = 0x0 /* 0.000000 */;
+      _ctx.pos = 0;
+      _ctx.posFract = 0x0 /* 0.000000 */;
       _ctx.state = 1;
    }
 }
@@ -186,6 +196,8 @@ void Sampler_noteOff(Sampler__ctx_type_2 &_ctx, int note, int channel){
 }
 
 void Sampler_default(Sampler__ctx_type_2 &_ctx){
+   _ctx.sampleFs = 0x2c1999 /* 44.100000 */;
+   _ctx.sampleFreq = 0x42f8 /* 0.261600 */;
    {
       _ctx.buffer_o[0] = 0x0 /* 0.000000 */;
       _ctx.buffer_o[1] = 0x0 /* 0.000000 */;
@@ -444,7 +456,7 @@ void Sampler_default(Sampler__ctx_type_2 &_ctx){
       _ctx.buffer_o[254] = 0x0 /* 0.000000 */;
       _ctx.buffer_o[255] = 0x0 /* 0.000000 */;
    }
-   _ctx.rsize = int_to_fix(Sampler_ocarina_samples());
+   _ctx.size = Sampler_ocarina_samples();
    Sampler_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    Sampler_setFrequency(_ctx,0x70a3 /* 0.440000 */);
    Notes_default(_ctx.playingnotes);

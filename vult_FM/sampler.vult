@@ -11,35 +11,34 @@ fun getSample(index: int) {
 }
 
 and process() {
-  // sample rate of the recording
-  mem sampleFs = 44.100;
-  // note of the sample, here C4 (still in kHz)
-  mem sampleFreq = 0.2616;
-  // audio sampling rate
-  mem fs: real;
-  // current note frequency
-  mem freq: real;
-  // current position in sample and how much we jump each step
-  // absolutely needs init to set that, converted to real to speedup
-  mem rsize: real;
-  mem pos: real;
+  // absolutely needs init to set that
+  mem size: int;
+  // current position in sample and fractional leftovers to overcome limitation of fixed point
+  mem pos: int;
+  mem posFract: real;
+  // how much we jump each step
   mem step: real;
   //  current gate
-  mem gate : bool;
+  mem gate: bool;
   // at the moment 0: not playing, 1: playing
-  mem state;
-  
+  mem state: int;
+
   // advance time, keep range in check here to maximize precision
-  pos = pos + step;
-  // will stop and reset note once reach the end
-  if (pos > rsize) {
-    state = 0;
-    pos = 0.0;
+  posFract = posFract + step;
+  if (posFract >= 1.0) {
+    pos = pos + int(floor(posFract));
+    posFract = posFract - floor(posFract);
+    // will stop and reset note once reach the end
+    if (pos > size) {
+      state = 0;
+      pos = 0;
+      posFract = 0.0;
+    }
   }
 
   val value = 0.0;
   if (state == 1) {
-    value = getSample(int(pos));
+    value = getSample(pos);
   }
   return value;
 }
@@ -54,15 +53,22 @@ and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
   val i = 0;
   while (i < nb) {
 
+
     // advance time, keep range in check here to maximize precision
-    pos = pos + step;
-    // will stop and reset note once reach the end
-    if (pos > rsize) {
-      state = 0;
-      pos = 0.0;
+    posFract = posFract + step;
+    if (posFract >= 1.0) {
+      pos = pos + int(floor(posFract));
+      posFract = posFract - floor(posFract);
+      // will stop and reset note once reach the end
+      if (pos > size) {
+        state = 0;
+        pos = 0;
+        posFract = 0.0;
+      }
     }
+    
     if (state == 1) {
-      oBuffer[i] = getSample(int(pos));
+      oBuffer[i] = getSample(pos);
     }
     else {
       oBuffer[i] = 0.0;
@@ -80,14 +86,22 @@ and process_buffer(nb: int) {
 
 // called internally when Samplerate or frequency is altered
 and updateStep() {
-    // base for computing step
-    mem stepRatio;
-    // both for efficiency and because we don't want any result to be outside [1/32767 .. 32767] to avoid fixed float limits we compute step in two... steps
-    step = freq*stepRatio;
+  // current note frequency
+  mem freq: real;
+  // base for computing step
+  mem stepRatio: real;
+  // both for efficiency and because we don't want any result to be outside [1/32767 .. 32767] to avoid fixed float limits we compute step in two... steps
+  step = freq*stepRatio;
 }
 
 // seter for parameters. expect values of desired frequency and current sampling rate in kHz to avoid fixed float limits ([1/32767 ..32767]... probably)
 and setSamplerate(newFs:real) {
+  // sample rate of the recording
+  mem sampleFs;
+  // note of the sample
+  mem sampleFreq;
+  // audio sampling rate
+  mem fs: real;
    if (newFs > 0.0) {
       fs = newFs;
       // update ratio when we update sampling rate
@@ -112,7 +126,8 @@ and noteOn(note:int, velocity:int, channel:int){
        _ = setFrequency(Util.noteToFrequency(note));
        // gate and start playing note
        gate = true;
-       pos = 0.0;
+       pos = 0;
+       posFract = 0.0;
        state = 1;
    }
 }
@@ -145,9 +160,13 @@ and noteOff(note:int, channel:int) {
 }
 
 and default() @[init] {
+  // defaults for current sample
+  sampleFs = 44.100;
+  // here C4 (still in kHz)
+  sampleFreq = 0.2616;
   // will copy a new array
   mem buffer_o = Util.buffer();
-  rsize = real(ocarina_samples());
+  size = ocarina_samples();
   _ = setSamplerate(44.1);
   // default frequency (in kHz)
   _ = setFrequency(0.440);
