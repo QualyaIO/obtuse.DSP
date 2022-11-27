@@ -146,11 +146,10 @@ typedef struct Sampler__ctx_type_2 {
    int posBase;
    fix16_t pos;
    Notes__ctx_type_0 playingnotes;
+   fix16_t noteRatio;
    uint8_t gate;
    fix16_t fsRatio;
    fix16_t fs;
-   fix16_t freqRatio;
-   fix16_t freq;
    fix16_t buffer_o[256];
 } Sampler__ctx_type_2;
 
@@ -204,7 +203,7 @@ static_inline void Sampler_updateStep_init(Sampler__ctx_type_2 &_output_){
 }
 
 static_inline void Sampler_updateStep(Sampler__ctx_type_2 &_ctx){
-   _ctx.step = fix_mul(_ctx.freqRatio,_ctx.fsRatio);
+   _ctx.step = fix_mul(_ctx.fsRatio,_ctx.noteRatio);
 };
 
 typedef Sampler__ctx_type_2 Sampler_setSamplerate_type;
@@ -216,18 +215,14 @@ static_inline void Sampler_setSamplerate_init(Sampler__ctx_type_2 &_output_){
 
 void Sampler_setSamplerate(Sampler__ctx_type_2 &_ctx, fix16_t newFs);
 
-typedef Sampler__ctx_type_2 Sampler_setFrequency_type;
+typedef Sampler__ctx_type_2 Sampler_setNote_type;
 
-static_inline void Sampler_setFrequency_init(Sampler__ctx_type_2 &_output_){
+static_inline void Sampler_setNote_init(Sampler__ctx_type_2 &_output_){
    Sampler__ctx_type_2_init(_output_);
    return ;
 }
 
-static_inline void Sampler_setFrequency(Sampler__ctx_type_2 &_ctx, fix16_t newFreq){
-   _ctx.freq = newFreq;
-   _ctx.freqRatio = fix_div(_ctx.freq,Util_noteToFrequency(_ctx.sampleNote));
-   Sampler_updateStep(_ctx);
-}
+void Sampler_setNote(Sampler__ctx_type_2 &_ctx, int note);
 
 typedef Sampler__ctx_type_2 Sampler_noteOn_type;
 

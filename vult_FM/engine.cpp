@@ -101,11 +101,10 @@ void Sampler__ctx_type_2_init(Sampler__ctx_type_2 &_output_){
    _ctx.posBase = 0;
    _ctx.pos = 0x0 /* 0.000000 */;
    Notes__ctx_type_0_init(_ctx.playingnotes);
+   _ctx.noteRatio = 0x0 /* 0.000000 */;
    _ctx.gate = false;
    _ctx.fsRatio = 0x0 /* 0.000000 */;
    _ctx.fs = 0x0 /* 0.000000 */;
-   _ctx.freqRatio = 0x0 /* 0.000000 */;
-   _ctx.freq = 0x0 /* 0.000000 */;
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_o);
    Sampler_default(_ctx);
    _output_ = _ctx;
@@ -128,7 +127,7 @@ fix16_t Sampler_process(Sampler__ctx_type_2 &_ctx){
    fix16_t value;
    value = 0x0 /* 0.000000 */;
    if(_ctx.state == 1){
-      value = Sampler_getSample(_ctx,idx);
+      value = (Sampler_getSample(_ctx,idx) + fix_mul((_ctx.pos + (- fix_floor(_ctx.pos))),(Sampler_getSample(_ctx,(1 + idx)) + (- Sampler_getSample(_ctx,idx)))));
    }
    return value;
 }
@@ -155,7 +154,7 @@ void Sampler_process_bufferTo(Sampler__ctx_type_2 &_ctx, int nb, fix16_t (&oBuff
          _ctx.pos = 0x0 /* 0.000000 */;
       }
       if(_ctx.state == 1){
-         oBuffer[i] = Sampler_getSample(_ctx,idx);
+         oBuffer[i] = (Sampler_getSample(_ctx,idx) + fix_mul((_ctx.pos + (- fix_floor(_ctx.pos))),(Sampler_getSample(_ctx,(1 + idx)) + (- Sampler_getSample(_ctx,idx)))));
       }
       else
       {
@@ -173,10 +172,19 @@ void Sampler_setSamplerate(Sampler__ctx_type_2 &_ctx, fix16_t newFs){
    Sampler_updateStep(_ctx);
 }
 
+void Sampler_setNote(Sampler__ctx_type_2 &_ctx, int note){
+   fix16_t log_two;
+   log_two = 0xb172 /* 0.693147 */;
+   fix16_t semitones;
+   semitones = fix_mul(0x1555 /* 0.083333 */,int_to_fix((note + (- _ctx.sampleNote))));
+   _ctx.noteRatio = fix_exp(fix_mul(log_two,semitones));
+   Sampler_updateStep(_ctx);
+}
+
 void Sampler_noteOn(Sampler__ctx_type_2 &_ctx, int note, int velocity, int channel){
    note = int_clip(note,0,127);
    if(Notes_noteOn(_ctx.playingnotes,note,velocity,channel)){
-      Sampler_setFrequency(_ctx,Util_noteToFrequency(note));
+      Sampler_setNote(_ctx,note);
       _ctx.gate = true;
       _ctx.posBase = 0;
       _ctx.pos = 0x0 /* 0.000000 */;
@@ -191,7 +199,7 @@ void Sampler_noteOff(Sampler__ctx_type_2 &_ctx, int note, int channel){
          int last_played;
          last_played = Notes_lastNote(_ctx.playingnotes);
          if((last_played > 0) && (last_played <= 128)){
-            Sampler_setFrequency(_ctx,Util_noteToFrequency(((-1) + last_played)));
+            Sampler_setNote(_ctx,((-1) + last_played));
          }
       }
       else
@@ -464,7 +472,7 @@ void Sampler_default(Sampler__ctx_type_2 &_ctx){
    }
    _ctx.size = Sampler_ocarina_samples();
    Sampler_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
-   Sampler_setFrequency(_ctx,0x70a3 /* 0.440000 */);
+   Sampler_setNote(_ctx,69);
    Notes_default(_ctx.playingnotes);
    Sampler_setPoly(_ctx,false);
 }

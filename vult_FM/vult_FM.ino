@@ -85,7 +85,7 @@ long dsp_cycle_count;
 long dsp_cycle_tick;
 
 // for testing we will alternate between both versions of algo
-bool buffer_version = false;
+bool buffer_version = true;
 unsigned long switch_tick;
 // in ms, how often we switch between boht versions. 0 to disable
 int buffer_switch_time = 0;
