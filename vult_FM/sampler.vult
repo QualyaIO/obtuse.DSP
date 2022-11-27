@@ -89,9 +89,10 @@ and updateStep() {
   // current note frequency
   mem freq: real;
   // base for computing step
-  mem stepRatio: real;
+  mem freqRatio: real;
+  mem fsRatio: real;
   // both for efficiency and because we don't want any result to be outside [1/32767 .. 32767] to avoid fixed float limits we compute step in two... steps
-  step = freq*stepRatio;
+  step = freqRatio*fsRatio;
 }
 
 // seter for parameters. expect values of desired frequency and current sampling rate in kHz to avoid fixed float limits ([1/32767 ..32767]... probably)
@@ -105,13 +106,14 @@ and setSamplerate(newFs:real) {
    if (newFs > 0.0) {
       fs = newFs;
       // update ratio when we update sampling rate
-      stepRatio = fs/sampleFs/sampleFreq;
+      fsRatio = sampleFs/fs;
    }
    _ = updateStep();
 }
 // frequency of the note to be played
 and setFrequency(newFreq:real) {
    freq = newFreq;
+   freqRatio = freq/sampleFreq;
    _ = updateStep();
 }
 
@@ -161,9 +163,9 @@ and noteOff(note:int, channel:int) {
 
 and default() @[init] {
   // defaults for current sample
-  sampleFs = 44.100;
-  // here C4 (still in kHz)
-  sampleFreq = 0.2616;
+  sampleFs = 30.0;
+  // here C4
+  sampleFreq = Util.noteToFrequency(60);
   // will copy a new array
   mem buffer_o = Util.buffer();
   size = ocarina_samples();

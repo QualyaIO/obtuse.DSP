@@ -127,18 +127,17 @@ static_inline void Notes_noteOff_init(Notes__ctx_type_0 &_output_){
 uint8_t Notes_noteOff(Notes__ctx_type_0 &_ctx, int note, int channel);
 
 static_inline int Sampler_ocarina_samples(){
-   return 57089;
+   return 38836;
 };
 
 static_inline fix16_t Sampler_ocarina(int channel, int index){
    if(channel == 0){
-      return fix_wrap_array(Sampler_ocarina_chan_0)[(index % 57089)];
+      return fix_wrap_array(Sampler_ocarina_chan_0)[(index % 38836)];
    }
    return 0x0 /* 0.000000 */;
 }
 
 typedef struct Sampler__ctx_type_2 {
-   fix16_t stepRatio;
    fix16_t step;
    int state;
    int size;
@@ -148,7 +147,9 @@ typedef struct Sampler__ctx_type_2 {
    int pos;
    Notes__ctx_type_0 playingnotes;
    uint8_t gate;
+   fix16_t fsRatio;
    fix16_t fs;
+   fix16_t freqRatio;
    fix16_t freq;
    fix16_t buffer_o[256];
 } Sampler__ctx_type_2;
@@ -203,7 +204,7 @@ static_inline void Sampler_updateStep_init(Sampler__ctx_type_2 &_output_){
 }
 
 static_inline void Sampler_updateStep(Sampler__ctx_type_2 &_ctx){
-   _ctx.step = fix_mul(_ctx.freq,_ctx.stepRatio);
+   _ctx.step = fix_mul(_ctx.freqRatio,_ctx.fsRatio);
 };
 
 typedef Sampler__ctx_type_2 Sampler_setSamplerate_type;
@@ -224,6 +225,7 @@ static_inline void Sampler_setFrequency_init(Sampler__ctx_type_2 &_output_){
 
 static_inline void Sampler_setFrequency(Sampler__ctx_type_2 &_ctx, fix16_t newFreq){
    _ctx.freq = newFreq;
+   _ctx.freqRatio = fix_div(_ctx.freq,_ctx.sampleFreq);
    Sampler_updateStep(_ctx);
 }
 

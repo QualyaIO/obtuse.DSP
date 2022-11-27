@@ -93,7 +93,6 @@ uint8_t Notes_noteOff(Notes__ctx_type_0 &_ctx, int note, int channel){
 
 void Sampler__ctx_type_2_init(Sampler__ctx_type_2 &_output_){
    Sampler__ctx_type_2 _ctx;
-   _ctx.stepRatio = 0x0 /* 0.000000 */;
    _ctx.step = 0x0 /* 0.000000 */;
    _ctx.state = 0;
    _ctx.size = 0;
@@ -103,7 +102,9 @@ void Sampler__ctx_type_2_init(Sampler__ctx_type_2 &_output_){
    _ctx.pos = 0;
    Notes__ctx_type_0_init(_ctx.playingnotes);
    _ctx.gate = false;
+   _ctx.fsRatio = 0x0 /* 0.000000 */;
    _ctx.fs = 0x0 /* 0.000000 */;
+   _ctx.freqRatio = 0x0 /* 0.000000 */;
    _ctx.freq = 0x0 /* 0.000000 */;
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_o);
    Sampler_default(_ctx);
@@ -162,7 +163,7 @@ void Sampler_process_bufferTo(Sampler__ctx_type_2 &_ctx, int nb, fix16_t (&oBuff
 void Sampler_setSamplerate(Sampler__ctx_type_2 &_ctx, fix16_t newFs){
    if(newFs > 0x0 /* 0.000000 */){
       _ctx.fs = newFs;
-      _ctx.stepRatio = fix_div(fix_div(_ctx.fs,_ctx.sampleFs),_ctx.sampleFreq);
+      _ctx.fsRatio = fix_div(_ctx.sampleFs,_ctx.fs);
    }
    Sampler_updateStep(_ctx);
 }
@@ -196,8 +197,8 @@ void Sampler_noteOff(Sampler__ctx_type_2 &_ctx, int note, int channel){
 }
 
 void Sampler_default(Sampler__ctx_type_2 &_ctx){
-   _ctx.sampleFs = 0x2c1999 /* 44.100000 */;
-   _ctx.sampleFreq = 0x42f8 /* 0.261600 */;
+   _ctx.sampleFs = 0x1e0000 /* 30.000000 */;
+   _ctx.sampleFreq = 0x42f9 /* 0.261626 */;
    {
       _ctx.buffer_o[0] = 0x0 /* 0.000000 */;
       _ctx.buffer_o[1] = 0x0 /* 0.000000 */;
