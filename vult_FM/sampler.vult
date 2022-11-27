@@ -13,9 +13,9 @@ fun getSample(index: int) {
 and process() {
   // absolutely needs init to set that
   mem size: int;
-  // current position in sample and fractional leftovers to overcome limitation of fixed point
-  mem pos: int;
-  mem posFract: real;
+  // using integer "base position" float position to overcome limitation of fixed point
+  mem posBase: int;
+  mem pos: real;
   // how much we jump each step
   mem step: real;
   //  current gate
@@ -24,21 +24,21 @@ and process() {
   mem state: int;
 
   // advance time, keep range in check here to maximize precision
-  posFract = posFract + step;
-  if (posFract >= 1.0) {
-    pos = pos + int(floor(posFract));
-    posFract = posFract - floor(posFract);
-    // will stop and reset note once reach the end
-    if (pos > size) {
-      state = 0;
-      pos = 0;
-      posFract = 0.0;
-    }
+  pos = pos + step;
+  while (pos >= 1024.0) {
+    posBase = posBase + 1024;
+    pos = pos - 1024.0;
   }
-
+  val idx = posBase + int(pos);
+  // will stop and reset note once reach the end
+  if (idx > size) {
+    state = 0;
+    posBase = 0;
+    pos = 0.0;
+  }
   val value = 0.0;
   if (state == 1) {
-    value = getSample(pos);
+    value = getSample(idx);
   }
   return value;
 }
@@ -50,25 +50,26 @@ and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
      nb = size(oBuffer);
   }
 
+  val idx = 0;
   val i = 0;
   while (i < nb) {
 
-
     // advance time, keep range in check here to maximize precision
-    posFract = posFract + step;
-    if (posFract >= 1.0) {
-      pos = pos + int(floor(posFract));
-      posFract = posFract - floor(posFract);
-      // will stop and reset note once reach the end
-      if (pos > size) {
-        state = 0;
-        pos = 0;
-        posFract = 0.0;
-      }
+    pos = pos + step;
+    while (pos >= 1024.0) {
+      posBase = posBase + 1024;
+      pos = pos - 1024.0;
     }
-    
+    idx = posBase + int(pos);
+    // will stop and reset note once reach the end
+    if (idx > size) {
+      state = 0;
+      posBase = 0;
+      pos = 0.0;
+    }
+
     if (state == 1) {
-      oBuffer[i] = getSample(pos);
+      oBuffer[i] = getSample(idx);
     }
     else {
       oBuffer[i] = 0.0;
@@ -128,8 +129,8 @@ and noteOn(note:int, velocity:int, channel:int){
        _ = setFrequency(Util.noteToFrequency(note));
        // gate and start playing note
        gate = true;
-       pos = 0;
-       posFract = 0.0;
+       posBase = 0;
+       pos = 0.0;
        state = 1;
    }
 }
