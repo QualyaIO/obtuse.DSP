@@ -72,7 +72,6 @@ and process_bufferTo(nb: int, env: array(real, 256), phase_shift: array(real, 25
          phase = phase - rsize;
       }
       // loop in sample
-      //v = getSample(int(phase_base + phase));
       oBuffer[i]  = getSample(int(half_phase + phase_range * phase_shift[i]  + phase)) * env[i];
       i = i + 1;
    }

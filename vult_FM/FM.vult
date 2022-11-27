@@ -21,7 +21,7 @@ fun process() {
     // number of iteration of this loop, for decimation
     mem n;
 
-    //  current gate (can be > 1 if several notes are held)
+    //  current gate
     mem gate : bool;
 
     n = n + 1;

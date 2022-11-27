@@ -91,6 +91,366 @@ uint8_t Notes_noteOff(Notes__ctx_type_0 &_ctx, int note, int channel){
    return false;
 }
 
+void Sampler__ctx_type_2_init(Sampler__ctx_type_2 &_output_){
+   Sampler__ctx_type_2 _ctx;
+   _ctx.stepRatio = 0x0 /* 0.000000 */;
+   _ctx.step = 0x0 /* 0.000000 */;
+   _ctx.state = 0;
+   _ctx.sampleFs = 0x0 /* 0.000000 */;
+   _ctx.sampleFreq = 0x0 /* 0.000000 */;
+   _ctx.rsize = 0x0 /* 0.000000 */;
+   _ctx.pos = 0x0 /* 0.000000 */;
+   Notes__ctx_type_0_init(_ctx.playingnotes);
+   _ctx.gate = false;
+   _ctx.fs = 0x0 /* 0.000000 */;
+   _ctx.freq = 0x0 /* 0.000000 */;
+   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_o);
+   Sampler_default(_ctx);
+   _output_ = _ctx;
+   return ;
+}
+
+fix16_t Sampler_process(Sampler__ctx_type_2 &_ctx){
+   _ctx.sampleFs = 0x2c1999 /* 44.100000 */;
+   _ctx.sampleFreq = 0x42f8 /* 0.261600 */;
+   _ctx.pos = (_ctx.pos + _ctx.step);
+   if(_ctx.pos > _ctx.rsize){
+      _ctx.state = 0;
+      _ctx.pos = 0x0 /* 0.000000 */;
+   }
+   fix16_t value;
+   value = 0x0 /* 0.000000 */;
+   if(_ctx.state == 1){
+      value = Sampler_getSample(_ctx,fix_to_int(_ctx.pos));
+   }
+   return value;
+}
+
+void Sampler_process_bufferTo(Sampler__ctx_type_2 &_ctx, int nb, fix16_t (&oBuffer)[256]){
+   nb = int_clip(nb,0,256);
+   if(nb == 0){
+      nb = 256;
+   }
+   int i;
+   i = 0;
+   while(i < nb){
+      _ctx.pos = (_ctx.pos + _ctx.step);
+      if(_ctx.pos > _ctx.rsize){
+         _ctx.state = 0;
+         _ctx.pos = 0x0 /* 0.000000 */;
+      }
+      if(_ctx.state == 1){
+         oBuffer[i] = Sampler_getSample(_ctx,fix_to_int(_ctx.pos));
+      }
+      else
+      {
+         oBuffer[i] = 0x0 /* 0.000000 */;
+      }
+      i = (1 + i);
+   }
+}
+
+void Sampler_setSamplerate(Sampler__ctx_type_2 &_ctx, fix16_t newFs){
+   if(newFs > 0x0 /* 0.000000 */){
+      _ctx.fs = newFs;
+      _ctx.stepRatio = fix_div(fix_div(_ctx.fs,_ctx.sampleFs),_ctx.sampleFreq);
+   }
+   Sampler_updateStep(_ctx);
+}
+
+void Sampler_noteOn(Sampler__ctx_type_2 &_ctx, int note, int velocity, int channel){
+   note = int_clip(note,0,127);
+   if(Notes_noteOn(_ctx.playingnotes,note,velocity,channel)){
+      Sampler_setFrequency(_ctx,Util_noteToFrequency(note));
+      _ctx.gate = true;
+      _ctx.pos = 0x0 /* 0.000000 */;
+      _ctx.state = 1;
+   }
+}
+
+void Sampler_noteOff(Sampler__ctx_type_2 &_ctx, int note, int channel){
+   note = int_clip(note,0,127);
+   if(Notes_noteOff(_ctx.playingnotes,note,channel)){
+      if(Notes_nbNotes(_ctx.playingnotes) > 0){
+         int last_played;
+         last_played = Notes_lastNote(_ctx.playingnotes);
+         if((last_played > 0) && (last_played <= 128)){
+            Sampler_setFrequency(_ctx,Util_noteToFrequency(((-1) + last_played)));
+         }
+      }
+      else
+      {
+         _ctx.gate = false;
+      }
+   }
+}
+
+void Sampler_default(Sampler__ctx_type_2 &_ctx){
+   {
+      _ctx.buffer_o[0] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[1] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[2] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[3] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[4] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[5] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[6] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[7] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[8] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[9] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[10] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[11] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[12] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[13] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[14] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[15] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[16] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[17] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[18] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[19] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[20] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[21] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[22] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[23] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[24] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[25] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[26] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[27] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[28] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[29] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[30] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[31] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[32] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[33] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[34] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[35] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[36] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[37] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[38] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[39] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[40] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[41] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[42] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[43] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[44] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[45] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[46] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[47] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[48] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[49] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[50] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[51] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[52] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[53] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[54] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[55] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[56] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[57] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[58] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[59] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[60] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[61] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[62] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[63] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[64] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[65] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[66] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[67] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[68] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[69] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[70] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[71] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[72] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[73] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[74] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[75] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[76] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[77] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[78] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[79] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[80] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[81] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[82] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[83] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[84] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[85] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[86] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[87] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[88] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[89] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[90] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[91] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[92] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[93] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[94] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[95] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[96] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[97] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[98] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[99] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[100] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[101] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[102] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[103] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[104] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[105] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[106] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[107] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[108] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[109] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[110] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[111] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[112] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[113] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[114] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[115] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[116] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[117] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[118] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[119] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[120] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[121] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[122] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[123] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[124] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[125] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[126] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[127] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[128] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[129] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[130] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[131] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[132] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[133] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[134] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[135] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[136] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[137] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[138] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[139] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[140] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[141] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[142] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[143] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[144] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[145] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[146] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[147] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[148] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[149] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[150] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[151] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[152] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[153] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[154] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[155] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[156] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[157] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[158] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[159] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[160] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[161] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[162] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[163] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[164] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[165] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[166] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[167] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[168] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[169] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[170] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[171] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[172] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[173] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[174] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[175] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[176] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[177] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[178] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[179] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[180] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[181] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[182] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[183] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[184] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[185] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[186] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[187] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[188] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[189] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[190] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[191] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[192] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[193] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[194] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[195] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[196] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[197] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[198] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[199] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[200] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[201] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[202] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[203] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[204] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[205] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[206] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[207] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[208] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[209] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[210] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[211] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[212] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[213] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[214] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[215] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[216] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[217] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[218] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[219] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[220] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[221] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[222] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[223] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[224] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[225] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[226] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[227] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[228] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[229] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[230] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[231] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[232] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[233] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[234] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[235] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[236] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[237] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[238] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[239] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[240] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[241] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[242] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[243] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[244] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[245] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[246] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[247] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[248] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[249] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[250] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[251] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[252] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[253] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[254] = 0x0 /* 0.000000 */;
+      _ctx.buffer_o[255] = 0x0 /* 0.000000 */;
+   }
+   _ctx.rsize = int_to_fix(Sampler_ocarina_samples());
+   Sampler_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
+   Sampler_setFrequency(_ctx,0x70a3 /* 0.440000 */);
+   Notes_default(_ctx.playingnotes);
+   Sampler_setPoly(_ctx,false);
+}
+
 void OSC__ctx_type_2_init(OSC__ctx_type_2 &_output_){
    OSC__ctx_type_2 _ctx;
    _ctx.wavetable = 0;
@@ -2629,9 +2989,13 @@ void Voice__ctx_type_0_init(Voice__ctx_type_0 &_output_){
    Notes__ctx_type_0_init(_ctx.voicesactive);
    _ctx.voices_ratio = 0x0 /* 0.000000 */;
    int_init_array(4,0,_ctx.voices);
+   Sampler__ctx_type_2_init(_ctx.voice3Sampler);
    FM__ctx_type_0_init(_ctx.voice3FM);
+   Sampler__ctx_type_2_init(_ctx.voice2Sampler);
    FM__ctx_type_0_init(_ctx.voice2FM);
+   Sampler__ctx_type_2_init(_ctx.voice1Sampler);
    FM__ctx_type_0_init(_ctx.voice1FM);
+   Sampler__ctx_type_2_init(_ctx.voice0Sampler);
    FM__ctx_type_0_init(_ctx.voice0FM);
    _ctx.synth = 0;
    _ctx.number_voices = 0;
@@ -2653,12 +3017,24 @@ fix16_t Voice_getSample(Voice__ctx_type_0 &_ctx, int voice){
          if(_ctx.synth == 0){
             return FM_process(_ctx.voice0FM);
          }
+         else
+         {
+            if(_ctx.synth == 1){
+               return Sampler_process(_ctx.voice0Sampler);
+            }
+         }
       }
       else
       {
          if(voice == 1){
             if(_ctx.synth == 0){
                return FM_process(_ctx.voice1FM);
+            }
+            else
+            {
+               if(_ctx.synth == 1){
+                  return Sampler_process(_ctx.voice1Sampler);
+               }
             }
          }
          else
@@ -2667,12 +3043,24 @@ fix16_t Voice_getSample(Voice__ctx_type_0 &_ctx, int voice){
                if(_ctx.synth == 0){
                   return FM_process(_ctx.voice2FM);
                }
+               else
+               {
+                  if(_ctx.synth == 1){
+                     return Sampler_process(_ctx.voice2Sampler);
+                  }
+               }
             }
             else
             {
                if(voice == 3){
                   if(_ctx.synth == 0){
                      return FM_process(_ctx.voice3FM);
+                  }
+                  else
+                  {
+                     if(_ctx.synth == 1){
+                        return Sampler_process(_ctx.voice3Sampler);
+                     }
                   }
                }
             }
@@ -2688,12 +3076,24 @@ void Voice_runVoice(Voice__ctx_type_0 &_ctx, int voice, int nb, fix16_t (&buff)[
          if(_ctx.synth == 0){
             FM_process_bufferTo(_ctx.voice0FM,nb,buff);
          }
+         else
+         {
+            if(_ctx.synth == 1){
+               Sampler_process_bufferTo(_ctx.voice0Sampler,nb,buff);
+            }
+         }
       }
       else
       {
          if(voice == 1){
             if(_ctx.synth == 0){
                FM_process_bufferTo(_ctx.voice1FM,nb,buff);
+            }
+            else
+            {
+               if(_ctx.synth == 1){
+                  Sampler_process_bufferTo(_ctx.voice1Sampler,nb,buff);
+               }
             }
          }
          else
@@ -2702,12 +3102,24 @@ void Voice_runVoice(Voice__ctx_type_0 &_ctx, int voice, int nb, fix16_t (&buff)[
                if(_ctx.synth == 0){
                   FM_process_bufferTo(_ctx.voice2FM,nb,buff);
                }
+               else
+               {
+                  if(_ctx.synth == 1){
+                     Sampler_process_bufferTo(_ctx.voice2Sampler,nb,buff);
+                  }
+               }
             }
             else
             {
                if(voice == 3){
                   if(_ctx.synth == 0){
                      FM_process_bufferTo(_ctx.voice3FM,nb,buff);
+                  }
+                  else
+                  {
+                     if(_ctx.synth == 1){
+                        Sampler_process_bufferTo(_ctx.voice3Sampler,nb,buff);
+                     }
                   }
                }
             }
@@ -2776,12 +3188,24 @@ void Voice__sendNoteOn(Voice__ctx_type_0 &_ctx, int voice, int note, int velocit
          if(_ctx.synth == 0){
             FM_noteOn(_ctx.voice0FM,note,velocity,channel);
          }
+         else
+         {
+            if(_ctx.synth == 1){
+               Sampler_noteOn(_ctx.voice0Sampler,note,velocity,channel);
+            }
+         }
       }
       else
       {
          if(voice == 1){
             if(_ctx.synth == 0){
                FM_noteOn(_ctx.voice1FM,note,velocity,channel);
+            }
+            else
+            {
+               if(_ctx.synth == 1){
+                  Sampler_noteOn(_ctx.voice1Sampler,note,velocity,channel);
+               }
             }
          }
          else
@@ -2790,12 +3214,24 @@ void Voice__sendNoteOn(Voice__ctx_type_0 &_ctx, int voice, int note, int velocit
                if(_ctx.synth == 0){
                   FM_noteOn(_ctx.voice2FM,note,velocity,channel);
                }
+               else
+               {
+                  if(_ctx.synth == 1){
+                     Sampler_noteOn(_ctx.voice2Sampler,note,velocity,channel);
+                  }
+               }
             }
             else
             {
                if(voice == 3){
                   if(_ctx.synth == 0){
                      FM_noteOn(_ctx.voice3FM,note,velocity,channel);
+                  }
+                  else
+                  {
+                     if(_ctx.synth == 1){
+                        Sampler_noteOn(_ctx.voice3Sampler,note,velocity,channel);
+                     }
                   }
                }
             }
@@ -2810,12 +3246,24 @@ void Voice__sendNoteOff(Voice__ctx_type_0 &_ctx, int voice, int note, int channe
          if(_ctx.synth == 0){
             FM_noteOff(_ctx.voice0FM,note,channel);
          }
+         else
+         {
+            if(_ctx.synth == 1){
+               Sampler_noteOff(_ctx.voice0Sampler,note,channel);
+            }
+         }
       }
       else
       {
          if(voice == 1){
             if(_ctx.synth == 0){
                FM_noteOff(_ctx.voice1FM,note,channel);
+            }
+            else
+            {
+               if(_ctx.synth == 1){
+                  Sampler_noteOff(_ctx.voice1Sampler,note,channel);
+               }
             }
          }
          else
@@ -2824,12 +3272,24 @@ void Voice__sendNoteOff(Voice__ctx_type_0 &_ctx, int voice, int note, int channe
                if(_ctx.synth == 0){
                   FM_noteOff(_ctx.voice2FM,note,channel);
                }
+               else
+               {
+                  if(_ctx.synth == 1){
+                     Sampler_noteOff(_ctx.voice2Sampler,note,channel);
+                  }
+               }
             }
             else
             {
                if(voice == 3){
                   if(_ctx.synth == 0){
                      FM_noteOff(_ctx.voice3FM,note,channel);
+                  }
+                  else
+                  {
+                     if(_ctx.synth == 1){
+                        Sampler_noteOff(_ctx.voice3Sampler,note,channel);
+                     }
                   }
                }
             }
@@ -2903,19 +3363,43 @@ void Voice_setSamplerate(Voice__ctx_type_0 &_ctx, fix16_t newFs){
       FM_setSamplerate(_ctx.voice2FM,_ctx.fs);
       FM_setSamplerate(_ctx.voice3FM,_ctx.fs);
    }
+   if(_ctx.synth == 1){
+      Sampler_setSamplerate(_ctx.voice0Sampler,_ctx.fs);
+      Sampler_setSamplerate(_ctx.voice1Sampler,_ctx.fs);
+      Sampler_setSamplerate(_ctx.voice2Sampler,_ctx.fs);
+      Sampler_setSamplerate(_ctx.voice3Sampler,_ctx.fs);
+   }
 }
 
 void Voice_selectSynth(Voice__ctx_type_0 &_ctx, int nsynth){
-   if(nsynth == 0){
-      nsynth = _ctx.synth;
-      FM_default(_ctx.voice0FM);
-      FM_setPoly(_ctx.voice0FM,true);
-      FM_default(_ctx.voice1FM);
-      FM_setPoly(_ctx.voice1FM,true);
-      FM_default(_ctx.voice2FM);
-      FM_setPoly(_ctx.voice2FM,true);
-      FM_default(_ctx.voice3FM);
-      FM_setPoly(_ctx.voice3FM,true);
+   switch(nsynth) {
+      case 0:
+         {
+            _ctx.synth = nsynth;
+            FM_default(_ctx.voice0FM);
+            FM_setPoly(_ctx.voice0FM,true);
+            FM_default(_ctx.voice1FM);
+            FM_setPoly(_ctx.voice1FM,true);
+            FM_default(_ctx.voice2FM);
+            FM_setPoly(_ctx.voice2FM,true);
+            FM_default(_ctx.voice3FM);
+            FM_setPoly(_ctx.voice3FM,true);
+         }
+      break;
+      case 1:
+         {
+            _ctx.synth = nsynth;
+            Sampler_default(_ctx.voice0Sampler);
+            Sampler_setPoly(_ctx.voice0Sampler,true);
+            Sampler_default(_ctx.voice1Sampler);
+            Sampler_setPoly(_ctx.voice1Sampler,true);
+            Sampler_default(_ctx.voice2Sampler);
+            Sampler_setPoly(_ctx.voice2Sampler,true);
+            Sampler_default(_ctx.voice3Sampler);
+            Sampler_setPoly(_ctx.voice3Sampler,true);
+         }
+      break;
+    
    }
    Voice_setSamplerate(_ctx,_ctx.fs);
 }

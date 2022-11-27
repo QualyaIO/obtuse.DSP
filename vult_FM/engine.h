@@ -126,6 +126,144 @@ static_inline void Notes_noteOff_init(Notes__ctx_type_0 &_output_){
 
 uint8_t Notes_noteOff(Notes__ctx_type_0 &_ctx, int note, int channel);
 
+static_inline int Sampler_ocarina_samples(){
+   return 57089;
+};
+
+static_inline fix16_t Sampler_ocarina(int channel, int index){
+   if(channel == 0){
+      return fix_wrap_array(Sampler_ocarina_chan_0)[(index % 57089)];
+   }
+   return 0x0 /* 0.000000 */;
+}
+
+typedef struct Sampler__ctx_type_2 {
+   fix16_t stepRatio;
+   fix16_t step;
+   int state;
+   fix16_t sampleFs;
+   fix16_t sampleFreq;
+   fix16_t rsize;
+   fix16_t pos;
+   Notes__ctx_type_0 playingnotes;
+   uint8_t gate;
+   fix16_t fs;
+   fix16_t freq;
+   fix16_t buffer_o[256];
+} Sampler__ctx_type_2;
+
+typedef Sampler__ctx_type_2 Sampler_getSample_type;
+
+void Sampler__ctx_type_2_init(Sampler__ctx_type_2 &_output_);
+
+static_inline void Sampler_getSample_init(Sampler__ctx_type_2 &_output_){
+   Sampler__ctx_type_2_init(_output_);
+   return ;
+}
+
+static_inline fix16_t Sampler_getSample(Sampler__ctx_type_2 &_ctx, int index){
+   return Sampler_ocarina(0,index);
+};
+
+typedef Sampler__ctx_type_2 Sampler_process_type;
+
+static_inline void Sampler_process_init(Sampler__ctx_type_2 &_output_){
+   Sampler__ctx_type_2_init(_output_);
+   return ;
+}
+
+fix16_t Sampler_process(Sampler__ctx_type_2 &_ctx);
+
+typedef Sampler__ctx_type_2 Sampler_process_bufferTo_type;
+
+static_inline void Sampler_process_bufferTo_init(Sampler__ctx_type_2 &_output_){
+   Sampler__ctx_type_2_init(_output_);
+   return ;
+}
+
+void Sampler_process_bufferTo(Sampler__ctx_type_2 &_ctx, int nb, fix16_t (&oBuffer)[256]);
+
+typedef Sampler__ctx_type_2 Sampler_process_buffer_type;
+
+static_inline void Sampler_process_buffer_init(Sampler__ctx_type_2 &_output_){
+   Sampler__ctx_type_2_init(_output_);
+   return ;
+}
+
+static_inline void Sampler_process_buffer(Sampler__ctx_type_2 &_ctx, int nb){
+   Sampler_process_bufferTo(_ctx,nb,_ctx.buffer_o);
+};
+
+typedef Sampler__ctx_type_2 Sampler_updateStep_type;
+
+static_inline void Sampler_updateStep_init(Sampler__ctx_type_2 &_output_){
+   Sampler__ctx_type_2_init(_output_);
+   return ;
+}
+
+static_inline void Sampler_updateStep(Sampler__ctx_type_2 &_ctx){
+   _ctx.step = fix_mul(_ctx.freq,_ctx.stepRatio);
+};
+
+typedef Sampler__ctx_type_2 Sampler_setSamplerate_type;
+
+static_inline void Sampler_setSamplerate_init(Sampler__ctx_type_2 &_output_){
+   Sampler__ctx_type_2_init(_output_);
+   return ;
+}
+
+void Sampler_setSamplerate(Sampler__ctx_type_2 &_ctx, fix16_t newFs);
+
+typedef Sampler__ctx_type_2 Sampler_setFrequency_type;
+
+static_inline void Sampler_setFrequency_init(Sampler__ctx_type_2 &_output_){
+   Sampler__ctx_type_2_init(_output_);
+   return ;
+}
+
+static_inline void Sampler_setFrequency(Sampler__ctx_type_2 &_ctx, fix16_t newFreq){
+   _ctx.freq = newFreq;
+   Sampler_updateStep(_ctx);
+}
+
+typedef Sampler__ctx_type_2 Sampler_noteOn_type;
+
+static_inline void Sampler_noteOn_init(Sampler__ctx_type_2 &_output_){
+   Sampler__ctx_type_2_init(_output_);
+   return ;
+}
+
+void Sampler_noteOn(Sampler__ctx_type_2 &_ctx, int note, int velocity, int channel);
+
+typedef Sampler__ctx_type_2 Sampler_setPoly_type;
+
+static_inline void Sampler_setPoly_init(Sampler__ctx_type_2 &_output_){
+   Sampler__ctx_type_2_init(_output_);
+   return ;
+}
+
+static_inline void Sampler_setPoly(Sampler__ctx_type_2 &_ctx, uint8_t flag){
+   Notes_setPoly(_ctx.playingnotes,flag);
+};
+
+typedef Sampler__ctx_type_2 Sampler_noteOff_type;
+
+static_inline void Sampler_noteOff_init(Sampler__ctx_type_2 &_output_){
+   Sampler__ctx_type_2_init(_output_);
+   return ;
+}
+
+void Sampler_noteOff(Sampler__ctx_type_2 &_ctx, int note, int channel);
+
+typedef Sampler__ctx_type_2 Sampler_default_type;
+
+static_inline void Sampler_default_init(Sampler__ctx_type_2 &_output_){
+   Sampler__ctx_type_2_init(_output_);
+   return ;
+}
+
+void Sampler_default(Sampler__ctx_type_2 &_ctx);
+
 static_inline int OSC_sin_wave_samples(){
    return 4096;
 };
@@ -622,9 +760,13 @@ typedef struct Voice__ctx_type_0 {
    Notes__ctx_type_0 voicesactive;
    fix16_t voices_ratio;
    int voices[4];
+   Sampler__ctx_type_2 voice3Sampler;
    FM__ctx_type_0 voice3FM;
+   Sampler__ctx_type_2 voice2Sampler;
    FM__ctx_type_0 voice2FM;
+   Sampler__ctx_type_2 voice1Sampler;
    FM__ctx_type_0 voice1FM;
+   Sampler__ctx_type_2 voice0Sampler;
    FM__ctx_type_0 voice0FM;
    int synth;
    int number_voices;

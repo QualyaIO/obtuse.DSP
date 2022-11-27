@@ -164,6 +164,7 @@ void setup() {
   // Init FM, then pass sample rate, not forgetting to convert passed parameters to fixed (of course...)
   Voice_default(context);
   Voice_setSamplerate(context, float_to_fix(sampleRate / (float)1000));
+  Voice_selectSynth(context, 1);
   OSC_default(context_osc);
   OSC_setSamplerate(context_osc, float_to_fix(sampleRate / (float)1000));
   FM_default(context_fm);

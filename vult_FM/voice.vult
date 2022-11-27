@@ -6,6 +6,7 @@
 
 // synth list:
 //    0: FM
+//    1: Sampler
 
 // retrieve sample from a specific voice
 fun getSample(voice: int) {
@@ -19,20 +20,32 @@ fun getSample(voice: int) {
            if (synth == 0) {
               return voice0FM:FM.process();
 	   }
+	   else if (synth == 1) {
+              return voice0Sampler:Sampler.process();
+	   }
        }
        else if (voice == 1) {
            if (synth == 0) {
               return voice1FM:FM.process();
+	   }
+	   else if (synth == 1) {
+              return voice1Sampler:Sampler.process();
 	   }
        }
        else if (voice == 2) {
            if (synth == 0) {
               return voice2FM:FM.process();
 	   }
+	   else if (synth == 1) {
+              return voice2Sampler:Sampler.process();
+	   }
        }
        else if (voice == 3) {
            if (synth == 0) {
               return voice3FM:FM.process();
+	   }
+	   else if (synth == 1) {
+              return voice3Sampler:Sampler.process();
 	   }
        }
 
@@ -47,20 +60,32 @@ and runVoice(voice: int, nb: int, buff: array(real, 256)) {
            if (synth == 0) {
 	      _ = voice0FM:FM.process_bufferTo(nb, buff);
 	   }
+	   else if (synth == 1) {
+	      _ = voice0Sampler:Sampler.process_bufferTo(nb, buff);
+	   }
        }
        else if (voice == 1) {
            if (synth == 0) {
 	      _ = voice1FM:FM.process_bufferTo(nb, buff);
+	   }
+	   else if (synth == 1) {
+	      _ = voice1Sampler:Sampler.process_bufferTo(nb, buff);
 	   }
        }
        else if (voice == 2) {
            if (synth == 0) {
               _ = voice2FM:FM.process_bufferTo(nb, buff);
 	   }
+	   else if (synth == 1) {
+	      _ = voice2Sampler:Sampler.process_bufferTo(nb, buff);
+	   }
        }
        else if (voice == 3) {
            if (synth == 0) {
               _ = voice3FM:FM.process_bufferTo(nb, buff);
+	   }
+	   else if (synth == 1) {
+	      _ = voice3Sampler:Sampler.process_bufferTo(nb, buff);
 	   }
        }
    }
@@ -161,20 +186,32 @@ and _sendNoteOn(voice:int, note:int, velocity: int, channel:int) {
            if (synth == 0) {
               _ = voice0FM:FM.noteOn(note, velocity, channel);
 	   }
+	   else if (synth == 1) {
+              _ = voice0Sampler:Sampler.noteOn(note, velocity, channel);
+	   }
        }
        else if (voice == 1) {
            if (synth == 0) {
               _ = voice1FM:FM.noteOn(note, velocity, channel);
+	   }
+	   else if (synth == 1) {
+              _ = voice1Sampler:Sampler.noteOn(note, velocity, channel);
 	   }
        }
        else if (voice == 2) {
            if (synth == 0) {
               _ = voice2FM:FM.noteOn(note, velocity, channel);
 	   }
+	   else if (synth == 1) {
+              _ = voice2Sampler:Sampler.noteOn(note, velocity, channel);
+	   }
        }
        else if (voice == 3) {
            if (synth == 0) {
               _ = voice3FM:FM.noteOn(note, velocity, channel);
+	   }
+	   else if (synth == 1) {
+              _ = voice3Sampler:Sampler.noteOn(note, velocity, channel);
 	   }
        }
    }
@@ -190,20 +227,32 @@ and _sendNoteOff(voice:int, note:int, channel:int) {
            if (synth == 0) {
               _ = voice0FM:FM.noteOff(note, channel);
 	   }
+           else if (synth == 1) {
+              _ = voice0Sampler:Sampler.noteOff(note, channel);
+	   }
        }
        else if (voice == 1) {
            if (synth == 0) {
               _ = voice1FM:FM.noteOff(note, channel);
+	   }
+           else if (synth == 1) {
+              _ = voice1Sampler:Sampler.noteOff(note, channel);
 	   }
        }
        else if (voice == 2) {
            if (synth == 0) {
               _ = voice2FM:FM.noteOff(note, channel);
 	   }
+           else if (synth == 1) {
+              _ = voice2Sampler:Sampler.noteOff(note, channel);
+	   }
        }
        else if (voice == 3) {
            if (synth == 0) {
               _ = voice3FM:FM.noteOff(note, channel);
+	   }
+           else if (synth == 1) {
+              _ = voice3Sampler:Sampler.noteOff(note, channel);
 	   }
        }
    }
@@ -300,12 +349,18 @@ and setSamplerate(newFs:real) {
       _ = voice2FM:FM.setSamplerate(fs);
       _ = voice3FM:FM.setSamplerate(fs);
   }
+   if (synth == 1) {
+     _ = voice0Sampler:Sampler.setSamplerate(fs);
+     _ = voice1Sampler:Sampler.setSamplerate(fs);
+     _ = voice2Sampler:Sampler.setSamplerate(fs);
+     _ = voice3Sampler:Sampler.setSamplerate(fs);
+  }
 }
 
-// init voices of selecetd synth (see beginning of file for list of supported)
+// init voices of selected synth (see beginning of file for list of supported)
 and selectSynth(nsynth: int) {
    if (nsynth == 0) {
-      nsynth = synth;
+      synth = nsynth;
       _ = voice0FM:FM.default();
       _ = voice0FM:FM.setPoly(true);
       _ = voice1FM:FM.default();
@@ -314,6 +369,16 @@ and selectSynth(nsynth: int) {
       _ = voice2FM:FM.setPoly(true);
       _ = voice3FM:FM.default();
       _ = voice3FM:FM.setPoly(true);
+   } else if (nsynth == 1) {
+      synth = nsynth;
+      _ = voice0Sampler:Sampler.default();
+      _ = voice0Sampler:Sampler.setPoly(true);
+      _ = voice1Sampler:Sampler.default();
+      _ = voice1Sampler:Sampler.setPoly(true);
+      _ = voice2Sampler:Sampler.default();
+      _ = voice2Sampler:Sampler.setPoly(true);
+      _ = voice3Sampler:Sampler.default();
+      _ = voice3Sampler:Sampler.setPoly(true);
    }
    _ = setSamplerate(fs);
 }
