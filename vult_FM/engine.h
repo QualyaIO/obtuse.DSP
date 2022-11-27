@@ -141,8 +141,8 @@ typedef struct Sampler__ctx_type_2 {
    fix16_t step;
    int state;
    int size;
+   int sampleNote;
    fix16_t sampleFs;
-   fix16_t sampleFreq;
    int posBase;
    fix16_t pos;
    Notes__ctx_type_0 playingnotes;
@@ -225,7 +225,7 @@ static_inline void Sampler_setFrequency_init(Sampler__ctx_type_2 &_output_){
 
 static_inline void Sampler_setFrequency(Sampler__ctx_type_2 &_ctx, fix16_t newFreq){
    _ctx.freq = newFreq;
-   _ctx.freqRatio = fix_div(_ctx.freq,_ctx.sampleFreq);
+   _ctx.freqRatio = fix_div(_ctx.freq,Util_noteToFrequency(_ctx.sampleNote));
    Sampler_updateStep(_ctx);
 }
 

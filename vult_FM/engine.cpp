@@ -96,8 +96,8 @@ void Sampler__ctx_type_2_init(Sampler__ctx_type_2 &_output_){
    _ctx.step = 0x0 /* 0.000000 */;
    _ctx.state = 0;
    _ctx.size = 0;
+   _ctx.sampleNote = 0;
    _ctx.sampleFs = 0x0 /* 0.000000 */;
-   _ctx.sampleFreq = 0x0 /* 0.000000 */;
    _ctx.posBase = 0;
    _ctx.pos = 0x0 /* 0.000000 */;
    Notes__ctx_type_0_init(_ctx.playingnotes);
@@ -114,9 +114,9 @@ void Sampler__ctx_type_2_init(Sampler__ctx_type_2 &_output_){
 
 fix16_t Sampler_process(Sampler__ctx_type_2 &_ctx){
    _ctx.pos = (_ctx.pos + _ctx.step);
-   while(_ctx.pos >= 0x4000000 /* 1024.000000 */){
-      _ctx.posBase = (1024 + _ctx.posBase);
-      _ctx.pos = (-0x4000000 /* -1024.000000 */ + _ctx.pos);
+   while(_ctx.pos >= 0x10000 /* 1.000000 */){
+      _ctx.posBase = (1 + _ctx.posBase);
+      _ctx.pos = (-0x10000 /* -1.000000 */ + _ctx.pos);
    }
    int idx;
    idx = (_ctx.posBase + fix_to_int(_ctx.pos));
@@ -203,7 +203,7 @@ void Sampler_noteOff(Sampler__ctx_type_2 &_ctx, int note, int channel){
 
 void Sampler_default(Sampler__ctx_type_2 &_ctx){
    _ctx.sampleFs = 0x1e0000 /* 30.000000 */;
-   _ctx.sampleFreq = 0x42f9 /* 0.261626 */;
+   _ctx.sampleNote = 60;
    {
       _ctx.buffer_o[0] = 0x0 /* 0.000000 */;
       _ctx.buffer_o[1] = 0x0 /* 0.000000 */;

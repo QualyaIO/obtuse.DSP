@@ -25,9 +25,9 @@ and process() {
 
   // advance time, keep range in check here to maximize precision
   pos = pos + step;
-  while (pos >= 1024.0) {
-    posBase = posBase + 1024;
-    pos = pos - 1024.0;
+  while (pos >= 1.0) {
+    posBase = posBase + 1;
+    pos = pos - 1.0;
   }
   val idx = posBase + int(pos);
   // will stop and reset note once reach the end
@@ -101,7 +101,7 @@ and setSamplerate(newFs:real) {
   // sample rate of the recording
   mem sampleFs;
   // note of the sample
-  mem sampleFreq;
+  mem sampleNote;
   // audio sampling rate
   mem fs: real;
    if (newFs > 0.0) {
@@ -114,7 +114,7 @@ and setSamplerate(newFs:real) {
 // frequency of the note to be played
 and setFrequency(newFreq:real) {
    freq = newFreq;
-   freqRatio = freq/sampleFreq;
+   freqRatio = freq/Util.noteToFrequency(sampleNote);
    _ = updateStep();
 }
 
@@ -166,7 +166,7 @@ and default() @[init] {
   // defaults for current sample
   sampleFs = 30.0;
   // here C4
-  sampleFreq = Util.noteToFrequency(60);
+  sampleNote = 60;
   // will copy a new array
   mem buffer_o = Util.buffer();
   size = ocarina_samples();
