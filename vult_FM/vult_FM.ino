@@ -12,7 +12,7 @@ Voice_process_type context;
 OSC_process_type context_osc;
 FM_process_type context_fm;
 // another for the filter
-Reverb_process_type context_reverb;
+//Reverb_process_type context_reverb;
 
 // sync with vult code
 #define BUFFER_SIZE 256
@@ -85,7 +85,7 @@ long dsp_cycle_count;
 long dsp_cycle_tick;
 
 // for testing we will alternate between both versions of algo
-bool buffer_version = true;
+bool buffer_version = false;
 unsigned long switch_tick;
 // in ms, how often we switch between boht versions. 0 to disable
 int buffer_switch_time = 0;
@@ -174,10 +174,11 @@ void setup() {
   OSC_setSamplerate(context_osc, float_to_fix(sampleRate / (float)1000));
   FM_default(context_fm);
   FM_setSamplerate(context_fm, float_to_fix(sampleRate / (float)1000));
-  Reverb_default(context_reverb);
-  Reverb_setSamplerate(context_reverb, float_to_fix(sampleRate / (float)1000));
-  Reverb_setReverbTime(context_reverb, float_to_fix(10.0));
-  Reverb_setDelayms(context_reverb, float_to_fix(50.0));
+  //Reverb_default(context_reverb);
+  //
+  //Reverb_setSamplerate(context_reverb, float_to_fix(sampleRate / (float)1000));
+  //Reverb_setReverbTime(context_reverb, float_to_fix(10.0));
+  //Reverb_setDelayms(context_reverb, float_to_fix(50.0));
 
 }
 
@@ -219,9 +220,9 @@ void loop() {
       //fix16_t raw = OSC_process(context_osc);
 
       fix16_t raw = Voice_process(context);
-      fix16_t val = Reverb_process(context_reverb, raw);
+      //fix16_t val = Reverb_process(context_reverb, raw);
       // wet / dry
-      fix16_t out = 0.5 * raw + 0.5 * val;
+      fix16_t out = raw;//0.5 * raw + 0.5 * val;
       // shortcut, instead of fixed_to_float * 32767, *almost* the same
       int16_t out16 =  out / 2 - (out >> 16);
 
@@ -241,12 +242,12 @@ void loop() {
       // FIXME: buffer not supported for voice at the moment
       //FM_process_bufferTo(context_fm, BUFFER_SIZE, raw_buff);
       Voice_process_bufferTo_alt(context, BUFFER_SIZE, raw_buff);
-      Reverb_process_bufferTo(context_reverb, BUFFER_SIZE, raw_buff, reverb_buff);
+      //Reverb_process_bufferTo(context_reverb, BUFFER_SIZE, raw_buff, reverb_buff);
       // two times to better compare with classical situation
       fix16_t out;
       for (size_t i = 0; i < BUFFER_SIZE; i++) {
         // wet / dry
-        out = 0.5 * raw_buff[i] + 0.5 * reverb_buff[i];
+        out = raw_buff[i]; //0.5 * raw_buff[i] + 0.5 * reverb_buff[i];
         // returned float should be between -1 and 1 (should we checkit ?)
         // shortcut, instead of fixed_to_float * 32767, *almost* the same and vastly improve perf with buffered version (???)
         buff[i] = out / 2 - ( out >> 16);
