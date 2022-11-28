@@ -102,7 +102,9 @@ void Sampler__ctx_type_2_init(Sampler__ctx_type_2 &_output_){
    _ctx.pos = 0x0 /* 0.000000 */;
    Notes__ctx_type_0_init(_ctx.playingnotes);
    _ctx.noteRatio = 0x0 /* 0.000000 */;
-   _ctx.gate = false;
+   _ctx.loopy = false;
+   _ctx.loopS = 0;
+   _ctx.loopE = 0;
    _ctx.fsRatio = 0x0 /* 0.000000 */;
    _ctx.fs = 0x0 /* 0.000000 */;
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_o);
@@ -112,22 +114,30 @@ void Sampler__ctx_type_2_init(Sampler__ctx_type_2 &_output_){
 }
 
 fix16_t Sampler_process(Sampler__ctx_type_2 &_ctx){
-   _ctx.pos = (_ctx.pos + _ctx.step);
-   while(_ctx.pos >= 0x4000000 /* 1024.000000 */){
-      _ctx.posBase = (1024 + _ctx.posBase);
-      _ctx.pos = (-0x4000000 /* -1024.000000 */ + _ctx.pos);
-   }
-   int idx;
-   idx = (_ctx.posBase + fix_to_int(_ctx.pos));
-   if(idx > _ctx.size){
-      _ctx.state = 0;
-      _ctx.posBase = 0;
-      _ctx.pos = 0x0 /* 0.000000 */;
-   }
    fix16_t value;
    value = 0x0 /* 0.000000 */;
-   if(_ctx.state == 1){
-      value = (Sampler_getSample(_ctx,idx) + fix_mul((_ctx.pos + (- fix_floor(_ctx.pos))),(Sampler_getSample(_ctx,(1 + idx)) + (- Sampler_getSample(_ctx,idx)))));
+   if(_ctx.state > 0){
+      _ctx.pos = (_ctx.pos + _ctx.step);
+      while(_ctx.pos >= 0x4000000 /* 1024.000000 */){
+         _ctx.posBase = (1024 + _ctx.posBase);
+         _ctx.pos = (-0x4000000 /* -1024.000000 */ + _ctx.pos);
+      }
+      int idx;
+      idx = (_ctx.posBase + fix_to_int(_ctx.pos));
+      if(idx > _ctx.size){
+         _ctx.state = 0;
+         _ctx.posBase = 0;
+         _ctx.pos = 0x0 /* 0.000000 */;
+      }
+      else
+      {
+         if((_ctx.state == 1) && _ctx.loopy && (idx >= _ctx.loopE)){
+            idx = (_ctx.loopS + idx + (- _ctx.loopE));
+            _ctx.posBase = idx;
+            _ctx.pos = (_ctx.pos + (- fix_floor(_ctx.pos)));
+         }
+         value = (Sampler_getSample(_ctx,idx) + fix_mul((_ctx.pos + (- fix_floor(_ctx.pos))),(Sampler_getSample(_ctx,(1 + idx)) + (- Sampler_getSample(_ctx,idx)))));
+      }
    }
    return value;
 }
@@ -142,19 +152,28 @@ void Sampler_process_bufferTo(Sampler__ctx_type_2 &_ctx, int nb, fix16_t (&oBuff
    int i;
    i = 0;
    while(i < nb){
-      _ctx.pos = (_ctx.pos + _ctx.step);
-      while(_ctx.pos >= 0x4000000 /* 1024.000000 */){
-         _ctx.posBase = (1024 + _ctx.posBase);
-         _ctx.pos = (-0x4000000 /* -1024.000000 */ + _ctx.pos);
-      }
-      idx = (_ctx.posBase + fix_to_int(_ctx.pos));
-      if(idx > _ctx.size){
-         _ctx.state = 0;
-         _ctx.posBase = 0;
-         _ctx.pos = 0x0 /* 0.000000 */;
-      }
-      if(_ctx.state == 1){
-         oBuffer[i] = (Sampler_getSample(_ctx,idx) + fix_mul((_ctx.pos + (- fix_floor(_ctx.pos))),(Sampler_getSample(_ctx,(1 + idx)) + (- Sampler_getSample(_ctx,idx)))));
+      if(_ctx.state > 0){
+         _ctx.pos = (_ctx.pos + _ctx.step);
+         while(_ctx.pos >= 0x4000000 /* 1024.000000 */){
+            _ctx.posBase = (1024 + _ctx.posBase);
+            _ctx.pos = (-0x4000000 /* -1024.000000 */ + _ctx.pos);
+         }
+         idx = (_ctx.posBase + fix_to_int(_ctx.pos));
+         if(idx > _ctx.size){
+            _ctx.state = 0;
+            _ctx.posBase = 0;
+            _ctx.pos = 0x0 /* 0.000000 */;
+            oBuffer[i] = 0x0 /* 0.000000 */;
+         }
+         else
+         {
+            if((_ctx.state == 1) && _ctx.loopy && (idx >= _ctx.loopE)){
+               idx = (_ctx.loopS + idx + (- _ctx.loopE));
+               _ctx.posBase = idx;
+               _ctx.pos = (_ctx.pos + (- fix_floor(_ctx.pos)));
+            }
+            oBuffer[i] = (Sampler_getSample(_ctx,idx) + fix_mul((_ctx.pos + (- fix_floor(_ctx.pos))),(Sampler_getSample(_ctx,(1 + idx)) + (- Sampler_getSample(_ctx,idx)))));
+         }
       }
       else
       {
@@ -185,7 +204,6 @@ void Sampler_noteOn(Sampler__ctx_type_2 &_ctx, int note, int velocity, int chann
    note = int_clip(note,0,127);
    if(Notes_noteOn(_ctx.playingnotes,note,velocity,channel)){
       Sampler_setNote(_ctx,note);
-      _ctx.gate = true;
       _ctx.posBase = 0;
       _ctx.pos = 0x0 /* 0.000000 */;
       _ctx.state = 1;
@@ -204,7 +222,7 @@ void Sampler_noteOff(Sampler__ctx_type_2 &_ctx, int note, int channel){
       }
       else
       {
-         _ctx.gate = false;
+         _ctx.state = 2;
       }
    }
 }
@@ -212,6 +230,9 @@ void Sampler_noteOff(Sampler__ctx_type_2 &_ctx, int note, int channel){
 void Sampler_default(Sampler__ctx_type_2 &_ctx){
    _ctx.sampleFs = 0x1e0000 /* 30.000000 */;
    _ctx.sampleNote = 60;
+   _ctx.loopy = true;
+   _ctx.loopS = 5073;
+   _ctx.loopE = 5992;
    {
       _ctx.buffer_o[0] = 0x0 /* 0.000000 */;
       _ctx.buffer_o[1] = 0x0 /* 0.000000 */;

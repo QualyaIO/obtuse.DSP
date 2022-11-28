@@ -1,5 +1,6 @@
 
-// reading samples
+// reading samples. Using linear interpolation to adjust pitch.
+// Option to loop a section upon a held note WARNING: end loop must be at least two samples after start loop, and longer than max used step!
 
 // TODO: (optional) loop points, kill on noteOff
 
@@ -13,34 +14,47 @@ fun getSample(index: int) {
 and process() {
   // absolutely needs init to set that
   mem size: int;
+  // if we should loop on note held, if so start and end position in samples.
+  mem loopy: bool;
+  mem loopS: int;
+  mem loopE: int;
   // using integer "base position" float position to overcome limitation of fixed point
   mem posBase: int;
   mem pos: real;
   // how much we jump each step
   mem step: real;
-  //  current gate
-  mem gate: bool;
-  // at the moment 0: not playing, 1: playing
+  // at the moment 0: not playing, 1: playing (eventually looping), 2: stopping
   mem state: int;
 
-  // advance time, keep range in check here to maximize precision
-  pos = pos + step;
-  while (pos >= 1024.0) {
-    posBase = posBase + 1024;
-    pos = pos - 1024.0;
-  }
-  val idx = posBase + int(pos);
-  // will stop and reset note once reach the end
-  if (idx > size) {
-    state = 0;
-    posBase = 0;
-    pos = 0.0;
-  }
   val value = 0.0;
-  if (state == 1) {
-    // linear interpolation betweet samples
-    value = getSample(idx) + (pos - floor(pos)) * (getSample(idx+1) - getSample(idx));
+
+  if (state > 0) {
+    // advance time, keep range in check here to maximize precision
+    pos = pos + step;
+    while (pos >= 1024.0) {
+      posBase = posBase + 1024;
+      pos = pos - 1024.0;
+    }
+    val idx = posBase + int(pos);
+
+    // will stop and reset note once reach the end
+    if (idx > size) {
+      state = 0;
+      posBase = 0;
+      pos = 0.0;
+    }
+    else {
+      if (state == 1 && loopy && idx >= loopE) {
+        // reset index and position to left
+        idx = loopS + (idx - loopE);
+        posBase = idx;
+        pos = pos - floor(pos);
+      }
+      // linear interpolation betweet samples
+      value = getSample(idx) + (pos - floor(pos)) * (getSample(idx+1) - getSample(idx));
+    }
   }
+
   return value;
 }
 
@@ -54,30 +68,38 @@ and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
   val idx = 0;
   val i = 0;
   while (i < nb) {
-
-    // advance time, keep range in check here to maximize precision
-    pos = pos + step;
-    while (pos >= 1024.0) {
-      posBase = posBase + 1024;
-      pos = pos - 1024.0;
-    }
-    idx = posBase + int(pos);
-    // will stop and reset note once reach the end
-    if (idx > size) {
-      state = 0;
-      posBase = 0;
-      pos = 0.0;
-    }
-
-    if (state == 1) {
-      // linear interpolation betweet samples
-      oBuffer[i] = getSample(idx) + (pos - floor(pos)) * (getSample(idx+1) - getSample(idx));
-    }
-    else {
+    if (state > 0) {
+      // advance time, keep range in check here to maximize precision
+      pos = pos + step;
+      while (pos >= 1024.0) {
+        posBase = posBase + 1024;
+        pos = pos - 1024.0;
+      }
+      idx = posBase + int(pos);
+  
+      // will stop and reset note once reach the end
+      if (idx > size) {
+        state = 0;
+        posBase = 0;
+        pos = 0.0;
+        oBuffer[i] = 0.0;
+      }
+      else {
+        if (state == 1 && loopy && idx >= loopE) {
+          // reset index and position to left
+          idx = loopS + (idx - loopE);
+          posBase = idx;
+          pos = pos - floor(pos);
+        }
+        // linear interpolation betweet samples
+        oBuffer[i] = getSample(idx) + (pos - floor(pos)) * (getSample(idx+1) - getSample(idx));
+      }
+    } else {
       oBuffer[i] = 0.0;
     }
+
     i = i + 1;
-   }
+  }
 }
 
 // retrocompatibility: using inner buffer
@@ -130,8 +152,7 @@ and noteOn(note:int, velocity:int, channel:int){
    if (playingnotes:Notes.noteOn(note, velocity, channel)) {
        // set frequency... should we reset phase somehow? artifacts upon first tests
        _ = setNote(note);
-       // gate and start playing note
-       gate = true;
+       // start playing note
        posBase = 0;
        pos = 0.0;
        state = 1;
@@ -160,7 +181,8 @@ and noteOff(note:int, channel:int) {
 	   _ = setNote(last_played - 1);
          }
       } else {
-         gate = false;
+ 	 // letting note go
+	 state = 2;
       }
    }
 }
@@ -170,6 +192,10 @@ and default() @[init] {
   sampleFs = 30.0;
   // here C4
   sampleNote = 60;
+  // looping sample
+  loopy = true;
+  loopS = 5073;
+  loopE = 5992;
   // will copy a new array
   mem buffer_o = Util.buffer();
   size = ocarina_samples();
