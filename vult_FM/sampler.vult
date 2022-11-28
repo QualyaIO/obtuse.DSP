@@ -1,6 +1,6 @@
 
 // reading samples. Using linear interpolation to adjust pitch.
-// Option to loop a section upon a held note WARNING: end loop must be at least two samples after start loop, and longer than max used step!
+// Option to loop a section upon a held note WARNING: end loop must be at least two samples after start loop, longer than max used step! Rudimentary cross-fade will be used if there is enough sample before loop start and after loop end to fill the buffer (e.g. 128 on each end, check Util.buffer), which effectiveness will depends on the step size. Sidenote: take into account this crossfade when setting loop points, as some samples will "bleed" outside of bounds during cross-fading.
 
 // TODO: (optional) loop points, kill on noteOff
 
@@ -18,13 +18,17 @@ and process() {
   mem loopy: bool;
   mem loopS: int;
   mem loopE: int;
+  mem crossfade: bool;
+  mem buffer_cross;
   // using integer "base position" float position to overcome limitation of fixed point
   mem posBase: int;
   mem pos: real;
   // how much we jump each step
   mem step: real;
-  // at the moment 0: not playing, 1: playing (eventually looping), 2: stopping
+  // at the moment 0: not playing, 1: playing (eventually looping), 2: cross-fading, 3: stopping
   mem state: int;
+  // note held or not
+  mem gate: bool;
 
   val value = 0.0;
 
@@ -38,20 +42,48 @@ and process() {
     val idx = posBase + int(pos);
 
     // will stop and reset note once reach the end
-    if (idx > size) {
+    if (idx >= size) {
       state = 0;
       posBase = 0;
       pos = 0.0;
     }
     else {
-      if (state == 1 && loopy && idx >= loopE) {
+      // first, updating states
+      // looping entering cross fade, centered around end loop (start exclusive, end inclusive)
+      if (state == 1 && loopy && crossfade && idx >= loopE - size(buffer_cross) / 2 + 1 && idx <= loopE + size(buffer_cross) / 2) {
+        state = 2;
+        // index aligned to position in buffer
+        idx = idx - loopE + size(buffer_cross) / 2 - 1;
+        posBase = 0;
+        pos = pos - floor(pos);
+      }
+      // looping without cross fade
+      else if (state == 1 && loopy && idx >= loopE) {
         // reset index and position to left
-        idx = loopS + (idx - loopE);
+        idx = loopS + idx - loopE;
         posBase = idx;
         pos = pos - floor(pos);
       }
-      // linear interpolation betweet samples
-      value = getSample(idx) + (pos - floor(pos)) * (getSample(idx+1) - getSample(idx));
+      // out of cross fading (need one sample ahead for interpolation)
+      if (state == 2 && idx >= size(buffer_cross) - 1) {
+        // back to regular indexes
+        idx = loopS + size(buffer_cross) / 2 + idx - size(buffer_cross);
+        posBase = idx;
+        pos = pos - floor(pos);
+        // will go to end of signal if gate is off
+        if (gate) {
+          state = 1;
+        } else {
+          state = 3;
+        }
+      }
+
+      // compute actual values, with linear interpolation between samples
+      if (state == 2) {
+        value = buffer_cross[idx] + (pos - floor(pos)) * (buffer_cross[idx+1] - buffer_cross[idx]);
+      } else {
+        value = getSample(idx) + (pos - floor(pos)) * (getSample(idx+1) - getSample(idx));
+      }
     }
   }
 
@@ -134,6 +166,30 @@ and setSamplerate(newFs:real) {
    _ = updateStep();
 }
 
+// rudimentary cross-fade
+and updateCrossFade() {
+  mem buffer_cross;
+  mem crossfade;
+  // using square-root for equal-power crossfade -- see https://dsp.stackexchange.com/a/49989 for some nice explainations
+  // centered around loop points (one extra marging for odd size at the end)
+  if (loopS > size(buffer_cross) / 2 && (size - loopE) > (size(buffer_cross) / 2 + 1)) {
+    crossfade = true;
+    val i = 0;
+    // coeff will vary from -1 to 1 as we go through cross-fading
+    val k = 0.0;
+    // taking samples from end and start of loop
+    val idxS = loopS - size(buffer_cross) / 2;
+    val idxE = loopE - size(buffer_cross) / 2;
+    while (i < size(buffer_cross)) {
+      k = (real(i) - real(size(buffer_cross))/2.0) / (real(size(buffer_cross)) / 2.0 );
+      buffer_cross[i] = sqrt(0.5 *(1.0 + k)) * getSample(idxE + i) + sqrt(0.5 * (1.0 - k)) * getSample(idxS + i);
+      i = i + 1;
+   }
+  }
+  else {
+    crossfade = false;
+  }
+}
 
 // true for note to loop upon being held, false for one-shot
 and setLoop(loop: bool) {
@@ -142,10 +198,12 @@ and setLoop(loop: bool) {
 // loop point for start (0 to sample size)
 and setLoopStart(newLoopS: int) {
   loopS = clip(newLoopS, 0, size);
+  _ = updateCrossFade();
 }
 // loop point for start (0 to sample size)
 and setLoopEnd(newLoopE: int) {
   loopE = clip(newLoopE, 0, size);
+  _ = updateCrossFade();
 }
 
 // number of samples (note: valid once init)
@@ -172,6 +230,7 @@ and noteOn(note:int, velocity:int, channel:int){
        // set frequency... should we reset phase somehow? artifacts upon first tests
        _ = setNote(note);
        // start playing note
+       gate = true;
        posBase = 0;
        pos = 0.0;
        state = 1;
@@ -201,23 +260,26 @@ and noteOff(note:int, channel:int) {
          }
       } else {
  	 // letting note go
-	 state = 2;
+         gate = false;
       }
    }
 }
 
 and default() @[init] {
+  size = ocarina_samples();
+  // will copy a new array
+  buffer_cross = Util.buffer();
+  crossfade = false;
   // defaults for current sample
   sampleFs = 30.0;
   // here C4
   sampleNote = 60;
   // looping sample
-  loopy = true;
-  loopS = 5073;
-  loopE = 5992;
+  _ = setLoop(true);
+  _ = setLoopStart(5073);
+  _ = setLoopEnd(5992);
   // will copy a new array
   mem buffer_o = Util.buffer();
-  size = ocarina_samples();
   _ = setSamplerate(44.1);
   // default frequency (in kHz)
   _ = setNote(69);
