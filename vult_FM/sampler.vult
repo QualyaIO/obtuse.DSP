@@ -134,6 +134,25 @@ and setSamplerate(newFs:real) {
    _ = updateStep();
 }
 
+
+// true for note to loop upon being held, false for one-shot
+and setLoop(loop: bool) {
+  loopy = loop;
+}
+// loop point for start (0 to sample size)
+and setLoopStart(newLoopS: int) {
+  loopS = clip(newLoopS, 0, size);
+}
+// loop point for start (0 to sample size)
+and setLoopEnd(newLoopE: int) {
+  loopE = clip(newLoopE, 0, size);
+}
+
+// number of samples (note: valid once init)
+and getSampleSize() {
+  return size;
+}
+
 // note to be played. Here only handle equal temperament
 and setNote(note: int) {
   // use ratio of note rather than freq to be more precise, +1 octave (12 semitones) doubles speed, -1 octave halves it

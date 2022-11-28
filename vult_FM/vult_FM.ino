@@ -165,6 +165,11 @@ void setup() {
   Voice_default(context);
   Voice_setSamplerate(context, float_to_fix(sampleRate / (float)1000));
   Voice_selectSynth(context, 1);
+
+  Voice_synthSetLoop(context, true);
+  Voice_synthSetLoopStart(context, 5073);
+  Voice_synthSetLoopEnd(context, 5992);
+  
   OSC_default(context_osc);
   OSC_setSamplerate(context_osc, float_to_fix(sampleRate / (float)1000));
   FM_default(context_fm);

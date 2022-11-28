@@ -217,6 +217,50 @@ static_inline void Sampler_setSamplerate_init(Sampler__ctx_type_2 &_output_){
 
 void Sampler_setSamplerate(Sampler__ctx_type_2 &_ctx, fix16_t newFs);
 
+typedef Sampler__ctx_type_2 Sampler_setLoop_type;
+
+static_inline void Sampler_setLoop_init(Sampler__ctx_type_2 &_output_){
+   Sampler__ctx_type_2_init(_output_);
+   return ;
+}
+
+static_inline void Sampler_setLoop(Sampler__ctx_type_2 &_ctx, uint8_t loop){
+   _ctx.loopy = loop;
+};
+
+typedef Sampler__ctx_type_2 Sampler_setLoopStart_type;
+
+static_inline void Sampler_setLoopStart_init(Sampler__ctx_type_2 &_output_){
+   Sampler__ctx_type_2_init(_output_);
+   return ;
+}
+
+static_inline void Sampler_setLoopStart(Sampler__ctx_type_2 &_ctx, int newLoopS){
+   _ctx.loopS = int_clip(newLoopS,0,_ctx.size);
+};
+
+typedef Sampler__ctx_type_2 Sampler_setLoopEnd_type;
+
+static_inline void Sampler_setLoopEnd_init(Sampler__ctx_type_2 &_output_){
+   Sampler__ctx_type_2_init(_output_);
+   return ;
+}
+
+static_inline void Sampler_setLoopEnd(Sampler__ctx_type_2 &_ctx, int newLoopE){
+   _ctx.loopE = int_clip(newLoopE,0,_ctx.size);
+};
+
+typedef Sampler__ctx_type_2 Sampler_getSampleSize_type;
+
+static_inline void Sampler_getSampleSize_init(Sampler__ctx_type_2 &_output_){
+   Sampler__ctx_type_2_init(_output_);
+   return ;
+}
+
+static_inline int Sampler_getSampleSize(Sampler__ctx_type_2 &_ctx){
+   return _ctx.size;
+};
+
 typedef Sampler__ctx_type_2 Sampler_setNote_type;
 
 static_inline void Sampler_setNote_init(Sampler__ctx_type_2 &_output_){
@@ -931,6 +975,47 @@ static_inline void Voice_copyTo_init(Voice__ctx_type_0 &_output_){
 }
 
 void Voice_copyTo(Voice__ctx_type_0 &_ctx, fix16_t (&oBuffer)[256], int nb);
+
+typedef Voice__ctx_type_0 Voice_synthSetLoop_type;
+
+static_inline void Voice_synthSetLoop_init(Voice__ctx_type_0 &_output_){
+   Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Voice_synthSetLoop(Voice__ctx_type_0 &_ctx, uint8_t flag);
+
+typedef Voice__ctx_type_0 Voice_synthSetLoopStart_type;
+
+static_inline void Voice_synthSetLoopStart_init(Voice__ctx_type_0 &_output_){
+   Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Voice_synthSetLoopStart(Voice__ctx_type_0 &_ctx, int value);
+
+typedef Voice__ctx_type_0 Voice_synthSetLoopEnd_type;
+
+static_inline void Voice_synthSetLoopEnd_init(Voice__ctx_type_0 &_output_){
+   Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+void Voice_synthSetLoopEnd(Voice__ctx_type_0 &_ctx, int value);
+
+typedef Voice__ctx_type_0 Voice_synthGetSize_type;
+
+static_inline void Voice_synthGetSize_init(Voice__ctx_type_0 &_output_){
+   Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int Voice_synthGetSize(Voice__ctx_type_0 &_ctx){
+   if(_ctx.synth == 1){
+      return Sampler_getSampleSize(_ctx.voice0Sampler);
+   }
+   return 0;
+}
 
 typedef Voice__ctx_type_0 Voice_default_type;
 

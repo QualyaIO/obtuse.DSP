@@ -3469,6 +3469,33 @@ void Voice_copyTo(Voice__ctx_type_0 &_ctx, fix16_t (&oBuffer)[256], int nb){
    }
 }
 
+void Voice_synthSetLoop(Voice__ctx_type_0 &_ctx, uint8_t flag){
+   if(_ctx.synth == 1){
+      Sampler_setLoop(_ctx.voice0Sampler,flag);
+      Sampler_setLoop(_ctx.voice1Sampler,flag);
+      Sampler_setLoop(_ctx.voice2Sampler,flag);
+      Sampler_setLoop(_ctx.voice3Sampler,flag);
+   }
+}
+
+void Voice_synthSetLoopStart(Voice__ctx_type_0 &_ctx, int value){
+   if(_ctx.synth == 1){
+      Sampler_setLoopStart(_ctx.voice0Sampler,value);
+      Sampler_setLoopStart(_ctx.voice1Sampler,value);
+      Sampler_setLoopStart(_ctx.voice2Sampler,value);
+      Sampler_setLoopStart(_ctx.voice3Sampler,value);
+   }
+}
+
+void Voice_synthSetLoopEnd(Voice__ctx_type_0 &_ctx, int value){
+   if(_ctx.synth == 1){
+      Sampler_setLoopEnd(_ctx.voice0Sampler,value);
+      Sampler_setLoopEnd(_ctx.voice1Sampler,value);
+      Sampler_setLoopEnd(_ctx.voice2Sampler,value);
+      Sampler_setLoopEnd(_ctx.voice3Sampler,value);
+   }
+}
+
 void Voice_default(Voice__ctx_type_0 &_ctx){
    {
       _ctx.buffer_v0[0] = 0x0 /* 0.000000 */;

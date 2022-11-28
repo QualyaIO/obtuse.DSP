@@ -405,6 +405,48 @@ and copyTo(oBuffer:array(real, 256), nb: int){
    }
 }
 
+/* getter/setter passed down to synth, if supported */
+
+// Sampler.setLoop()
+and synthSetLoop(flag: bool) {
+  if (synth == 1) {
+    _ = voice0Sampler:Sampler.setLoop(flag);
+    _ = voice1Sampler:Sampler.setLoop(flag);
+    _ = voice2Sampler:Sampler.setLoop(flag);
+    _ = voice3Sampler:Sampler.setLoop(flag);
+  }
+}
+
+// Sampler.setLoopStart()
+and synthSetLoopStart(value: int) {
+  if (synth == 1) {
+    _ = voice0Sampler:Sampler.setLoopStart(value);
+    _ = voice1Sampler:Sampler.setLoopStart(value);
+    _ = voice2Sampler:Sampler.setLoopStart(value);
+    _ = voice3Sampler:Sampler.setLoopStart(value);
+  }
+}
+
+// Sampler.setLoopEnd()
+and synthSetLoopEnd(value: int) {
+  if (synth == 1) {
+    _ = voice0Sampler:Sampler.setLoopEnd(value);
+    _ = voice1Sampler:Sampler.setLoopEnd(value);
+    _ = voice2Sampler:Sampler.setLoopEnd(value);
+    _ = voice3Sampler:Sampler.setLoopEnd(value);
+  }
+}
+
+// Sampler.getSampleSize()
+and synthGetSize(): int {
+  if (synth == 1) {
+    return voice0Sampler:Sampler.getSampleSize();
+  }
+  return 0;
+}
+
+/* end parameters for synths */
+  
 and default() @[init] {
    buffer_v0 = Util.buffer();
    buffer_v1 = Util.buffer();

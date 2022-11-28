@@ -7,4 +7,5 @@ MIDI input: using https://github.com/FortySevenEffects/arduino_midi_library (tes
 TODO:
 
 - take into account pitchwheel
-- filters and reverb: method to ask for auto-resize of delay upon change in samplerate,,
+- filters and reverb: method to ask for auto-resize of delay upon change in samplerate
+- voice: buffer_alt with fixed 4 voices
