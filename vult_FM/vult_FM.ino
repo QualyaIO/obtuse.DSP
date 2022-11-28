@@ -7,8 +7,9 @@
 
 #include "engine.h"
 
-// context for FM synth used in vult, used to handle internal states
-Voice_process_type context;
+// context for synth used in vult, used to handle internal states
+Voice_process_type contextv0;
+Voice_process_type contextv1;
 OSC_process_type context_osc;
 FM_process_type context_fm;
 // another for the filter
@@ -17,8 +18,14 @@ Reverb_process_type context_reverb;
 // sync with vult code
 #define BUFFER_SIZE 256
 
+// output buf
 int16_t buff[BUFFER_SIZE];
+// voices
+fix16_t raw0_buff[BUFFER_SIZE];
+fix16_t raw1_buff[BUFFER_SIZE];
+// mixer
 fix16_t raw_buff[BUFFER_SIZE];
+// efect
 fix16_t reverb_buff[BUFFER_SIZE];
 
 /*** MIDI ***/
@@ -162,24 +169,26 @@ void setup() {
 
   /* Vult */
   // Init FM, then pass sample rate, not forgetting to convert passed parameters to fixed (of course...)
-  Voice_default(context);
-  Voice_setSamplerate(context, float_to_fix(sampleRate / (float)1000));
-  Voice_selectSynth(context, 1);
-
-  Voice_synthSetLoop(context, true);
-  Voice_synthSetLoopStart(context, 5073);
-  Voice_synthSetLoopEnd(context, 5992);
-  
+  Voice_default(contextv0);
+  Voice_setSamplerate(contextv0, float_to_fix(sampleRate / (float)1000));
+  Voice_selectSynth(contextv0, 0);
+  // Init sampler ocarina
+  Voice_default(contextv1);
+  Voice_setSamplerate(contextv1, float_to_fix(sampleRate / (float)1000));
+  Voice_selectSynth(contextv1, 1);
+  Voice_synthSetLoop(contextv1, true);
+  Voice_synthSetLoopStart(contextv1, 5073);
+  Voice_synthSetLoopEnd(contextv1, 5992);
+  // mostly kept for debug
   OSC_default(context_osc);
   OSC_setSamplerate(context_osc, float_to_fix(sampleRate / (float)1000));
   FM_default(context_fm);
   FM_setSamplerate(context_fm, float_to_fix(sampleRate / (float)1000));
+  // Effect
   Reverb_default(context_reverb);
-  //
   Reverb_setSamplerate(context_reverb, float_to_fix(sampleRate / (float)1000));
   Reverb_setReverbTime(context_reverb, float_to_fix(10.0));
   Reverb_setDelayms(context_reverb, float_to_fix(50.0));
-
 }
 
 void loop() {
@@ -196,14 +205,14 @@ void loop() {
         current_note = 0;
       }
       Serial.println(current_note);
-      Voice_noteOn(context, current_note, 0, 0);
+      Voice_noteOn(contextv0, current_note, 0, 0);
       //OSC_setFrequency(context_osc, Util_noteToFrequency(current_note));
       midi_tick = millis();
       gate = true;
     }
     if (gate and millis() - midi_tick >= 50) {
       Serial.println("note off");
-      Voice_noteOff(context, current_note, 0);
+      Voice_noteOff(contextv0, current_note, 0);
       midi_tick = millis();
       gate = false;
     }
@@ -219,7 +228,11 @@ void loop() {
       //fix16_t raw = FM_process(context_fm);
       //fix16_t raw = OSC_process(context_osc);
 
-      fix16_t raw = Voice_process(context);
+      fix16_t raw0 = Voice_process(contextv0);
+      fix16_t raw1 = Voice_process(contextv1);
+      // mix voices
+      fix16_t raw = 0.5 * raw0 + 0.5 * raw1;
+      // add reverb
       fix16_t val = Reverb_process(context_reverb, raw);
       // wet / dry
       fix16_t out = 0.5 * raw + 0.5 * val;
@@ -241,7 +254,13 @@ void loop() {
       //OSC_process_bufferTo_simplest(context_osc, BUFFER_SIZE, raw_buff);
       // FIXME: buffer not supported for voice at the moment
       //FM_process_bufferTo(context_fm, BUFFER_SIZE, raw_buff);
-      Voice_process_bufferTo_alt(context, BUFFER_SIZE, raw_buff);
+      Voice_process_bufferTo_alt(contextv0, BUFFER_SIZE, raw0_buff);
+      Voice_process_bufferTo_alt(contextv1, BUFFER_SIZE, raw1_buff);
+      // mix
+      for (size_t i = 0; i < BUFFER_SIZE; i++) {
+        raw_buff[i] = 0.5 * raw0_buff[i] + 0.5 * raw1_buff[i];
+      }
+      // apply effect
       Reverb_process_bufferTo(context_reverb, BUFFER_SIZE, raw_buff, reverb_buff);
       // two times to better compare with classical situation
       fix16_t out;
@@ -291,6 +310,7 @@ void loop() {
   }
 }
 
+// channel: 1..16
 void handleNoteOn(byte channel, byte pitch, byte velocity)
 {
   // Log when a note is pressed.
@@ -304,7 +324,13 @@ void handleNoteOn(byte channel, byte pitch, byte velocity)
   Serial.println(velocity);
   //OSC_setFrequency(context_osc, Util_noteToFrequency(pitch));
   //FM_noteOn(context_fm, pitch, 0, 0);
-  Voice_noteOn(context, pitch, 0, 0);
+
+  // FM by default, sampler on channel 2
+  if (channel == 2) {
+    Voice_noteOn(contextv1, pitch, velocity, channel);
+  } else {
+    Voice_noteOn(contextv0, pitch, velocity, channel);
+  }
 }
 
 void handleNoteOff(byte channel, byte pitch, byte velocity)
@@ -320,5 +346,9 @@ void handleNoteOff(byte channel, byte pitch, byte velocity)
   Serial.println(velocity);
   //OSC_setFrequency(context_osc, Util_noteToFrequency(1));
   //FM_noteOff(context_fm, pitch, 0);
-  Voice_noteOff(context, pitch, 0);
+  if (channel == 2) {
+    Voice_noteOff(contextv1, pitch, channel);
+  } else {
+    Voice_noteOff(contextv0, pitch, channel);
+  }
 }
