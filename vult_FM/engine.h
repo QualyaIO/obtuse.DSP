@@ -150,9 +150,12 @@ typedef struct Sampler__ctx_type_2 {
    uint8_t loopy;
    int loopS;
    int loopE;
+   uint8_t gate;
    fix16_t fsRatio;
    fix16_t fs;
+   uint8_t crossfade;
    fix16_t buffer_o[256];
+   fix16_t buffer_cross[256];
 } Sampler__ctx_type_2;
 
 typedef Sampler__ctx_type_2 Sampler_getSample_type;
@@ -217,6 +220,15 @@ static_inline void Sampler_setSamplerate_init(Sampler__ctx_type_2 &_output_){
 
 void Sampler_setSamplerate(Sampler__ctx_type_2 &_ctx, fix16_t newFs);
 
+typedef Sampler__ctx_type_2 Sampler_updateCrossFade_type;
+
+static_inline void Sampler_updateCrossFade_init(Sampler__ctx_type_2 &_output_){
+   Sampler__ctx_type_2_init(_output_);
+   return ;
+}
+
+void Sampler_updateCrossFade(Sampler__ctx_type_2 &_ctx);
+
 typedef Sampler__ctx_type_2 Sampler_setLoop_type;
 
 static_inline void Sampler_setLoop_init(Sampler__ctx_type_2 &_output_){
@@ -237,7 +249,8 @@ static_inline void Sampler_setLoopStart_init(Sampler__ctx_type_2 &_output_){
 
 static_inline void Sampler_setLoopStart(Sampler__ctx_type_2 &_ctx, int newLoopS){
    _ctx.loopS = int_clip(newLoopS,0,_ctx.size);
-};
+   Sampler_updateCrossFade(_ctx);
+}
 
 typedef Sampler__ctx_type_2 Sampler_setLoopEnd_type;
 
@@ -248,7 +261,8 @@ static_inline void Sampler_setLoopEnd_init(Sampler__ctx_type_2 &_output_){
 
 static_inline void Sampler_setLoopEnd(Sampler__ctx_type_2 &_ctx, int newLoopE){
    _ctx.loopE = int_clip(newLoopE,0,_ctx.size);
-};
+   Sampler_updateCrossFade(_ctx);
+}
 
 typedef Sampler__ctx_type_2 Sampler_getSampleSize_type;
 

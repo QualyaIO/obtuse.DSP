@@ -40,8 +40,6 @@ and process() {
       pos = pos - 1024.0;
     }
     val idx = posBase + int(pos);
-    val v1: real;
-    val v2: real;
 
     // will stop and reset note once reach the end
     if (idx >= size) {
@@ -50,30 +48,14 @@ and process() {
       pos = 0.0;
     }
     else {
-      // general case for values
-      if (state == 2) {
-          v1 = buffer_cross[idx];
-          v2 = buffer_cross[idx+1];
-      } else {
-          v1 = getSample(idx);
-          v2 = getSample(idx+1);
-      }
       // first, updating states
       // looping entering cross fade, centered around end loop
-      if (state == 1 && gate && loopy && crossfade) {
-        // next will be in crossfade
-        if (idx == loopE - size(buffer_cross) / 2 - 1) {
-          v2 = buffer_cross[0];
-        }
-        else if (idx >= loopE - size(buffer_cross) / 2 && idx <= loopE + size(buffer_cross) / 2) {
-          state = 2;
-          // index aligned to position in buffer
-          idx = idx - loopE + size(buffer_cross) / 2;
-          posBase = idx;
-          pos = pos % 1.0;
-          v1 = buffer_cross[idx];
-          v2 = buffer_cross[idx+1];
-        }
+      if (state == 1 && gate && loopy && crossfade && idx >= loopE - size(buffer_cross) / 2 && idx <= loopE + size(buffer_cross) / 2) {
+        state = 2;
+        // index aligned to position in buffer
+        idx = idx - loopE + size(buffer_cross) / 2;
+        posBase = idx;
+        pos = pos % 1.0;
       }
       // looping without cross fade
       else if (state == 1 && gate && loopy && idx >= loopE) {
@@ -81,22 +63,13 @@ and process() {
         idx = loopS + idx - loopE;
         posBase = idx;
         pos = pos % 1.0;
-        v1 = getSample(idx);
-        v2 = getSample(idx+1);
-      }
-      // just before out cross fading
-      if (state == 2 && idx == size(buffer_cross) - 1) {
-        v1 = buffer_cross[size(buffer_cross) - 1];
-        v2 = getSample(loopS - size(buffer_cross) / 2 + idx + 1);
       }
       // out of cross fading (need one sample ahead for interpolation)
-      else if (state == 2 && idx >= size(buffer_cross)) {
+      if (state == 2 && idx >= size(buffer_cross) - 1) {
         // back to regular indexes
         idx = loopS - size(buffer_cross) / 2 + idx;
         posBase = idx;
         pos = pos % 1.0;
-        v1 = getSample(idx);
-        v2 = getSample(idx+1);
         // will go to end of signal if gate is off
         if (gate) {
           state = 1;
@@ -106,7 +79,11 @@ and process() {
       }
 
       // compute actual values, with linear interpolation between samples
-      value =  v1 + (pos % 1.0) * (v2 - v1);
+      if (state == 2) {
+        value = buffer_cross[idx] + (pos % 1.0) * (buffer_cross[idx+1] - buffer_cross[idx]);
+      } else {
+        value = getSample(idx) + (pos % 1.0) * (getSample(idx+1) - getSample(idx));
+      }
     }
   }
 
@@ -140,14 +117,42 @@ and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
         oBuffer[i] = 0.0;
       }
       else {
-        if (state == 1 && loopy && idx >= loopE) {
-          // reset index and position to left
-          idx = loopS + (idx - loopE);
+        // first, updating states
+        // looping entering cross fade, centered around end loop
+        if (state == 1 && gate && loopy && crossfade && idx >= loopE - size(buffer_cross) / 2 && idx <= loopE + size(buffer_cross) / 2) {
+        state = 2;
+          // index aligned to position in buffer
+          idx = idx - loopE + size(buffer_cross) / 2;
           posBase = idx;
-          pos = pos - floor(pos);
+          pos = pos % 1.0;
         }
-        // linear interpolation betweet samples
-        oBuffer[i] = getSample(idx) + (pos - floor(pos)) * (getSample(idx+1) - getSample(idx));
+        // looping without cross fade
+        else if (state == 1 && gate && loopy && idx >= loopE) {
+          // reset index and position to left
+          idx = loopS + idx - loopE;
+          posBase = idx;
+          pos = pos % 1.0;
+        }
+        // out of cross fading (need one sample ahead for interpolation)
+        if (state == 2 && idx >= size(buffer_cross) - 1) {
+          // back to regular indexes
+          idx = loopS - size(buffer_cross) / 2 + idx;
+          posBase = idx;
+          pos = pos % 1.0;
+          // will go to end of signal if gate is off
+          if (gate) {
+            state = 1;
+          } else {
+            state = 3;
+          }
+        }
+
+        // compute actual values, with linear interpolation between samples
+        if (state == 2) {
+          oBuffer[i] = buffer_cross[idx] + (pos % 1.0) * (buffer_cross[idx+1] - buffer_cross[idx]);
+        } else {
+          oBuffer[i] = getSample(idx) + (pos % 1.0) * (getSample(idx+1) - getSample(idx));
+        }
       }
     } else {
       oBuffer[i] = 0.0;

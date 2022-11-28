@@ -105,9 +105,12 @@ void Sampler__ctx_type_2_init(Sampler__ctx_type_2 &_output_){
    _ctx.loopy = false;
    _ctx.loopS = 0;
    _ctx.loopE = 0;
+   _ctx.gate = false;
    _ctx.fsRatio = 0x0 /* 0.000000 */;
    _ctx.fs = 0x0 /* 0.000000 */;
+   _ctx.crossfade = false;
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_o);
+   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_cross);
    Sampler_default(_ctx);
    _output_ = _ctx;
    return ;
@@ -124,19 +127,46 @@ fix16_t Sampler_process(Sampler__ctx_type_2 &_ctx){
       }
       int idx;
       idx = (_ctx.posBase + fix_to_int(_ctx.pos));
-      if(idx > _ctx.size){
+      if(idx >= _ctx.size){
          _ctx.state = 0;
          _ctx.posBase = 0;
          _ctx.pos = 0x0 /* 0.000000 */;
       }
       else
       {
-         if((_ctx.state == 1) && _ctx.loopy && (idx >= _ctx.loopE)){
-            idx = (_ctx.loopS + idx + (- _ctx.loopE));
+         if((_ctx.state == 1) && _ctx.gate && _ctx.loopy && _ctx.crossfade && (idx >= (_ctx.loopE + (- (256 / 2)))) && (idx <= (_ctx.loopE + (256 / 2)))){
+            _ctx.state = 2;
+            idx = (idx + (- _ctx.loopE) + (256 / 2));
             _ctx.posBase = idx;
-            _ctx.pos = (_ctx.pos + (- fix_floor(_ctx.pos)));
+            _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
          }
-         value = (Sampler_getSample(_ctx,idx) + fix_mul((_ctx.pos + (- fix_floor(_ctx.pos))),(Sampler_getSample(_ctx,(1 + idx)) + (- Sampler_getSample(_ctx,idx)))));
+         else
+         {
+            if((_ctx.state == 1) && _ctx.gate && _ctx.loopy && (idx >= _ctx.loopE)){
+               idx = (_ctx.loopS + idx + (- _ctx.loopE));
+               _ctx.posBase = idx;
+               _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
+            }
+         }
+         if((_ctx.state == 2) && (idx >= 255)){
+            idx = (_ctx.loopS + idx + (- (256 / 2)));
+            _ctx.posBase = idx;
+            _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
+            if(_ctx.gate){
+               _ctx.state = 1;
+            }
+            else
+            {
+               _ctx.state = 3;
+            }
+         }
+         if(_ctx.state == 2){
+            value = (_ctx.buffer_cross[idx] + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(_ctx.buffer_cross[(1 + idx)] + (- _ctx.buffer_cross[idx]))));
+         }
+         else
+         {
+            value = (Sampler_getSample(_ctx,idx) + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(Sampler_getSample(_ctx,(1 + idx)) + (- Sampler_getSample(_ctx,idx)))));
+         }
       }
    }
    return value;
@@ -167,12 +197,39 @@ void Sampler_process_bufferTo(Sampler__ctx_type_2 &_ctx, int nb, fix16_t (&oBuff
          }
          else
          {
-            if((_ctx.state == 1) && _ctx.loopy && (idx >= _ctx.loopE)){
-               idx = (_ctx.loopS + idx + (- _ctx.loopE));
+            if((_ctx.state == 1) && _ctx.gate && _ctx.loopy && _ctx.crossfade && (idx >= (_ctx.loopE + (- (256 / 2)))) && (idx <= (_ctx.loopE + (256 / 2)))){
+               _ctx.state = 2;
+               idx = (idx + (- _ctx.loopE) + (256 / 2));
                _ctx.posBase = idx;
-               _ctx.pos = (_ctx.pos + (- fix_floor(_ctx.pos)));
+               _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
             }
-            oBuffer[i] = (Sampler_getSample(_ctx,idx) + fix_mul((_ctx.pos + (- fix_floor(_ctx.pos))),(Sampler_getSample(_ctx,(1 + idx)) + (- Sampler_getSample(_ctx,idx)))));
+            else
+            {
+               if((_ctx.state == 1) && _ctx.gate && _ctx.loopy && (idx >= _ctx.loopE)){
+                  idx = (_ctx.loopS + idx + (- _ctx.loopE));
+                  _ctx.posBase = idx;
+                  _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
+               }
+            }
+            if((_ctx.state == 2) && (idx >= 255)){
+               idx = (_ctx.loopS + idx + (- (256 / 2)));
+               _ctx.posBase = idx;
+               _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
+               if(_ctx.gate){
+                  _ctx.state = 1;
+               }
+               else
+               {
+                  _ctx.state = 3;
+               }
+            }
+            if(_ctx.state == 2){
+               oBuffer[i] = (_ctx.buffer_cross[idx] + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(_ctx.buffer_cross[(1 + idx)] + (- _ctx.buffer_cross[idx]))));
+            }
+            else
+            {
+               oBuffer[i] = (Sampler_getSample(_ctx,idx) + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(Sampler_getSample(_ctx,(1 + idx)) + (- Sampler_getSample(_ctx,idx)))));
+            }
          }
       }
       else
@@ -191,6 +248,29 @@ void Sampler_setSamplerate(Sampler__ctx_type_2 &_ctx, fix16_t newFs){
    Sampler_updateStep(_ctx);
 }
 
+void Sampler_updateCrossFade(Sampler__ctx_type_2 &_ctx){
+   if((_ctx.loopS > (256 / 2)) && ((_ctx.size + (- _ctx.loopE)) > (1 + (256 / 2)))){
+      _ctx.crossfade = true;
+      int i;
+      i = 0;
+      fix16_t k;
+      k = 0x0 /* 0.000000 */;
+      int idxS;
+      idxS = (_ctx.loopS + (- (256 / 2)));
+      int idxE;
+      idxE = (_ctx.loopE + (- (256 / 2)));
+      while(i < 256){
+         k = fix_mul(0x101 /* 0.003922 */,int_to_fix(i));
+         _ctx.buffer_cross[i] = (fix_mul(k,Sampler_getSample(_ctx,(i + idxS))) + fix_mul(Sampler_getSample(_ctx,(i + idxE)),(0x10000 /* 1.000000 */ + (- k))));
+         i = (1 + i);
+      }
+   }
+   else
+   {
+      _ctx.crossfade = false;
+   }
+}
+
 void Sampler_setNote(Sampler__ctx_type_2 &_ctx, int note){
    fix16_t log_two;
    log_two = 0xb172 /* 0.693147 */;
@@ -204,6 +284,7 @@ void Sampler_noteOn(Sampler__ctx_type_2 &_ctx, int note, int velocity, int chann
    note = int_clip(note,0,127);
    if(Notes_noteOn(_ctx.playingnotes,note,velocity,channel)){
       Sampler_setNote(_ctx,note);
+      _ctx.gate = true;
       _ctx.posBase = 0;
       _ctx.pos = 0x0 /* 0.000000 */;
       _ctx.state = 1;
@@ -222,17 +303,277 @@ void Sampler_noteOff(Sampler__ctx_type_2 &_ctx, int note, int channel){
       }
       else
       {
-         _ctx.state = 2;
+         _ctx.gate = false;
       }
    }
 }
 
 void Sampler_default(Sampler__ctx_type_2 &_ctx){
+   _ctx.size = Sampler_ocarina_samples();
+   {
+      _ctx.buffer_cross[0] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[1] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[2] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[3] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[4] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[5] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[6] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[7] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[8] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[9] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[10] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[11] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[12] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[13] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[14] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[15] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[16] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[17] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[18] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[19] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[20] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[21] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[22] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[23] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[24] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[25] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[26] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[27] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[28] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[29] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[30] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[31] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[32] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[33] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[34] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[35] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[36] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[37] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[38] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[39] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[40] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[41] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[42] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[43] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[44] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[45] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[46] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[47] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[48] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[49] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[50] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[51] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[52] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[53] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[54] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[55] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[56] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[57] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[58] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[59] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[60] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[61] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[62] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[63] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[64] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[65] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[66] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[67] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[68] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[69] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[70] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[71] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[72] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[73] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[74] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[75] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[76] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[77] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[78] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[79] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[80] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[81] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[82] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[83] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[84] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[85] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[86] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[87] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[88] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[89] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[90] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[91] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[92] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[93] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[94] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[95] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[96] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[97] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[98] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[99] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[100] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[101] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[102] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[103] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[104] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[105] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[106] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[107] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[108] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[109] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[110] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[111] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[112] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[113] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[114] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[115] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[116] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[117] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[118] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[119] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[120] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[121] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[122] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[123] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[124] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[125] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[126] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[127] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[128] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[129] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[130] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[131] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[132] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[133] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[134] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[135] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[136] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[137] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[138] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[139] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[140] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[141] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[142] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[143] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[144] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[145] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[146] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[147] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[148] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[149] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[150] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[151] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[152] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[153] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[154] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[155] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[156] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[157] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[158] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[159] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[160] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[161] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[162] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[163] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[164] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[165] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[166] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[167] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[168] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[169] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[170] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[171] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[172] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[173] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[174] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[175] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[176] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[177] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[178] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[179] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[180] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[181] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[182] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[183] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[184] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[185] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[186] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[187] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[188] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[189] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[190] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[191] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[192] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[193] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[194] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[195] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[196] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[197] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[198] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[199] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[200] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[201] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[202] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[203] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[204] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[205] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[206] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[207] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[208] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[209] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[210] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[211] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[212] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[213] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[214] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[215] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[216] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[217] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[218] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[219] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[220] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[221] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[222] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[223] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[224] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[225] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[226] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[227] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[228] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[229] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[230] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[231] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[232] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[233] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[234] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[235] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[236] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[237] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[238] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[239] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[240] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[241] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[242] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[243] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[244] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[245] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[246] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[247] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[248] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[249] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[250] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[251] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[252] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[253] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[254] = 0x0 /* 0.000000 */;
+      _ctx.buffer_cross[255] = 0x0 /* 0.000000 */;
+   }
+   _ctx.crossfade = false;
    _ctx.sampleFs = 0x1e0000 /* 30.000000 */;
    _ctx.sampleNote = 60;
-   _ctx.loopy = true;
-   _ctx.loopS = 5073;
-   _ctx.loopE = 5992;
+   Sampler_setLoop(_ctx,true);
+   Sampler_setLoopStart(_ctx,5073);
+   Sampler_setLoopEnd(_ctx,5992);
    {
       _ctx.buffer_o[0] = 0x0 /* 0.000000 */;
       _ctx.buffer_o[1] = 0x0 /* 0.000000 */;
@@ -491,7 +832,6 @@ void Sampler_default(Sampler__ctx_type_2 &_ctx){
       _ctx.buffer_o[254] = 0x0 /* 0.000000 */;
       _ctx.buffer_o[255] = 0x0 /* 0.000000 */;
    }
-   _ctx.size = Sampler_ocarina_samples();
    Sampler_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    Sampler_setNote(_ctx,69);
    Notes_default(_ctx.playingnotes);
