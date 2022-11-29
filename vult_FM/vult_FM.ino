@@ -206,6 +206,8 @@ void loop() {
       }
       Serial.println(current_note);
       synthFM_Voice_noteOn(contextv0, current_note, 0, 0);
+      synthSampler_Voice_noteOn(contextv1, 127 - current_note, 0, 1);
+
       //synthFM_OSC_setFrequency(context_osc, Util_noteToFrequency(current_note));
       midi_tick = millis();
       gate = true;
@@ -213,6 +215,8 @@ void loop() {
     if (gate and millis() - midi_tick >= 50) {
       Serial.println("note off");
       synthFM_Voice_noteOff(contextv0, current_note, 0);
+      synthSampler_Voice_noteOff(contextv1, 127 - current_note, 0);
+
       midi_tick = millis();
       gate = false;
     }
