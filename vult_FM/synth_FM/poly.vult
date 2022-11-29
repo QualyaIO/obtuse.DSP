@@ -1,0 +1,113 @@
+
+// polyvoice FM. To be used with Voice
+
+
+// retrieve sample from a specific voice
+fun getSample(voice: int) {
+       if (voice == 0) {
+           return voice0:FM.process();
+       }
+       else if (voice == 1) {
+            return voice1:FM.process();
+       }
+       else if (voice == 2) {
+            return voice2:FM.process();
+       }
+       else if (voice == 3) {
+            return voice3:FM.process();
+       }
+   return 0.0;
+}
+
+// run buffer for specified voice (buffered version of getSample), filling specified buffer
+and runVoice(voice: int, nb: int, buff: array(real, 256)) {
+       if (voice == 0) {
+           _ = voice0:FM.process_bufferTo(nb, buff);
+       }
+       else if (voice == 1) {
+	   _ = voice1:FM.process_bufferTo(nb, buff);
+       }
+       else if (voice == 2) {
+           _ = voice2:FM.process_bufferTo(nb, buff);
+       }
+       else if (voice == 3) {
+           _ = voice3:FM.process_bufferTo(nb, buff);
+       }
+}
+
+// send note on to selected inactive voice
+// Note: should be call internally, DON'T update inner states, only forward info
+and sendNoteOn(voice:int, note:int, velocity: int, channel:int) {
+       // a tad tedious, as many context as we handle voices, and test all possible synth
+       if (voice == 0) {
+           _ = voice0:FM.noteOn(note, velocity, channel);
+       }
+       else if (voice == 1) {
+           _ = voice1:FM.noteOn(note, velocity, channel);
+       }
+       else if (voice == 2) {
+           _ = voice2:FM.noteOn(note, velocity, channel);
+       }
+       else if (voice == 3) {
+           _ = voice3:FM.noteOn(note, velocity, channel);
+       }
+}
+
+
+// send note off to selected active voice
+// Note: should be call internally, DON'T update inner states, only forward info
+and sendNoteOff(voice:int, note:int, channel:int) {
+       // a tad tedious, as many context as we handle voices, and test all possible synth
+       if (voice == 0) {
+           _ = voice0:FM.noteOff(note, channel);
+       }
+       else if (voice == 1) {
+           _ = voice1:FM.noteOff(note, channel);
+       }
+       else if (voice == 2) {
+           _ = voice2:FM.noteOff(note, channel);
+       }
+       else if (voice == 3) {
+           _ = voice3:FM.noteOff(note, channel);
+       }
+}
+
+// change sampling rate for current synth
+and setSamplerate(fs:real) {
+    _ = voice0:FM.setSamplerate(fs);
+    _ = voice1:FM.setSamplerate(fs);
+    _ = voice2:FM.setSamplerate(fs);
+    _ = voice3:FM.setSamplerate(fs);
+}
+
+/* getter/setter passed down to synth, if supported */
+
+// Sampler.setLoop()
+and synthSetLoop(flag: bool) {
+}
+
+// Sampler.setLoopStart()
+and synthSetLoopStart(value: int) {
+}
+
+// Sampler.setLoopEnd()
+and synthSetLoopEnd(value: int) {
+}
+
+// Sampler.getSampleSize()
+and synthGetSize(): int {
+  return 0;
+}
+
+/* end parameters for synths */
+
+and default() @[init] {
+      _ = voice0:FM.default();
+      _ = voice0:FM.setPoly(true);
+      _ = voice1:FM.default();
+      _ = voice1:FM.setPoly(true);
+      _ = voice2:FM.default();
+      _ = voice2:FM.setPoly(true);
+      _ = voice3:FM.default();
+      _ = voice3:FM.setPoly(true);
+}

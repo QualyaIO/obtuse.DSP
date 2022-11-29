@@ -5,15 +5,17 @@
 
 /*** Vult ***/
 
-#include "engine.h"
+#include "effects.h"
+#include "synthFM.h"
+#include "synthSampler.h"
 
 // context for synth used in vult, used to handle internal states
-Voice_process_type contextv0;
-Voice_process_type contextv1;
-OSC_process_type context_osc;
-FM_process_type context_fm;
+synthFM_Voice_process_type contextv0;
+synthSampler_Voice_process_type contextv1;
+synthFM_OSC_process_type context_osc;
+synthFM_FM_process_type context_fm;
 // another for the filter
-Reverb_process_type context_reverb;
+effects_Reverb_process_type context_reverb;
 
 // sync with vult code
 #define BUFFER_SIZE 256
@@ -169,26 +171,24 @@ void setup() {
 
   /* Vult */
   // Init FM, then pass sample rate, not forgetting to convert passed parameters to fixed (of course...)
-  Voice_default(contextv0);
-  Voice_setSamplerate(contextv0, float_to_fix(sampleRate / (float)1000));
-  Voice_selectSynth(contextv0, 0);
+  synthFM_Voice_default(contextv0);
+  synthFM_Voice_setSamplerate(contextv0, float_to_fix(sampleRate / (float)1000));
   // Init sampler ocarina
-  Voice_default(contextv1);
-  Voice_setSamplerate(contextv1, float_to_fix(sampleRate / (float)1000));
-  Voice_selectSynth(contextv1, 1);
-  Voice_synthSetLoop(contextv1, true);
-  Voice_synthSetLoopStart(contextv1, 5073);
-  Voice_synthSetLoopEnd(contextv1, 5992);
+  synthSampler_Voice_default(contextv1);
+  synthSampler_Voice_setSamplerate(contextv1, float_to_fix(sampleRate / (float)1000));
+  synthSampler_Voice_synthSetLoop(contextv1, true);
+  synthSampler_Voice_synthSetLoopStart(contextv1, 5073);
+  synthSampler_Voice_synthSetLoopEnd(contextv1, 5992);
   // mostly kept for debug
-  OSC_default(context_osc);
-  OSC_setSamplerate(context_osc, float_to_fix(sampleRate / (float)1000));
-  FM_default(context_fm);
-  FM_setSamplerate(context_fm, float_to_fix(sampleRate / (float)1000));
+  synthFM_OSC_default(context_osc);
+  synthFM_OSC_setSamplerate(context_osc, float_to_fix(sampleRate / (float)1000));
+  synthFM_FM_default(context_fm);
+  synthFM_FM_setSamplerate(context_fm, float_to_fix(sampleRate / (float)1000));
   // Effect
-  Reverb_default(context_reverb);
-  Reverb_setSamplerate(context_reverb, float_to_fix(sampleRate / (float)1000));
-  Reverb_setReverbTime(context_reverb, float_to_fix(10.0));
-  Reverb_setDelayms(context_reverb, float_to_fix(50.0));
+  effects_Reverb_default(context_reverb);
+  effects_Reverb_setSamplerate(context_reverb, float_to_fix(sampleRate / (float)1000));
+  effects_Reverb_setReverbTime(context_reverb, float_to_fix(10.0));
+  effects_Reverb_setDelayms(context_reverb, float_to_fix(50.0));
 }
 
 void loop() {
@@ -205,14 +205,14 @@ void loop() {
         current_note = 0;
       }
       Serial.println(current_note);
-      Voice_noteOn(contextv0, current_note, 0, 0);
-      //OSC_setFrequency(context_osc, Util_noteToFrequency(current_note));
+      synthFM_Voice_noteOn(contextv0, current_note, 0, 0);
+      //synthFM_OSC_setFrequency(context_osc, Util_noteToFrequency(current_note));
       midi_tick = millis();
       gate = true;
     }
     if (gate and millis() - midi_tick >= 50) {
       Serial.println("note off");
-      Voice_noteOff(contextv0, current_note, 0);
+      synthFM_Voice_noteOff(contextv0, current_note, 0);
       midi_tick = millis();
       gate = false;
     }
@@ -225,15 +225,15 @@ void loop() {
       dsp_cycle_tick = rp2040.getCycleCount();
 
       // returned float should be between -1 and 1 (should we checkit ?)
-      //fix16_t raw = FM_process(context_fm);
-      //fix16_t raw = OSC_process(context_osc);
+      //fix16_t raw = synthFM_FM_process(context_fm);
+      //fix16_t raw = synthFM_OSC_process(context_osc);
 
-      fix16_t raw0 = Voice_process(contextv0);
-      fix16_t raw1 = Voice_process(contextv1);
+      fix16_t raw0 = synthFM_Voice_process(contextv0);
+      fix16_t raw1 = synthSampler_Voice_process(contextv1);
       // mix voices
       fix16_t raw = 0.5 * raw0 + 0.5 * raw1;
       // add reverb
-      fix16_t val = Reverb_process(context_reverb, raw);
+      fix16_t val = effects_Reverb_process(context_reverb, raw);
       // wet / dry
       fix16_t out = 0.5 * raw + 0.5 * val;
       // shortcut, instead of fixed_to_float * 32767, *almost* the same
@@ -251,17 +251,16 @@ void loop() {
       dsp_tick = micros();
       dsp_cycle_tick = rp2040.getCycleCount();
 
-      //OSC_process_bufferTo_simplest(context_osc, BUFFER_SIZE, raw_buff);
-      // FIXME: buffer not supported for voice at the moment
-      //FM_process_bufferTo(context_fm, BUFFER_SIZE, raw_buff);
-      Voice_process_bufferTo_alt(contextv0, BUFFER_SIZE, raw0_buff);
-      Voice_process_bufferTo_alt(contextv1, BUFFER_SIZE, raw1_buff);
+      //synthFM_OSC_process_bufferTo_simplest(context_osc, BUFFER_SIZE, raw_buff);
+      //synthFM_FM_process_bufferTo(context_fm, BUFFER_SIZE, raw_buff);
+      synthFM_Voice_process_bufferTo_alt(contextv0, BUFFER_SIZE, raw0_buff);
+      synthSampler_Voice_process_bufferTo_alt(contextv1, BUFFER_SIZE, raw1_buff);
       // mix
       for (size_t i = 0; i < BUFFER_SIZE; i++) {
         raw_buff[i] = 0.5 * raw0_buff[i] + 0.5 * raw1_buff[i];
       }
       // apply effect
-      Reverb_process_bufferTo(context_reverb, BUFFER_SIZE, raw_buff, reverb_buff);
+      effects_Reverb_process_bufferTo(context_reverb, BUFFER_SIZE, raw_buff, reverb_buff);
       // two times to better compare with classical situation
       fix16_t out;
       for (size_t i = 0; i < BUFFER_SIZE; i++) {
@@ -322,14 +321,14 @@ void handleNoteOn(byte channel, byte pitch, byte velocity)
 
   Serial.print(" velocity = ");
   Serial.println(velocity);
-  //OSC_setFrequency(context_osc, Util_noteToFrequency(pitch));
-  //FM_noteOn(context_fm, pitch, 0, 0);
+  //synthFM_OSC_setFrequency(context_osc, Util_noteToFrequency(pitch));
+  //synthFM_FM_noteOn(context_fm, pitch, 0, 0);
 
   // FM by default, sampler on channel 2
   if (channel == 2) {
-    Voice_noteOn(contextv1, pitch, velocity, channel);
+    synthSampler_Voice_noteOn(contextv1, pitch, velocity, channel);
   } else {
-    Voice_noteOn(contextv0, pitch, velocity, channel);
+    synthFM_Voice_noteOn(contextv0, pitch, velocity, channel);
   }
 }
 
@@ -344,11 +343,11 @@ void handleNoteOff(byte channel, byte pitch, byte velocity)
 
   Serial.print(" velocity = ");
   Serial.println(velocity);
-  //OSC_setFrequency(context_osc, Util_noteToFrequency(1));
-  //FM_noteOff(context_fm, pitch, 0);
+  //synthFM_OSC_setFrequency(context_osc, Util_noteToFrequency(1));
+  //synthFM_FM_noteOff(context_fm, pitch, 0);
   if (channel == 2) {
-    Voice_noteOff(contextv1, pitch, channel);
+    synthSampler_Voice_noteOff(contextv1, pitch, channel);
   } else {
-    Voice_noteOff(contextv0, pitch, channel);
+    synthFM_Voice_noteOff(contextv0, pitch, channel);
   }
 }
