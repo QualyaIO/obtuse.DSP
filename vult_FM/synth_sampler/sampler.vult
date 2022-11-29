@@ -2,7 +2,7 @@
 // reading samples. Using linear interpolation to adjust pitch.
 // Option to loop a section upon a held note WARNING: end loop must be at least two samples after start loop, longer than max used step! Rudimentary cross-fade will be used if there is enough sample before loop start and after loop end to fill the buffer (e.g. 128 on each end, check Util.buffer), which effectiveness will depends on the step size. Sidenote: take into account this crossfade when setting loop points, as some samples will "bleed" outside of bounds during cross-fading.
 
-// TODO: (optional) loop points, kill on noteOff
+// TODO: kill on noteOff
 
 external ocarina(channel:int, index:int) : real @[wave(channels=1, file="ocarina.wav")];
 

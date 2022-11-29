@@ -8,10 +8,13 @@
 #include "effects.h"
 #include "synthFM.h"
 #include "synthSampler.h"
+#include "synthDrummer.h"
 
 // context for synth used in vult, used to handle internal states
 synthFM_Voice_process_type contextv0;
 synthSampler_Voice_process_type contextv1;
+synthDrummer_Drummer_process_type contextboom;
+// for tests
 synthFM_OSC_process_type context_osc;
 synthFM_FM_process_type context_fm;
 // another for the filter
@@ -25,6 +28,7 @@ int16_t buff[BUFFER_SIZE];
 // voices
 fix16_t raw0_buff[BUFFER_SIZE];
 fix16_t raw1_buff[BUFFER_SIZE];
+fix16_t raw2_buff[BUFFER_SIZE];
 // mixer
 fix16_t raw_buff[BUFFER_SIZE];
 // efect
@@ -179,6 +183,9 @@ void setup() {
   synthSampler_Voice_synthSetLoop(contextv1, true);
   synthSampler_Voice_synthSetLoopStart(contextv1, 5073);
   synthSampler_Voice_synthSetLoopEnd(contextv1, 5992);
+  // Init drummer
+  synthDrummer_Drummer_default(contextboom);
+  synthDrummer_Drummer_setSamplerate(contextboom, float_to_fix(sampleRate / (float)1000));
   // mostly kept for debug
   synthFM_OSC_default(context_osc);
   synthFM_OSC_setSamplerate(context_osc, float_to_fix(sampleRate / (float)1000));
@@ -234,8 +241,10 @@ void loop() {
 
       fix16_t raw0 = synthFM_Voice_process(contextv0);
       fix16_t raw1 = synthSampler_Voice_process(contextv1);
-      // mix voices
-      fix16_t raw = 0.5 * raw0 + 0.5 * raw1;
+      fix16_t raw2 = synthDrummer_Drummer_process(contextboom);
+
+      // mix voices (yes, here 150%)
+      fix16_t raw = 0.5 * raw0 + 0.5 * raw1 + 0.5 * raw2;
       // add reverb
       fix16_t val = effects_Reverb_process(context_reverb, raw);
       // wet / dry
@@ -259,9 +268,10 @@ void loop() {
       //synthFM_FM_process_bufferTo(context_fm, BUFFER_SIZE, raw_buff);
       synthFM_Voice_process_bufferTo_alt(contextv0, BUFFER_SIZE, raw0_buff);
       synthSampler_Voice_process_bufferTo_alt(contextv1, BUFFER_SIZE, raw1_buff);
+      synthDrummer_Drummer_process_bufferTo(contextboom, BUFFER_SIZE, raw2_buff);
       // mix
       for (size_t i = 0; i < BUFFER_SIZE; i++) {
-        raw_buff[i] = 0.5 * raw0_buff[i] + 0.5 * raw1_buff[i];
+        raw_buff[i] = 0.5 * raw0_buff[i] + 0.5 * raw1_buff[i] + 0.5 * raw2_buff[i];
       }
       // apply effect
       effects_Reverb_process_bufferTo(context_reverb, BUFFER_SIZE, raw_buff, reverb_buff);
@@ -328,8 +338,11 @@ void handleNoteOn(byte channel, byte pitch, byte velocity)
   //synthFM_OSC_setFrequency(context_osc, Util_noteToFrequency(pitch));
   //synthFM_FM_noteOn(context_fm, pitch, 0, 0);
 
-  // FM by default, sampler on channel 2
-  if (channel == 2) {
+  // FM by default, sampler on channel 2, drums on channel 3
+  if (channel == 3) {
+    synthDrummer_Drummer_noteOn(contextboom, pitch, velocity, channel);
+  }
+  else if (channel == 2) {
     synthSampler_Voice_noteOn(contextv1, pitch, velocity, channel);
   } else {
     synthFM_Voice_noteOn(contextv0, pitch, velocity, channel);
@@ -349,7 +362,10 @@ void handleNoteOff(byte channel, byte pitch, byte velocity)
   Serial.println(velocity);
   //synthFM_OSC_setFrequency(context_osc, Util_noteToFrequency(1));
   //synthFM_FM_noteOff(context_fm, pitch, 0);
-  if (channel == 2) {
+  if (channel == 3) {
+    synthDrummer_Drummer_noteOff(contextboom, pitch, channel);
+  }
+  else if (channel == 2) {
     synthSampler_Voice_noteOff(contextv1, pitch, channel);
   } else {
     synthFM_Voice_noteOff(contextv0, pitch, channel);
