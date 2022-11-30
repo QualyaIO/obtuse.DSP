@@ -385,7 +385,7 @@ static_inline void synthFM_ADSR_process_bufferTo_init(synthFM_ADSR__ctx_type_0 &
    return ;
 }
 
-void synthFM_ADSR_process_bufferTo(synthFM_ADSR__ctx_type_0 &_ctx, uint8_t bgate, int nb, fix16_t (&oBuffer)[256]);
+uint8_t synthFM_ADSR_process_bufferTo(synthFM_ADSR__ctx_type_0 &_ctx, uint8_t bgate, int nb, fix16_t (&oBuffer)[256]);
 
 typedef synthFM_ADSR__ctx_type_0 synthFM_ADSR_process_buffer_type;
 
@@ -394,8 +394,8 @@ static_inline void synthFM_ADSR_process_buffer_init(synthFM_ADSR__ctx_type_0 &_o
    return ;
 }
 
-static_inline void synthFM_ADSR_process_buffer(synthFM_ADSR__ctx_type_0 &_ctx, uint8_t bgate, int nb){
-   synthFM_ADSR_process_bufferTo(_ctx,bgate,nb,_ctx.buffer_o);
+static_inline uint8_t synthFM_ADSR_process_buffer(synthFM_ADSR__ctx_type_0 &_ctx, uint8_t bgate, int nb){
+   return synthFM_ADSR_process_bufferTo(_ctx,bgate,nb,_ctx.buffer_o);
 };
 
 typedef synthFM_ADSR__ctx_type_0 synthFM_ADSR_updateSteps_type;

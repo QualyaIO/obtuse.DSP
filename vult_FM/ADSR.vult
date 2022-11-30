@@ -95,7 +95,8 @@ fun process(bgate:bool) {
 
 
 // one gate for the whole buffer at the moment
-and process_bufferTo(bgate:bool, nb:int, oBuffer: array(real, 256)) {
+// return
+and process_bufferTo(bgate:bool, nb:int, oBuffer: array(real, 256)): bool {
    nb = clip(nb, 0, size(oBuffer));
    if (nb == 0) {
       nb = size(oBuffer);
@@ -105,6 +106,7 @@ and process_bufferTo(bgate:bool, nb:int, oBuffer: array(real, 256)) {
    val scale = 1000.0;
    // ...faster to multiply by 1/1000...
    val scale_i = 0.001;
+   val idle = true;
 
    val i = 0;
    val v = 0.0;
@@ -122,52 +124,53 @@ and process_bufferTo(bgate:bool, nb:int, oBuffer: array(real, 256)) {
         out = 0.0;
       }
       else {
+        idle = false;
         out = out + step; 
-      }
-      // attack
-      if(state == 1) {
-         // peaked, going to decay
-         if(out >=  target) {
-            step = d_step;
-            out = target;
-         	 target = s * scale;
-         	 state = 2;
-         }
-         // gate off, to go release
-         if (not(bgate)) {
-            step = r_step;
-            target = 0.0;
-            state = 4;
-         }
-      }
-      // decay
-      if (state == 2) {
-         // gate off, to go release
-         if (not(bgate)) {
-            step = r_step;
-            target = 0.0;
-            state = 4;
-         }
-         // target reached, go to sustain
-         if (out <= target) {
-            out = target;
-            step = 0.0;
-	    state = 3;
-         }
 
-      }
-      // sustain
-      if (state == 3) {
-         // just waiting for the gate to end, go to release
-         if (not(bgate)) {
-            step = r_step;
-            target = 0.0;
-            state = 4;
-         }
-      }
+        // attack
+        if(state == 1) {
+           // peaked, going to decay
+           if(out >=  target) {
+              step = d_step;
+              out = target;
+              target = s * scale;
+              state = 2;
+           }
+           // gate off, to go release
+           if (not(bgate)) {
+              step = r_step;
+              target = 0.0;
+              state = 4;
+           }
+        }
+        // decay
+        if (state == 2) {
+           // gate off, to go release
+           if (not(bgate)) {
+              step = r_step;
+              target = 0.0;
+              state = 4;
+           }
+           // target reached, go to sustain
+           if (out <= target) {
+              out = target;
+              step = 0.0;
+	      state = 3;
+           }
+  
+        }
+        // sustain
+        if (state == 3) {
+           // just waiting for the gate to end, go to release
+           if (not(bgate)) {
+              step = r_step;
+              target = 0.0;
+              state = 4;
+           }
+        }
    
        // release
-      if(state == 4) {
+        if(state == 4) {
          // back to idle
          if (out <= 0.0) {
             out = 0.0;
@@ -175,16 +178,18 @@ and process_bufferTo(bgate:bool, nb:int, oBuffer: array(real, 256)) {
             step = 0.0;
             target = 0.0;
          }
+        }
       }
    
       oBuffer[i] = clip(out * scale_i, 0.0, 1.0);
       i = i + 1;
    }
+   return idle;
 }
 
 and process_buffer(bgate:bool, nb:int) {
    mem buffer_o;
-   _ = process_bufferTo(bgate, nb, buffer_o);
+   return process_bufferTo(bgate, nb, buffer_o);
 }
 
 // once sample rate change, we need to adapt 

@@ -73,40 +73,70 @@ and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
     mem buffer_carrier_env;
     mem buffer_modulator_env;
 
-    // compute number of samples for this buffer's decimation
-    val nb_env = (n + nb) / env_decimation_factor;
+    // do we have any envelope?
+    val env_modulator_idle = true;
+    val env_carrier_idle = true;
 
-    // retrieve envelopes
-    if (nb_env > 0) {
-       _ = carrieradsr:ADSR.process_bufferTo(gate, nb_env, buffer_carrier_env_short);
-       _ = modulatoradsr:ADSR.process_bufferTo(gate, nb_env, buffer_modulator_env_short);
+    // sanitize env decimation
+    val env_df = env_decimation_factor;
+    if (env_df < 1) {
+      env_df = 1;
     }
+     
 
-    // expand carrier envelop and retrieve to full version
-    // FIXME: do not do that at all if decimation 1
-    val i = 0;
-    val i_env = 0;
-    while (i < nb) {
-       // advance and update envelope
-       n = (n + 1) % env_decimation_factor;
-       if (n == 0) {
-          modulator_env = buffer_modulator_env_short[i_env];
-	  carrier_env = buffer_carrier_env_short[i_env];
-          i_env = i_env + 1;
-       }
-       buffer_modulator_env[i] = modulator_env;
-       buffer_carrier_env[i] = carrier_env;
-       i = i + 1;
+    if (env_decimation_factor > 1) {
+      // compute number of samples for this buffer's decimation
+      val nb_env = (n + nb) / env_decimation_factor;
+      // retrieve envelopes
+      if (nb_env > 0) {
+         env_carrier_idle = carrieradsr:ADSR.process_bufferTo(gate, nb_env, buffer_carrier_env_short);
+         env_modulator_idle = modulatoradsr:ADSR.process_bufferTo(gate, nb_env, buffer_modulator_env_short);
+
+         // expand carrier envelop and retrieve to full version
+         // FIXME: we update both envelopes, but we could select if only one is active
+         val i = 0;
+         val i_env = 0;
+         while (i < nb) {
+            // advance and update envelope
+            n = (n + 1) % env_decimation_factor;
+            if (n == 0) {
+               modulator_env = buffer_modulator_env_short[i_env];
+               carrier_env = buffer_carrier_env_short[i_env];
+               i_env = i_env + 1;
+            }
+            buffer_modulator_env[i] = modulator_env;
+            buffer_carrier_env[i] = carrier_env;
+            i = i + 1;
+         }
+      }
+    } else {
+       // no decimation, direct the whole buffer
+       env_carrier_idle = carrieradsr:ADSR.process_bufferTo(gate, nb, buffer_carrier_env);
+       env_modulator_idle = modulatoradsr:ADSR.process_bufferTo(gate, nb, buffer_modulator_env);
     }
-
-
-    // retrieve modulation
-    // FIME: can we here find a way to not calling when the corresponding envelope is 0?
-    _ = modulator:OSC.process_bufferTo_simple(nb, buffer_modulator_env, buffer_modulator);
 
     // apply to carrier
-    // FIXME: pass volume directly?
-    _ = carrier:OSC.process_bufferTo(nb, buffer_carrier_env, buffer_modulator, level, oBuffer);
+    if (env_carrier_idle) {
+      // just silence on the output if its envelop is inactive
+      val i = 0;
+      while(i < nb) {
+	oBuffer[i] = 0.0;
+	i = i + 1;
+      }
+
+    } else {
+      // zero modulation if inactive
+      if (env_modulator_idle) {
+        val i = 0;
+        while(i < nb) {
+          buffer_modulator[i] = 0.0;
+          i = i + 1;
+        }
+      } else {
+        _ = modulator:OSC.process_bufferTo_simple(nb, buffer_modulator_env,   buffer_modulator);
+      }
+      _ = carrier:OSC.process_bufferTo(nb, buffer_carrier_env, buffer_modulator, level, oBuffer);
+    }
 }
 and process_buffer(nb: int) {
   mem buffer_o;
