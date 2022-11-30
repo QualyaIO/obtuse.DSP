@@ -26,22 +26,22 @@ and process() {
 
   val value = 0.0;
 
-  // advance time, keep range in check here to maximize precision
-  pos = pos + step;
-  while (pos >= 1024.0) {
-    posBase = posBase + 1024;
-    pos = pos - 1024.0;
-  }
-
-  val idx = posBase + int(pos);
-  // will stop and reset note once reach the end of file
-  if (idx >= size) {
-    slice = -1;
-    posBase = 0;
-    pos = 0.0;
-  }
-
   if (slice >= 0 && slice <= size(slices_start)) {
+
+    // advance time, keep range in check here to maximize precision
+    pos = pos + step;
+    while (pos >= 1024.0) {
+      posBase = posBase + 1024;
+      pos = pos - 1024.0;
+    }
+
+    val idx = posBase + int(pos);
+    // will stop and reset note once reach the end of file
+    if (idx >= size) {
+      slice = -1;
+      posBase = 0;
+      pos = 0.0;
+    }
 
     // stop and reset once reached and of sample
     if (idx >= slices_end[slice]) {
@@ -191,4 +191,6 @@ and default() @[init] {
   );
   // will copy a new array
   mem buffer_o = Util.buffer();
+  // start with nothing
+  slice = -1;
 }

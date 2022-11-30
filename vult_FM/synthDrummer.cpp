@@ -24,19 +24,19 @@ void synthDrummer_Drummer__ctx_type_2_init(synthDrummer_Drummer__ctx_type_2 &_ou
 fix16_t synthDrummer_Drummer_process(synthDrummer_Drummer__ctx_type_2 &_ctx){
    fix16_t value;
    value = 0x0 /* 0.000000 */;
-   _ctx.pos = (_ctx.pos + _ctx.step);
-   while(_ctx.pos >= 0x4000000 /* 1024.000000 */){
-      _ctx.posBase = (1024 + _ctx.posBase);
-      _ctx.pos = (-0x4000000 /* -1024.000000 */ + _ctx.pos);
-   }
-   int idx;
-   idx = (_ctx.posBase + fix_to_int(_ctx.pos));
-   if(idx >= _ctx.size){
-      _ctx.slice = (-1);
-      _ctx.posBase = 0;
-      _ctx.pos = 0x0 /* 0.000000 */;
-   }
    if((_ctx.slice >= 0) && (_ctx.slice <= 12)){
+      _ctx.pos = (_ctx.pos + _ctx.step);
+      while(_ctx.pos >= 0x4000000 /* 1024.000000 */){
+         _ctx.posBase = (1024 + _ctx.posBase);
+         _ctx.pos = (-0x4000000 /* -1024.000000 */ + _ctx.pos);
+      }
+      int idx;
+      idx = (_ctx.posBase + fix_to_int(_ctx.pos));
+      if(idx >= _ctx.size){
+         _ctx.slice = (-1);
+         _ctx.posBase = 0;
+         _ctx.pos = 0x0 /* 0.000000 */;
+      }
       if(idx >= _ctx.slices_end[_ctx.slice]){
          _ctx.slice = (-1);
          _ctx.posBase = 0;
@@ -425,6 +425,7 @@ void synthDrummer_Drummer_default(synthDrummer_Drummer__ctx_type_2 &_ctx){
       _ctx.buffer_o[254] = 0x0 /* 0.000000 */;
       _ctx.buffer_o[255] = 0x0 /* 0.000000 */;
    }
+   _ctx.slice = (-1);
 }
 
 void synthDrummer_Poly__ctx_type_0_init(synthDrummer_Poly__ctx_type_0 &_output_){
