@@ -888,6 +888,7 @@ void synthSampler_Voice__ctx_type_0_init(synthSampler_Voice__ctx_type_0 &_output
    synthSampler_Poly__ctx_type_0_init(_ctx.poly);
    _ctx.number_voices = 0;
    int_init_array(128,0,_ctx.notes);
+   _ctx.normalize = false;
    _ctx.fs = 0x0 /* 0.000000 */;
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v3);
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v2);
@@ -908,7 +909,10 @@ fix16_t synthSampler_Voice_process(synthSampler_Voice__ctx_type_0 &_ctx){
       value = (value + synthSampler_Poly_getSample(_ctx.poly,i));
       i = (1 + i);
    }
-   return fix_mul(_ctx.voices_ratio,value);
+   if(_ctx.normalize){
+      return fix_mul(_ctx.voices_ratio,value);
+   }
+   return value;
 }
 
 void synthSampler_Voice_process_bufferTo(synthSampler_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]){
@@ -930,9 +934,18 @@ void synthSampler_Voice_process_bufferTo(synthSampler_Voice__ctx_type_0 &_ctx, i
       v = (1 + v);
    }
    i = 0;
-   while(i < nb){
-      oBuffer[i] = fix_mul(_ctx.voices_ratio,oBuffer[i]);
-      i = (1 + i);
+   if(_ctx.normalize){
+      while(i < nb){
+         oBuffer[i] = fix_mul(_ctx.voices_ratio,oBuffer[i]);
+         i = (1 + i);
+      }
+   }
+   else
+   {
+      while(i < nb){
+         oBuffer[i] = oBuffer[i];
+         i = (1 + i);
+      }
    }
 }
 
@@ -947,9 +960,18 @@ void synthSampler_Voice_process_bufferTo_alt(synthSampler_Voice__ctx_type_0 &_ct
    synthSampler_Poly_runVoice(_ctx.poly,3,nb,_ctx.buffer_v3);
    int i;
    i = 0;
-   while(i < nb){
-      oBuffer[i] = fix_mul(_ctx.voices_ratio,(_ctx.buffer_v0[i] + _ctx.buffer_v1[i] + _ctx.buffer_v2[i] + _ctx.buffer_v3[i]));
-      i = (1 + i);
+   if(_ctx.normalize){
+      while(i < nb){
+         oBuffer[i] = fix_mul(_ctx.voices_ratio,(_ctx.buffer_v0[i] + _ctx.buffer_v1[i] + _ctx.buffer_v2[i] + _ctx.buffer_v3[i]));
+         i = (1 + i);
+      }
+   }
+   else
+   {
+      while(i < nb){
+         oBuffer[i] = (_ctx.buffer_v0[i] + _ctx.buffer_v1[i] + _ctx.buffer_v2[i] + _ctx.buffer_v3[i]);
+         i = (1 + i);
+      }
    }
 }
 
@@ -2326,6 +2348,7 @@ void synthSampler_Voice_default(synthSampler_Voice__ctx_type_0 &_ctx){
    synthSampler_Notes_setPoly(_ctx.voicesactive,false);
    synthSampler_Notes_default(_ctx.voicesinactive);
    synthSampler_Notes_setPoly(_ctx.voicesinactive,false);
+   synthSampler_Voice_setNormalize(_ctx,true);
    synthSampler_Voice_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
 }
 

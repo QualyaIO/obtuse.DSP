@@ -499,6 +499,7 @@ typedef struct synthSampler_Voice__ctx_type_0 {
    synthSampler_Poly__ctx_type_0 poly;
    int number_voices;
    int notes[128];
+   uint8_t normalize;
    fix16_t fs;
    fix16_t buffer_v3[256];
    fix16_t buffer_v2[256];
@@ -584,6 +585,17 @@ static_inline void synthSampler_Voice_setNbVoices_init(synthSampler_Voice__ctx_t
 }
 
 void synthSampler_Voice_setNbVoices(synthSampler_Voice__ctx_type_0 &_ctx, int nbvoices);
+
+typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_setNormalize_type;
+
+static_inline void synthSampler_Voice_setNormalize_init(synthSampler_Voice__ctx_type_0 &_output_){
+   synthSampler_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSampler_Voice_setNormalize(synthSampler_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.normalize = flag;
+};
 
 typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_setSamplerate_type;
 

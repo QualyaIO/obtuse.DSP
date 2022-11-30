@@ -177,12 +177,15 @@ void setup() {
   // Init FM, then pass sample rate, not forgetting to convert passed parameters to fixed (of course...)
   synthFM_Voice_default(contextv0);
   synthFM_Voice_setSamplerate(contextv0, float_to_fix(sampleRate / (float)1000));
+  synthFM_Voice_setNormalize(contextv0, false);
   // Init sampler ocarina
   synthSampler_Voice_default(contextv1);
   synthSampler_Voice_setSamplerate(contextv1, float_to_fix(sampleRate / (float)1000));
   synthSampler_Voice_synthSetLoop(contextv1, true);
   synthSampler_Voice_synthSetLoopStart(contextv1, 5073);
   synthSampler_Voice_synthSetLoopEnd(contextv1, 5992);
+  synthSampler_Voice_setNormalize(contextv1, false);
+
   // Init drummer
   synthDrummer_Drummer_default(contextboom);
   synthDrummer_Drummer_setSamplerate(contextboom, float_to_fix(sampleRate / (float)1000));

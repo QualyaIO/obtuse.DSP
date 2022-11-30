@@ -14,6 +14,8 @@ fun process() {
    mem voices_ratio;
    // what voice (if any) number are associated to
    mem notes;
+   // normalize: output maxed to -1 / 1 no matter the number of voices
+   mem normalize;
 
    // output sample
    val value = 0.0;
@@ -25,7 +27,10 @@ fun process() {
       i = i + 1;
    }
    // normalise
-   return value * voices_ratio;
+   if (normalize) {
+      return value * voices_ratio;
+   }
+   return value;
 }
 
 // one buffer for all voice
@@ -50,9 +55,16 @@ and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
    }
    // scale down
    i = 0;
-   while (i < nb) {
-      oBuffer[i] = oBuffer[i] * voices_ratio;
-      i = i + 1;
+   if (normalize) {
+      while (i < nb) {
+          oBuffer[i] = oBuffer[i] * voices_ratio;
+          i = i + 1;
+      }
+   } else {
+      while (i < nb) {
+          oBuffer[i] = oBuffer[i];
+          i = i + 1;
+      }
    }
 }
 
@@ -75,9 +87,16 @@ and process_bufferTo_alt(nb: int, oBuffer: array(real, 256)) {
    _ = poly:Poly.runVoice(2, nb, buffer_v2);
    _ = poly:Poly.runVoice(3, nb, buffer_v3);
    val i = 0;
-   while (i < nb) {
-      oBuffer[i] = (buffer_v0[i] + buffer_v1[i] + buffer_v2[i] + buffer_v3[i]) * voices_ratio;
-      i = i + 1;
+   if (normalize) {
+      while (i < nb) {
+         oBuffer[i] = (buffer_v0[i] + buffer_v1[i] + buffer_v2[i] + buffer_v3[i]) * voices_ratio;
+         i = i + 1;
+      }
+   } else {
+      while (i < nb) {
+         oBuffer[i] = buffer_v0[i] + buffer_v1[i] + buffer_v2[i] + buffer_v3[i];
+         i = i + 1;
+      }
    }
 }
 
@@ -164,6 +183,11 @@ and setNbVoices(nbvoices: int) {
    voices_ratio  = 1.0/real(number_voices);
 }
 
+// normalize: output maxed to -1 / 1 no matter the number of voices
+and setNormalize(flag: bool) {
+   normalize = flag;
+}
+
 // change sampling rate for current synth
 and setSamplerate(newFs:real) {
    mem fs;
@@ -241,5 +265,6 @@ and default() @[init] {
    _ = voicesinactive:Notes.default();
    _ = voicesinactive:Notes.setPoly(false);
 
+   _ = setNormalize(true);
    _ = setSamplerate(44.1);
 }

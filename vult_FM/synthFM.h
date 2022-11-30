@@ -782,6 +782,7 @@ typedef struct synthFM_Voice__ctx_type_0 {
    synthFM_Poly__ctx_type_0 poly;
    int number_voices;
    int notes[128];
+   uint8_t normalize;
    fix16_t fs;
    fix16_t buffer_v3[256];
    fix16_t buffer_v2[256];
@@ -867,6 +868,17 @@ static_inline void synthFM_Voice_setNbVoices_init(synthFM_Voice__ctx_type_0 &_ou
 }
 
 void synthFM_Voice_setNbVoices(synthFM_Voice__ctx_type_0 &_ctx, int nbvoices);
+
+typedef synthFM_Voice__ctx_type_0 synthFM_Voice_setNormalize_type;
+
+static_inline void synthFM_Voice_setNormalize_init(synthFM_Voice__ctx_type_0 &_output_){
+   synthFM_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthFM_Voice_setNormalize(synthFM_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.normalize = flag;
+};
 
 typedef synthFM_Voice__ctx_type_0 synthFM_Voice_setSamplerate_type;
 
