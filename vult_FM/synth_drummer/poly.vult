@@ -1,0 +1,111 @@
+
+// polyvoice Sampler. To be used with Voice
+
+
+// retrieve sample from a specific voice
+fun getSample(voice: int) {
+       if (voice == 0) {
+           return voice0:Drummer.process();
+       }
+       else if (voice == 1) {
+            return voice1:Drummer.process();
+       }
+       else if (voice == 2) {
+            return voice2:Drummer.process();
+       }
+       else if (voice == 3) {
+            return voice3:Drummer.process();
+       }
+   return 0.0;
+}
+
+// run buffer for specified voice (buffered version of getSample), filling specified buffer
+and runVoice(voice: int, nb: int, buff: array(real, 256)) {
+       if (voice == 0) {
+           _ = voice0:Drummer.process_bufferTo(nb, buff);
+       }
+       else if (voice == 1) {
+	   _ = voice1:Drummer.process_bufferTo(nb, buff);
+       }
+       else if (voice == 2) {
+           _ = voice2:Drummer.process_bufferTo(nb, buff);
+       }
+       else if (voice == 3) {
+           _ = voice3:Drummer.process_bufferTo(nb, buff);
+       }
+}
+
+// send note on to selected inactive voice
+// Note: should be call internally, DON'T update inner states, only forward info
+and sendNoteOn(voice:int, note:int, velocity: int, channel:int) {
+       // a tad tedious, as many context as we handle voices, and test all possible synth
+       if (voice == 0) {
+           _ = voice0:Drummer.noteOn(note, velocity, channel);
+       }
+       else if (voice == 1) {
+           _ = voice1:Drummer.noteOn(note, velocity, channel);
+       }
+       else if (voice == 2) {
+           _ = voice2:Drummer.noteOn(note, velocity, channel);
+       }
+       else if (voice == 3) {
+           _ = voice3:Drummer.noteOn(note, velocity, channel);
+       }
+}
+
+
+// send note off to selected active voice
+// Note: should be call internally, DON'T update inner states, only forward info
+and sendNoteOff(voice:int, note:int, channel:int) {
+       // a tad tedious, as many context as we handle voices, and test all possible synth
+       if (voice == 0) {
+           _ = voice0:Drummer.noteOff(note, channel);
+       }
+       else if (voice == 1) {
+           _ = voice1:Drummer.noteOff(note, channel);
+       }
+       else if (voice == 2) {
+           _ = voice2:Drummer.noteOff(note, channel);
+       }
+       else if (voice == 3) {
+           _ = voice3:Drummer.noteOff(note, channel);
+       }
+}
+
+// change sampling rate for current synth
+and setSamplerate(fs:real) {
+  _ = voice0:Drummer.setSamplerate(fs);
+  _ = voice1:Drummer.setSamplerate(fs);
+  _ = voice2:Drummer.setSamplerate(fs);
+  _ = voice3:Drummer.setSamplerate(fs);
+}
+
+/* getter/setter passed down to synth, if supported */
+
+// Sampler.setLoop()
+and synthSetLoop(flag: bool) {
+}
+
+// Sampler.setLoopStart()
+and synthSetLoopStart(value: int) {
+}
+
+// Sampler.setLoopEnd()
+and synthSetLoopEnd(value: int) {
+}
+
+// Sampler.getSampleSize()
+and synthGetSize(): int {
+  return 0;
+}
+
+/* end parameters for synths */
+ 
+
+
+and default() @[init] {
+      _ = voice0:Drummer.default();
+      _ = voice1:Drummer.default();
+      _ = voice2:Drummer.default();
+      _ = voice3:Drummer.default();
+}

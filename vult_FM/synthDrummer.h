@@ -184,6 +184,440 @@ static_inline void synthDrummer_Drummer_default_init(synthDrummer_Drummer__ctx_t
 
 void synthDrummer_Drummer_default(synthDrummer_Drummer__ctx_type_2 &_ctx);
 
+typedef struct synthDrummer_Poly__ctx_type_0 {
+   synthDrummer_Drummer__ctx_type_2 voice3;
+   synthDrummer_Drummer__ctx_type_2 voice2;
+   synthDrummer_Drummer__ctx_type_2 voice1;
+   synthDrummer_Drummer__ctx_type_2 voice0;
+} synthDrummer_Poly__ctx_type_0;
+
+typedef synthDrummer_Poly__ctx_type_0 synthDrummer_Poly_getSample_type;
+
+void synthDrummer_Poly__ctx_type_0_init(synthDrummer_Poly__ctx_type_0 &_output_);
+
+static_inline void synthDrummer_Poly_getSample_init(synthDrummer_Poly__ctx_type_0 &_output_){
+   synthDrummer_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+fix16_t synthDrummer_Poly_getSample(synthDrummer_Poly__ctx_type_0 &_ctx, int voice);
+
+typedef synthDrummer_Poly__ctx_type_0 synthDrummer_Poly_runVoice_type;
+
+static_inline void synthDrummer_Poly_runVoice_init(synthDrummer_Poly__ctx_type_0 &_output_){
+   synthDrummer_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Poly_runVoice(synthDrummer_Poly__ctx_type_0 &_ctx, int voice, int nb, fix16_t (&buff)[256]){
+   switch(voice) {
+      case 0:
+         synthDrummer_Drummer_process_bufferTo(_ctx.voice0,nb,buff);
+      break;
+      case 1:
+         synthDrummer_Drummer_process_bufferTo(_ctx.voice1,nb,buff);
+      break;
+      case 2:
+         synthDrummer_Drummer_process_bufferTo(_ctx.voice2,nb,buff);
+      break;
+      case 3:
+         synthDrummer_Drummer_process_bufferTo(_ctx.voice3,nb,buff);
+      break;
+    
+   }
+};
+
+typedef synthDrummer_Poly__ctx_type_0 synthDrummer_Poly_sendNoteOn_type;
+
+static_inline void synthDrummer_Poly_sendNoteOn_init(synthDrummer_Poly__ctx_type_0 &_output_){
+   synthDrummer_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Poly_sendNoteOn(synthDrummer_Poly__ctx_type_0 &_ctx, int voice, int note, int velocity, int channel){
+   switch(voice) {
+      case 0:
+         synthDrummer_Drummer_noteOn(_ctx.voice0,note,velocity,channel);
+      break;
+      case 1:
+         synthDrummer_Drummer_noteOn(_ctx.voice1,note,velocity,channel);
+      break;
+      case 2:
+         synthDrummer_Drummer_noteOn(_ctx.voice2,note,velocity,channel);
+      break;
+      case 3:
+         synthDrummer_Drummer_noteOn(_ctx.voice3,note,velocity,channel);
+      break;
+    
+   }
+};
+
+typedef synthDrummer_Poly__ctx_type_0 synthDrummer_Poly_sendNoteOff_type;
+
+static_inline void synthDrummer_Poly_sendNoteOff_init(synthDrummer_Poly__ctx_type_0 &_output_){
+   synthDrummer_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Poly_sendNoteOff(synthDrummer_Poly__ctx_type_0 &_ctx, int voice, int note, int channel){
+   switch(voice) {
+      case 0:
+         synthDrummer_Drummer_noteOff(_ctx.voice0,note,channel);
+      break;
+      case 1:
+         synthDrummer_Drummer_noteOff(_ctx.voice1,note,channel);
+      break;
+      case 2:
+         synthDrummer_Drummer_noteOff(_ctx.voice2,note,channel);
+      break;
+      case 3:
+         synthDrummer_Drummer_noteOff(_ctx.voice3,note,channel);
+      break;
+    
+   }
+};
+
+typedef synthDrummer_Poly__ctx_type_0 synthDrummer_Poly_setSamplerate_type;
+
+static_inline void synthDrummer_Poly_setSamplerate_init(synthDrummer_Poly__ctx_type_0 &_output_){
+   synthDrummer_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Poly_setSamplerate(synthDrummer_Poly__ctx_type_0 &_ctx, fix16_t fs){
+   synthDrummer_Drummer_setSamplerate(_ctx.voice0,fs);
+   synthDrummer_Drummer_setSamplerate(_ctx.voice1,fs);
+   synthDrummer_Drummer_setSamplerate(_ctx.voice2,fs);
+   synthDrummer_Drummer_setSamplerate(_ctx.voice3,fs);
+}
+
+typedef synthDrummer_Poly__ctx_type_0 synthDrummer_Poly_synthSetLoop_type;
+
+static_inline void synthDrummer_Poly_synthSetLoop_init(synthDrummer_Poly__ctx_type_0 &_output_){
+   synthDrummer_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Poly_synthSetLoop(synthDrummer_Poly__ctx_type_0 &_ctx, uint8_t flag){
+}
+
+typedef synthDrummer_Poly__ctx_type_0 synthDrummer_Poly_synthSetLoopStart_type;
+
+static_inline void synthDrummer_Poly_synthSetLoopStart_init(synthDrummer_Poly__ctx_type_0 &_output_){
+   synthDrummer_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Poly_synthSetLoopStart(synthDrummer_Poly__ctx_type_0 &_ctx, int value){
+}
+
+typedef synthDrummer_Poly__ctx_type_0 synthDrummer_Poly_synthSetLoopEnd_type;
+
+static_inline void synthDrummer_Poly_synthSetLoopEnd_init(synthDrummer_Poly__ctx_type_0 &_output_){
+   synthDrummer_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Poly_synthSetLoopEnd(synthDrummer_Poly__ctx_type_0 &_ctx, int value){
+}
+
+typedef synthDrummer_Poly__ctx_type_0 synthDrummer_Poly_synthGetSize_type;
+
+static_inline void synthDrummer_Poly_synthGetSize_init(synthDrummer_Poly__ctx_type_0 &_output_){
+   synthDrummer_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthDrummer_Poly_synthGetSize(synthDrummer_Poly__ctx_type_0 &_ctx){
+   return 0;
+};
+
+typedef synthDrummer_Poly__ctx_type_0 synthDrummer_Poly_default_type;
+
+static_inline void synthDrummer_Poly_default_init(synthDrummer_Poly__ctx_type_0 &_output_){
+   synthDrummer_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Poly_default(synthDrummer_Poly__ctx_type_0 &_ctx){
+   synthDrummer_Drummer_default(_ctx.voice0);
+   synthDrummer_Drummer_default(_ctx.voice1);
+   synthDrummer_Drummer_default(_ctx.voice2);
+   synthDrummer_Drummer_default(_ctx.voice3);
+}
+
+typedef struct synthDrummer_Notes__ctx_type_0 {
+   uint8_t poly;
+   int notes[128];
+   int nb_notes;
+   int last_notes[128];
+} synthDrummer_Notes__ctx_type_0;
+
+typedef synthDrummer_Notes__ctx_type_0 synthDrummer_Notes_setPoly_type;
+
+void synthDrummer_Notes__ctx_type_0_init(synthDrummer_Notes__ctx_type_0 &_output_);
+
+static_inline void synthDrummer_Notes_setPoly_init(synthDrummer_Notes__ctx_type_0 &_output_){
+   synthDrummer_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Notes_setPoly(synthDrummer_Notes__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.poly = flag;
+};
+
+typedef synthDrummer_Notes__ctx_type_0 synthDrummer_Notes_default_type;
+
+static_inline void synthDrummer_Notes_default_init(synthDrummer_Notes__ctx_type_0 &_output_){
+   synthDrummer_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Notes_default(synthDrummer_Notes__ctx_type_0 &_ctx){
+   synthDrummer_Notes_setPoly(_ctx,false);
+};
+
+typedef synthDrummer_Notes__ctx_type_0 synthDrummer_Notes_nbNotes_type;
+
+static_inline void synthDrummer_Notes_nbNotes_init(synthDrummer_Notes__ctx_type_0 &_output_){
+   synthDrummer_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthDrummer_Notes_nbNotes(synthDrummer_Notes__ctx_type_0 &_ctx){
+   return _ctx.nb_notes;
+};
+
+typedef synthDrummer_Notes__ctx_type_0 synthDrummer_Notes_firstNote_type;
+
+static_inline void synthDrummer_Notes_firstNote_init(synthDrummer_Notes__ctx_type_0 &_output_){
+   synthDrummer_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+int synthDrummer_Notes_firstNote(synthDrummer_Notes__ctx_type_0 &_ctx);
+
+typedef synthDrummer_Notes__ctx_type_0 synthDrummer_Notes_lastNote_type;
+
+static_inline void synthDrummer_Notes_lastNote_init(synthDrummer_Notes__ctx_type_0 &_output_){
+   synthDrummer_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+int synthDrummer_Notes_lastNote(synthDrummer_Notes__ctx_type_0 &_ctx);
+
+typedef synthDrummer_Notes__ctx_type_0 synthDrummer_Notes_noteOn_type;
+
+static_inline void synthDrummer_Notes_noteOn_init(synthDrummer_Notes__ctx_type_0 &_output_){
+   synthDrummer_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+uint8_t synthDrummer_Notes_noteOn(synthDrummer_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
+
+typedef synthDrummer_Notes__ctx_type_0 synthDrummer_Notes_noteOff_type;
+
+static_inline void synthDrummer_Notes_noteOff_init(synthDrummer_Notes__ctx_type_0 &_output_){
+   synthDrummer_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+uint8_t synthDrummer_Notes_noteOff(synthDrummer_Notes__ctx_type_0 &_ctx, int note, int channel);
+
+typedef struct synthDrummer_Voice__ctx_type_0 {
+   synthDrummer_Notes__ctx_type_0 voicesinactive;
+   synthDrummer_Notes__ctx_type_0 voicesactive;
+   fix16_t voices_ratio;
+   int voices[4];
+   synthDrummer_Poly__ctx_type_0 poly;
+   int number_voices;
+   int notes[128];
+   uint8_t normalize;
+   fix16_t fs;
+   fix16_t buffer_v3[256];
+   fix16_t buffer_v2[256];
+   fix16_t buffer_v1[256];
+   fix16_t buffer_v0[256];
+   fix16_t buffer_o[256];
+} synthDrummer_Voice__ctx_type_0;
+
+typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_process_type;
+
+void synthDrummer_Voice__ctx_type_0_init(synthDrummer_Voice__ctx_type_0 &_output_);
+
+static_inline void synthDrummer_Voice_process_init(synthDrummer_Voice__ctx_type_0 &_output_){
+   synthDrummer_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+fix16_t synthDrummer_Voice_process(synthDrummer_Voice__ctx_type_0 &_ctx);
+
+typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_process_bufferTo_type;
+
+static_inline void synthDrummer_Voice_process_bufferTo_init(synthDrummer_Voice__ctx_type_0 &_output_){
+   synthDrummer_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthDrummer_Voice_process_bufferTo(synthDrummer_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
+
+typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_process_buffer_type;
+
+static_inline void synthDrummer_Voice_process_buffer_init(synthDrummer_Voice__ctx_type_0 &_output_){
+   synthDrummer_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Voice_process_buffer(synthDrummer_Voice__ctx_type_0 &_ctx, int nb){
+   synthDrummer_Voice_process_bufferTo(_ctx,nb,_ctx.buffer_o);
+};
+
+typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_process_bufferTo_alt_type;
+
+static_inline void synthDrummer_Voice_process_bufferTo_alt_init(synthDrummer_Voice__ctx_type_0 &_output_){
+   synthDrummer_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthDrummer_Voice_process_bufferTo_alt(synthDrummer_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
+
+typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_process_buffer_alt_type;
+
+static_inline void synthDrummer_Voice_process_buffer_alt_init(synthDrummer_Voice__ctx_type_0 &_output_){
+   synthDrummer_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Voice_process_buffer_alt(synthDrummer_Voice__ctx_type_0 &_ctx, int nb){
+   synthDrummer_Voice_process_bufferTo_alt(_ctx,nb,_ctx.buffer_o);
+};
+
+typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_noteOff_type;
+
+static_inline void synthDrummer_Voice_noteOff_init(synthDrummer_Voice__ctx_type_0 &_output_){
+   synthDrummer_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthDrummer_Voice_noteOff(synthDrummer_Voice__ctx_type_0 &_ctx, int note, int channel);
+
+typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_noteOn_type;
+
+static_inline void synthDrummer_Voice_noteOn_init(synthDrummer_Voice__ctx_type_0 &_output_){
+   synthDrummer_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthDrummer_Voice_noteOn(synthDrummer_Voice__ctx_type_0 &_ctx, int note, int velocity, int channel);
+
+typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_setNbVoices_type;
+
+static_inline void synthDrummer_Voice_setNbVoices_init(synthDrummer_Voice__ctx_type_0 &_output_){
+   synthDrummer_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthDrummer_Voice_setNbVoices(synthDrummer_Voice__ctx_type_0 &_ctx, int nbvoices);
+
+typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_setNormalize_type;
+
+static_inline void synthDrummer_Voice_setNormalize_init(synthDrummer_Voice__ctx_type_0 &_output_){
+   synthDrummer_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Voice_setNormalize(synthDrummer_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.normalize = flag;
+};
+
+typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_setSamplerate_type;
+
+static_inline void synthDrummer_Voice_setSamplerate_init(synthDrummer_Voice__ctx_type_0 &_output_){
+   synthDrummer_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Voice_setSamplerate(synthDrummer_Voice__ctx_type_0 &_ctx, fix16_t newFs){
+   if(newFs > 0x0 /* 0.000000 */){
+      _ctx.fs = newFs;
+   }
+   synthDrummer_Poly_setSamplerate(_ctx.poly,_ctx.fs);
+}
+
+typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_getBuffer_type;
+
+static_inline void synthDrummer_Voice_getBuffer_init(synthDrummer_Voice__ctx_type_0 &_output_){
+   synthDrummer_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Voice_getBuffer(synthDrummer_Voice__ctx_type_0 &_ctx, fix16_t (&_output_)[256]){
+   fix_copy_array(256,_output_,_ctx.buffer_o);
+   return ;
+}
+
+typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_copyTo_type;
+
+static_inline void synthDrummer_Voice_copyTo_init(synthDrummer_Voice__ctx_type_0 &_output_){
+   synthDrummer_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthDrummer_Voice_copyTo(synthDrummer_Voice__ctx_type_0 &_ctx, fix16_t (&oBuffer)[256], int nb);
+
+typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_synthSetLoop_type;
+
+static_inline void synthDrummer_Voice_synthSetLoop_init(synthDrummer_Voice__ctx_type_0 &_output_){
+   synthDrummer_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Voice_synthSetLoop(synthDrummer_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   synthDrummer_Poly_synthSetLoop(_ctx.poly,flag);
+};
+
+typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_synthSetLoopStart_type;
+
+static_inline void synthDrummer_Voice_synthSetLoopStart_init(synthDrummer_Voice__ctx_type_0 &_output_){
+   synthDrummer_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Voice_synthSetLoopStart(synthDrummer_Voice__ctx_type_0 &_ctx, int value){
+   synthDrummer_Poly_synthSetLoopStart(_ctx.poly,value);
+};
+
+typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_synthSetLoopEnd_type;
+
+static_inline void synthDrummer_Voice_synthSetLoopEnd_init(synthDrummer_Voice__ctx_type_0 &_output_){
+   synthDrummer_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Voice_synthSetLoopEnd(synthDrummer_Voice__ctx_type_0 &_ctx, int value){
+   synthDrummer_Poly_synthSetLoopEnd(_ctx.poly,value);
+};
+
+typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_synthGetSize_type;
+
+static_inline void synthDrummer_Voice_synthGetSize_init(synthDrummer_Voice__ctx_type_0 &_output_){
+   synthDrummer_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthDrummer_Voice_synthGetSize(synthDrummer_Voice__ctx_type_0 &_ctx){
+   return synthDrummer_Poly_synthGetSize(_ctx.poly);
+};
+
+typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_default_type;
+
+static_inline void synthDrummer_Voice_default_init(synthDrummer_Voice__ctx_type_0 &_output_){
+   synthDrummer_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthDrummer_Voice_default(synthDrummer_Voice__ctx_type_0 &_ctx);
+
 
 
 #endif // SYNTHDRUMMER_H

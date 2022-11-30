@@ -13,7 +13,7 @@
 // context for synth used in vult, used to handle internal states
 synthFM_Voice_process_type contextv0;
 synthSampler_Voice_process_type contextv1;
-synthDrummer_Drummer_process_type contextboom;
+synthDrummer_Voice_process_type contextboom;
 // for tests
 synthFM_OSC_process_type context_osc;
 synthFM_FM_process_type context_fm;
@@ -185,10 +185,10 @@ void setup() {
   synthSampler_Voice_synthSetLoopStart(contextv1, 5073);
   synthSampler_Voice_synthSetLoopEnd(contextv1, 5992);
   synthSampler_Voice_setNormalize(contextv1, false);
-
   // Init drummer
-  synthDrummer_Drummer_default(contextboom);
-  synthDrummer_Drummer_setSamplerate(contextboom, float_to_fix(sampleRate / (float)1000));
+  synthDrummer_Voice_default(contextboom);
+  synthDrummer_Voice_setSamplerate(contextboom, float_to_fix(sampleRate / (float)1000));
+  synthDrummer_Voice_setNormalize(contextboom, false);
   // mostly kept for debug
   synthFM_OSC_default(context_osc);
   synthFM_OSC_setSamplerate(context_osc, float_to_fix(sampleRate / (float)1000));
@@ -244,7 +244,7 @@ void loop() {
 
       fix16_t raw0 = synthFM_Voice_process(contextv0);
       fix16_t raw1 = synthSampler_Voice_process(contextv1);
-      fix16_t raw2 = synthDrummer_Drummer_process(contextboom);
+      fix16_t raw2 = synthDrummer_Voice_process(contextboom);
 
       // mix voices (yes, here 150%)
       fix16_t raw = 0.5 * raw0 + 0.5 * raw1 + 0.5 * raw2;
@@ -271,7 +271,7 @@ void loop() {
       //synthFM_FM_process_bufferTo(context_fm, BUFFER_SIZE, raw_buff);
       synthFM_Voice_process_bufferTo_alt(contextv0, BUFFER_SIZE, raw0_buff);
       synthSampler_Voice_process_bufferTo_alt(contextv1, BUFFER_SIZE, raw1_buff);
-      synthDrummer_Drummer_process_bufferTo(contextboom, BUFFER_SIZE, raw2_buff);
+      synthDrummer_Voice_process_bufferTo_alt(contextboom, BUFFER_SIZE, raw2_buff);
       // mix
       for (size_t i = 0; i < BUFFER_SIZE; i++) {
         raw_buff[i] = 0.5 * raw0_buff[i] + 0.5 * raw1_buff[i] + 0.5 * raw2_buff[i];
@@ -343,7 +343,7 @@ void handleNoteOn(byte channel, byte pitch, byte velocity)
 
   // FM by default, sampler on channel 2, drums on channel 3
   if (channel == 3) {
-    synthDrummer_Drummer_noteOn(contextboom, pitch, velocity, channel);
+    synthDrummer_Voice_noteOn(contextboom, pitch, velocity, channel);
   }
   else if (channel == 2) {
     synthSampler_Voice_noteOn(contextv1, pitch, velocity, channel);
@@ -366,7 +366,7 @@ void handleNoteOff(byte channel, byte pitch, byte velocity)
   //synthFM_OSC_setFrequency(context_osc, Util_noteToFrequency(1));
   //synthFM_FM_noteOff(context_fm, pitch, 0);
   if (channel == 3) {
-    synthDrummer_Drummer_noteOff(contextboom, pitch, channel);
+    synthDrummer_Voice_noteOff(contextboom, pitch, channel);
   }
   else if (channel == 2) {
     synthSampler_Voice_noteOff(contextv1, pitch, channel);

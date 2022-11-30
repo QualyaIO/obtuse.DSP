@@ -44,11 +44,22 @@ and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
    // run all voices and add to output buffer
    val v = 0;
    val i = 0;
+   // first run to init
+   if (v < number_voices) {
+      _ = poly:Poly.runVoice(v, nb, buffer_v0);
+      i = 0;
+      while (i < nb) {
+         oBuffer[i] = buffer_v0[i];
+         i = i + 1;
+      }
+      v = v + 1;
+   }
+   // accumulate the others
    while (v < number_voices) {
       _ = poly:Poly.runVoice(v, nb, buffer_v0);
       i = 0;
       while (i < nb) {
-	oBuffer[i] = oBuffer[i] + oBuffer[i];
+	oBuffer[i] = oBuffer[i] + buffer_v0[i];
          i = i + 1;
       }
       v = v + 1;
@@ -58,11 +69,6 @@ and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
    if (normalize) {
       while (i < nb) {
           oBuffer[i] = oBuffer[i] * voices_ratio;
-          i = i + 1;
-      }
-   } else {
-      while (i < nb) {
-          oBuffer[i] = oBuffer[i];
           i = i + 1;
       }
    }

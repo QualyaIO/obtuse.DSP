@@ -2751,11 +2751,20 @@ void synthFM_Voice_process_bufferTo(synthFM_Voice__ctx_type_0 &_ctx, int nb, fix
    v = 0;
    int i;
    i = 0;
+   if(v < _ctx.number_voices){
+      synthFM_Poly_runVoice(_ctx.poly,v,nb,_ctx.buffer_v0);
+      i = 0;
+      while(i < nb){
+         oBuffer[i] = _ctx.buffer_v0[i];
+         i = (1 + i);
+      }
+      v = (1 + v);
+   }
    while(v < _ctx.number_voices){
       synthFM_Poly_runVoice(_ctx.poly,v,nb,_ctx.buffer_v0);
       i = 0;
       while(i < nb){
-         oBuffer[i] = (oBuffer[i] + oBuffer[i]);
+         oBuffer[i] = (_ctx.buffer_v0[i] + oBuffer[i]);
          i = (1 + i);
       }
       v = (1 + v);
@@ -2764,13 +2773,6 @@ void synthFM_Voice_process_bufferTo(synthFM_Voice__ctx_type_0 &_ctx, int nb, fix
    if(_ctx.normalize){
       while(i < nb){
          oBuffer[i] = fix_mul(_ctx.voices_ratio,oBuffer[i]);
-         i = (1 + i);
-      }
-   }
-   else
-   {
-      while(i < nb){
-         oBuffer[i] = oBuffer[i];
          i = (1 + i);
       }
    }
