@@ -84,9 +84,11 @@ and process_euler(input:real, cut:real, res:real):real{
    if(Util.change(cut)) {
       fh = getTune(cut);
    }
+   /*
     _ = e:euler(input, fh, res);
     _ = e:euler(input, fh, res);
     _ = e:euler(input, fh, res);
+    */
     val out = e:euler(input, fh, res);
     return out;
 }
@@ -96,9 +98,11 @@ and process_heun(input:real, cut:real, res:real):real{
    if(Util.change(cut)) {
       fh = getTune(cut);
    }
+   /*
     _ = h:heun(input, fh, res);
     _ = h:heun(input, fh, res);
     _ = h:heun(input, fh, res);
+   */
     val out = h:heun(input, fh, res);
     return out;
 }

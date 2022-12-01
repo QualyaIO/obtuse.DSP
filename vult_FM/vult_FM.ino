@@ -126,6 +126,9 @@ void setup() {
   // Do the same for MIDI Note Off messages.
   MIDI.setHandleNoteOff(handleNoteOff);
 
+  // And finally, for control change
+  MIDI.setHandleControlChange(handleCC);
+
   // NOTE: for some reason MIDI interface does not init if Serial.begin() is called beforehand -- at least there is too much time between Serial.begin and MIDI.begin, e.g. delay(1000) ??
   Serial.begin(115200);
   delay(1000);
@@ -203,8 +206,10 @@ void setup() {
   effects_Reverb_setDelayms(context_reverb, float_to_fix(50.0));
   effects_Ladder_default(context_ladder);
   effects_Ladder_setSamplerate(context_ladder, float_to_fix(sampleRate / (float)1000));
-  effects_Ladder_setCutOff(context_ladder, float_to_fix(5.0));
+  effects_Ladder_setCutOff(context_ladder, float_to_fix(1.0));
   effects_Ladder_setResonance(context_ladder, float_to_fix(1.0));
+  effects_Ladder_setEstimationMethod(context_ladder, 0);
+
 }
 
 void loop() {
@@ -255,13 +260,13 @@ void loop() {
       // mix voices -- scaling will occur afterward
       //fix16_t raw = 0.5 * raw0 + 0.5 * raw1 + 0.5 * raw2;
       fix16_t raw = raw0 + raw1 + raw2;
-      // add ladder effect
-      fix16_t rawf = effects_Ladder_process(context_ladder, raw);
+      // add ladder effect -- reduce volume to avoid saturation
+      fix16_t rawf = effects_Ladder_process(context_ladder, raw * 0.1);
       // add reverb
       fix16_t val = effects_Reverb_process(context_reverb, rawf);
       // wet / dry
       //fix16_t out = 0.5 * raw + 0.5 * val;
-      fix16_t out = raw + val;
+      fix16_t out = rawf + val;
       // shortcut, instead of fixed_to_float * 32767, *almost* the same
       //int16_t out16 =  out / 2 - (out >> 16);
       int16_t out16 =  out / 10 - (out >> 16);
@@ -286,7 +291,8 @@ void loop() {
       // mix -- scaling will occur on all voices at once
       for (size_t i = 0; i < BUFFER_SIZE; i++) {
         //raw_buff[i] = 0.5 * raw0_buff[i] + 0.5 * raw1_buff[i] + 0.5 * raw2_buff[i];
-        raw_buff[i] = raw0_buff[i] + raw1_buff[i] + raw2_buff[i];
+        // reduce for ladder
+        raw_buff[i] = (raw0_buff[i] + raw1_buff[i] + raw2_buff[i])* 0.1;
       }
       // apply ladder and then reverb
       // add ladder effect
@@ -297,12 +303,12 @@ void loop() {
       for (size_t i = 0; i < BUFFER_SIZE; i++) {
         // wet / dry
         //out = 0.5 * raw_buff[i] + 0.5 * reverb_buff[i];
-        out = raw_buff[i] + reverb_buff[i];
+        out = ladder_buff[i] + reverb_buff[i];
         // returned float should be between -1 and 1 (should we checkit ?)
         // shortcut, instead of fixed_to_float * 32767, *almost* the same and vastly improve perf with buffered version (???)
         //buff[i] = out / 2 - ( out >> 16);
         // now scale-down at the very end
-        buff[i] = out / 10 - ( out >> 16);
+        buff[i] = out  - ( out >> 16);
       }
 
       dsp_cycle_count += rp2040.getCycleCount() - dsp_cycle_tick;
@@ -389,5 +395,34 @@ void handleNoteOff(byte channel, byte pitch, byte velocity)
     synthSampler_Voice_noteOff(contextv1, pitch, channel);
   } else {
     synthFM_Voice_noteOff(contextv0, pitch, channel);
+  }
+}
+
+void handleCC(byte channel, byte cc, byte value) {
+  Serial.print("CC on: channel = ");
+  Serial.print(channel);
+  Serial.print(" control = ");
+  Serial.print(cc);
+  Serial.print(" value = ");
+  Serial.println(value);
+
+  if (value > 127) {
+    value = 127;
+  }
+  float ratio = value / 127.0;
+
+  // ladder cuttoff, from 0 to nyquist (in kHz)
+  if (cc == 62) {
+    float cut = ratio * (sampleRate / 2000.0);
+    Serial.print("Setting Ladder cutoff to: ");
+    Serial.println(cut);
+    effects_Ladder_setCutOff(context_ladder, float_to_fix(cut));
+  } 
+  // resonance from -10 to 10
+  else if (cc == 63) {
+    float res = (ratio - 0.5) * 20.0;
+    Serial.print("Setting resonance cutoff to: ");
+    Serial.println(res);
+    effects_Ladder_setResonance(context_ladder, float_to_fix(res));
   }
 }

@@ -8866,9 +8866,6 @@ fix16_t effects_Ladder_process_euler(effects_Ladder__ctx_type_2 &_ctx, fix16_t i
    if(effects_Util_change(_ctx._inst13b,_ctx.cut)){
       _ctx.fh = effects_Ladder_getTune(_ctx,_ctx.cut);
    }
-   effects_Ladder_euler(_ctx.e,input,_ctx.fh,_ctx.res);
-   effects_Ladder_euler(_ctx.e,input,_ctx.fh,_ctx.res);
-   effects_Ladder_euler(_ctx.e,input,_ctx.fh,_ctx.res);
    fix16_t out;
    out = effects_Ladder_euler(_ctx.e,input,_ctx.fh,_ctx.res);
    return out;
@@ -8878,9 +8875,6 @@ fix16_t effects_Ladder_process_heun(effects_Ladder__ctx_type_2 &_ctx, fix16_t in
    if(effects_Util_change(_ctx._inst43b,_ctx.cut)){
       _ctx.fh = effects_Ladder_getTune(_ctx,_ctx.cut);
    }
-   effects_Ladder_heun(_ctx.h,input,_ctx.fh,_ctx.res);
-   effects_Ladder_heun(_ctx.h,input,_ctx.fh,_ctx.res);
-   effects_Ladder_heun(_ctx.h,input,_ctx.fh,_ctx.res);
    fix16_t out;
    out = effects_Ladder_heun(_ctx.h,input,_ctx.fh,_ctx.res);
    return out;
