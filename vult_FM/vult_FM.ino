@@ -19,6 +19,7 @@ synthFM_OSC_process_type context_osc;
 synthFM_FM_process_type context_fm;
 // another for the filter
 effects_Reverb_process_type context_reverb;
+effects_Ladder_process_type context_ladder;
 
 // sync with vult code
 #define BUFFER_SIZE 256
@@ -32,6 +33,7 @@ fix16_t raw2_buff[BUFFER_SIZE];
 // mixer
 fix16_t raw_buff[BUFFER_SIZE];
 // efect
+fix16_t ladder_buff[BUFFER_SIZE];
 fix16_t reverb_buff[BUFFER_SIZE];
 
 /*** MIDI ***/
@@ -199,6 +201,10 @@ void setup() {
   effects_Reverb_setSamplerate(context_reverb, float_to_fix(sampleRate / (float)1000));
   effects_Reverb_setReverbTime(context_reverb, float_to_fix(10.0));
   effects_Reverb_setDelayms(context_reverb, float_to_fix(50.0));
+  effects_Ladder_default(context_ladder);
+  effects_Ladder_setSamplerate(context_ladder, float_to_fix(sampleRate / (float)1000));
+  effects_Ladder_setCutOff(context_ladder, float_to_fix(5.0));
+  effects_Ladder_setResonance(context_ladder, float_to_fix(1.0));
 }
 
 void loop() {
@@ -249,8 +255,10 @@ void loop() {
       // mix voices -- scaling will occur afterward
       //fix16_t raw = 0.5 * raw0 + 0.5 * raw1 + 0.5 * raw2;
       fix16_t raw = raw0 + raw1 + raw2;
+      // add ladder effect
+      fix16_t rawf = effects_Ladder_process(context_ladder, raw);
       // add reverb
-      fix16_t val = effects_Reverb_process(context_reverb, raw);
+      fix16_t val = effects_Reverb_process(context_reverb, rawf);
       // wet / dry
       //fix16_t out = 0.5 * raw + 0.5 * val;
       fix16_t out = raw + val;
@@ -280,8 +288,10 @@ void loop() {
         //raw_buff[i] = 0.5 * raw0_buff[i] + 0.5 * raw1_buff[i] + 0.5 * raw2_buff[i];
         raw_buff[i] = raw0_buff[i] + raw1_buff[i] + raw2_buff[i];
       }
-      // apply effect
-      effects_Reverb_process_bufferTo(context_reverb, BUFFER_SIZE, raw_buff, reverb_buff);
+      // apply ladder and then reverb
+      // add ladder effect
+      effects_Ladder_process_bufferTo(context_ladder, BUFFER_SIZE, raw_buff, ladder_buff);
+      effects_Reverb_process_bufferTo(context_reverb, BUFFER_SIZE, ladder_buff, reverb_buff);
       // two times to better compare with classical situation
       fix16_t out;
       for (size_t i = 0; i < BUFFER_SIZE; i++) {

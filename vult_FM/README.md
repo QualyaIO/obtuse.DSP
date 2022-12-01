@@ -18,3 +18,4 @@ TODO:
 - add velocity
 - midi file?
 - sequencer?
+- timeout for voices?

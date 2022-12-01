@@ -36,6 +36,47 @@ static_inline uint8_t effects_Util_edge(effects_Util__ctx_type_1 &_ctx, uint8_t 
    return ret;
 }
 
+static_inline fix16_t effects_Util_cubic_clipper(fix16_t x){
+   if(x <= -0xaaaa /* -0.666667 */){
+      return -0xaaaa /* -0.666667 */;
+   }
+   else
+   {
+      if(x >= 0xaaaa /* 0.666667 */){
+         return 0xaaaa /* 0.666667 */;
+      }
+      else
+      {
+         return (x + fix_mul(fix_mul(fix_mul(-0x5555 /* -0.333333 */,x),x),x));
+      }
+   }
+};
+
+typedef struct effects_Util__ctx_type_3 {
+   fix16_t pre_x;
+} effects_Util__ctx_type_3;
+
+typedef effects_Util__ctx_type_3 effects_Util_change_type;
+
+static_inline void effects_Util__ctx_type_3_init(effects_Util__ctx_type_3 &_output_){
+   effects_Util__ctx_type_3 _ctx;
+   _ctx.pre_x = 0x0 /* 0.000000 */;
+   _output_ = _ctx;
+   return ;
+}
+
+static_inline void effects_Util_change_init(effects_Util__ctx_type_3 &_output_){
+   effects_Util__ctx_type_3_init(_output_);
+   return ;
+}
+
+static_inline uint8_t effects_Util_change(effects_Util__ctx_type_3 &_ctx, fix16_t x){
+   uint8_t v;
+   v = (_ctx.pre_x != x);
+   _ctx.pre_x = x;
+   return v;
+}
+
 static_inline void effects_Util_buffer(fix16_t (&_output_)[256]){
    fix16_t buff[256];
    fix_copy_array(256,_output_,buff);
@@ -450,6 +491,183 @@ static_inline void effects_Reverb_default_init(effects_Reverb__ctx_type_0 &_outp
 }
 
 void effects_Reverb_default(effects_Reverb__ctx_type_0 &_ctx);
+
+typedef struct effects_Ladder__ctx_type_0 {
+   fix16_t p3;
+   fix16_t p2;
+   fix16_t p1;
+   fix16_t p0;
+} effects_Ladder__ctx_type_0;
+
+typedef effects_Ladder__ctx_type_0 effects_Ladder_heun_type;
+
+void effects_Ladder__ctx_type_0_init(effects_Ladder__ctx_type_0 &_output_);
+
+static_inline void effects_Ladder_heun_init(effects_Ladder__ctx_type_0 &_output_){
+   effects_Ladder__ctx_type_0_init(_output_);
+   return ;
+}
+
+fix16_t effects_Ladder_heun(effects_Ladder__ctx_type_0 &_ctx, fix16_t input, fix16_t fh, fix16_t res);
+
+typedef struct effects_Ladder__ctx_type_1 {
+   fix16_t p3;
+   fix16_t p2;
+   fix16_t p1;
+   fix16_t p0;
+} effects_Ladder__ctx_type_1;
+
+typedef effects_Ladder__ctx_type_1 effects_Ladder_euler_type;
+
+void effects_Ladder__ctx_type_1_init(effects_Ladder__ctx_type_1 &_output_);
+
+static_inline void effects_Ladder_euler_init(effects_Ladder__ctx_type_1 &_output_){
+   effects_Ladder__ctx_type_1_init(_output_);
+   return ;
+}
+
+fix16_t effects_Ladder_euler(effects_Ladder__ctx_type_1 &_ctx, fix16_t input, fix16_t fh, fix16_t res);
+
+typedef struct effects_Ladder__ctx_type_2 {
+   fix16_t tune_table[1024];
+   fix16_t tuneRatio;
+   fix16_t rsize;
+   fix16_t res;
+   uint8_t heun;
+   effects_Ladder__ctx_type_0 h;
+   fix16_t fs_nyquist;
+   fix16_t fs;
+   fix16_t fh;
+   effects_Ladder__ctx_type_1 e;
+   fix16_t cut;
+   effects_Util__ctx_type_3 _inst43b;
+   effects_Util__ctx_type_3 _inst13b;
+} effects_Ladder__ctx_type_2;
+
+typedef effects_Ladder__ctx_type_2 effects_Ladder_getTune_type;
+
+void effects_Ladder__ctx_type_2_init(effects_Ladder__ctx_type_2 &_output_);
+
+static_inline void effects_Ladder_getTune_init(effects_Ladder__ctx_type_2 &_output_){
+   effects_Ladder__ctx_type_2_init(_output_);
+   return ;
+}
+
+fix16_t effects_Ladder_getTune(effects_Ladder__ctx_type_2 &_ctx, fix16_t cut);
+
+typedef effects_Ladder__ctx_type_2 effects_Ladder_process_euler_type;
+
+static_inline void effects_Ladder_process_euler_init(effects_Ladder__ctx_type_2 &_output_){
+   effects_Ladder__ctx_type_2_init(_output_);
+   return ;
+}
+
+fix16_t effects_Ladder_process_euler(effects_Ladder__ctx_type_2 &_ctx, fix16_t input, fix16_t cut, fix16_t res);
+
+typedef effects_Ladder__ctx_type_2 effects_Ladder_process_heun_type;
+
+static_inline void effects_Ladder_process_heun_init(effects_Ladder__ctx_type_2 &_output_){
+   effects_Ladder__ctx_type_2_init(_output_);
+   return ;
+}
+
+fix16_t effects_Ladder_process_heun(effects_Ladder__ctx_type_2 &_ctx, fix16_t input, fix16_t cut, fix16_t res);
+
+typedef effects_Ladder__ctx_type_2 effects_Ladder_process_type;
+
+static_inline void effects_Ladder_process_init(effects_Ladder__ctx_type_2 &_output_){
+   effects_Ladder__ctx_type_2_init(_output_);
+   return ;
+}
+
+static_inline fix16_t effects_Ladder_process(effects_Ladder__ctx_type_2 &_ctx, fix16_t input){
+   if(_ctx.heun){
+      return effects_Ladder_process_heun(_ctx,input,_ctx.cut,_ctx.res);
+   }
+   else
+   {
+      return effects_Ladder_process_euler(_ctx,input,_ctx.cut,_ctx.res);
+   }
+};
+
+typedef effects_Ladder__ctx_type_2 effects_Ladder_process_bufferTo_type;
+
+static_inline void effects_Ladder_process_bufferTo_init(effects_Ladder__ctx_type_2 &_output_){
+   effects_Ladder__ctx_type_2_init(_output_);
+   return ;
+}
+
+void effects_Ladder_process_bufferTo(effects_Ladder__ctx_type_2 &_ctx, int nb, fix16_t (&input)[256], fix16_t (&oBuffer)[256]);
+
+typedef effects_Ladder__ctx_type_2 effects_Ladder_updateTune_type;
+
+static_inline void effects_Ladder_updateTune_init(effects_Ladder__ctx_type_2 &_output_){
+   effects_Ladder__ctx_type_2_init(_output_);
+   return ;
+}
+
+void effects_Ladder_updateTune(effects_Ladder__ctx_type_2 &_ctx);
+
+typedef effects_Ladder__ctx_type_2 effects_Ladder_setEstimationMethod_type;
+
+static_inline void effects_Ladder_setEstimationMethod_init(effects_Ladder__ctx_type_2 &_output_){
+   effects_Ladder__ctx_type_2_init(_output_);
+   return ;
+}
+
+static_inline void effects_Ladder_setEstimationMethod(effects_Ladder__ctx_type_2 &_ctx, int method){
+   if(method == 1){
+      _ctx.heun = true;
+   }
+   else
+   {
+      _ctx.heun = false;
+   }
+};
+
+typedef effects_Ladder__ctx_type_2 effects_Ladder_setCutOff_type;
+
+static_inline void effects_Ladder_setCutOff_init(effects_Ladder__ctx_type_2 &_output_){
+   effects_Ladder__ctx_type_2_init(_output_);
+   return ;
+}
+
+static_inline void effects_Ladder_setCutOff(effects_Ladder__ctx_type_2 &_ctx, fix16_t newCut){
+   _ctx.cut = fix_clip(newCut,0x0 /* 0.000000 */,_ctx.fs_nyquist);
+};
+
+typedef effects_Ladder__ctx_type_2 effects_Ladder_setResonance_type;
+
+static_inline void effects_Ladder_setResonance_init(effects_Ladder__ctx_type_2 &_output_){
+   effects_Ladder__ctx_type_2_init(_output_);
+   return ;
+}
+
+static_inline void effects_Ladder_setResonance(effects_Ladder__ctx_type_2 &_ctx, fix16_t newRes){
+   _ctx.res = newRes;
+};
+
+typedef effects_Ladder__ctx_type_2 effects_Ladder_setSamplerate_type;
+
+static_inline void effects_Ladder_setSamplerate_init(effects_Ladder__ctx_type_2 &_output_){
+   effects_Ladder__ctx_type_2_init(_output_);
+   return ;
+}
+
+void effects_Ladder_setSamplerate(effects_Ladder__ctx_type_2 &_ctx, fix16_t newFs);
+
+typedef effects_Ladder__ctx_type_2 effects_Ladder_default_type;
+
+static_inline void effects_Ladder_default_init(effects_Ladder__ctx_type_2 &_output_){
+   effects_Ladder__ctx_type_2_init(_output_);
+   return ;
+}
+
+static_inline void effects_Ladder_default(effects_Ladder__ctx_type_2 &_ctx){
+   _ctx.rsize = 0x4000000 /* 1024.000000 */;
+   effects_Ladder_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
+   effects_Ladder_setEstimationMethod(_ctx,0);
+}
 
 
 

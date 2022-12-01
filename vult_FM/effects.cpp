@@ -8730,4 +8730,207 @@ void effects_Reverb_default(effects_Reverb__ctx_type_0 &_ctx){
    effects_Allpass_setDelay(_ctx.allpass1,42);
 }
 
+void effects_Ladder__ctx_type_0_init(effects_Ladder__ctx_type_0 &_output_){
+   effects_Ladder__ctx_type_0 _ctx;
+   _ctx.p3 = 0x0 /* 0.000000 */;
+   _ctx.p2 = 0x0 /* 0.000000 */;
+   _ctx.p1 = 0x0 /* 0.000000 */;
+   _ctx.p0 = 0x0 /* 0.000000 */;
+   _output_ = _ctx;
+   return ;
+}
+
+fix16_t effects_Ladder_heun(effects_Ladder__ctx_type_0 &_ctx, fix16_t input, fix16_t fh, fix16_t res){
+   fix16_t wt0;
+   wt0 = effects_Util_cubic_clipper((input + (- (fix_mul(_ctx.p3,res) << 2))));
+   fix16_t wt1;
+   wt1 = effects_Util_cubic_clipper(_ctx.p0);
+   fix16_t dpt0;
+   dpt0 = fix_mul(fh,(wt0 + (- wt1)));
+   fix16_t wt3;
+   wt3 = effects_Util_cubic_clipper(_ctx.p1);
+   fix16_t dpt1;
+   dpt1 = fix_mul(fh,(wt1 + (- wt3)));
+   fix16_t wt5;
+   wt5 = effects_Util_cubic_clipper(_ctx.p2);
+   fix16_t dpt2;
+   dpt2 = fix_mul(fh,(wt3 + (- wt5)));
+   fix16_t wt7;
+   wt7 = effects_Util_cubic_clipper(_ctx.p3);
+   fix16_t dpt3;
+   dpt3 = fix_mul(fh,(wt5 + (- wt7)));
+   fix16_t pt0;
+   pt0 = (_ctx.p0 + dpt0);
+   fix16_t pt1;
+   pt1 = (_ctx.p1 + dpt1);
+   fix16_t pt2;
+   pt2 = (_ctx.p2 + dpt2);
+   fix16_t pt3;
+   pt3 = (_ctx.p3 + dpt3);
+   fix16_t w0;
+   w0 = effects_Util_cubic_clipper((input + (- (fix_mul(pt3,res) << 2))));
+   fix16_t w1;
+   w1 = effects_Util_cubic_clipper(pt0);
+   fix16_t dp0;
+   dp0 = fix_mul(fh,(w0 + (- w1)));
+   fix16_t w3;
+   w3 = effects_Util_cubic_clipper(pt1);
+   fix16_t dp1;
+   dp1 = fix_mul(fh,(w1 + (- w3)));
+   fix16_t w5;
+   w5 = effects_Util_cubic_clipper(pt2);
+   fix16_t dp2;
+   dp2 = fix_mul(fh,(w3 + (- w5)));
+   fix16_t w7;
+   w7 = effects_Util_cubic_clipper(pt3);
+   fix16_t dp3;
+   dp3 = fix_mul(fh,(w5 + (- w7)));
+   _ctx.p0 = (_ctx.p0 + ((dp0 + dpt0) >> 1));
+   _ctx.p1 = (_ctx.p1 + ((dp1 + dpt1) >> 1));
+   _ctx.p2 = (_ctx.p2 + ((dp2 + dpt2) >> 1));
+   _ctx.p3 = (_ctx.p3 + ((dp3 + dpt3) >> 1));
+   return _ctx.p3;
+}
+
+void effects_Ladder__ctx_type_1_init(effects_Ladder__ctx_type_1 &_output_){
+   effects_Ladder__ctx_type_1 _ctx;
+   _ctx.p3 = 0x0 /* 0.000000 */;
+   _ctx.p2 = 0x0 /* 0.000000 */;
+   _ctx.p1 = 0x0 /* 0.000000 */;
+   _ctx.p0 = 0x0 /* 0.000000 */;
+   _output_ = _ctx;
+   return ;
+}
+
+fix16_t effects_Ladder_euler(effects_Ladder__ctx_type_1 &_ctx, fix16_t input, fix16_t fh, fix16_t res){
+   fix16_t w0;
+   w0 = effects_Util_cubic_clipper((input + (- (fix_mul(_ctx.p3,res) << 2))));
+   fix16_t w1;
+   w1 = effects_Util_cubic_clipper(_ctx.p0);
+   fix16_t dpt0;
+   dpt0 = fix_mul(fh,(w0 + (- w1)));
+   fix16_t w3;
+   w3 = effects_Util_cubic_clipper(_ctx.p1);
+   fix16_t dpt1;
+   dpt1 = fix_mul(fh,(w1 + (- w3)));
+   fix16_t w5;
+   w5 = effects_Util_cubic_clipper(_ctx.p2);
+   fix16_t dpt2;
+   dpt2 = fix_mul(fh,(w3 + (- w5)));
+   fix16_t w7;
+   w7 = effects_Util_cubic_clipper(_ctx.p3);
+   fix16_t dpt3;
+   dpt3 = fix_mul(fh,(w5 + (- w7)));
+   _ctx.p0 = (_ctx.p0 + dpt0);
+   _ctx.p1 = (_ctx.p1 + dpt1);
+   _ctx.p2 = (_ctx.p2 + dpt2);
+   _ctx.p3 = (_ctx.p3 + dpt3);
+   return _ctx.p3;
+}
+
+void effects_Ladder__ctx_type_2_init(effects_Ladder__ctx_type_2 &_output_){
+   effects_Ladder__ctx_type_2 _ctx;
+   ;
+   _ctx.tuneRatio = 0x0 /* 0.000000 */;
+   _ctx.rsize = 0x0 /* 0.000000 */;
+   _ctx.res = 0x0 /* 0.000000 */;
+   _ctx.heun = false;
+   effects_Ladder__ctx_type_0_init(_ctx.h);
+   _ctx.fs_nyquist = 0x0 /* 0.000000 */;
+   _ctx.fs = 0x0 /* 0.000000 */;
+   _ctx.fh = 0x0 /* 0.000000 */;
+   effects_Ladder__ctx_type_1_init(_ctx.e);
+   _ctx.cut = 0x0 /* 0.000000 */;
+   effects_Util__ctx_type_3_init(_ctx._inst43b);
+   effects_Util__ctx_type_3_init(_ctx._inst13b);
+   _output_ = _ctx;
+   return ;
+}
+
+fix16_t effects_Ladder_getTune(effects_Ladder__ctx_type_2 &_ctx, fix16_t cut){
+   _ctx.cut = fix_clip(_ctx.cut,0x0 /* 0.000000 */,(_ctx.fs >> 1));
+   fix16_t idx;
+   idx = fix_mul(_ctx.cut,_ctx.tuneRatio);
+   int iIdx;
+   iIdx = fix_to_int(idx);
+   if(iIdx < 1023){
+      return (_ctx.tune_table[iIdx] + fix_mul((idx % 0x10000 /* 1.000000 */),(_ctx.tune_table[(1 + iIdx)] + (- _ctx.tune_table[iIdx]))));
+   }
+   else
+   {
+      return _ctx.tune_table[1023];
+   }
+}
+
+fix16_t effects_Ladder_process_euler(effects_Ladder__ctx_type_2 &_ctx, fix16_t input, fix16_t cut, fix16_t res){
+   if(effects_Util_change(_ctx._inst13b,_ctx.cut)){
+      _ctx.fh = effects_Ladder_getTune(_ctx,_ctx.cut);
+   }
+   effects_Ladder_euler(_ctx.e,input,_ctx.fh,_ctx.res);
+   effects_Ladder_euler(_ctx.e,input,_ctx.fh,_ctx.res);
+   effects_Ladder_euler(_ctx.e,input,_ctx.fh,_ctx.res);
+   fix16_t out;
+   out = effects_Ladder_euler(_ctx.e,input,_ctx.fh,_ctx.res);
+   return out;
+}
+
+fix16_t effects_Ladder_process_heun(effects_Ladder__ctx_type_2 &_ctx, fix16_t input, fix16_t cut, fix16_t res){
+   if(effects_Util_change(_ctx._inst43b,_ctx.cut)){
+      _ctx.fh = effects_Ladder_getTune(_ctx,_ctx.cut);
+   }
+   effects_Ladder_heun(_ctx.h,input,_ctx.fh,_ctx.res);
+   effects_Ladder_heun(_ctx.h,input,_ctx.fh,_ctx.res);
+   effects_Ladder_heun(_ctx.h,input,_ctx.fh,_ctx.res);
+   fix16_t out;
+   out = effects_Ladder_heun(_ctx.h,input,_ctx.fh,_ctx.res);
+   return out;
+}
+
+void effects_Ladder_process_bufferTo(effects_Ladder__ctx_type_2 &_ctx, int nb, fix16_t (&input)[256], fix16_t (&oBuffer)[256]){
+   int min_nb;
+   min_nb = 256;
+   if(256 < min_nb){
+      min_nb = 256;
+   }
+   nb = int_clip(nb,0,min_nb);
+   if(nb == 0){
+      nb = min_nb;
+   }
+   int i;
+   i = 0;
+   if(_ctx.heun){
+      while(i < nb){
+         oBuffer[i] = effects_Ladder_process_heun(_ctx,input[i],_ctx.cut,_ctx.res);
+         i = (1 + i);
+      }
+   }
+   else
+   {
+      while(i < nb){
+         oBuffer[i] = effects_Ladder_process_euler(_ctx,input[i],_ctx.cut,_ctx.res);
+         i = (1 + i);
+      }
+   }
+}
+
+void effects_Ladder_updateTune(effects_Ladder__ctx_type_2 &_ctx){
+   fix16_t fi;
+   int i;
+   i = 0;
+   while(i < 1024){
+      fi = fix_div(fix_mul(_ctx.fs_nyquist,int_to_fix(i)),_ctx.rsize);
+      _ctx.tune_table[i] = fix_div(fix_mul(0x6487e /* 6.283185 */,fi),(_ctx.fs << 2));
+      i = (1 + i);
+   }
+}
+
+void effects_Ladder_setSamplerate(effects_Ladder__ctx_type_2 &_ctx, fix16_t newFs){
+   if(newFs > 0x0 /* 0.000000 */){
+      _ctx.fs = newFs;
+      _ctx.fs_nyquist = (_ctx.fs >> 1);
+      _ctx.tuneRatio = fix_div(_ctx.rsize,_ctx.fs_nyquist);
+      effects_Ladder_updateTune(_ctx);
+   }
+}
+
 

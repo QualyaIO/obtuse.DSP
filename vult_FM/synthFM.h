@@ -36,6 +36,47 @@ static_inline uint8_t synthFM_Util_edge(synthFM_Util__ctx_type_1 &_ctx, uint8_t 
    return ret;
 }
 
+static_inline fix16_t synthFM_Util_cubic_clipper(fix16_t x){
+   if(x <= -0xaaaa /* -0.666667 */){
+      return -0xaaaa /* -0.666667 */;
+   }
+   else
+   {
+      if(x >= 0xaaaa /* 0.666667 */){
+         return 0xaaaa /* 0.666667 */;
+      }
+      else
+      {
+         return (x + fix_mul(fix_mul(fix_mul(-0x5555 /* -0.333333 */,x),x),x));
+      }
+   }
+};
+
+typedef struct synthFM_Util__ctx_type_3 {
+   fix16_t pre_x;
+} synthFM_Util__ctx_type_3;
+
+typedef synthFM_Util__ctx_type_3 synthFM_Util_change_type;
+
+static_inline void synthFM_Util__ctx_type_3_init(synthFM_Util__ctx_type_3 &_output_){
+   synthFM_Util__ctx_type_3 _ctx;
+   _ctx.pre_x = 0x0 /* 0.000000 */;
+   _output_ = _ctx;
+   return ;
+}
+
+static_inline void synthFM_Util_change_init(synthFM_Util__ctx_type_3 &_output_){
+   synthFM_Util__ctx_type_3_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthFM_Util_change(synthFM_Util__ctx_type_3 &_ctx, fix16_t x){
+   uint8_t v;
+   v = (_ctx.pre_x != x);
+   _ctx.pre_x = x;
+   return v;
+}
+
 static_inline void synthFM_Util_buffer(fix16_t (&_output_)[256]){
    fix16_t buff[256];
    fix_copy_array(256,_output_,buff);
