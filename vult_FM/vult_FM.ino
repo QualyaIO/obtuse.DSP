@@ -246,14 +246,17 @@ void loop() {
       fix16_t raw1 = synthSampler_Voice_process(contextv1);
       fix16_t raw2 = synthDrummer_Voice_process(contextboom);
 
-      // mix voices (yes, here 150%)
-      fix16_t raw = 0.5 * raw0 + 0.5 * raw1 + 0.5 * raw2;
+      // mix voices -- scaling will occur afterward
+      //fix16_t raw = 0.5 * raw0 + 0.5 * raw1 + 0.5 * raw2;
+      fix16_t raw = raw0 + raw1 + raw2;
       // add reverb
       fix16_t val = effects_Reverb_process(context_reverb, raw);
       // wet / dry
-      fix16_t out = 0.5 * raw + 0.5 * val;
+      //fix16_t out = 0.5 * raw + 0.5 * val;
+      fix16_t out = raw + val;
       // shortcut, instead of fixed_to_float * 32767, *almost* the same
-      int16_t out16 =  out / 2 - (out >> 16);
+      //int16_t out16 =  out / 2 - (out >> 16);
+      int16_t out16 =  out / 10 - (out >> 16);
 
       dsp_cycle_count += rp2040.getCycleCount() - dsp_cycle_tick;
       dsp_time += micros() - dsp_tick;
@@ -272,9 +275,10 @@ void loop() {
       synthFM_Voice_process_bufferTo_alt(contextv0, BUFFER_SIZE, raw0_buff);
       synthSampler_Voice_process_bufferTo_alt(contextv1, BUFFER_SIZE, raw1_buff);
       synthDrummer_Voice_process_bufferTo_alt(contextboom, BUFFER_SIZE, raw2_buff);
-      // mix
+      // mix -- scaling will occur on all voices at once
       for (size_t i = 0; i < BUFFER_SIZE; i++) {
-        raw_buff[i] = 0.5 * raw0_buff[i] + 0.5 * raw1_buff[i] + 0.5 * raw2_buff[i];
+        //raw_buff[i] = 0.5 * raw0_buff[i] + 0.5 * raw1_buff[i] + 0.5 * raw2_buff[i];
+        raw_buff[i] = raw0_buff[i] + raw1_buff[i] + raw2_buff[i];
       }
       // apply effect
       effects_Reverb_process_bufferTo(context_reverb, BUFFER_SIZE, raw_buff, reverb_buff);
@@ -282,10 +286,13 @@ void loop() {
       fix16_t out;
       for (size_t i = 0; i < BUFFER_SIZE; i++) {
         // wet / dry
-        out = 0.5 * raw_buff[i] + 0.5 * reverb_buff[i];
+        //out = 0.5 * raw_buff[i] + 0.5 * reverb_buff[i];
+        out = raw_buff[i] + reverb_buff[i];
         // returned float should be between -1 and 1 (should we checkit ?)
         // shortcut, instead of fixed_to_float * 32767, *almost* the same and vastly improve perf with buffered version (???)
-        buff[i] = out / 2 - ( out >> 16);
+        //buff[i] = out / 2 - ( out >> 16);
+        // now scale-down at the very end
+        buff[i] = out / 10 - ( out >> 16);
       }
 
       dsp_cycle_count += rp2040.getCycleCount() - dsp_cycle_tick;

@@ -13,5 +13,6 @@ TODO:
 - voice: buffer_alt with fixed 4 voices
 - fix pop when a voice is stolen
 - add effect to modulate?
-- add mixe
-- back to toubidour
+- add mixer
+- back to toubidou
+- add velocity
