@@ -1,17 +1,6 @@
-/*
-The MIT License (MIT)
-
-Copyright (c) 2017 Leonardo Laguna Ruiz
------
-Diode ladder filter
-*/
-
-fun tune(cut) @[table(min = 0.0, max = 1.0, size = 128)]{
-   val f = Util.cvTokHz(cut);
-   f = clip(f, 0.0, 20.0);
-   val fh = (2.0 * pi()) * f / (4.0 * 44.1);
-   return fh;
-}
+// Diode ladder filter
+// Adapted from Vult examples (with copyright 2017 Leonardo Laguna Ruiz) and MIT Licence
+// Note that filter freq will be caped at nyquist (sample rate / 2)
 
 fun heun(input, fh, res) {
    mem p0, p1, p2, p3;
@@ -79,7 +68,7 @@ fun process_euler(input:real, cut:real, res:real):real{
     return out;
 }
 
-fun process_heun(input:real, cut:real, res:real):real{
+and process_heun(input:real, cut:real, res:real):real{
    mem fh;
    if(Util.change(cut)) {
       fh = tune(cut);
@@ -91,11 +80,91 @@ fun process_heun(input:real, cut:real, res:real):real{
     return out;
 }
 
-fun process(input:real, cut:real, res:real):real{
-    return process_heun(input, cut, res);
+and process(input:real):real{
+  // cutoff ferquency, in kHz
+  mem cut: real;
+  // resonance of the filter
+  mem res: real;
+  return process_heun(input, cut, res);
 }
 
-and noteOn(note:int,velocity:int,channel:int){ }
-and noteOff(note:int,channel:int){ }
-and controlChange(control:int,value:int,channel:int){ }
-and default(){ }
+and process_bufferTo(nb: int, input: array(real, 256), oBuffer: array(real, 256)) {
+  val min_nb = size(input);
+  if (size(oBuffer) < min_nb) {
+     min_nb = size(oBuffer);
+  }
+  nb = clip(nb, 0, min_nb);
+  if (nb == 0) {
+     nb = min_nb;
+  }
+
+  val i = 0;
+  while (i < nb) {
+     oBuffer[i] = process_heun(input[i], cut, res);
+  }
+}
+
+// fixed buffre, from 0hz to nyquist
+and updateTune() {
+   // current sampling rate and max possible frequency
+   mem fs: real;
+   mem fs_nyquist: real;
+   // buffer to store frequency tables
+   mem tune_table;
+   // size of table, to speedup (hence must be init first!)
+   mem rsize;
+
+   // frequency in the table to be updated
+   val fi;
+   val i = 0;
+   while (i < size(tune_table)){
+     fi = real(i) * fs_nyquist / rsize;
+     tune_table[i] = (2.0 * pi()) * fi / (4.0 * fs);
+     i = i + 1;
+   }
+}
+
+// set cut-off frequnecy, in kHz, max sampling rate / 2.0
+and setCutOff(newCut: real) {
+   cut = clip(newCut, 0, fs_nyquist);
+}
+
+// note that effects will depend on input level
+and setResonance(newRes: real) {
+   res = newRes;
+}
+
+// seter for parameters. expect values of desired frequency and current sampling rate in kHz to avoid fixed float limits ([1/32767 ..32767]... probably)
+// Will re-compute the tuning table, call will be costly
+and setSamplerate(newFs:real) {
+   mem tuneRatio;
+   if (newFs > 0.0) {
+      fs = newFs;
+      fs_nyquist = fs/2.0;
+      tuneRatio = rsize / fs_nyquist;
+      _ = updateTune();
+   }
+}
+
+// retrieve value from tune table, with a linear interpolation. Except a frequency below nyquist
+// cut-off, in kHz
+and getTune(cut) {
+   // to speedup computations
+   mem tuneRatio;
+   cut = clip(cut, 0, fs/2.0);
+   val idx = cut * tuneRatio;
+   if (idx < size(tune_table) - 1) {
+      // interpolate
+      return tune_table[int(idx)] + (idx % 1.0) * (tune_table[int(idx)+1] - tune_table[int(idx)]);
+   }
+   else {
+      return tune_table[size(tune_table) - 1];
+   }
+}
+
+and default(){
+   // frequency table will be computed ahead of time to save resources
+   mem tune_table: array(real, 1024);
+   rsize = real(size(tune_table));
+   _ = setSamplerate(44.1);
+}

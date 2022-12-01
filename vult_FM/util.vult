@@ -14,6 +14,22 @@ fun edge(x:bool) : bool {
    return ret;
 }
 
+fun cubic_clipper(x) {
+   if(x <= -2.0/3.0)
+      return -2.0/3.0;
+   else if(x >= 2.0/3.0)
+      return 2.0/3.0;
+   else
+      return x - (x * x * x) / 3.0;
+}
+
+fun change(x:real):bool {
+    mem pre_x;
+    val v:bool = pre_x <> x;
+    pre_x = x;
+    return v;
+}
+
 // allocate an audio buffer
 // size tuned for current use, default non-blocking I2S buffer
 fun buffer() {
