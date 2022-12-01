@@ -38,6 +38,8 @@ fun heun(input, fh, res) {
    return p3;
 }
 
+
+
 fun euler(input, fh, res) {
    mem p0, p1, p2, p3;
    val w0 = Util.cubic_clipper(input - 4.0 * res * p3);
@@ -56,10 +58,31 @@ fun euler(input, fh, res) {
    return p3;
 }
 
-fun process_euler(input:real, cut:real, res:real):real{
+
+// retrieve value from tune table, with a linear interpolation. Except a frequency below nyquist
+// cut-off, in kHz
+fun getTune(cut: real) {
+   mem fs;
+   mem tune_table;
+   // to speedup computations
+   mem tuneRatio;
+   cut = clip(cut, 0.0, fs/2.0);
+   val idx = cut * tuneRatio;
+   val iIdx = int(idx);
+   if (iIdx < size(tune_table) - 1) {
+      // interpolate
+      return tune_table[iIdx] + (idx % 1.0) * (tune_table[iIdx+1] - tune_table[iIdx]);
+   }
+   else {
+      return tune_table[size(tune_table) - 1];
+   }
+}
+
+
+and process_euler(input:real, cut:real, res:real):real{
    mem fh;
    if(Util.change(cut)) {
-      fh = tune(cut);
+      fh = getTune(cut);
    }
     _ = e:euler(input, fh, res);
     _ = e:euler(input, fh, res);
@@ -71,7 +94,7 @@ fun process_euler(input:real, cut:real, res:real):real{
 and process_heun(input:real, cut:real, res:real):real{
    mem fh;
    if(Util.change(cut)) {
-      fh = tune(cut);
+      fh = getTune(cut);
    }
     _ = h:heun(input, fh, res);
     _ = h:heun(input, fh, res);
@@ -81,11 +104,16 @@ and process_heun(input:real, cut:real, res:real):real{
 }
 
 and process(input:real):real{
-  // cutoff ferquency, in kHz
+  // cutoff fqeuency, in kHz
   mem cut: real;
   // resonance of the filter
   mem res: real;
-  return process_heun(input, cut, res);
+  mem heun: bool;
+  if (heun) {
+    return process_heun(input, cut, res);
+  } else {
+    return process_euler(input, cut, res);
+  }
 }
 
 and process_bufferTo(nb: int, input: array(real, 256), oBuffer: array(real, 256)) {
@@ -99,8 +127,16 @@ and process_bufferTo(nb: int, input: array(real, 256), oBuffer: array(real, 256)
   }
 
   val i = 0;
-  while (i < nb) {
-     oBuffer[i] = process_heun(input[i], cut, res);
+  if (heun) {
+    while (i < nb) {
+      oBuffer[i] = process_heun(input[i], cut, res);
+      i = i + 1;
+    }
+  } else {
+    while (i < nb) {
+       oBuffer[i] = process_euler(input[i], cut, res);
+      i = i + 1;
+    }
   }
 }
 
@@ -124,9 +160,19 @@ and updateTune() {
    }
 }
 
+// Select method used to approximate the analog filter:
+// - 0: Euler (default), 1: Heun less precise but faster than Heun ("false")
+and setEstimationMethod(method: int) {
+   if (method == 1) {
+      heun = true;
+   } else {
+      heun = false;
+   }
+}
+
 // set cut-off frequnecy, in kHz, max sampling rate / 2.0
 and setCutOff(newCut: real) {
-   cut = clip(newCut, 0, fs_nyquist);
+   cut = clip(newCut, 0.0, fs_nyquist);
 }
 
 // note that effects will depend on input level
@@ -146,25 +192,10 @@ and setSamplerate(newFs:real) {
    }
 }
 
-// retrieve value from tune table, with a linear interpolation. Except a frequency below nyquist
-// cut-off, in kHz
-and getTune(cut) {
-   // to speedup computations
-   mem tuneRatio;
-   cut = clip(cut, 0, fs/2.0);
-   val idx = cut * tuneRatio;
-   if (idx < size(tune_table) - 1) {
-      // interpolate
-      return tune_table[int(idx)] + (idx % 1.0) * (tune_table[int(idx)+1] - tune_table[int(idx)]);
-   }
-   else {
-      return tune_table[size(tune_table) - 1];
-   }
-}
-
 and default(){
    // frequency table will be computed ahead of time to save resources
    mem tune_table: array(real, 1024);
    rsize = real(size(tune_table));
    _ = setSamplerate(44.1);
+   _ = setEstimationMethod(0);
 }
