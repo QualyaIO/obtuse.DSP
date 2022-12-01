@@ -16,3 +16,5 @@ TODO:
 - add mixer
 - back to toubidou
 - add velocity
+- midi file?
+- sequencer?
