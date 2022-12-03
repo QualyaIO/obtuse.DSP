@@ -19,3 +19,4 @@ TODO:
 - midi file?
 - sequencer?
 - timeout for voices?
+- copy wavetable in temp var for FM, and mix them?
