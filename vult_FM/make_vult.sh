@@ -10,4 +10,4 @@ echo "Generate Drummer synth"
 vultc -ccode voice.vult -real fixed -i synth_drummer -o synthDrummer -output-prefix synthDrummer_
 
 echo "Generate Effects"
-vultc -ccode reverb.vult ladder.vult -real fixed -o effects -output-prefix effects_
+vultc -ccode reverb.vult ladder.vult SVF.vult -real fixed -o effects -output-prefix effects_

@@ -19,7 +19,8 @@ synthFM_OSC_process_type context_osc;
 synthFM_FM_process_type context_fm;
 // another for the filter
 effects_Reverb_process_type context_reverb;
-effects_Ladder_process_type context_ladder;
+//effects_Ladder_process_type context_ladder;
+effects_SVF_process_type context_svf;
 
 // sync with vult code
 #define BUFFER_SIZE 256
@@ -33,7 +34,7 @@ fix16_t raw2_buff[BUFFER_SIZE];
 // mixer
 fix16_t raw_buff[BUFFER_SIZE];
 // efect
-fix16_t ladder_buff[BUFFER_SIZE];
+fix16_t filter_buff[BUFFER_SIZE];
 fix16_t reverb_buff[BUFFER_SIZE];
 
 /*** MIDI ***/
@@ -59,7 +60,7 @@ bool gate = false;
 
 // counters to pull from time to time (but not to often, to minimize crash) from MIDI messages
 long midi_msg_tick = 0;
-float midi_msg_freq = 10;
+float midi_msg_freq = 4;
 
 /*** SGTL ***/
 
@@ -208,12 +209,19 @@ void setup() {
   effects_Reverb_setSamplerate(context_reverb, float_to_fix(sampleRate / (float)1000));
   effects_Reverb_setReverbTime(context_reverb, float_to_fix(10.0));
   effects_Reverb_setDelayms(context_reverb, float_to_fix(50.0));
-  effects_Ladder_default(context_ladder);
-  effects_Ladder_setSamplerate(context_ladder, float_to_fix(sampleRate / (float)1000));
-  effects_Ladder_setCutOff(context_ladder, float_to_fix(1.0));
-  effects_Ladder_setResonance(context_ladder, float_to_fix(1.0));
-  effects_Ladder_setEstimationMethod(context_ladder, 0);
-
+  /*
+    effects_Ladder_default(context_ladder);
+    effects_Ladder_setSamplerate(context_ladder, float_to_fix(sampleRate / (float)1000));
+    effects_Ladder_setCutOff(context_ladder, float_to_fix(1.0));
+    effects_Ladder_setResonance(context_ladder, float_to_fix(1.0));
+    effects_Ladder_setEstimationMethod(context_ladder, 0);
+  */
+  effects_SVF_default(context_svf);
+  effects_SVF_setSamplerate(context_svf, float_to_fix(sampleRate / (float)1000));
+  // by default, disable
+  effects_SVF_setFreq(context_svf, float_to_fix(sampleRate / (float)2000));
+  effects_SVF_setQ(context_svf, float_to_fix(0.0));
+  effects_SVF_setType(context_svf, 0);
 }
 
 void loop() {
@@ -265,7 +273,8 @@ void loop() {
       //fix16_t raw = 0.5 * raw0 + 0.5 * raw1 + 0.5 * raw2;
       fix16_t raw = raw0 + raw1 + raw2;
       // add ladder effect -- reduce volume to avoid saturation
-      fix16_t rawf = effects_Ladder_process(context_ladder, raw * 0.1);
+      //fix16_t rawf = effects_Ladder_process(context_ladder, raw * 0.1);
+      fix16_t rawf = effects_SVF_process(context_svf, raw);
       // add reverb
       fix16_t val = effects_Reverb_process(context_reverb, rawf);
       // wet / dry
@@ -273,7 +282,7 @@ void loop() {
       fix16_t out = rawf + val;
       // shortcut, instead of fixed_to_float * 32767, *almost* the same
       //int16_t out16 =  out / 2 - (out >> 16);
-      int16_t out16 =  out  - (out >> 16);
+      int16_t out16 =  out / 10 - (out >> 16);
 
       dsp_cycle_count += rp2040.getCycleCount() - dsp_cycle_tick;
       dsp_time += micros() - dsp_tick;
@@ -294,25 +303,26 @@ void loop() {
       synthDrummer_Voice_process_bufferTo_alt(contextboom, BUFFER_SIZE, raw2_buff);
       // mix -- scaling will occur on all voices at once
       for (size_t i = 0; i < BUFFER_SIZE; i++) {
-        //raw_buff[i] = 0.5 * raw0_buff[i] + 0.5 * raw1_buff[i] + 0.5 * raw2_buff[i];
         // reduce for ladder
-        raw_buff[i] = (raw0_buff[i] + raw1_buff[i] + raw2_buff[i]) * 0.1;
+        //raw_buff[i] = (raw0_buff[i] + raw1_buff[i] + raw2_buff[i]) * 0.1;
+        raw_buff[i] = (raw0_buff[i] + raw1_buff[i] + raw2_buff[i]);
       }
       // apply ladder and then reverb
-      // add ladder effect
-      effects_Ladder_process_bufferTo(context_ladder, BUFFER_SIZE, raw_buff, ladder_buff);
-      effects_Reverb_process_bufferTo(context_reverb, BUFFER_SIZE, ladder_buff, reverb_buff);
+      // add effect
+      // effects_Ladder_process_bufferTo(context_ladder, BUFFER_SIZE, raw_buff, filter_buff);
+      effects_SVF_process_bufferTo(context_svf, BUFFER_SIZE, raw_buff, filter_buff);
+      effects_Reverb_process_bufferTo(context_reverb, BUFFER_SIZE, filter_buff, reverb_buff);
       // two times to better compare with classical situation
       fix16_t out;
       for (size_t i = 0; i < BUFFER_SIZE; i++) {
         // wet / dry
         //out = 0.5 * raw_buff[i] + 0.5 * reverb_buff[i];
-        out = ladder_buff[i] + reverb_buff[i];
+        out = filter_buff[i] + reverb_buff[i];
         // returned float should be between -1 and 1 (should we checkit ?)
         // shortcut, instead of fixed_to_float * 32767, *almost* the same and vastly improve perf with buffered version (???)
         //buff[i] = out / 2 - ( out >> 16);
         // now scale-down at the very end
-        buff[i] = out  - ( out >> 16);
+        buff[i] = out / 10 - ( out >> 16);
       }
 
       dsp_cycle_count += rp2040.getCycleCount() - dsp_cycle_tick;
@@ -423,19 +433,58 @@ void handleCC(byte channel, byte cc, byte value) {
   }
   float ratio = value / 127.0;
 
+  // effect depends on active filter
   // ladder cuttoff, from 0 to nyquist (in kHz)
+  // SVF freq, from 0 to nyquist (in kHz)
   if (cc == 62) {
-    float cut = ratio * (sampleRate / 2000.0);
-    Sprint("Setting Ladder cutoff to: ");
-    Sprintln(cut);
-    effects_Ladder_setCutOff(context_ladder, float_to_fix(cut));
+    /*
+      float cut = ratio * (sampleRate / 2000.0);
+      Sprint("Setting ladder cutoff to: ");
+      Sprintln(cut);
+      effects_Ladder_setCutOff(context_ladder, float_to_fix(cut));
+    */
+    float freq = ratio * (sampleRate / 2000.0);
+    Sprint("Setting SVF freq to: ");
+    Sprintln(freq);
+    effects_SVF_setFreq(context_svf, float_to_fix(freq));
   }
-  // resonance from -10 to 10
+  // Ladder: resonance from 0 to 3
+  // SVF: Q from 0 to ... 5?
   else if (cc == 63) {
-    float res = (ratio - 0.5) * 20.0;
-    Sprint("Setting resonance cutoff to: ");
-    Sprintln(res);
-    effects_Ladder_setResonance(context_ladder, float_to_fix(res));
+    /*
+      float res = (ratio) * 3.0;
+      Sprint("Setting ladder resonance cutoff to: ");
+      Sprintln(res);
+      effects_Ladder_setResonance(context_ladder, float_to_fix(res));
+    */
+    float q = ratio * 3.0;
+    Sprint("Setting SVF Q to: ");
+    Sprintln(q);
+    effects_SVF_setQ(context_svf, float_to_fix(q));
+  }
+  else if (cc == 64) {
+    int type = round(ratio * 4);
+    Sprint("Setting SVF type to: ");
+    Sprint(type);
+    if (type == 0) {
+      Sprintln(" (disabled)");
+    }
+    else if (type == 1) {
+      Sprintln(" (low pass)");
+    }
+    else if (type == 2) {
+      Sprintln(" (high pass)");
+    }
+    else if (type == 3) {
+      Sprintln(" (band pass)");
+    }
+    else if (type == 4) {
+      Sprintln(" (low pass)");
+    }
+    else {
+      Sprintln(" (unknown)");
+    }
+    effects_SVF_setType(context_svf, type);
   }
 }
 

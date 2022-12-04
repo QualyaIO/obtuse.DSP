@@ -669,6 +669,132 @@ static_inline void effects_Ladder_default(effects_Ladder__ctx_type_2 &_ctx){
    effects_Ladder_setEstimationMethod(_ctx,0);
 }
 
+typedef struct effects_SVF__ctx_type_0 {
+   fix16_t z2;
+   fix16_t z1;
+   fix16_t tuneRatio;
+   int sel;
+   fix16_t rsize;
+   fix16_t q;
+   fix16_t inv_den;
+   fix16_t g_table[1024];
+   fix16_t gRatio;
+   fix16_t g;
+   fix16_t fs_nyquist;
+   fix16_t fs;
+   fix16_t freq;
+   fix16_t R;
+} effects_SVF__ctx_type_0;
+
+typedef effects_SVF__ctx_type_0 effects_SVF_updateGTable_type;
+
+void effects_SVF__ctx_type_0_init(effects_SVF__ctx_type_0 &_output_);
+
+static_inline void effects_SVF_updateGTable_init(effects_SVF__ctx_type_0 &_output_){
+   effects_SVF__ctx_type_0_init(_output_);
+   return ;
+}
+
+void effects_SVF_updateGTable(effects_SVF__ctx_type_0 &_ctx);
+
+typedef effects_SVF__ctx_type_0 effects_SVF_updateG_type;
+
+static_inline void effects_SVF_updateG_init(effects_SVF__ctx_type_0 &_output_){
+   effects_SVF__ctx_type_0_init(_output_);
+   return ;
+}
+
+void effects_SVF_updateG(effects_SVF__ctx_type_0 &_ctx);
+
+typedef effects_SVF__ctx_type_0 effects_SVF_updateCoeffs_type;
+
+static_inline void effects_SVF_updateCoeffs_init(effects_SVF__ctx_type_0 &_output_){
+   effects_SVF__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void effects_SVF_updateCoeffs(effects_SVF__ctx_type_0 &_ctx){
+   _ctx.R = fix_div(0x10000 /* 1.000000 */,((0x0 /* 0.000000 */ + _ctx.q) << 1));
+   _ctx.inv_den = fix_div(0x10000 /* 1.000000 */,(0x10000 /* 1.000000 */ + fix_mul(_ctx.g,_ctx.g) + (fix_mul(_ctx.R,_ctx.g) << 1)));
+}
+
+typedef effects_SVF__ctx_type_0 effects_SVF_setFreq_type;
+
+static_inline void effects_SVF_setFreq_init(effects_SVF__ctx_type_0 &_output_){
+   effects_SVF__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void effects_SVF_setFreq(effects_SVF__ctx_type_0 &_ctx, fix16_t newFreq){
+   _ctx.freq = fix_clip(newFreq,0x0 /* 0.000000 */,_ctx.fs_nyquist);
+   effects_SVF_updateG(_ctx);
+   effects_SVF_updateCoeffs(_ctx);
+}
+
+typedef effects_SVF__ctx_type_0 effects_SVF_setQ_type;
+
+static_inline void effects_SVF_setQ_init(effects_SVF__ctx_type_0 &_output_){
+   effects_SVF__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void effects_SVF_setQ(effects_SVF__ctx_type_0 &_ctx, fix16_t newQ){
+   _ctx.q = (0x8000 /* 0.500000 */ + newQ);
+   effects_SVF_updateCoeffs(_ctx);
+}
+
+typedef effects_SVF__ctx_type_0 effects_SVF_setType_type;
+
+static_inline void effects_SVF_setType_init(effects_SVF__ctx_type_0 &_output_){
+   effects_SVF__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void effects_SVF_setType(effects_SVF__ctx_type_0 &_ctx, int newSel){
+   _ctx.sel = int_clip(newSel,0,4);
+};
+
+typedef effects_SVF__ctx_type_0 effects_SVF_process_type;
+
+static_inline void effects_SVF_process_init(effects_SVF__ctx_type_0 &_output_){
+   effects_SVF__ctx_type_0_init(_output_);
+   return ;
+}
+
+fix16_t effects_SVF_process(effects_SVF__ctx_type_0 &_ctx, fix16_t input);
+
+typedef effects_SVF__ctx_type_0 effects_SVF_process_bufferTo_type;
+
+static_inline void effects_SVF_process_bufferTo_init(effects_SVF__ctx_type_0 &_output_){
+   effects_SVF__ctx_type_0_init(_output_);
+   return ;
+}
+
+void effects_SVF_process_bufferTo(effects_SVF__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256], fix16_t (&oBuffer)[256]);
+
+typedef effects_SVF__ctx_type_0 effects_SVF_setSamplerate_type;
+
+static_inline void effects_SVF_setSamplerate_init(effects_SVF__ctx_type_0 &_output_){
+   effects_SVF__ctx_type_0_init(_output_);
+   return ;
+}
+
+void effects_SVF_setSamplerate(effects_SVF__ctx_type_0 &_ctx, fix16_t newFs);
+
+typedef effects_SVF__ctx_type_0 effects_SVF_default_type;
+
+static_inline void effects_SVF_default_init(effects_SVF__ctx_type_0 &_output_){
+   effects_SVF__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void effects_SVF_default(effects_SVF__ctx_type_0 &_ctx){
+   _ctx.rsize = 0x4000000 /* 1024.000000 */;
+   _ctx.freq = 0x0 /* 0.000000 */;
+   _ctx.q = 0x0 /* 0.000000 */;
+   effects_SVF_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
+}
+
 
 
 #endif // EFFECTS_H

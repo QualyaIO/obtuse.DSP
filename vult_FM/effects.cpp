@@ -8927,4 +8927,154 @@ void effects_Ladder_setSamplerate(effects_Ladder__ctx_type_2 &_ctx, fix16_t newF
    }
 }
 
+void effects_SVF__ctx_type_0_init(effects_SVF__ctx_type_0 &_output_){
+   effects_SVF__ctx_type_0 _ctx;
+   _ctx.z2 = 0x0 /* 0.000000 */;
+   _ctx.z1 = 0x0 /* 0.000000 */;
+   _ctx.tuneRatio = 0x0 /* 0.000000 */;
+   _ctx.sel = 0;
+   _ctx.rsize = 0x0 /* 0.000000 */;
+   _ctx.q = 0x0 /* 0.000000 */;
+   _ctx.inv_den = 0x0 /* 0.000000 */;
+   ;
+   _ctx.gRatio = 0x0 /* 0.000000 */;
+   _ctx.g = 0x0 /* 0.000000 */;
+   _ctx.fs_nyquist = 0x0 /* 0.000000 */;
+   _ctx.fs = 0x0 /* 0.000000 */;
+   _ctx.freq = 0x0 /* 0.000000 */;
+   _ctx.R = 0x0 /* 0.000000 */;
+   effects_SVF_default(_ctx);
+   _output_ = _ctx;
+   return ;
+}
+
+void effects_SVF_updateGTable(effects_SVF__ctx_type_0 &_ctx){
+   fix16_t wd;
+   fix16_t T;
+   fix16_t wa;
+   fix16_t fi;
+   int i;
+   i = 0;
+   while(i < 1024){
+      fi = fix_div(fix_mul(_ctx.fs_nyquist,int_to_fix(i)),_ctx.rsize);
+      wd = fix_mul(0x6487e /* 6.283185 */,fi);
+      T = fix_div(0x10000 /* 1.000000 */,_ctx.fs);
+      wa = fix_mul(fix_tan((fix_mul(T,wd) >> 1)),fix_div(0x20000 /* 2.000000 */,T));
+      _ctx.g_table[i] = (fix_mul(T,wa) >> 1);
+      i = (1 + i);
+   }
+}
+
+void effects_SVF_updateG(effects_SVF__ctx_type_0 &_ctx){
+   _ctx.freq = fix_clip(_ctx.freq,0x0 /* 0.000000 */,(_ctx.fs >> 1));
+   fix16_t idx;
+   idx = fix_mul(_ctx.freq,_ctx.tuneRatio);
+   int iIdx;
+   iIdx = fix_to_int(idx);
+   if(iIdx < 1023){
+      _ctx.g = (_ctx.g_table[iIdx] + fix_mul((idx % 0x10000 /* 1.000000 */),(_ctx.g_table[(1 + iIdx)] + (- _ctx.g_table[iIdx]))));
+   }
+   else
+   {
+      _ctx.g = _ctx.g_table[1023];
+   }
+}
+
+fix16_t effects_SVF_process(effects_SVF__ctx_type_0 &_ctx, fix16_t input){
+   if(_ctx.sel == 0){
+      return input;
+   }
+   fix16_t high;
+   high = fix_mul(_ctx.inv_den,(input + (- _ctx.z2) + (- fix_mul(_ctx.z1,(_ctx.g + (_ctx.R << 1))))));
+   fix16_t band;
+   band = (_ctx.z1 + fix_mul(_ctx.g,high));
+   fix16_t low;
+   low = (_ctx.z2 + fix_mul(_ctx.g,band));
+   fix16_t notch;
+   notch = (high + low);
+   _ctx.z1 = (band + fix_mul(_ctx.g,high));
+   _ctx.z2 = (low + fix_mul(_ctx.g,band));
+   fix16_t output;
+   switch(_ctx.sel) {
+      case 1:
+         output = low;
+      break;
+      case 2:
+         output = high;
+      break;
+      case 3:
+         output = band;
+      break;
+    default: 
+      output = notch;
+   }
+   return output;
+}
+
+void effects_SVF_process_bufferTo(effects_SVF__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256], fix16_t (&oBuffer)[256]){
+   int min_nb;
+   min_nb = 256;
+   if(256 < min_nb){
+      min_nb = 256;
+   }
+   nb = int_clip(nb,0,min_nb);
+   if(nb == 0){
+      nb = min_nb;
+   }
+   int i;
+   i = 0;
+   if(_ctx.sel == 0){
+      while(i < nb){
+         oBuffer[i] = input[i];
+         i = (1 + i);
+      }
+   }
+   else
+   {
+      while(i < nb){
+         fix16_t high;
+         high = fix_mul(_ctx.inv_den,(input[i] + (- _ctx.z2) + (- fix_mul(_ctx.z1,(_ctx.g + (_ctx.R << 1))))));
+         fix16_t band;
+         band = (_ctx.z1 + fix_mul(_ctx.g,high));
+         fix16_t low;
+         low = (_ctx.z2 + fix_mul(_ctx.g,band));
+         fix16_t notch;
+         notch = (high + low);
+         _ctx.z1 = (band + fix_mul(_ctx.g,high));
+         _ctx.z2 = (low + fix_mul(_ctx.g,band));
+         if(_ctx.sel == 1){
+            oBuffer[i] = low;
+         }
+         else
+         {
+            if(_ctx.sel == 2){
+               oBuffer[i] = high;
+            }
+            else
+            {
+               if(_ctx.sel == 3){
+                  oBuffer[i] = band;
+               }
+               else
+               {
+                  oBuffer[i] = notch;
+               }
+            }
+         }
+         i = (1 + i);
+      }
+   }
+}
+
+void effects_SVF_setSamplerate(effects_SVF__ctx_type_0 &_ctx, fix16_t newFs){
+   if(newFs > 0x0 /* 0.000000 */){
+      _ctx.fs = newFs;
+      _ctx.fs_nyquist = (_ctx.fs >> 1);
+      _ctx.gRatio = fix_div(_ctx.rsize,_ctx.fs_nyquist);
+      effects_SVF_updateGTable(_ctx);
+      effects_SVF_updateG(_ctx);
+      effects_SVF_updateCoeffs(_ctx);
+   }
+}
+
 

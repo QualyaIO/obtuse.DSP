@@ -102,6 +102,45 @@ and process(input:real):real {
    return output;
 }
 
+and process_bufferTo(nb: int, input: array(real, 256), oBuffer: array(real, 256)) {
+  val min_nb = size(input);
+  if (size(oBuffer) < min_nb) {
+     min_nb = size(oBuffer);
+  }
+  nb = clip(nb, 0, min_nb);
+  if (nb == 0) {
+     nb = min_nb;
+  }
+
+  val i = 0;
+  if (sel == 0) {
+    while (i < nb) {
+      oBuffer[i] = input[i];
+      i = i + 1;
+    }
+  } else {
+    while (i < nb) {
+      val high  = (input[i] - (2.0*R + g)*z1 - z2) * inv_den;
+      val band  = g*high + z1;
+      val low   = g*band + z2;
+      val notch = low + high;
+   
+      z1 = g*high + band;
+      z2 = g*band + low;
+
+      oBuffer[i] =
+        if sel == 1 then low else
+        if sel == 2 then high else
+        if sel == 3 then band else
+        notch;
+
+      i = i + 1;
+    }
+  }
+}
+
+
+
 // seter for parameters. expect values of desired frequency and current sampling rate in kHz to avoid fixed float limits ([1/32767 ..32767]... probably)
 // Will re-compute the tuning table, call will be costly
 and setSamplerate(newFs:real) {
