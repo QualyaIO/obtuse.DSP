@@ -3,7 +3,7 @@
 // warning: most probably non thread-safe, and even interrupt-safe -- worst-case messages will be temporarily mixed-up, no memory corruption it seems (finger crossed)
 
 // buffer for storing data
-char buffchar[512];
+char buffchar[128];
 size_t buffWpos = 0;
 size_t buffRpos = 0;
 

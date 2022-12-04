@@ -57,6 +57,10 @@ int current_note = 0;
 // note on/off
 bool gate = false;
 
+// counters to pull from time to time (but not to often, to minimize crash) from MIDI messages
+long midi_msg_tick = 0;
+float midi_msg_freq = 10;
+
 /*** SGTL ***/
 
 #include <I2S.h>
@@ -112,13 +116,8 @@ void setup() {
   set_sys_clock_khz(153600, true); // this one for 30000hz
 
   /* MIDI */
-  // init explicitely TinyUSB, taking into account tud_midi_rx_cb
-  tusb_init();
-  // make available the device
-  usb_midi.begin();
-
   // not working?
-  //usb_midi.setStringDescriptor("Vult_FM");
+  usb_midi.setStringDescriptor("Vult_FM");
 
   // Initialize MIDI, and listen to all MIDI channels
   // This will also call usb_midi's begin()
@@ -274,7 +273,7 @@ void loop() {
       fix16_t out = rawf + val;
       // shortcut, instead of fixed_to_float * 32767, *almost* the same
       //int16_t out16 =  out / 2 - (out >> 16);
-      int16_t out16 =  out / 10 - (out >> 16);
+      int16_t out16 =  out  - (out >> 16);
 
       dsp_cycle_count += rp2040.getCycleCount() - dsp_cycle_tick;
       dsp_time += micros() - dsp_tick;
@@ -325,6 +324,15 @@ void loop() {
     }
   }
 
+  // Process all incoming MIDI messages
+  MidiFlush();
+  // fetch message from MIDI to Serial in a second time to minimize crash due to racing condition
+  // FIXME: sill not perfect, might disable all logs and/or set watchdog
+  if (midi_msg_freq > 0 && millis() - midi_msg_tick > 1. / midi_msg_freq) {
+    Sfetch();
+    midi_msg_tick = millis();
+  }
+
   // debug
   int newTick = micros();
   if (newTick - tick >= 1000000) {
@@ -341,11 +349,9 @@ void loop() {
     tick += 1000000;
     dsp_cycle_count = 0;
     debug_cycle_tick = rp2040.getCycleCount();
-
-    // fetch message from MIDI to Serial in a second time to avoid crash due to racing condition
-    Sfetch();
   }
 
+  // for testing, switching between buffer version
   if (buffer_switch_time > 0 and millis() - switch_tick >= buffer_switch_time) {
     buffer_version = !buffer_version;
     Serial.print("Switch to buffer: ");
@@ -434,10 +440,14 @@ void handleCC(byte channel, byte cc, byte value) {
 }
 
 // pull all pending MIDI messages
-void tud_midi_rx_cb()
-{
+void MidiFlush() {
   while (tud_midi_available() > 0) {
-    Serial.println("midi message");
     MIDI.read();
   }
 }
+
+// automatically called from TinyUSB, disable to avoid changing things during audio processing
+/*void tud_midi_rx_cb(uint8_t itf)
+  {
+  MidiFlush();
+  }*/
