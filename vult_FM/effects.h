@@ -672,7 +672,6 @@ static_inline void effects_Ladder_default(effects_Ladder__ctx_type_2 &_ctx){
 typedef struct effects_SVF__ctx_type_0 {
    fix16_t z2;
    fix16_t z1;
-   fix16_t tuneRatio;
    int sel;
    fix16_t rsize;
    fix16_t q;

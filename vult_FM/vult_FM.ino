@@ -479,7 +479,7 @@ void handleCC(byte channel, byte cc, byte value) {
       Sprintln(" (band pass)");
     }
     else if (type == 4) {
-      Sprintln(" (low pass)");
+      Sprintln(" (notch)");
     }
     else {
       Sprintln(" (unknown)");

@@ -1,6 +1,6 @@
 // State variable filter
 // Adapted from Vult examples (with copyright 2017 Leonardo Laguna Ruiz) and MIT Licence
-// Note that filter freq will be caped at nyquist (sample rate / 2)
+// Note that filter freq will be caped at nyquist (sample rate / 2)... minus some to avoid coeff going to the room
 
 // update table for computing coeff, from 0hz to nyquist
 fun updateGTable() {
@@ -34,9 +34,9 @@ and updateG() {
    // selected frequency and corresponding coeff to be tuned
    mem freq, g;
    // to speedup computations
-   mem tuneRatio;
-   freq = clip(freq, 0.0, fs/2.0);
-   val idx = freq * tuneRatio;
+   mem gRatio;
+   freq = clip(freq, 0.0, fs_nyquist);
+   val idx = freq * gRatio;
    val iIdx = int(idx);
    if (iIdx < size(g_table) - 1) {
       // interpolate
@@ -147,7 +147,8 @@ and setSamplerate(newFs:real) {
    mem gRatio;
    if (newFs > 0.0) {
       fs = newFs;
-      fs_nyquist = fs/2.0;
+      // not really fs/2 to avoid problem with values too high (noise as we reach nyquist)
+      fs_nyquist = fs*0.45;
       gRatio = rsize / fs_nyquist;
       _ = updateGTable();
       _ = updateG();

@@ -8931,7 +8931,6 @@ void effects_SVF__ctx_type_0_init(effects_SVF__ctx_type_0 &_output_){
    effects_SVF__ctx_type_0 _ctx;
    _ctx.z2 = 0x0 /* 0.000000 */;
    _ctx.z1 = 0x0 /* 0.000000 */;
-   _ctx.tuneRatio = 0x0 /* 0.000000 */;
    _ctx.sel = 0;
    _ctx.rsize = 0x0 /* 0.000000 */;
    _ctx.q = 0x0 /* 0.000000 */;
@@ -8966,9 +8965,9 @@ void effects_SVF_updateGTable(effects_SVF__ctx_type_0 &_ctx){
 }
 
 void effects_SVF_updateG(effects_SVF__ctx_type_0 &_ctx){
-   _ctx.freq = fix_clip(_ctx.freq,0x0 /* 0.000000 */,(_ctx.fs >> 1));
+   _ctx.freq = fix_clip(_ctx.freq,0x0 /* 0.000000 */,_ctx.fs_nyquist);
    fix16_t idx;
-   idx = fix_mul(_ctx.freq,_ctx.tuneRatio);
+   idx = fix_mul(_ctx.freq,_ctx.gRatio);
    int iIdx;
    iIdx = fix_to_int(idx);
    if(iIdx < 1023){
@@ -9069,7 +9068,7 @@ void effects_SVF_process_bufferTo(effects_SVF__ctx_type_0 &_ctx, int nb, fix16_t
 void effects_SVF_setSamplerate(effects_SVF__ctx_type_0 &_ctx, fix16_t newFs){
    if(newFs > 0x0 /* 0.000000 */){
       _ctx.fs = newFs;
-      _ctx.fs_nyquist = (_ctx.fs >> 1);
+      _ctx.fs_nyquist = fix_mul(0x7333 /* 0.450000 */,_ctx.fs);
       _ctx.gRatio = fix_div(_ctx.rsize,_ctx.fs_nyquist);
       effects_SVF_updateGTable(_ctx);
       effects_SVF_updateG(_ctx);
