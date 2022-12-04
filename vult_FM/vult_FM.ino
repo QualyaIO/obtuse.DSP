@@ -112,8 +112,13 @@ void setup() {
   set_sys_clock_khz(153600, true); // this one for 30000hz
 
   /* MIDI */
+  // init explicitely TinyUSB, taking into account tud_midi_rx_cb
+  tusb_init();
+  // make available the device
+  usb_midi.begin();
+
   // not working?
-  usb_midi.setStringDescriptor("Vult_FM");
+  //usb_midi.setStringDescriptor("Vult_FM");
 
   // Initialize MIDI, and listen to all MIDI channels
   // This will also call usb_midi's begin()
@@ -292,7 +297,7 @@ void loop() {
       for (size_t i = 0; i < BUFFER_SIZE; i++) {
         //raw_buff[i] = 0.5 * raw0_buff[i] + 0.5 * raw1_buff[i] + 0.5 * raw2_buff[i];
         // reduce for ladder
-        raw_buff[i] = (raw0_buff[i] + raw1_buff[i] + raw2_buff[i])* 0.1;
+        raw_buff[i] = (raw0_buff[i] + raw1_buff[i] + raw2_buff[i]) * 0.1;
       }
       // apply ladder and then reverb
       // add ladder effect
@@ -320,9 +325,6 @@ void loop() {
     }
   }
 
-  // read any new MIDI messages
-  MIDI.read();
-
   // debug
   int newTick = micros();
   if (newTick - tick >= 1000000) {
@@ -339,6 +341,9 @@ void loop() {
     tick += 1000000;
     dsp_cycle_count = 0;
     debug_cycle_tick = rp2040.getCycleCount();
+
+    // fetch message from MIDI to Serial in a second time to avoid crash due to racing condition
+    Sfetch();
   }
 
   if (buffer_switch_time > 0 and millis() - switch_tick >= buffer_switch_time) {
@@ -347,20 +352,21 @@ void loop() {
     Serial.println(buffer_version);
     switch_tick = millis();
   }
+
 }
 
 // channel: 1..16
 void handleNoteOn(byte channel, byte pitch, byte velocity)
 {
   // Log when a note is pressed.
-  Serial.print("Note on: channel = ");
-  Serial.print(channel);
+  Sprint("Note on: channel = ");
+  Sprint(channel);
 
-  Serial.print(" pitch = ");
-  Serial.print(pitch);
+  Sprint(" pitch = ");
+  Sprint(pitch);
 
-  Serial.print(" velocity = ");
-  Serial.println(velocity);
+  Sprint(" velocity = ");
+  Sprintln(velocity);
   //synthFM_OSC_setFrequency(context_osc, Util_noteToFrequency(pitch));
   //synthFM_FM_noteOn(context_fm, pitch, 0, 0);
 
@@ -378,14 +384,14 @@ void handleNoteOn(byte channel, byte pitch, byte velocity)
 void handleNoteOff(byte channel, byte pitch, byte velocity)
 {
   // Log when a note is released.
-  Serial.print("Note off: channel = ");
-  Serial.print(channel);
+  Sprint("Note off: channel = ");
+  Sprint(channel);
 
-  Serial.print(" pitch = ");
-  Serial.print(pitch);
+  Sprint(" pitch = ");
+  Sprint(pitch);
 
-  Serial.print(" velocity = ");
-  Serial.println(velocity);
+  Sprint(" velocity = ");
+  Sprintln(velocity);
   //synthFM_OSC_setFrequency(context_osc, Util_noteToFrequency(1));
   //synthFM_FM_noteOff(context_fm, pitch, 0);
   if (channel == 3) {
@@ -399,12 +405,12 @@ void handleNoteOff(byte channel, byte pitch, byte velocity)
 }
 
 void handleCC(byte channel, byte cc, byte value) {
-  Serial.print("CC on: channel = ");
-  Serial.print(channel);
-  Serial.print(" control = ");
-  Serial.print(cc);
-  Serial.print(" value = ");
-  Serial.println(value);
+  Sprint("CC on: channel = ");
+  Sprint(channel);
+  Sprint(" control = ");
+  Sprint(cc);
+  Sprint(" value = ");
+  Sprintln(value);
 
   if (value > 127) {
     value = 127;
@@ -414,15 +420,24 @@ void handleCC(byte channel, byte cc, byte value) {
   // ladder cuttoff, from 0 to nyquist (in kHz)
   if (cc == 62) {
     float cut = ratio * (sampleRate / 2000.0);
-    Serial.print("Setting Ladder cutoff to: ");
-    Serial.println(cut);
+    Sprint("Setting Ladder cutoff to: ");
+    Sprintln(cut);
     effects_Ladder_setCutOff(context_ladder, float_to_fix(cut));
-  } 
+  }
   // resonance from -10 to 10
   else if (cc == 63) {
     float res = (ratio - 0.5) * 20.0;
-    Serial.print("Setting resonance cutoff to: ");
-    Serial.println(res);
+    Sprint("Setting resonance cutoff to: ");
+    Sprintln(res);
     effects_Ladder_setResonance(context_ladder, float_to_fix(res));
+  }
+}
+
+// pull all pending MIDI messages
+void tud_midi_rx_cb()
+{
+  while (tud_midi_available() > 0) {
+    Serial.println("midi message");
+    MIDI.read();
   }
 }
