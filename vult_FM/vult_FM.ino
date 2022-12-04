@@ -462,7 +462,7 @@ void handleCC(byte channel, byte cc, byte value) {
     Sprintln(q);
     effects_SVF_setQ(context_svf, float_to_fix(q));
   }
-  else if (cc == 64) {
+  else if (cc == 75) {
     int type = round(ratio * 4);
     Sprint("Setting SVF type to: ");
     Sprint(type);

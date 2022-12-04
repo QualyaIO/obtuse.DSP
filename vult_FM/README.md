@@ -6,6 +6,7 @@ MIDI input: using https://github.com/FortySevenEffects/arduino_midi_library (tes
 
 For now, use `make_vult.sh` to transpile all files.
 
+WARNING: Drummer for some reason does not work on Os optim (default). Tested fine with Ofast.
 TODO:
 
 - take into account pitchwheel
@@ -20,3 +21,4 @@ TODO:
 - sequencer?
 - timeout for voices?
 - copy wavetable in temp var for FM, and mix them?
+- make drummer work no matter the optimisation ??

@@ -68,23 +68,23 @@ and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
 
   while (i < nb) {
     value = 0.0;
-    // advance time, keep range in check here to maximize precision
-    pos = pos + step;
-    while (pos >= 1024.0) {
-      posBase = posBase + 1024;
-      pos = pos - 1024.0;
-    }
 
-    val idx = posBase + int(pos);
-    // will stop and reset note once reach the end of file
-    if (idx >= size) {
-      slice = -1;
-      posBase = 0;
-      pos = 0.0;
-    }
-  
     if (slice >= 0 && slice <= size(slices_start)) {
+      // advance time, keep range in check here to maximize precision
+      pos = pos + step;
+      while (pos >= 1024.0) {
+        posBase = posBase + 1024;
+        pos = pos - 1024.0;
+      }
   
+      val idx = posBase + int(pos);
+      // will stop and reset note once reach the end of file
+      if (idx >= size) {
+        slice = -1;
+        posBase = 0;
+        pos = 0.0;
+      }
+
       // stop and reset once reached and of sample
       if (idx >= slices_end[slice]) {
         slice = -1;
@@ -93,7 +93,9 @@ and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
       } else {
         value = getSample(idx) + (pos % 1.0) * (getSample(idx+1) - getSample(idx));
       }
+      
     }
+    
     oBuffer[i] = value;
     i = i + 1;
   }
