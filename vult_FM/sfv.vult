@@ -1,47 +1,128 @@
 // State variable filter
 // Adapted from Vult examples (with copyright 2017 Leonardo Laguna Ruiz) and MIT Licence
+// Note that filter freq will be caped at nyquist (sample rate / 2)
 
-fun calc_g(cv) @[table(size=128, min=0.0, max=0.9)]{
-   val pitch = Util.cvToPitch(cv);
-   val f = 8.175798915643707*exp(0.057762265046662105*pitch);
-   val pi = 3.141592653589793;
-   val wd = 2.0*pi*f;
-	val T  = 1.0/44100.0;
-	val wa = (2.0/T)*tan(wd*T/2.0);
-	val g  = wa*T/2.0;
-   return g;
+// update table for computing coeff, from 0hz to nyquist
+fun updateGTable() {
+   // current sampling rate and max possible frequency
+   mem fs: real;
+   mem fs_nyquist: real;
+   // buffer to store frequency tables
+   mem g_table;
+   // size of table, to speedup (hence must be init first!)
+   mem rsize;
+
+   // temp variables for computations
+   val wd, T, wa;
+
+   // frequency in the table to be updated
+   val fi;
+   val i = 0;
+
+   while (i < size(g_table)){
+     fi = real(i) * fs_nyquist / rsize;
+     wd = 2.0*pi()*fi;
+     T  = 1.0/fs;
+     wa = (2.0/T)*tan(wd*T/2.0);
+     g_table[i] = wa*T/2.0;
+     i = i + 1;
+   }
 }
 
-fun process(x, cv, q, sel) {
-   mem z1, z2;
-   mem g, inv_den, R;
-   q = q + 0.5;
-   if(Util.change(cv) || Util.change(q)) {
-      g = calc_g(cv);
-      R = 1.0/(2.0*(q+eps()));
-      inv_den = 1.0/(1.0 + 2.0*R*g + g*g);
+// update G after sample rate or frequency change, with a linear interpolation. Except a frequency below nyquist, in kHz
+and updateG() {
+   // selected frequency and corresponding coeff to be tuned
+   mem freq, g;
+   // to speedup computations
+   mem tuneRatio;
+   freq = clip(freq, 0.0, fs/2.0);
+   val idx = freq * tuneRatio;
+   val iIdx = int(idx);
+   if (iIdx < size(g_table) - 1) {
+      // interpolate
+      g = g_table[iIdx] + (idx % 1.0) * (g_table[iIdx+1] - g_table[iIdx]);
    }
+   else {
+      g = g_table[size(g_table) - 1];
+   }
+}
 
-   val high  = (x - (2.0*R + g)*z1 - z2) * inv_den;
-	val band  = g*high + z1;
-	val low   = g*band + z2;
+// to be called upon new freq or Q, after updateG
+and updateCoeffs() {
+  // selected band and coeffs to be tuned
+   mem q, inv_den, R;
+   R = 1.0/(2.0*(q+eps()));
+   inv_den = 1.0/(1.0 + 2.0*R*g + g*g);
+}
+
+
+// note that effects will depend on input level
+and setFreq(newFreq: real) {
+   freq = clip(newFreq, 0.0, fs_nyquist);
+   _ = updateG();
+   _ = updateCoeffs();
+}
+
+// set... bandwidth?
+and setQ(newQ: real) {
+  q = newQ + 0.5;
+  _ = updateCoeffs();
+}
+
+// setting filter type
+// 0: disabled
+// 1: low-pass
+// 2: high-pass
+// 3: band-pass
+// 4: notch
+and setType(newSel: int) {
+  mem sel = clip(newSel, 0, 4);
+}
+
+and process(input:real):real {
+   if (sel == 0) {
+     return input;
+   }
+   mem z1, z2;
+
+   val high  = (input - (2.0*R + g)*z1 - z2) * inv_den;
+   val band  = g*high + z1;
+   val low   = g*band + z2;
    val notch = low + high;
 
-	z1 = g*high + band;
-	z2 = g*band + low;
+   z1 = g*high + band;
+   z2 = g*band + low;
 
    val output =
-      if sel == 0 then low else
-      if sel == 1 then high else
-      if sel == 2 then band else
+      if sel == 1 then low else
+      if sel == 2 then high else
+      if sel == 3 then band else
       notch;
-   return Saturate_soft.process(output);
+   //return Saturate_soft.process(output);
+   return output;
 }
-and noteOn(note:int,velocity:int,channel:int){ }
-and noteOff(note:int,channel:int){ }
-and controlChange(control:int,value:int,channel:int){ }
+
+// seter for parameters. expect values of desired frequency and current sampling rate in kHz to avoid fixed float limits ([1/32767 ..32767]... probably)
+// Will re-compute the tuning table, call will be costly
+and setSamplerate(newFs:real) {
+   mem gRatio;
+   if (newFs > 0.0) {
+      fs = newFs;
+      fs_nyquist = fs/2.0;
+      gRatio = rsize / fs_nyquist;
+      _ = updateGTable();
+      _ = updateG();
+      _ = updateCoeffs();
+   }
+}
+
+
 and default() @[init] {
-   g = calc_g(0.0);
-   R = 1.0/(2.0*0.5);
-   inv_den = 1.0/(1.0 + 2.0*0.0*g + g*g);
+   // frequency table will be computed ahead of time to save resources
+   mem g_table: array(real, 1024);
+   rsize = real(size(g_table));
+   freq = 0.0;
+   q = 0.0;
+   // will also call methods to update coeffs
+   _ = setSamplerate(44.1);
  }
