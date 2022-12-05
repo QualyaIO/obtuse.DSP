@@ -58,7 +58,7 @@ and updateCoeffs() {
 
 // note that effects will depend on input level
 and setFreq(newFreq: real) {
-   freq = clip(newFreq, 0.0, fs_nyquist);
+   mem targetFreq = clip(newFreq, 0.0, fs_nyquist);
    _ = updateG();
    _ = updateCoeffs();
 }
@@ -85,7 +85,13 @@ and process(input:real):real {
      return input;
      }*/
    mem z1, z2;
-
+   mem targetFreq;
+   mem freq = Util.smooth(targetFreq, 0.1);
+   if(Util.change(freq)) {
+     _ = updateG();
+     _ = updateCoeffs();
+   }
+   
    val high  = (input - (2.0*R + g)*z1 - z2) * inv_den;
    val band  = g*high + z1;
    val low   = g*band + z2;
@@ -124,6 +130,12 @@ and process_bufferTo(nb: int, input: array(real, 256), oBuffer: array(real, 256)
   } else {
   */
     while (i < nb) {
+      freq = Util.smooth(targetFreq, 0.1);
+      if(Util.change(freq)) {
+        _ = updateG();
+        _ = updateCoeffs();
+      }
+
       val high  = (input[i] - (2.0*R + g)*z1 - z2) * inv_den;
       val band  = g*high + z1;
       val low   = g*band + z2;

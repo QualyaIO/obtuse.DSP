@@ -89,6 +89,29 @@ static_inline void effects_Util_buffer_large(fix16_t (&_output_)[2048]){
    return ;
 }
 
+typedef struct effects_Util__ctx_type_6 {
+   fix16_t x;
+} effects_Util__ctx_type_6;
+
+typedef effects_Util__ctx_type_6 effects_Util_smooth_type;
+
+static_inline void effects_Util__ctx_type_6_init(effects_Util__ctx_type_6 &_output_){
+   effects_Util__ctx_type_6 _ctx;
+   _ctx.x = 0x0 /* 0.000000 */;
+   _output_ = _ctx;
+   return ;
+}
+
+static_inline void effects_Util_smooth_init(effects_Util__ctx_type_6 &_output_){
+   effects_Util__ctx_type_6_init(_output_);
+   return ;
+}
+
+static_inline fix16_t effects_Util_smooth(effects_Util__ctx_type_6 &_ctx, fix16_t input, fix16_t coeff){
+   _ctx.x = (_ctx.x + fix_mul(coeff,(input + (- _ctx.x))));
+   return _ctx.x;
+}
+
 typedef struct effects_CombFB__ctx_type_0 {
    fix16_t scale;
    int pos;
@@ -672,6 +695,7 @@ static_inline void effects_Ladder_default(effects_Ladder__ctx_type_2 &_ctx){
 typedef struct effects_SVF__ctx_type_0 {
    fix16_t z2;
    fix16_t z1;
+   fix16_t targetFreq;
    int sel;
    fix16_t rsize;
    fix16_t q;
@@ -682,6 +706,10 @@ typedef struct effects_SVF__ctx_type_0 {
    fix16_t fs_nyquist;
    fix16_t fs;
    fix16_t freq;
+   effects_Util__ctx_type_3 _inst93b;
+   effects_Util__ctx_type_6 _inst855;
+   effects_Util__ctx_type_3 _inst163b;
+   effects_Util__ctx_type_6 _inst1555;
    fix16_t R;
 } effects_SVF__ctx_type_0;
 
@@ -725,7 +753,7 @@ static_inline void effects_SVF_setFreq_init(effects_SVF__ctx_type_0 &_output_){
 }
 
 static_inline void effects_SVF_setFreq(effects_SVF__ctx_type_0 &_ctx, fix16_t newFreq){
-   _ctx.freq = fix_clip(newFreq,0x0 /* 0.000000 */,_ctx.fs_nyquist);
+   _ctx.targetFreq = fix_clip(newFreq,0x0 /* 0.000000 */,_ctx.fs_nyquist);
    effects_SVF_updateG(_ctx);
    effects_SVF_updateCoeffs(_ctx);
 }

@@ -46,8 +46,8 @@ fun buffer_large() {
 
 // smooth transition to a value
 // coeff: should be ]0..1] from slow to instantaneous
-fun smooth(input, coeff){
+fun smooth(input, coeff:real){
    mem x;
-   x = x+(input-x)*0.005;
+   x = x+(input-x)*coeff;
    return x;
 }

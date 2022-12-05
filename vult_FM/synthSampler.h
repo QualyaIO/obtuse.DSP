@@ -89,6 +89,29 @@ static_inline void synthSampler_Util_buffer_large(fix16_t (&_output_)[2048]){
    return ;
 }
 
+typedef struct synthSampler_Util__ctx_type_6 {
+   fix16_t x;
+} synthSampler_Util__ctx_type_6;
+
+typedef synthSampler_Util__ctx_type_6 synthSampler_Util_smooth_type;
+
+static_inline void synthSampler_Util__ctx_type_6_init(synthSampler_Util__ctx_type_6 &_output_){
+   synthSampler_Util__ctx_type_6 _ctx;
+   _ctx.x = 0x0 /* 0.000000 */;
+   _output_ = _ctx;
+   return ;
+}
+
+static_inline void synthSampler_Util_smooth_init(synthSampler_Util__ctx_type_6 &_output_){
+   synthSampler_Util__ctx_type_6_init(_output_);
+   return ;
+}
+
+static_inline fix16_t synthSampler_Util_smooth(synthSampler_Util__ctx_type_6 &_ctx, fix16_t input, fix16_t coeff){
+   _ctx.x = (_ctx.x + fix_mul(coeff,(input + (- _ctx.x))));
+   return _ctx.x;
+}
+
 typedef struct synthSampler_Notes__ctx_type_0 {
    uint8_t poly;
    int notes[128];

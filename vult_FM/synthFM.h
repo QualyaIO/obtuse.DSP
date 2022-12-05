@@ -89,6 +89,29 @@ static_inline void synthFM_Util_buffer_large(fix16_t (&_output_)[2048]){
    return ;
 }
 
+typedef struct synthFM_Util__ctx_type_6 {
+   fix16_t x;
+} synthFM_Util__ctx_type_6;
+
+typedef synthFM_Util__ctx_type_6 synthFM_Util_smooth_type;
+
+static_inline void synthFM_Util__ctx_type_6_init(synthFM_Util__ctx_type_6 &_output_){
+   synthFM_Util__ctx_type_6 _ctx;
+   _ctx.x = 0x0 /* 0.000000 */;
+   _output_ = _ctx;
+   return ;
+}
+
+static_inline void synthFM_Util_smooth_init(synthFM_Util__ctx_type_6 &_output_){
+   synthFM_Util__ctx_type_6_init(_output_);
+   return ;
+}
+
+static_inline fix16_t synthFM_Util_smooth(synthFM_Util__ctx_type_6 &_ctx, fix16_t input, fix16_t coeff){
+   _ctx.x = (_ctx.x + fix_mul(coeff,(input + (- _ctx.x))));
+   return _ctx.x;
+}
+
 static_inline int synthFM_OSC_sin_wave_samples(){
    return 4096;
 };

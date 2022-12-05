@@ -8931,6 +8931,7 @@ void effects_SVF__ctx_type_0_init(effects_SVF__ctx_type_0 &_output_){
    effects_SVF__ctx_type_0 _ctx;
    _ctx.z2 = 0x0 /* 0.000000 */;
    _ctx.z1 = 0x0 /* 0.000000 */;
+   _ctx.targetFreq = 0x0 /* 0.000000 */;
    _ctx.sel = 0;
    _ctx.rsize = 0x0 /* 0.000000 */;
    _ctx.q = 0x0 /* 0.000000 */;
@@ -8941,6 +8942,10 @@ void effects_SVF__ctx_type_0_init(effects_SVF__ctx_type_0 &_output_){
    _ctx.fs_nyquist = 0x0 /* 0.000000 */;
    _ctx.fs = 0x0 /* 0.000000 */;
    _ctx.freq = 0x0 /* 0.000000 */;
+   effects_Util__ctx_type_3_init(_ctx._inst93b);
+   effects_Util__ctx_type_6_init(_ctx._inst855);
+   effects_Util__ctx_type_3_init(_ctx._inst163b);
+   effects_Util__ctx_type_6_init(_ctx._inst1555);
    _ctx.R = 0x0 /* 0.000000 */;
    effects_SVF_default(_ctx);
    _output_ = _ctx;
@@ -8980,6 +8985,11 @@ void effects_SVF_updateG(effects_SVF__ctx_type_0 &_ctx){
 }
 
 fix16_t effects_SVF_process(effects_SVF__ctx_type_0 &_ctx, fix16_t input){
+   _ctx.freq = effects_Util_smooth(_ctx._inst855,_ctx.targetFreq,0x1999 /* 0.100000 */);
+   if(effects_Util_change(_ctx._inst93b,_ctx.freq)){
+      effects_SVF_updateG(_ctx);
+      effects_SVF_updateCoeffs(_ctx);
+   }
    fix16_t high;
    high = fix_mul(_ctx.inv_den,(input + (- _ctx.z2) + (- fix_mul(_ctx.z1,(_ctx.g + (_ctx.R << 1))))));
    fix16_t band;
@@ -9023,6 +9033,11 @@ void effects_SVF_process_bufferTo(effects_SVF__ctx_type_0 &_ctx, int nb, fix16_t
    int i;
    i = 0;
    while(i < nb){
+      _ctx.freq = effects_Util_smooth(_ctx._inst1555,_ctx.targetFreq,0x1999 /* 0.100000 */);
+      if(effects_Util_change(_ctx._inst163b,_ctx.freq)){
+         effects_SVF_updateG(_ctx);
+         effects_SVF_updateCoeffs(_ctx);
+      }
       fix16_t high;
       high = fix_mul(_ctx.inv_den,(input[i] + (- _ctx.z2) + (- fix_mul(_ctx.z1,(_ctx.g + (_ctx.R << 1))))));
       fix16_t band;
