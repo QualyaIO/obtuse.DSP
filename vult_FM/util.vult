@@ -43,3 +43,11 @@ fun buffer_large() {
   val buff : array(real, 2048);
   return buff;
 }
+
+// smooth transition to a value
+// coeff: should be ]0..1] from slow to instantaneous
+fun smooth(input, coeff){
+   mem x;
+   x = x+(input-x)*0.005;
+   return x;
+}

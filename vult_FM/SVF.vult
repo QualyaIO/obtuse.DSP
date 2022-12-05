@@ -80,9 +80,10 @@ and setType(newSel: int) {
 }
 
 and process(input:real):real {
-   if (sel == 0) {
+   // actually compute even when disable to avoid noise upon start
+   /*if (sel == 0) {
      return input;
-   }
+     }*/
    mem z1, z2;
 
    val high  = (input - (2.0*R + g)*z1 - z2) * inv_den;
@@ -97,7 +98,8 @@ and process(input:real):real {
       if sel == 1 then low else
       if sel == 2 then high else
       if sel == 3 then band else
-      notch;
+      if sel == 4 then notch else
+      input;
    //return Saturate_soft.process(output);
    return output;
 }
@@ -113,12 +115,14 @@ and process_bufferTo(nb: int, input: array(real, 256), oBuffer: array(real, 256)
   }
 
   val i = 0;
-  if (sel == 0) {
+  // actually compute even when disable to avoid noise upon start
+  /*if (sel == 0) {
     while (i < nb) {
       oBuffer[i] = input[i];
       i = i + 1;
     }
   } else {
+  */
     while (i < nb) {
       val high  = (input[i] - (2.0*R + g)*z1 - z2) * inv_den;
       val band  = g*high + z1;
@@ -132,11 +136,12 @@ and process_bufferTo(nb: int, input: array(real, 256), oBuffer: array(real, 256)
         if sel == 1 then low else
         if sel == 2 then high else
         if sel == 3 then band else
-        notch;
+        if sel == 4 then notch else
+        input[i];
 
       i = i + 1;
     }
-  }
+  /*}*/
 }
 
 

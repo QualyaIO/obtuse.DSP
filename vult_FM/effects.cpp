@@ -8980,9 +8980,6 @@ void effects_SVF_updateG(effects_SVF__ctx_type_0 &_ctx){
 }
 
 fix16_t effects_SVF_process(effects_SVF__ctx_type_0 &_ctx, fix16_t input){
-   if(_ctx.sel == 0){
-      return input;
-   }
    fix16_t high;
    high = fix_mul(_ctx.inv_den,(input + (- _ctx.z2) + (- fix_mul(_ctx.z1,(_ctx.g + (_ctx.R << 1))))));
    fix16_t band;
@@ -9004,8 +9001,11 @@ fix16_t effects_SVF_process(effects_SVF__ctx_type_0 &_ctx, fix16_t input){
       case 3:
          output = band;
       break;
+      case 4:
+         output = notch;
+      break;
     default: 
-      output = notch;
+      output = input;
    }
    return output;
 }
@@ -9022,46 +9022,34 @@ void effects_SVF_process_bufferTo(effects_SVF__ctx_type_0 &_ctx, int nb, fix16_t
    }
    int i;
    i = 0;
-   if(_ctx.sel == 0){
-      while(i < nb){
-         oBuffer[i] = input[i];
-         i = (1 + i);
-      }
-   }
-   else
-   {
-      while(i < nb){
-         fix16_t high;
-         high = fix_mul(_ctx.inv_den,(input[i] + (- _ctx.z2) + (- fix_mul(_ctx.z1,(_ctx.g + (_ctx.R << 1))))));
-         fix16_t band;
-         band = (_ctx.z1 + fix_mul(_ctx.g,high));
-         fix16_t low;
-         low = (_ctx.z2 + fix_mul(_ctx.g,band));
-         fix16_t notch;
-         notch = (high + low);
-         _ctx.z1 = (band + fix_mul(_ctx.g,high));
-         _ctx.z2 = (low + fix_mul(_ctx.g,band));
-         if(_ctx.sel == 1){
+   while(i < nb){
+      fix16_t high;
+      high = fix_mul(_ctx.inv_den,(input[i] + (- _ctx.z2) + (- fix_mul(_ctx.z1,(_ctx.g + (_ctx.R << 1))))));
+      fix16_t band;
+      band = (_ctx.z1 + fix_mul(_ctx.g,high));
+      fix16_t low;
+      low = (_ctx.z2 + fix_mul(_ctx.g,band));
+      fix16_t notch;
+      notch = (high + low);
+      _ctx.z1 = (band + fix_mul(_ctx.g,high));
+      _ctx.z2 = (low + fix_mul(_ctx.g,band));
+      switch(_ctx.sel) {
+         case 1:
             oBuffer[i] = low;
-         }
-         else
-         {
-            if(_ctx.sel == 2){
-               oBuffer[i] = high;
-            }
-            else
-            {
-               if(_ctx.sel == 3){
-                  oBuffer[i] = band;
-               }
-               else
-               {
-                  oBuffer[i] = notch;
-               }
-            }
-         }
-         i = (1 + i);
+         break;
+         case 2:
+            oBuffer[i] = high;
+         break;
+         case 3:
+            oBuffer[i] = band;
+         break;
+         case 4:
+            oBuffer[i] = notch;
+         break;
+       default: 
+         oBuffer[i] = input[i];
       }
+      i = (1 + i);
    }
 }
 
