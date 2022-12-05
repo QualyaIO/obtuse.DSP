@@ -4,7 +4,7 @@ Here expects `vultc -ccode voice.vult reverb.vult -real fixed -o engine ` (won't
 In case arduino template is used: `sed -i 's/pgm_read_word/pgm_read_dword/g' engine.*`
 MIDI input: using https://github.com/FortySevenEffects/arduino_midi_library (tested 5.0.2). Select TinyUSB as USB stack.
 
-For now, use `make_vult.sh` to transpile all files.
+For now, use `make_vult.sh` to transpile all files -- and set some specific optimization for rp2040.
 
 WARNING: Drummer for some reason does not work on Os optim (default). Tested fine with Ofast.
 TODO:
@@ -22,4 +22,3 @@ TODO:
 - timeout for voices?
 - copy wavetable in temp var for FM, and mix them?
 - make drummer work no matter the optimisation ??
-- automate __not_in_flash() for wavetables

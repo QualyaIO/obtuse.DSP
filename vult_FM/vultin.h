@@ -34,6 +34,8 @@ NOTE: The code for the fixed-point operations is based on the project:
 #include <math.h>
 #include <stdint.h>
 #include <stdlib.h>
+// used for __not_in_flash optim
+#include "Arduino.h"
 
 #ifdef _MSC_VER
 #define static_inline static __inline
