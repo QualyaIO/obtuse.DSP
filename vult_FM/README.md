@@ -22,3 +22,4 @@ TODO:
 - timeout for voices?
 - copy wavetable in temp var for FM, and mix them?
 - make drummer work no matter the optimisation ??
+- automate __not_in_flash() for wavetables

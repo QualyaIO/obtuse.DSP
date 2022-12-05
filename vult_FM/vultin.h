@@ -80,10 +80,22 @@ static_inline fix16_t fix_add(fix16_t x, fix16_t y) { return x + y; }
 
 static_inline fix16_t fix_sub(fix16_t x, fix16_t y) { return x - y; }
 
+// speed-up multiplication by avoiding int64, at least on rp2040
 static_inline fix16_t fix_mul(fix16_t x, fix16_t y) {
+    uint32_t a = x >> 16;
+    uint32_t b = x & 0xffff;
+    uint32_t c = y >> 16;
+    uint32_t d = y & 0xffff;
+    return ((d * b) >> 16) 
+    + (d * a) 
+    + (c * b) 
+    + ((c * a) << 16);
+}
+
+/* static_inline fix16_t fix_mul(fix16_t x, fix16_t y) {
    int64_t res = (int64_t)x * y;
    return (fix16_t)(res >> 16);
-}
+   } */
 
 static_inline fix16_t fix_div(fix16_t a, fix16_t b) {
    if (b == 0)
