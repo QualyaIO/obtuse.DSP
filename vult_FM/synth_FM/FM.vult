@@ -138,30 +138,6 @@ and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
       _ = carrier:OSC.process_bufferTo(nb, buffer_carrier_env, buffer_modulator, level, oBuffer);
     }
 }
-and process_buffer(nb: int) {
-  mem buffer_o;
-  _ = process_bufferTo(nb, buffer_o);
-}
-and getBuffer() {
-   return buffer_o;
-}
-// copy output values to dest buffer
-and copyTo(oBuffer:array(real, 256), nb: int){
-   // ensure we won't overflow
-   val min_size = size(oBuffer);
-   if (size(buffer_o) < min_size) {
-      min_size = size(buffer_o);
-   }
-   nb = clip(nb, 0, min_size);
-   if (nb == 0) {
-      nb = min_size;
-   }
-   val i = 0;
-   while (i < nb) {
-      oBuffer[i] = buffer_o[i];
-      i = i + 1;
-   }
-}
 and setSamplerate(newFs:real) {
    if (newFs > 0.0) {
       fs = newFs;
@@ -239,8 +215,6 @@ and noteOff(note:int, channel:int) {
 
 // to be called on start
 and default() @[init] {
-    // will copy new arrays
-    buffer_o = Util.buffer();
     buffer_modulator = Util.buffer();
     buffer_carrier_env_short = Util.buffer();
     buffer_modulator_env_short = Util.buffer();

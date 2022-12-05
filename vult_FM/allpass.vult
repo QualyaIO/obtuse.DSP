@@ -49,31 +49,6 @@ and process_bufferTo(nb: int, input: array(real, 256), oBuffer: array(real, 256)
        i = i + 1;
     }
 }
-and process_buffer(nb: int, input: array(real, 256)) {
-    mem buffer_o;
-    _ = process_bufferTo(nb, input, buffer_o);
-}
-// copy current buffer to another one up to desired number (0 for max)
-// too bad we have to hard-code size here
-and getBuffer() {
-   return buffer_o;
-}
-and copyTo(oBuffer:array(real, 256), nb: int){
-   // ensure we won't overflow
-   val min_size = size(oBuffer);
-   if (size(buffer_o) < min_size) {
-      min_size = size(buffer_o);
-   }
-   nb = clip(nb, 0, min_size);
-   if (nb == 0) {
-      nb = min_size;
-   }
-   val i = 0;
-   while (i < nb) {
-      oBuffer[i] = buffer_o[i];
-      i = i + 1;
-   }
-}
 
 // setter for decay, here on
 and setDecay(newDecay: real) {
@@ -124,8 +99,6 @@ and setSamplerate(newFs:real) {
 and default() @[init] {
    buffer = Util.buffer_large();
    buffer_allpassed = Util.buffer_large();
-   // output values (with delay), will copy a new array
-   buffer_o = Util.buffer();
    _ = setSamplerate(44.100);
    _ = setDelayms(50.0);
    _ = setDecay(0.5);

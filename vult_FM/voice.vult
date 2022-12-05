@@ -74,11 +74,6 @@ and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
    }
 }
 
-and process_buffer(nb: int) {
-    mem buffer_o;
-    _ = process_bufferTo(nb, buffer_o);
-}
-
 // several buffer
 // FIXME: only set for 4 voices
 and process_bufferTo_alt(nb: int, oBuffer: array(real, 256)) {
@@ -104,10 +99,6 @@ and process_bufferTo_alt(nb: int, oBuffer: array(real, 256)) {
          i = i + 1;
       }
    }
-}
-
-and process_buffer_alt(nb: int) {
-    _ = process_bufferTo_alt(nb, buffer_o);
 }
 
 // transmit noteOff to corresponding voice, update inner states active/inactive voice
@@ -203,28 +194,6 @@ and setSamplerate(newFs:real) {
    _ = poly:Poly.setSamplerate(fs);
 }
 
-// retrieve output values from buffer
-and getBuffer() {
-   return buffer_o;
-}
-// copy output values to dest buffer
-and copyTo(oBuffer:array(real, 256), nb: int){
-   // ensure we won't overflow
-   val min_size = size(oBuffer);
-   if (size(buffer_o) < min_size) {
-      min_size = size(buffer_o);
-   }
-   nb = clip(nb, 0, min_size);
-   if (nb == 0) {
-      nb = min_size;
-   }
-   val i = 0;
-   while (i < nb) {
-      oBuffer[i] = buffer_o[i];
-      i = i + 1;
-   }
-}
-
 /* getter/setter passed down to synth, if supported */
 
 // Sampler.setLoop()
@@ -256,7 +225,6 @@ and default() @[init] {
    buffer_v1 = Util.buffer();
    buffer_v2 = Util.buffer();
    buffer_v3 = Util.buffer();
-   buffer_o = Util.buffer();
 
    mem voices: array(int, 4);
    number_voices = if number_voices == 0 then size(voices) else number_voices;

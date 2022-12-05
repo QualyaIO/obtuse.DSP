@@ -502,7 +502,6 @@ typedef struct synthDrummer_Voice__ctx_type_0 {
    fix16_t buffer_v2[256];
    fix16_t buffer_v1[256];
    fix16_t buffer_v0[256];
-   fix16_t buffer_o[256];
 } synthDrummer_Voice__ctx_type_0;
 
 typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_process_type;
@@ -525,17 +524,6 @@ static_inline void synthDrummer_Voice_process_bufferTo_init(synthDrummer_Voice__
 
 void synthDrummer_Voice_process_bufferTo(synthDrummer_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
 
-typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_process_buffer_type;
-
-static_inline void synthDrummer_Voice_process_buffer_init(synthDrummer_Voice__ctx_type_0 &_output_){
-   synthDrummer_Voice__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthDrummer_Voice_process_buffer(synthDrummer_Voice__ctx_type_0 &_ctx, int nb){
-   synthDrummer_Voice_process_bufferTo(_ctx,nb,_ctx.buffer_o);
-};
-
 typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_process_bufferTo_alt_type;
 
 static_inline void synthDrummer_Voice_process_bufferTo_alt_init(synthDrummer_Voice__ctx_type_0 &_output_){
@@ -544,17 +532,6 @@ static_inline void synthDrummer_Voice_process_bufferTo_alt_init(synthDrummer_Voi
 }
 
 void synthDrummer_Voice_process_bufferTo_alt(synthDrummer_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
-
-typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_process_buffer_alt_type;
-
-static_inline void synthDrummer_Voice_process_buffer_alt_init(synthDrummer_Voice__ctx_type_0 &_output_){
-   synthDrummer_Voice__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthDrummer_Voice_process_buffer_alt(synthDrummer_Voice__ctx_type_0 &_ctx, int nb){
-   synthDrummer_Voice_process_bufferTo_alt(_ctx,nb,_ctx.buffer_o);
-};
 
 typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_noteOff_type;
 
@@ -607,27 +584,6 @@ static_inline void synthDrummer_Voice_setSamplerate(synthDrummer_Voice__ctx_type
    }
    synthDrummer_Poly_setSamplerate(_ctx.poly,_ctx.fs);
 }
-
-typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_getBuffer_type;
-
-static_inline void synthDrummer_Voice_getBuffer_init(synthDrummer_Voice__ctx_type_0 &_output_){
-   synthDrummer_Voice__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthDrummer_Voice_getBuffer(synthDrummer_Voice__ctx_type_0 &_ctx, fix16_t (&_output_)[256]){
-   fix_copy_array(256,_output_,_ctx.buffer_o);
-   return ;
-}
-
-typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_copyTo_type;
-
-static_inline void synthDrummer_Voice_copyTo_init(synthDrummer_Voice__ctx_type_0 &_output_){
-   synthDrummer_Voice__ctx_type_0_init(_output_);
-   return ;
-}
-
-void synthDrummer_Voice_copyTo(synthDrummer_Voice__ctx_type_0 &_ctx, fix16_t (&oBuffer)[256], int nb);
 
 typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_synthSetLoop_type;
 

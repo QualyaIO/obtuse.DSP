@@ -569,7 +569,6 @@ typedef struct synthSampler_Voice__ctx_type_0 {
    fix16_t buffer_v2[256];
    fix16_t buffer_v1[256];
    fix16_t buffer_v0[256];
-   fix16_t buffer_o[256];
 } synthSampler_Voice__ctx_type_0;
 
 typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_process_type;
@@ -592,17 +591,6 @@ static_inline void synthSampler_Voice_process_bufferTo_init(synthSampler_Voice__
 
 void synthSampler_Voice_process_bufferTo(synthSampler_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
 
-typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_process_buffer_type;
-
-static_inline void synthSampler_Voice_process_buffer_init(synthSampler_Voice__ctx_type_0 &_output_){
-   synthSampler_Voice__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthSampler_Voice_process_buffer(synthSampler_Voice__ctx_type_0 &_ctx, int nb){
-   synthSampler_Voice_process_bufferTo(_ctx,nb,_ctx.buffer_o);
-};
-
 typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_process_bufferTo_alt_type;
 
 static_inline void synthSampler_Voice_process_bufferTo_alt_init(synthSampler_Voice__ctx_type_0 &_output_){
@@ -611,17 +599,6 @@ static_inline void synthSampler_Voice_process_bufferTo_alt_init(synthSampler_Voi
 }
 
 void synthSampler_Voice_process_bufferTo_alt(synthSampler_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
-
-typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_process_buffer_alt_type;
-
-static_inline void synthSampler_Voice_process_buffer_alt_init(synthSampler_Voice__ctx_type_0 &_output_){
-   synthSampler_Voice__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthSampler_Voice_process_buffer_alt(synthSampler_Voice__ctx_type_0 &_ctx, int nb){
-   synthSampler_Voice_process_bufferTo_alt(_ctx,nb,_ctx.buffer_o);
-};
 
 typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_noteOff_type;
 
@@ -674,27 +651,6 @@ static_inline void synthSampler_Voice_setSamplerate(synthSampler_Voice__ctx_type
    }
    synthSampler_Poly_setSamplerate(_ctx.poly,_ctx.fs);
 }
-
-typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_getBuffer_type;
-
-static_inline void synthSampler_Voice_getBuffer_init(synthSampler_Voice__ctx_type_0 &_output_){
-   synthSampler_Voice__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthSampler_Voice_getBuffer(synthSampler_Voice__ctx_type_0 &_ctx, fix16_t (&_output_)[256]){
-   fix_copy_array(256,_output_,_ctx.buffer_o);
-   return ;
-}
-
-typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_copyTo_type;
-
-static_inline void synthSampler_Voice_copyTo_init(synthSampler_Voice__ctx_type_0 &_output_){
-   synthSampler_Voice__ctx_type_0_init(_output_);
-   return ;
-}
-
-void synthSampler_Voice_copyTo(synthSampler_Voice__ctx_type_0 &_ctx, fix16_t (&oBuffer)[256], int nb);
 
 typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_synthSetLoop_type;
 

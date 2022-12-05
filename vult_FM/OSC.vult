@@ -76,11 +76,6 @@ and process_bufferTo(nb: int, env: array(real, 256), phase_shift: array(real, 25
       i = i + 1;
    }
 }
-// retrocompatibility: using inner buffer
-and process_buffer(nb: int, env: array(real, 256), phase_shift: array(real, 256), phase_shift_level: real) {
-   mem buffer_o;
-   _ = process_bufferTo(nb, env, phase_shift, phase_shift_level, buffer_o);
-}
 
 // without phase this one
 and process_bufferTo_simple(nb: int, env: array(real, 256), oBuffer: array(real, 256)) {
@@ -102,10 +97,6 @@ and process_bufferTo_simple(nb: int, env: array(real, 256), oBuffer: array(real,
       oBuffer[i]  = getSample(int(phase_base + phase)) * env[i];
       i = i + 1;
    }
-}
-
-and process_buffer_simple(nb: int, env: array(real, 256)) {
-   _ = process_bufferTo_simple(nb, env, buffer_o);
 }
 
 // without envelop nor phase this one
@@ -130,20 +121,12 @@ and process_bufferTo_simplest(nb: int, oBuffer: array(real, 256)) {
    }
 }
 
-
-and process_buffer_simplest(nb: int) {
-   _ = process_bufferTo_simplest(nb, buffer_o);
-}
-
 // called internally when Samplerate or frequency is altered
 and updateStep() {
     // base for computing step
     mem stepRatio;
     // both for efficiency and because we don't want any result to be outside [1/32767 .. 32767] to avoid fixed float limits we compute step in two... steps
     step = stepRatio*freq;
-}
-and getBuffer() {
-   return buffer_o;
 }
 // seter for parameters. expect values of desired frequency and current sampling rate in kHz to avoid fixed float limits ([1/32767 ..32767]... probably)
 and setSamplerate(newFs:real) {
@@ -182,27 +165,8 @@ and setWavetable(index: int) {
 and getSize() : int {
     return int(rsize);
 }
-// copy current buffer to another one up to desired number (0 for max)
-// too bad we have to hard-code size here
-and copyTo(oBuffer:array(real, 256), nb: int){
-   // ensure we won't overflow
-   val min_size = size(oBuffer);
-   if (size(buffer_o) < min_size) {
-      min_size = size(buffer_o);
-   }
-   nb = clip(nb, 0, min_size);
-   if (nb == 0) {
-      nb = min_size;
-   }
-   val i = 0;
-   while (i < nb) {
-      oBuffer[i] = buffer_o[i];
-      i = i + 1;
-   }
-}
+
 and default() @[init] {
-   // will copy a new array
-   mem buffer_o = Util.buffer();
    // default sampling rate (in kHz)
    _ = setSamplerate(44.1);
    // default sine

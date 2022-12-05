@@ -118,7 +118,6 @@ typedef struct effects_CombFB__ctx_type_0 {
    fix16_t fs;
    int delay;
    fix16_t decay;
-   fix16_t buffer_o[256];
    fix16_t buffer[2048];
 } effects_CombFB__ctx_type_0;
 
@@ -141,38 +140,6 @@ static_inline void effects_CombFB_process_bufferTo_init(effects_CombFB__ctx_type
 }
 
 void effects_CombFB_process_bufferTo(effects_CombFB__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256], fix16_t (&oBuffer)[256]);
-
-typedef effects_CombFB__ctx_type_0 effects_CombFB_process_buffer_type;
-
-static_inline void effects_CombFB_process_buffer_init(effects_CombFB__ctx_type_0 &_output_){
-   effects_CombFB__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void effects_CombFB_process_buffer(effects_CombFB__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256]){
-   effects_CombFB_process_bufferTo(_ctx,nb,input,_ctx.buffer_o);
-};
-
-typedef effects_CombFB__ctx_type_0 effects_CombFB_getBuffer_type;
-
-static_inline void effects_CombFB_getBuffer_init(effects_CombFB__ctx_type_0 &_output_){
-   effects_CombFB__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void effects_CombFB_getBuffer(effects_CombFB__ctx_type_0 &_ctx, fix16_t (&_output_)[256]){
-   fix_copy_array(256,_output_,_ctx.buffer_o);
-   return ;
-}
-
-typedef effects_CombFB__ctx_type_0 effects_CombFB_copyTo_type;
-
-static_inline void effects_CombFB_copyTo_init(effects_CombFB__ctx_type_0 &_output_){
-   effects_CombFB__ctx_type_0_init(_output_);
-   return ;
-}
-
-void effects_CombFB_copyTo(effects_CombFB__ctx_type_0 &_ctx, fix16_t (&oBuffer)[256], int nb);
 
 typedef effects_CombFB__ctx_type_0 effects_CombFB_setDecay_type;
 
@@ -262,7 +229,6 @@ typedef struct effects_Allpass__ctx_type_0 {
    fix16_t fs;
    int delay;
    fix16_t decay;
-   fix16_t buffer_o[256];
    fix16_t buffer_allpassed[2048];
    fix16_t buffer[2048];
 } effects_Allpass__ctx_type_0;
@@ -286,38 +252,6 @@ static_inline void effects_Allpass_process_bufferTo_init(effects_Allpass__ctx_ty
 }
 
 void effects_Allpass_process_bufferTo(effects_Allpass__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256], fix16_t (&oBuffer)[256]);
-
-typedef effects_Allpass__ctx_type_0 effects_Allpass_process_buffer_type;
-
-static_inline void effects_Allpass_process_buffer_init(effects_Allpass__ctx_type_0 &_output_){
-   effects_Allpass__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void effects_Allpass_process_buffer(effects_Allpass__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256]){
-   effects_Allpass_process_bufferTo(_ctx,nb,input,_ctx.buffer_o);
-};
-
-typedef effects_Allpass__ctx_type_0 effects_Allpass_getBuffer_type;
-
-static_inline void effects_Allpass_getBuffer_init(effects_Allpass__ctx_type_0 &_output_){
-   effects_Allpass__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void effects_Allpass_getBuffer(effects_Allpass__ctx_type_0 &_ctx, fix16_t (&_output_)[256]){
-   fix_copy_array(256,_output_,_ctx.buffer_o);
-   return ;
-}
-
-typedef effects_Allpass__ctx_type_0 effects_Allpass_copyTo_type;
-
-static_inline void effects_Allpass_copyTo_init(effects_Allpass__ctx_type_0 &_output_){
-   effects_Allpass__ctx_type_0_init(_output_);
-   return ;
-}
-
-void effects_Allpass_copyTo(effects_Allpass__ctx_type_0 &_ctx, fix16_t (&oBuffer)[256], int nb);
 
 typedef effects_Allpass__ctx_type_0 effects_Allpass_setDecay_type;
 
@@ -412,7 +346,6 @@ typedef struct effects_Reverb__ctx_type_0 {
    effects_CombFB__ctx_type_0 comb1;
    int comb0delay;
    effects_CombFB__ctx_type_0 comb0;
-   fix16_t buffer_o[256];
    fix16_t buffer_c3[256];
    fix16_t buffer_c2[256];
    fix16_t buffer_c1[256];
@@ -447,17 +380,6 @@ static_inline void effects_Reverb_process_bufferTo_init(effects_Reverb__ctx_type
 
 void effects_Reverb_process_bufferTo(effects_Reverb__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256], fix16_t (&oBuffer)[256]);
 
-typedef effects_Reverb__ctx_type_0 effects_Reverb_process_buffer_type;
-
-static_inline void effects_Reverb_process_buffer_init(effects_Reverb__ctx_type_0 &_output_){
-   effects_Reverb__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void effects_Reverb_process_buffer(effects_Reverb__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256]){
-   effects_Reverb_process_bufferTo(_ctx,nb,input,_ctx.buffer_o);
-};
-
 typedef effects_Reverb__ctx_type_0 effects_Reverb_setSamplerate_type;
 
 static_inline void effects_Reverb_setSamplerate_init(effects_Reverb__ctx_type_0 &_output_){
@@ -484,27 +406,6 @@ static_inline void effects_Reverb_setDelayms_init(effects_Reverb__ctx_type_0 &_o
 }
 
 void effects_Reverb_setDelayms(effects_Reverb__ctx_type_0 &_ctx, fix16_t delayms);
-
-typedef effects_Reverb__ctx_type_0 effects_Reverb_getBuffer_type;
-
-static_inline void effects_Reverb_getBuffer_init(effects_Reverb__ctx_type_0 &_output_){
-   effects_Reverb__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void effects_Reverb_getBuffer(effects_Reverb__ctx_type_0 &_ctx, fix16_t (&_output_)[256]){
-   fix_copy_array(256,_output_,_ctx.buffer_o);
-   return ;
-}
-
-typedef effects_Reverb__ctx_type_0 effects_Reverb_copyTo_type;
-
-static_inline void effects_Reverb_copyTo_init(effects_Reverb__ctx_type_0 &_output_){
-   effects_Reverb__ctx_type_0_init(_output_);
-   return ;
-}
-
-void effects_Reverb_copyTo(effects_Reverb__ctx_type_0 &_ctx, fix16_t (&oBuffer)[256], int nb);
 
 typedef effects_Reverb__ctx_type_0 effects_Reverb_default_type;
 

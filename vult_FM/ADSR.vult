@@ -187,11 +187,6 @@ and process_bufferTo(bgate:bool, nb:int, oBuffer: array(real, 256)): bool {
    return idle;
 }
 
-and process_buffer(bgate:bool, nb:int) {
-   mem buffer_o;
-   return process_bufferTo(bgate, nb, buffer_o);
-}
-
 // once sample rate change, we need to adapt 
 and updateSteps() {
    mem a, d, r, fs;
@@ -215,7 +210,6 @@ and setSamplerate(newFs:real) {
    _ = updateSteps();
 }
 
-
 // attack: time (s) to peak output at 1.0 -- limit to 60s (for fixed point sake)
 // decay: time (s) to get to sustain level -- limit to 60s
 // sustain: level when note is held (0..1)
@@ -232,28 +226,7 @@ and config(newA, newD, newS, newR) {
    _ = updateSteps();
 }
 
-// copy current buffer to another one up to desired number (0 for max)
-// too bad we have to hard-code size here
-and copyTo(oBuffer:array(real, 256), nb: int){
-   // ensure we won't overflow
-   val min_size = size(oBuffer);
-   if (size(buffer_o) < min_size) {
-      min_size = size(buffer_o);
-   }
-   nb = clip(nb, 0, min_size);
-   if (nb == 0) {
-      nb = min_size;
-   }
-   val i = 0;
-   while (i < nb) {
-      oBuffer[i] = buffer_o[i];
-      i = i + 1;
-   }
-}
-
 and default() @[init] {
-   // will copy new arrays
-   buffer_o = Util.buffer();
    // Note: if fore some reason becomes < s, adapt decay to check if we reach sustain "from below" in process()
    mem a_target = 1.0;
    _ = setSamplerate(44.1);

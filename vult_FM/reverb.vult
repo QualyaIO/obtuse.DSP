@@ -39,11 +39,6 @@ and process_bufferTo(nb: int, input: array(real, 256), oBuffer: array(real, 256)
   _ =  allpass0:Allpass.process_bufferTo(nb, oBuffer, oBuffer);
   _ =  allpass1:Allpass.process_bufferTo(nb, oBuffer, oBuffer);
 }
-and process_buffer(nb: int, input: array(real, 256)) {
-    mem buffer_o;
-    _ = process_bufferTo(nb, input, buffer_o);
-}
-
 
 // Set base for reverb and delay times, in kHz
 // WARNING: will *not* update delays in ms and reverb time in s when this is changed, hence to be called first
@@ -107,28 +102,6 @@ and setDelayms(delayms: real) {
   _ = setReverbTime(reverbtime);
 }
 
-// retrieve output values from buffer
-and getBuffer() {
-   return buffer_o;
-}
-// copy output values to dest buffer
-and copyTo(oBuffer:array(real, 256), nb: int){
-   // ensure we won't overflow
-   val min_size = size(oBuffer);
-   if (size(buffer_o) < min_size) {
-      min_size = size(buffer_o);
-   }
-   nb = clip(nb, 0, min_size);
-   if (nb == 0) {
-      nb = min_size;
-   }
-   val i = 0;
-   while (i < nb) {
-      oBuffer[i] = buffer_o[i];
-      i = i + 1;
-   }
-}
-
 and default() @[init] {
   // many buffers!
   buffer_c0 = Util.buffer();
@@ -137,7 +110,6 @@ and default() @[init] {
   buffer_c3 = Util.buffer();
   buffer_a0 = Util.buffer();
   buffer_a1 = Util.buffer();
-  buffer_o = Util.buffer();
   _ = setSamplerate(44.100);
   // to approximate default parameters found in litteratures
   reverbtime = 0.65;
