@@ -12,7 +12,7 @@ TODO:
 - take into account pitchwheel
 - filters and reverb: method to ask for auto-resize of delay upon change in samplerate
 - voice: buffer_alt with fixed 4 voices
-- fix pop when a voice is stolen
+- better fix pop when a voice is stolen
 - add mixer
 - back to toubidou
 - velocity: not only linear? save for monophonic?

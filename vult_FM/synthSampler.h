@@ -117,136 +117,6 @@ static_inline fix16_t synthSampler_Util_velocityToLevel(int velocity){
    return fix_mul(0x204 /* 0.007874 */,int_to_fix(velocity));
 }
 
-typedef struct synthSampler_SVF__ctx_type_0 {
-   fix16_t z2;
-   fix16_t z1;
-   fix16_t targetFreq;
-   int sel;
-   fix16_t rsize;
-   fix16_t q;
-   fix16_t inv_den;
-   fix16_t g_table[1024];
-   fix16_t gRatio;
-   fix16_t g;
-   fix16_t fs_nyquist;
-   fix16_t fs;
-   fix16_t freq;
-   synthSampler_Util__ctx_type_3 _inst93b;
-   synthSampler_Util__ctx_type_6 _inst855;
-   synthSampler_Util__ctx_type_3 _inst163b;
-   synthSampler_Util__ctx_type_6 _inst1555;
-   fix16_t R;
-} synthSampler_SVF__ctx_type_0;
-
-typedef synthSampler_SVF__ctx_type_0 synthSampler_SVF_updateGTable_type;
-
-void synthSampler_SVF__ctx_type_0_init(synthSampler_SVF__ctx_type_0 &_output_);
-
-static_inline void synthSampler_SVF_updateGTable_init(synthSampler_SVF__ctx_type_0 &_output_){
-   synthSampler_SVF__ctx_type_0_init(_output_);
-   return ;
-}
-
-void synthSampler_SVF_updateGTable(synthSampler_SVF__ctx_type_0 &_ctx);
-
-typedef synthSampler_SVF__ctx_type_0 synthSampler_SVF_updateG_type;
-
-static_inline void synthSampler_SVF_updateG_init(synthSampler_SVF__ctx_type_0 &_output_){
-   synthSampler_SVF__ctx_type_0_init(_output_);
-   return ;
-}
-
-void synthSampler_SVF_updateG(synthSampler_SVF__ctx_type_0 &_ctx);
-
-typedef synthSampler_SVF__ctx_type_0 synthSampler_SVF_updateCoeffs_type;
-
-static_inline void synthSampler_SVF_updateCoeffs_init(synthSampler_SVF__ctx_type_0 &_output_){
-   synthSampler_SVF__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthSampler_SVF_updateCoeffs(synthSampler_SVF__ctx_type_0 &_ctx){
-   _ctx.R = fix_div(0x10000 /* 1.000000 */,((0x0 /* 0.000000 */ + _ctx.q) << 1));
-   _ctx.inv_den = fix_div(0x10000 /* 1.000000 */,(0x10000 /* 1.000000 */ + fix_mul(_ctx.g,_ctx.g) + (fix_mul(_ctx.R,_ctx.g) << 1)));
-}
-
-typedef synthSampler_SVF__ctx_type_0 synthSampler_SVF_setFreq_type;
-
-static_inline void synthSampler_SVF_setFreq_init(synthSampler_SVF__ctx_type_0 &_output_){
-   synthSampler_SVF__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthSampler_SVF_setFreq(synthSampler_SVF__ctx_type_0 &_ctx, fix16_t newFreq){
-   _ctx.targetFreq = fix_clip(newFreq,0x0 /* 0.000000 */,_ctx.fs_nyquist);
-   synthSampler_SVF_updateG(_ctx);
-   synthSampler_SVF_updateCoeffs(_ctx);
-}
-
-typedef synthSampler_SVF__ctx_type_0 synthSampler_SVF_setQ_type;
-
-static_inline void synthSampler_SVF_setQ_init(synthSampler_SVF__ctx_type_0 &_output_){
-   synthSampler_SVF__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthSampler_SVF_setQ(synthSampler_SVF__ctx_type_0 &_ctx, fix16_t newQ){
-   _ctx.q = (0x8000 /* 0.500000 */ + newQ);
-   synthSampler_SVF_updateCoeffs(_ctx);
-}
-
-typedef synthSampler_SVF__ctx_type_0 synthSampler_SVF_setType_type;
-
-static_inline void synthSampler_SVF_setType_init(synthSampler_SVF__ctx_type_0 &_output_){
-   synthSampler_SVF__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthSampler_SVF_setType(synthSampler_SVF__ctx_type_0 &_ctx, int newSel){
-   _ctx.sel = int_clip(newSel,0,4);
-};
-
-typedef synthSampler_SVF__ctx_type_0 synthSampler_SVF_process_type;
-
-static_inline void synthSampler_SVF_process_init(synthSampler_SVF__ctx_type_0 &_output_){
-   synthSampler_SVF__ctx_type_0_init(_output_);
-   return ;
-}
-
-fix16_t synthSampler_SVF_process(synthSampler_SVF__ctx_type_0 &_ctx, fix16_t input);
-
-typedef synthSampler_SVF__ctx_type_0 synthSampler_SVF_process_bufferTo_type;
-
-static_inline void synthSampler_SVF_process_bufferTo_init(synthSampler_SVF__ctx_type_0 &_output_){
-   synthSampler_SVF__ctx_type_0_init(_output_);
-   return ;
-}
-
-void synthSampler_SVF_process_bufferTo(synthSampler_SVF__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256], fix16_t (&oBuffer)[256]);
-
-typedef synthSampler_SVF__ctx_type_0 synthSampler_SVF_setSamplerate_type;
-
-static_inline void synthSampler_SVF_setSamplerate_init(synthSampler_SVF__ctx_type_0 &_output_){
-   synthSampler_SVF__ctx_type_0_init(_output_);
-   return ;
-}
-
-void synthSampler_SVF_setSamplerate(synthSampler_SVF__ctx_type_0 &_ctx, fix16_t newFs);
-
-typedef synthSampler_SVF__ctx_type_0 synthSampler_SVF_default_type;
-
-static_inline void synthSampler_SVF_default_init(synthSampler_SVF__ctx_type_0 &_output_){
-   synthSampler_SVF__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthSampler_SVF_default(synthSampler_SVF__ctx_type_0 &_ctx){
-   _ctx.rsize = 0x4000000 /* 1024.000000 */;
-   _ctx.freq = 0x0 /* 0.000000 */;
-   _ctx.q = 0x0 /* 0.000000 */;
-   synthSampler_SVF_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
-}
-
 typedef struct synthSampler_Notes__ctx_type_0 {
    uint8_t poly;
    int notes[128];
@@ -711,10 +581,10 @@ typedef struct synthSampler_Voice__ctx_type_0 {
    int number_voices;
    int notes[128];
    uint8_t normalize;
+   fix16_t leftovers_decay;
    fix16_t leftovers;
    fix16_t last_values[4];
    fix16_t fs;
-   synthSampler_SVF__ctx_type_0 fil;
    fix16_t buffer_v3[256];
    fix16_t buffer_v2[256];
    fix16_t buffer_v1[256];
@@ -795,12 +665,7 @@ static_inline void synthSampler_Voice_setSamplerate_init(synthSampler_Voice__ctx
    return ;
 }
 
-static_inline void synthSampler_Voice_setSamplerate(synthSampler_Voice__ctx_type_0 &_ctx, fix16_t newFs){
-   if(newFs > 0x0 /* 0.000000 */){
-      _ctx.fs = newFs;
-   }
-   synthSampler_Poly_setSamplerate(_ctx.poly,_ctx.fs);
-}
+void synthSampler_Voice_setSamplerate(synthSampler_Voice__ctx_type_0 &_ctx, fix16_t newFs);
 
 typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_synthSetLoop_type;
 

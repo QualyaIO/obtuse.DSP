@@ -2,6 +2,7 @@
 // wrapper to create voice from a poly synth
 // Very conservative concerning the volume, will each voice will have a fraction of the max amplitude.
 // Note: does not take midi channel into account at this level
+// try to minimize (poorly) clicks when voices are stolen
 // TODO: back to monophonic if number of voices is 1
 
 // retrieve sample from all voices, mix
@@ -12,8 +13,9 @@ fun process() {
    mem number_voices;
    // store last values for each voice, used to avoid clicks when stealing one
    mem last_values;
-   // keep all residues
+   // keep all residues, that will decay over time to minimize clicks and pops (T60 100ms)
    mem leftovers: real;
+   mem leftovers_decay: real;
    // to speedup, corresponding ratio per voice
    mem voices_ratio;
    // what voice (if any) number are associated to
@@ -33,7 +35,7 @@ fun process() {
    }
    // leftovers, if any
    if (leftovers <> 0.0) {
-       leftovers = leftovers * 0.999;
+       leftovers = leftovers * leftovers_decay;
        value = value + leftovers;
    }
    // normalise
@@ -83,9 +85,8 @@ and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
    // leftovers, if any
    i = 0;
    while (leftovers <> 0.0 && i < nb) {
-      //leftovers = leftovers * 0.999;
-      leftovers = fil:SVF.process(leftovers);
-      oBuffer[i] = leftovers;
+      leftovers = leftovers * leftovers_decay;
+      oBuffer[i] = oBuffer[i] + leftovers;
       i = i + 1;
    }
    // scale down
@@ -125,18 +126,23 @@ and process_bufferTo_alt(nb: int, oBuffer: array(real, 256)) {
          oBuffer[i] = (buffer_v0[i] + buffer_v1[i] + buffer_v2[i] + buffer_v3[i]) * voices_ratio;
          i = i + 1;
       }
+      // leftovers, if any
+      i = 0;
+      while (leftovers <> 0.0 && i < nb) {
+         leftovers = leftovers * leftovers_decay;
+         oBuffer[i] = oBuffer[i] + leftovers * voices_ratio;
+         i = i + 1;
+      }
    } else {
       while (i < nb) {
          oBuffer[i] = buffer_v0[i] + buffer_v1[i] + buffer_v2[i] + buffer_v3[i];
          i = i + 1;
       }
-
       // leftovers, if any
       i = 0;
       while (leftovers <> 0.0 && i < nb) {
-         //leftovers = leftovers * 0.999;
-         leftovers = fil:SVF.process(leftovers);
-         oBuffer[i] = leftovers;
+         leftovers = leftovers * leftovers_decay;
+         oBuffer[i] = oBuffer[i] + leftovers;
          i = i + 1;
       }
 
@@ -181,8 +187,6 @@ and noteOn(note:int, velocity:int, channel:int){
 	 if (active_v > 0) {
 	    // disable this voice (with arbitrary channel)
 	    _ = noteOff(voices[active_v-1], 0);
-            // retrieve last value
-            leftovers = leftovers + last_values[active_v];
 	 }
       }
       // ne we should have at least one inactive voice
@@ -190,6 +194,8 @@ and noteOn(note:int, velocity:int, channel:int){
       if (v > 0) {
          // voice removed successfully from inactive ones and added to active ones (arbitrary channel 0 and velocity 127)
          if (voicesinactive:Notes.noteOff(v - 1, 0) && voicesactive:Notes.noteOn(v - 1, 127, 0)) {
+            // retrieve last value of this voice
+            leftovers = clip(leftovers + last_values[v-1], 0.0, real(number_voices));
 	    // forward info
 	    _ = poly:Poly.sendNoteOn(v - 1, note, velocity, channel);
             // update arrays
@@ -236,6 +242,9 @@ and setSamplerate(newFs:real) {
       fs = newFs;
    }
    _ = poly:Poly.setSamplerate(fs);
+   // safe formula as in reverb, to reduce by 60db leftovers in 100ms
+   val log_base = log10(10.0)/log10(exp(1.0));
+   leftovers_decay = exp(log_base * (-3.0 / 1000.0) / (fs * 0.1));
 }
 
 /* getter/setter passed down to synth, if supported */
@@ -276,10 +285,6 @@ and default() @[init] {
    _ = setNbVoices(number_voices);
    mem notes: array(int, 128);
    mem last_values: array(real, 4);
-   _ = fil:SVF.setSamplerate(30.0);
-   _ = fil:SVF.setType(1);
-   _ = fil:SVF.setFreq(1.0);
-   _ = fil:SVF.setQ(1.0);
 
    // monophonic algo used to keep track of active voices...
    _ = voicesactive:Notes.default();
