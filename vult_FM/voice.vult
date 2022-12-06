@@ -13,7 +13,7 @@ fun process() {
    mem number_voices;
    // store last values for each voice, used to avoid clicks when stealing one
    mem last_values;
-   // keep all residues, that will decay over time to minimize clicks and pops (T60 100ms)
+   // keep all residues, that will decay over time to minimize clicks and pops (T60 200ms)
    mem leftovers: real;
    mem leftovers_decay: real;
    // to speedup, corresponding ratio per voice
@@ -195,7 +195,7 @@ and noteOn(note:int, velocity:int, channel:int){
          // voice removed successfully from inactive ones and added to active ones (arbitrary channel 0 and velocity 127)
          if (voicesinactive:Notes.noteOff(v - 1, 0) && voicesactive:Notes.noteOn(v - 1, 127, 0)) {
             // retrieve last value of this voice
-            leftovers = clip(leftovers + last_values[v-1], 0.0, real(number_voices));
+            leftovers = leftovers + last_values[v-1];
 	    // forward info
 	    _ = poly:Poly.sendNoteOn(v - 1, note, velocity, channel);
             // update arrays
@@ -242,9 +242,9 @@ and setSamplerate(newFs:real) {
       fs = newFs;
    }
    _ = poly:Poly.setSamplerate(fs);
-   // safe formula as in reverb, to reduce by 60db leftovers in 100ms
+   // safe formula as in reverb, to reduce by 60db leftovers in 200ms
    val log_base = log10(10.0)/log10(exp(1.0));
-   leftovers_decay = exp(log_base * (-3.0 / 1000.0) / (fs * 0.1));
+   leftovers_decay = exp(log_base * (-3.0 / 1000.0) / (fs * 0.2));
 }
 
 /* getter/setter passed down to synth, if supported */

@@ -714,7 +714,7 @@ void synthDrummer_Voice_noteOn(synthDrummer_Voice__ctx_type_0 &_ctx, int note, i
       v = synthDrummer_Notes_firstNote(_ctx.voicesinactive);
       if(v > 0){
          if(synthDrummer_Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && synthDrummer_Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)){
-            _ctx.leftovers = fix_clip((_ctx.leftovers + _ctx.last_values[((-1) + v)]),0x0 /* 0.000000 */,int_to_fix(_ctx.number_voices));
+            _ctx.leftovers = (_ctx.leftovers + _ctx.last_values[((-1) + v)]);
             synthDrummer_Poly_sendNoteOn(_ctx.poly,((-1) + v),note,velocity,channel);
             _ctx.notes[note] = v;
             _ctx.voices[((-1) + v)] = note;
@@ -748,7 +748,7 @@ void synthDrummer_Voice_setSamplerate(synthDrummer_Voice__ctx_type_0 &_ctx, fix1
    synthDrummer_Poly_setSamplerate(_ctx.poly,_ctx.fs);
    fix16_t log_base;
    log_base = 0x24d76 /* 2.302585 */;
-   _ctx.leftovers_decay = fix_exp(fix_div(fix_mul(-0xc4 /* -0.003000 */,log_base),fix_mul(0x1999 /* 0.100000 */,_ctx.fs)));
+   _ctx.leftovers_decay = fix_exp(fix_div(fix_mul(-0xc4 /* -0.003000 */,log_base),fix_mul(0x3333 /* 0.200000 */,_ctx.fs)));
 }
 
 void synthDrummer_Voice_default(synthDrummer_Voice__ctx_type_0 &_ctx){
