@@ -112,6 +112,11 @@ static_inline fix16_t synthFM_Util_smooth(synthFM_Util__ctx_type_6 &_ctx, fix16_
    return _ctx.x;
 }
 
+static_inline fix16_t synthFM_Util_velocityToLevel(int velocity){
+   velocity = int_clip(velocity,0,127);
+   return fix_mul(0x204 /* 0.007874 */,int_to_fix(velocity));
+}
+
 static_inline int synthFM_OSC_sin_wave_samples(){
    return 4096;
 };
@@ -448,6 +453,7 @@ typedef struct synthFM_FM__ctx_type_0 {
    synthFM_Notes__ctx_type_0 playingnotes;
    int n;
    synthFM_ADSR__ctx_type_0 modulatoradsr;
+   fix16_t modulator_level;
    fix16_t modulator_env;
    fix16_t modulatorRatio;
    synthFM_OSC__ctx_type_2 modulator;
@@ -526,9 +532,20 @@ static_inline void synthFM_FM_setModulatorLevel_init(synthFM_FM__ctx_type_0 &_ou
 }
 
 static_inline void synthFM_FM_setModulatorLevel(synthFM_FM__ctx_type_0 &_ctx, fix16_t newLevel){
-   _ctx.level = newLevel;
-   _ctx.carrier_half_phase = (fix_mul(_ctx.level,int_to_fix(synthFM_OSC_getSize(_ctx.carrier))) >> 1);
+   _ctx.modulator_level = newLevel;
+   _ctx.carrier_half_phase = (fix_mul(_ctx.modulator_level,int_to_fix(synthFM_OSC_getSize(_ctx.carrier))) >> 1);
 }
+
+typedef synthFM_FM__ctx_type_0 synthFM_FM_setLevel_type;
+
+static_inline void synthFM_FM_setLevel_init(synthFM_FM__ctx_type_0 &_output_){
+   synthFM_FM__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthFM_FM_setLevel(synthFM_FM__ctx_type_0 &_ctx, fix16_t newLevel){
+   _ctx.level = newLevel;
+};
 
 typedef synthFM_FM__ctx_type_0 synthFM_FM_setFrequency_type;
 

@@ -112,6 +112,11 @@ static_inline fix16_t effects_Util_smooth(effects_Util__ctx_type_6 &_ctx, fix16_
    return _ctx.x;
 }
 
+static_inline fix16_t effects_Util_velocityToLevel(int velocity){
+   velocity = int_clip(velocity,0,127);
+   return fix_mul(0x204 /* 0.007874 */,int_to_fix(velocity));
+}
+
 typedef struct effects_CombFB__ctx_type_0 {
    fix16_t scale;
    int pos;

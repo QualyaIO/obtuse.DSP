@@ -23,6 +23,8 @@ and process() {
   mem pos: real;
   // how much we jump each step
   mem step: real;
+  // we are velocity sensitive
+  mem level: real;
 
   val value = 0.0;
 
@@ -49,7 +51,7 @@ and process() {
       posBase = 0;
       pos = 0.0;
     } else {
-      value = getSample(idx) + (pos % 1.0) * (getSample(idx+1) - getSample(idx));
+      value = (getSample(idx) + (pos % 1.0) * (getSample(idx+1) - getSample(idx))) * level;
     }
 
   }
@@ -91,7 +93,7 @@ and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
         posBase = 0;
         pos = 0.0;
       } else {
-        value = getSample(idx) + (pos % 1.0) * (getSample(idx+1) - getSample(idx));
+        value = (getSample(idx) + (pos % 1.0) * (getSample(idx+1) - getSample(idx))) * level;
       }
       
     }
@@ -152,6 +154,11 @@ and getSampleSize() {
   return size;
 }
 
+// set level of the output [0..1] (applied on the envelop)
+and setLevel(newLevel: real) {
+    level = newLevel;
+}
+
 // beginning of a note -- will effectively ignore duplicated noteOn for same note
 // we don't check velocity, yet
 and noteOn(note:int, velocity:int, channel:int){
@@ -173,6 +180,7 @@ and noteOn(note:int, velocity:int, channel:int){
   val octave = real(slice_root-root)/12.0;
   noteRatio = exp(log_two * octave);
   _ = updateStep();
+  _ = setLevel(Util.velocityToLevel(velocity));
 }
 
 and noteOff(note:int, channel:int) {
@@ -184,6 +192,7 @@ and default() @[init] {
   mem slices_start: array(int, 12);
   mem slices_end: array(int, 12);
   // defaults for current sample and DSP
+  _ = setLevel(1.0);
   sampleFs = 30.0;
   _ = setSamplerate(44.1);
   // set default slices

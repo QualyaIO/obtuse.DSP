@@ -29,6 +29,8 @@ and process() {
   mem state: int;
   // note held or not
   mem gate: bool;
+  // we are velocity sensitive
+  mem level: real;
 
   val value = 0.0;
 
@@ -80,9 +82,9 @@ and process() {
 
       // compute actual values, with linear interpolation between samples
       if (state == 2) {
-        value = buffer_cross[idx] + (pos % 1.0) * (buffer_cross[idx+1] - buffer_cross[idx]);
+        value = (buffer_cross[idx] + (pos % 1.0) * (buffer_cross[idx+1] - buffer_cross[idx])) * level;
       } else {
-        value = getSample(idx) + (pos % 1.0) * (getSample(idx+1) - getSample(idx));
+        value = (getSample(idx) + (pos % 1.0) * (getSample(idx+1) - getSample(idx))) * level;
       }
     }
   }
@@ -149,9 +151,9 @@ and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
 
         // compute actual values, with linear interpolation between samples
         if (state == 2) {
-          oBuffer[i] = buffer_cross[idx] + (pos % 1.0) * (buffer_cross[idx+1] - buffer_cross[idx]);
+          oBuffer[i] = (buffer_cross[idx] + (pos % 1.0) * (buffer_cross[idx+1] - buffer_cross[idx])) * level;
         } else {
-          oBuffer[i] = getSample(idx) + (pos % 1.0) * (getSample(idx+1) - getSample(idx));
+          oBuffer[i] = (getSample(idx) + (pos % 1.0) * (getSample(idx+1) - getSample(idx))) * level;
         }
       }
     } else {
@@ -256,6 +258,11 @@ and setNote(note: int) {
   _ = updateStep();
 }
 
+// set level of the output [0..1] (applied on the envelop)
+and setLevel(newLevel: real) {
+    level = newLevel;
+}
+
 // beginning of a note -- will effectively ignore duplicated noteOn for same note
 // we don't check velocity, yet
 and noteOn(note:int, velocity:int, channel:int){
@@ -265,6 +272,7 @@ and noteOn(note:int, velocity:int, channel:int){
    if (playingnotes:Notes.noteOn(note, velocity, channel)) {
        // set frequency... should we reset phase somehow? artifacts upon first tests
        _ = setNote(note);
+       _ = setLevel(Util.velocityToLevel(velocity));
        // start playing note
        gate = true;
        posBase = 0;
@@ -316,6 +324,8 @@ and default() @[init] {
   _ = setLoopEnd(5992);
   // will copy a new array
   mem buffer_o = Util.buffer();
+  // default level, waiting for velocity to take over
+  _ = setLevel(1.0);
   _ = setSamplerate(44.1);
   // default frequency (in kHz)
   _ = setNote(69);

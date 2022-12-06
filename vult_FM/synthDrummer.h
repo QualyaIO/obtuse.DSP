@@ -112,6 +112,11 @@ static_inline fix16_t synthDrummer_Util_smooth(synthDrummer_Util__ctx_type_6 &_c
    return _ctx.x;
 }
 
+static_inline fix16_t synthDrummer_Util_velocityToLevel(int velocity){
+   velocity = int_clip(velocity,0,127);
+   return fix_mul(0x204 /* 0.007874 */,int_to_fix(velocity));
+}
+
 static_inline int synthDrummer_Drummer_drumkit_samples(){
    return 107178;
 };
@@ -133,6 +138,7 @@ typedef struct synthDrummer_Drummer__ctx_type_2 {
    int posBase;
    fix16_t pos;
    fix16_t noteRatio;
+   fix16_t level;
    fix16_t fsRatio;
    fix16_t fs;
    fix16_t buffer_o[256];
@@ -218,6 +224,17 @@ static_inline void synthDrummer_Drummer_getSampleSize_init(synthDrummer_Drummer_
 
 static_inline int synthDrummer_Drummer_getSampleSize(synthDrummer_Drummer__ctx_type_2 &_ctx){
    return _ctx.size;
+};
+
+typedef synthDrummer_Drummer__ctx_type_2 synthDrummer_Drummer_setLevel_type;
+
+static_inline void synthDrummer_Drummer_setLevel_init(synthDrummer_Drummer__ctx_type_2 &_output_){
+   synthDrummer_Drummer__ctx_type_2_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Drummer_setLevel(synthDrummer_Drummer__ctx_type_2 &_ctx, fix16_t newLevel){
+   _ctx.level = newLevel;
 };
 
 typedef synthDrummer_Drummer__ctx_type_2 synthDrummer_Drummer_noteOn_type;

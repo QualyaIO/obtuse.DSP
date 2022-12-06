@@ -16,7 +16,7 @@ TODO:
 - add effect to modulate?
 - add mixer
 - back to toubidou
-- add velocity
+- velocity: not only linear? save for monophonic?
 - midi file?
 - sequencer?
 - timeout for voices?

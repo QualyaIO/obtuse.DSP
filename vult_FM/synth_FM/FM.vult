@@ -18,6 +18,8 @@ fun process() {
     mem env_decimation_factor;
     mem carrier_env;
     mem modulator_env;
+    // level of the synth, applied to envelop
+    mem level;
     // number of iteration of this loop, for decimation
     mem n;
 
@@ -34,7 +36,7 @@ fun process() {
     val carrier_val = 0.0;
     // retrieve main envelope
     if (update_env) {
-       carrier_env = carrieradsr:ADSR.process(gate);
+       carrier_env = carrieradsr:ADSR.process(gate) * level;
     }
 
     // only going forward if we got sound on the output
@@ -65,7 +67,7 @@ and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
        nb = size(oBuffer);
     }
     // amount of phase modulation
-    mem level;
+    mem modulator_level;
 
     // buffers for envelops, decimated and the full 
     mem buffer_carrier_env_short;
@@ -101,7 +103,7 @@ and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
             n = (n + 1) % env_decimation_factor;
             if (n == 0) {
                modulator_env = buffer_modulator_env_short[i_env];
-               carrier_env = buffer_carrier_env_short[i_env];
+               carrier_env = buffer_carrier_env_short[i_env] * level;
                i_env = i_env + 1;
             }
             buffer_modulator_env[i] = modulator_env;
@@ -135,7 +137,7 @@ and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
       } else {
         _ = modulator:OSC.process_bufferTo_simple(nb, buffer_modulator_env,   buffer_modulator);
       }
-      _ = carrier:OSC.process_bufferTo(nb, buffer_carrier_env, buffer_modulator, level, oBuffer);
+      _ = carrier:OSC.process_bufferTo(nb, buffer_carrier_env, buffer_modulator, modulator_level, oBuffer);
     }
 }
 and setSamplerate(newFs:real) {
@@ -162,9 +164,13 @@ and setModulatorRatio(ratio: real) {
 }
 // effect of modulator [0..1]
 and setModulatorLevel(newLevel: real) {
-    level = newLevel;
+    modulator_level = newLevel;
     // directly manipulating the phase amount
-    carrier_half_phase = real(carrier:OSC.getSize()) / 2.0 * level;
+    carrier_half_phase = real(carrier:OSC.getSize()) / 2.0 * modulator_level;
+}
+// set level of the output [0..1] (applied on the envelop)
+and setLevel(newLevel: real) {
+    level = newLevel;
 }
 // should be 0..nquist, in kHz
 and setFrequency(freq: real) {
@@ -190,6 +196,7 @@ and noteOn(note:int, velocity:int, channel:int){
    if (playingnotes:Notes.noteOn(note, velocity, channel)) {
        // set frequency... should we reset phase somehow? artifacts upon first tests
        _ = setFrequency(Util.noteToFrequency(note));
+       _ = setLevel(Util.velocityToLevel(velocity));
        // gate, no mater what
        gate = true;
    }
@@ -205,6 +212,7 @@ and noteOff(note:int, channel:int) {
          val last_played = playingnotes:Notes.lastNote();
 	 // check we do have a note -- and that it's in range
          if (last_played > 0 && last_played <= 128) {
+	   // note: keeping current level...
             _ = setFrequency(Util.noteToFrequency(last_played - 1));
          }
       } else {
@@ -238,6 +246,7 @@ and default() @[init] {
     _ = setCarrierRatio(1.0);
     _ = setModulatorRatio(2.0);
     _ = setModulatorLevel(0.1);
+    _ = setLevel(1.0);
     // sarting with LA
     _ = setFrequency(0.440);
 

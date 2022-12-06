@@ -13,6 +13,7 @@ void synthDrummer_Drummer__ctx_type_2_init(synthDrummer_Drummer__ctx_type_2 &_ou
    _ctx.posBase = 0;
    _ctx.pos = 0x0 /* 0.000000 */;
    _ctx.noteRatio = 0x0 /* 0.000000 */;
+   _ctx.level = 0x0 /* 0.000000 */;
    _ctx.fsRatio = 0x0 /* 0.000000 */;
    _ctx.fs = 0x0 /* 0.000000 */;
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_o);
@@ -44,7 +45,7 @@ fix16_t synthDrummer_Drummer_process(synthDrummer_Drummer__ctx_type_2 &_ctx){
       }
       else
       {
-         value = (synthDrummer_Drummer_getSample(_ctx,idx) + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(synthDrummer_Drummer_getSample(_ctx,(1 + idx)) + (- synthDrummer_Drummer_getSample(_ctx,idx)))));
+         value = fix_mul(_ctx.level,(synthDrummer_Drummer_getSample(_ctx,idx) + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(synthDrummer_Drummer_getSample(_ctx,(1 + idx)) + (- synthDrummer_Drummer_getSample(_ctx,idx))))));
       }
    }
    return value;
@@ -79,7 +80,7 @@ void synthDrummer_Drummer_process_bufferTo(synthDrummer_Drummer__ctx_type_2 &_ct
          }
          else
          {
-            value = (synthDrummer_Drummer_getSample(_ctx,idx) + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(synthDrummer_Drummer_getSample(_ctx,(1 + idx)) + (- synthDrummer_Drummer_getSample(_ctx,idx)))));
+            value = fix_mul(_ctx.level,(synthDrummer_Drummer_getSample(_ctx,idx) + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(synthDrummer_Drummer_getSample(_ctx,(1 + idx)) + (- synthDrummer_Drummer_getSample(_ctx,idx))))));
          }
       }
       oBuffer[i] = value;
@@ -130,43 +131,45 @@ void synthDrummer_Drummer_noteOn(synthDrummer_Drummer__ctx_type_2 &_ctx, int not
    octave = fix_mul(0x1555 /* 0.083333 */,int_to_fix((slice_root + (- root))));
    _ctx.noteRatio = fix_exp(fix_mul(log_two,octave));
    synthDrummer_Drummer_updateStep(_ctx);
+   synthDrummer_Drummer_setLevel(_ctx,synthDrummer_Util_velocityToLevel(velocity));
 }
 
 void synthDrummer_Drummer_default(synthDrummer_Drummer__ctx_type_2 &_ctx){
    _ctx.size = synthDrummer_Drummer_drumkit_samples();
+   synthDrummer_Drummer_setLevel(_ctx,0x10000 /* 1.000000 */);
    _ctx.sampleFs = 0x1e0000 /* 30.000000 */;
    synthDrummer_Drummer_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
-   int _array_38[12];
-   {
-      _array_38[0] = 0;
-      _array_38[1] = 11500;
-      _array_38[2] = 22000;
-      _array_38[3] = 26000;
-      _array_38[4] = 28800;
-      _array_38[5] = 45600;
-      _array_38[6] = 46550;
-      _array_38[7] = 49000;
-      _array_38[8] = 50400;
-      _array_38[9] = 61000;
-      _array_38[10] = 78100;
-      _array_38[11] = 83600;
-   }
    int _array_39[12];
    {
-      _array_39[0] = 10000;
-      _array_39[1] = 21500;
-      _array_39[2] = 25500;
-      _array_39[3] = 28500;
-      _array_39[4] = 45500;
-      _array_39[5] = 46500;
-      _array_39[6] = 48550;
-      _array_39[7] = 50100;
-      _array_39[8] = 60000;
-      _array_39[9] = 78000;
-      _array_39[10] = 83500;
-      _array_39[11] = 107000;
+      _array_39[0] = 0;
+      _array_39[1] = 11500;
+      _array_39[2] = 22000;
+      _array_39[3] = 26000;
+      _array_39[4] = 28800;
+      _array_39[5] = 45600;
+      _array_39[6] = 46550;
+      _array_39[7] = 49000;
+      _array_39[8] = 50400;
+      _array_39[9] = 61000;
+      _array_39[10] = 78100;
+      _array_39[11] = 83600;
    }
-   synthDrummer_Drummer_setSlices(_ctx,_array_38,_array_39);
+   int _array_40[12];
+   {
+      _array_40[0] = 10000;
+      _array_40[1] = 21500;
+      _array_40[2] = 25500;
+      _array_40[3] = 28500;
+      _array_40[4] = 45500;
+      _array_40[5] = 46500;
+      _array_40[6] = 48550;
+      _array_40[7] = 50100;
+      _array_40[8] = 60000;
+      _array_40[9] = 78000;
+      _array_40[10] = 83500;
+      _array_40[11] = 107000;
+   }
+   synthDrummer_Drummer_setSlices(_ctx,_array_39,_array_40);
    {
       _ctx.buffer_o[0] = 0x0 /* 0.000000 */;
       _ctx.buffer_o[1] = 0x0 /* 0.000000 */;

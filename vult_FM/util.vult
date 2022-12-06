@@ -51,3 +51,9 @@ fun smooth(input, coeff:real){
    x = x+(input-x)*coeff;
    return x;
 }
+
+// convent velocity (received from midi, exected 0..127) to level 0..1
+fun velocityToLevel(velocity: int) {
+  velocity = clip(velocity, 0, 127);
+  return real(velocity)/127.0;
+} 

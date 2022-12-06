@@ -112,6 +112,11 @@ static_inline fix16_t synthSampler_Util_smooth(synthSampler_Util__ctx_type_6 &_c
    return _ctx.x;
 }
 
+static_inline fix16_t synthSampler_Util_velocityToLevel(int velocity){
+   velocity = int_clip(velocity,0,127);
+   return fix_mul(0x204 /* 0.007874 */,int_to_fix(velocity));
+}
+
 typedef struct synthSampler_Notes__ctx_type_0 {
    uint8_t poly;
    int notes[128];
@@ -214,6 +219,7 @@ typedef struct synthSampler_Sampler__ctx_type_2 {
    uint8_t loopy;
    int loopS;
    int loopE;
+   fix16_t level;
    uint8_t gate;
    fix16_t fsRatio;
    fix16_t fs;
@@ -347,6 +353,17 @@ static_inline void synthSampler_Sampler_setNote_init(synthSampler_Sampler__ctx_t
 }
 
 void synthSampler_Sampler_setNote(synthSampler_Sampler__ctx_type_2 &_ctx, int note);
+
+typedef synthSampler_Sampler__ctx_type_2 synthSampler_Sampler_setLevel_type;
+
+static_inline void synthSampler_Sampler_setLevel_init(synthSampler_Sampler__ctx_type_2 &_output_){
+   synthSampler_Sampler__ctx_type_2_init(_output_);
+   return ;
+}
+
+static_inline void synthSampler_Sampler_setLevel(synthSampler_Sampler__ctx_type_2 &_ctx, fix16_t newLevel){
+   _ctx.level = newLevel;
+};
 
 typedef synthSampler_Sampler__ctx_type_2 synthSampler_Sampler_noteOn_type;
 

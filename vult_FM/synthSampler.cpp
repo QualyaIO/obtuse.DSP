@@ -105,6 +105,7 @@ void synthSampler_Sampler__ctx_type_2_init(synthSampler_Sampler__ctx_type_2 &_ou
    _ctx.loopy = false;
    _ctx.loopS = 0;
    _ctx.loopE = 0;
+   _ctx.level = 0x0 /* 0.000000 */;
    _ctx.gate = false;
    _ctx.fsRatio = 0x0 /* 0.000000 */;
    _ctx.fs = 0x0 /* 0.000000 */;
@@ -161,11 +162,11 @@ fix16_t synthSampler_Sampler_process(synthSampler_Sampler__ctx_type_2 &_ctx){
             }
          }
          if(_ctx.state == 2){
-            value = (_ctx.buffer_cross[idx] + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(_ctx.buffer_cross[(1 + idx)] + (- _ctx.buffer_cross[idx]))));
+            value = fix_mul(_ctx.level,(_ctx.buffer_cross[idx] + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(_ctx.buffer_cross[(1 + idx)] + (- _ctx.buffer_cross[idx])))));
          }
          else
          {
-            value = (synthSampler_Sampler_getSample(_ctx,idx) + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(synthSampler_Sampler_getSample(_ctx,(1 + idx)) + (- synthSampler_Sampler_getSample(_ctx,idx)))));
+            value = fix_mul(_ctx.level,(synthSampler_Sampler_getSample(_ctx,idx) + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(synthSampler_Sampler_getSample(_ctx,(1 + idx)) + (- synthSampler_Sampler_getSample(_ctx,idx))))));
          }
       }
    }
@@ -224,11 +225,11 @@ void synthSampler_Sampler_process_bufferTo(synthSampler_Sampler__ctx_type_2 &_ct
                }
             }
             if(_ctx.state == 2){
-               oBuffer[i] = (_ctx.buffer_cross[idx] + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(_ctx.buffer_cross[(1 + idx)] + (- _ctx.buffer_cross[idx]))));
+               oBuffer[i] = fix_mul(_ctx.level,(_ctx.buffer_cross[idx] + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(_ctx.buffer_cross[(1 + idx)] + (- _ctx.buffer_cross[idx])))));
             }
             else
             {
-               oBuffer[i] = (synthSampler_Sampler_getSample(_ctx,idx) + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(synthSampler_Sampler_getSample(_ctx,(1 + idx)) + (- synthSampler_Sampler_getSample(_ctx,idx)))));
+               oBuffer[i] = fix_mul(_ctx.level,(synthSampler_Sampler_getSample(_ctx,idx) + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(synthSampler_Sampler_getSample(_ctx,(1 + idx)) + (- synthSampler_Sampler_getSample(_ctx,idx))))));
             }
          }
       }
@@ -284,6 +285,7 @@ void synthSampler_Sampler_noteOn(synthSampler_Sampler__ctx_type_2 &_ctx, int not
    note = int_clip(note,0,127);
    if(synthSampler_Notes_noteOn(_ctx.playingnotes,note,velocity,channel)){
       synthSampler_Sampler_setNote(_ctx,note);
+      synthSampler_Sampler_setLevel(_ctx,synthSampler_Util_velocityToLevel(velocity));
       _ctx.gate = true;
       _ctx.posBase = 0;
       _ctx.pos = 0x0 /* 0.000000 */;
@@ -832,6 +834,7 @@ void synthSampler_Sampler_default(synthSampler_Sampler__ctx_type_2 &_ctx){
       _ctx.buffer_o[254] = 0x0 /* 0.000000 */;
       _ctx.buffer_o[255] = 0x0 /* 0.000000 */;
    }
+   synthSampler_Sampler_setLevel(_ctx,0x10000 /* 1.000000 */);
    synthSampler_Sampler_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    synthSampler_Sampler_setNote(_ctx,69);
    synthSampler_Notes_default(_ctx.playingnotes);
