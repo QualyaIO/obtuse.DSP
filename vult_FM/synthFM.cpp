@@ -1876,6 +1876,8 @@ void synthFM_Voice__ctx_type_0_init(synthFM_Voice__ctx_type_0 &_output_){
    _ctx.number_voices = 0;
    int_init_array(128,0,_ctx.notes);
    _ctx.normalize = false;
+   _ctx.leftovers = 0x0 /* 0.000000 */;
+   fix_init_array(4,0x0 /* 0.000000 */,_ctx.last_values);
    _ctx.fs = 0x0 /* 0.000000 */;
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v3);
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v2);
@@ -1892,8 +1894,13 @@ fix16_t synthFM_Voice_process(synthFM_Voice__ctx_type_0 &_ctx){
    int i;
    i = 0;
    while(i < _ctx.number_voices){
-      value = (value + synthFM_Poly_getSample(_ctx.poly,i));
+      _ctx.last_values[i] = synthFM_Poly_getSample(_ctx.poly,i);
+      value = (value + _ctx.last_values[i]);
       i = (1 + i);
+   }
+   if(_ctx.leftovers != 0x0 /* 0.000000 */){
+      _ctx.leftovers = fix_mul(0xffbe /* 0.999000 */,_ctx.leftovers);
+      value = (_ctx.leftovers + value);
    }
    if(_ctx.normalize){
       return fix_mul(_ctx.voices_ratio,value);
@@ -1917,6 +1924,9 @@ void synthFM_Voice_process_bufferTo(synthFM_Voice__ctx_type_0 &_ctx, int nb, fix
          oBuffer[i] = _ctx.buffer_v0[i];
          i = (1 + i);
       }
+      if(nb > 0){
+         _ctx.last_values[v] = _ctx.buffer_v0[((-1) + nb)];
+      }
       v = (1 + v);
    }
    while(v < _ctx.number_voices){
@@ -1926,10 +1936,19 @@ void synthFM_Voice_process_bufferTo(synthFM_Voice__ctx_type_0 &_ctx, int nb, fix
          oBuffer[i] = (_ctx.buffer_v0[i] + oBuffer[i]);
          i = (1 + i);
       }
+      if(nb > 0){
+         _ctx.last_values[v] = _ctx.buffer_v0[((-1) + nb)];
+      }
       v = (1 + v);
    }
    i = 0;
+   while((_ctx.leftovers != 0x0 /* 0.000000 */) && (i < nb)){
+      _ctx.leftovers = fix_mul(0xffbe /* 0.999000 */,_ctx.leftovers);
+      oBuffer[i] = _ctx.leftovers;
+      i = (1 + i);
+   }
    if(_ctx.normalize){
+      i = 0;
       while(i < nb){
          oBuffer[i] = fix_mul(_ctx.voices_ratio,oBuffer[i]);
          i = (1 + i);
@@ -1987,6 +2006,7 @@ void synthFM_Voice_noteOn(synthFM_Voice__ctx_type_0 &_ctx, int note, int velocit
          active_v = synthFM_Notes_firstNote(_ctx.voicesactive);
          if(active_v > 0){
             synthFM_Voice_noteOff(_ctx,_ctx.voices[((-1) + active_v)],0);
+            _ctx.leftovers = (_ctx.leftovers + _ctx.last_values[active_v]);
          }
       }
       v = synthFM_Notes_firstNote(_ctx.voicesinactive);

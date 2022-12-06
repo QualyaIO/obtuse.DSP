@@ -10,6 +10,10 @@ fun process() {
    mem voices;
    // how many voices we support at the moment?
    mem number_voices;
+   // store last values for each voice, used to avoid clicks when stealing one
+   mem last_values;
+   // keep all residues
+   mem leftovers: real;
    // to speedup, corresponding ratio per voice
    mem voices_ratio;
    // what voice (if any) number are associated to
@@ -23,8 +27,14 @@ fun process() {
    val i = 0;
    // accumulate all voices
    while (i < number_voices) {
-      value = value + poly:Poly.getSample(i);
+      last_values[i] = poly:Poly.getSample(i);
+      value = value + last_values[i];
       i = i + 1;
+   }
+   // leftovers, if any
+   if (leftovers <> 0.0) {
+       leftovers = leftovers * 0.999;
+       value = value + leftovers;
    }
    // normalise
    if (normalize) {
@@ -52,6 +62,9 @@ and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
          oBuffer[i] = buffer_v0[i];
          i = i + 1;
       }
+      if (nb > 0) {
+         last_values[v] = buffer_v0[nb - 1];
+      }
       v = v + 1;
    }
    // accumulate the others
@@ -62,11 +75,21 @@ and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
 	oBuffer[i] = oBuffer[i] + buffer_v0[i];
          i = i + 1;
       }
+      if (nb > 0) {
+         last_values[v] = buffer_v0[nb - 1];
+      }
       v = v + 1;
    }
-   // scale down
+   // leftovers, if any
    i = 0;
+   while (leftovers <> 0.0 && i < nb) {
+      leftovers = leftovers * 0.999;
+      oBuffer[i] = leftovers;
+      i = i + 1;
+   }
+   // scale down
    if (normalize) {
+      i = 0;
       while (i < nb) {
           oBuffer[i] = oBuffer[i] * voices_ratio;
           i = i + 1;
@@ -139,6 +162,8 @@ and noteOn(note:int, velocity:int, channel:int){
 	 if (active_v > 0) {
 	    // disable this voice (with arbitrary channel)
 	    _ = noteOff(voices[active_v-1], 0);
+            // retrieve last value
+            leftovers = leftovers + last_values[active_v];
 	 }
       }
       // ne we should have at least one inactive voice
@@ -231,6 +256,7 @@ and default() @[init] {
     // which notes are active, if so to which voice? (to select voice and prune duplicated note on/off). Stores voice number + 1
    _ = setNbVoices(number_voices);
    mem notes: array(int, 128);
+   mem last_values: array(real, 4);
 
    // monophonic algo used to keep track of active voices...
    _ = voicesactive:Notes.default();

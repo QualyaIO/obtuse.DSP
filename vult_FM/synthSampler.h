@@ -581,6 +581,8 @@ typedef struct synthSampler_Voice__ctx_type_0 {
    int number_voices;
    int notes[128];
    uint8_t normalize;
+   fix16_t leftovers;
+   fix16_t last_values[4];
    fix16_t fs;
    fix16_t buffer_v3[256];
    fix16_t buffer_v2[256];
