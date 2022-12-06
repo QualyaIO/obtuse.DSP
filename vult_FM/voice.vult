@@ -83,7 +83,8 @@ and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
    // leftovers, if any
    i = 0;
    while (leftovers <> 0.0 && i < nb) {
-      leftovers = leftovers * 0.999;
+      //leftovers = leftovers * 0.999;
+      leftovers = fil:SVF.process(leftovers);
       oBuffer[i] = leftovers;
       i = i + 1;
    }
@@ -110,6 +111,14 @@ and process_bufferTo_alt(nb: int, oBuffer: array(real, 256)) {
    _ = poly:Poly.runVoice(1, nb, buffer_v1);
    _ = poly:Poly.runVoice(2, nb, buffer_v2);
    _ = poly:Poly.runVoice(3, nb, buffer_v3);
+
+   if (nb > 0) {
+       last_values[0] = buffer_v0[nb - 1];
+       last_values[1] = buffer_v1[nb - 1];
+       last_values[2] = buffer_v2[nb - 1];
+       last_values[3] = buffer_v3[nb - 1];
+   }
+
    val i = 0;
    if (normalize) {
       while (i < nb) {
@@ -121,6 +130,16 @@ and process_bufferTo_alt(nb: int, oBuffer: array(real, 256)) {
          oBuffer[i] = buffer_v0[i] + buffer_v1[i] + buffer_v2[i] + buffer_v3[i];
          i = i + 1;
       }
+
+      // leftovers, if any
+      i = 0;
+      while (leftovers <> 0.0 && i < nb) {
+         //leftovers = leftovers * 0.999;
+         leftovers = fil:SVF.process(leftovers);
+         oBuffer[i] = leftovers;
+         i = i + 1;
+      }
+
    }
 }
 
@@ -242,7 +261,7 @@ and synthGetSize(): int {
 }
 
 /* end parameters for synths */
- 
+
 and default() @[init] {
    _ = poly:Poly.default();
 
@@ -257,6 +276,10 @@ and default() @[init] {
    _ = setNbVoices(number_voices);
    mem notes: array(int, 128);
    mem last_values: array(real, 4);
+   _ = fil:SVF.setSamplerate(30.0);
+   _ = fil:SVF.setType(1);
+   _ = fil:SVF.setFreq(1.0);
+   _ = fil:SVF.setQ(1.0);
 
    // monophonic algo used to keep track of active voices...
    _ = voicesactive:Notes.default();
