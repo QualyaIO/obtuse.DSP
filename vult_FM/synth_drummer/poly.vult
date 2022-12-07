@@ -99,6 +99,19 @@ and synthGetSize(): int {
   return 0;
 }
 
+// Wavetable.getNbWavetables()
+and synthGetNbWavetables(): int {
+  return 0;
+}
+
+// destined to FM modulator oscillator
+and synthSetModulatorWavetable(wavetableIdx: real) {
+}
+
+// destined to FM modulator oscillator
+and synthSetCarrierWavetable(wavetableIdx: real) {
+}
+
 /* end parameters for synths */
  
 

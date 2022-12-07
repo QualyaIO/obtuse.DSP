@@ -7,17 +7,28 @@ MIDI input: using https://github.com/FortySevenEffects/arduino_midi_library (tes
 For now, use `make_vult.sh` to transpile all files -- and set some specific optimization for rp2040.
 
 WARNING: Drummer for some reason does not work on Os optim (default). Tested fine with Ofast.
-TODO:
+
+# TODO
+
+
+Interface
 
 - take into account pitchwheel
 - filters and reverb: method to ask for auto-resize of delay upon change in samplerate
+- add mixer
+- midi file?
+
+Fixes
+
 - voice: buffer_alt with fixed 4 voices
 - better fix pop when a voice is stolen
-- add mixer
-- back to toubidou
-- velocity: not only linear? save for monophonic?
-- midi file?
-- sequencer?
 - timeout for voices?
-- copy wavetable in temp var for FM, and mix them?
 - make drummer work no matter the optimisation ??
+
+Features
+
+- back to toubidou
+- sequencer?
+- velocity: not only linear? save for monophonic?
+- tremolo (e.g. at Voice level)
+- interpolate between wavetables (for morph or even to retrieve samples)

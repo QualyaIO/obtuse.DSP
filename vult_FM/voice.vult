@@ -269,6 +269,21 @@ and synthGetSize(): int {
   return poly:Poly.synthGetSize();
 }
 
+// Wavetable.getNbWavetables()
+and synthGetNbWavetables(): int {
+  return poly:Poly.synthGetNbWavetables();
+}
+
+// destined to FM modulator oscillator
+and synthSetModulatorWavetable(wavetableIdx: real) {
+  _ = poly:Poly.synthSetModulatorWavetable(wavetableIdx);
+}
+
+// destined to FM modulator oscillator
+and synthSetCarrierWavetable(wavetableIdx: real) {
+  _ = poly:Poly.synthSetCarrierWavetable(wavetableIdx);
+}
+
 /* end parameters for synths */
 
 and default() @[init] {

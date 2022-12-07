@@ -1,27 +1,11 @@
 
-// oscillator, using waveables
-// TODO: dublicate code here as well between process and process_buffer (and "simple" version! for sake of efficiency)
-
-// note that wavetable should be big enough to avoid fixed float limits upon later computations (let say at least 100). Too small and audio artifacts will occur (e.g. sine 2048 not so great) too big and CPU will take a hit. 4096 hears a good tradeoff
-
-// 0 -> sine,
-external sin_wave(channel:int, index:int) : real @[wave(channels=1, file="sinus_4096.wav")];
-
-// return value for current wavetable (first channel hard-coded), between [0..sample size[
-fun getSample(index: int) {
-    // index of wavetable
-    mem wavetable;
-    // modulo will be taken care of by the generated code 
-    val sample = 0.0;
-    if (wavetable == 0) {
-       sample = sin_wave(0, index);
-    }
-    return sample;
-}
+// oscillator, using waveables, to be passed as parameter for flexibility
+// TODO: duplicate code here as well between process and process_buffer (and "simpler" versions! for sake of efficiency)
 
 
 // non-buffered version
-and process() {
+// wavetable: array containing samples to retrieve
+fun process(wavetable) {
    // audio sampling rate
    mem fs: real;
    // sinus frequency
@@ -40,8 +24,8 @@ and process() {
    while (phase > rsize) {
       phase = phase - rsize;
    }
-   // loop in sample
-   return getSample(int(phase_base + phase));
+   // let others take care of modulo
+   return Wavetable.getSampleFrom(wavetable, int(phase_base + phase));
 }
 
 
@@ -49,11 +33,11 @@ and process() {
 // buffered version, specify number of elements of the buffer to proceed (will be caped to acual max). 0: all elements
 // update the buffer, to be fetch afterward, returns last sample
 // env: envelope to apply (0..1)
-// phase shift: specify how to shift the base phase (-1 to 1, 0 center of phase) -- FIXME so that 0 does not change anything?
+// phase shift: specify how to shift the base phase (-1 to 1, 0 center of phase) -- FIXME so that 0 does not change anything?
 // phase_shift_level: by how much we apply phase shift (0..1)
 // oBuffer: output buffer to copy data to
 // FIXME: not check for phase_bases size, no option to by-pass
-and process_bufferTo(nb: int, env: array(real, 256), phase_shift: array(real, 256), phase_shift_level: real, oBuffer: array(real, 256)) {
+and process_bufferTo(wavetable, nb: int, env: array(real, 256), phase_shift: array(real, 256), phase_shift_level: real, oBuffer: array(real, 256)) {
    nb = clip(nb, 0, size(oBuffer));
    if (nb == 0) {
       nb = size(oBuffer);
@@ -72,13 +56,13 @@ and process_bufferTo(nb: int, env: array(real, 256), phase_shift: array(real, 25
          phase = phase - rsize;
       }
       // loop in sample
-      oBuffer[i]  = getSample(int(half_phase + phase_range * phase_shift[i]  + phase)) * env[i];
+      oBuffer[i]  = Wavetable.getSampleFrom(wavetable, int(half_phase + phase_range * phase_shift[i]  + phase)) * env[i];
       i = i + 1;
    }
 }
 
 // without phase this one
-and process_bufferTo_simple(nb: int, env: array(real, 256), oBuffer: array(real, 256)) {
+and process_bufferTo_simple(wavetable, nb: int, env: array(real, 256), oBuffer: array(real, 256)) {
    nb = clip(nb, 0, size(oBuffer));
    if (nb == 0) {
       nb = size(oBuffer);
@@ -94,13 +78,13 @@ and process_bufferTo_simple(nb: int, env: array(real, 256), oBuffer: array(real,
       }
       // loop in sample
       //v = getSample(int(phase_base + phase));
-      oBuffer[i]  = getSample(int(phase_base + phase)) * env[i];
+      oBuffer[i]  = Wavetable.getSampleFrom(wavetable, int(phase_base + phase)) * env[i];
       i = i + 1;
    }
 }
 
 // without envelop nor phase this one
-and process_bufferTo_simplest(nb: int, oBuffer: array(real, 256)) {
+and process_bufferTo_simplest(wavetable, nb: int, oBuffer: array(real, 256)) {
    nb = clip(nb, 0, size(oBuffer));
    if (nb == 0) {
       nb = size(oBuffer);
@@ -116,7 +100,7 @@ and process_bufferTo_simplest(nb: int, oBuffer: array(real, 256)) {
       }
       // loop in sample
       //v = getSample(int(phase_base + phase));
-      oBuffer[i]  = getSample(int(phase_base + phase));
+      oBuffer[i]  = Wavetable.getSampleFrom(wavetable, int(phase_base + phase));
       i = i + 1;
    }
 }
@@ -150,27 +134,16 @@ and resetPhase() {
    phase = 0.0;
    phase_base = 0.0;
 }
-// see options at the top of the file
-// reset to 0 if invalid wavetable is selected
-and setWavetable(index: int) {
-    if (wavetable == 0) {
-       rsize = real(sin_wave_samples());
-    }
-    // sefault to sine
-    else {
-       setWavetable(0);
-    }
-}
-// size of selected wavetable (int)
-and getSize() : int {
-    return int(rsize);
+
+// size of wavetable
+and getSize() {
+    return rsize;
 }
 
 and default() @[init] {
+   rsize = real(Wavetable.bufferSize());
    // default sampling rate (in kHz)
    _ = setSamplerate(44.1);
-   // default sine
-   _ = setWavetable(0);
    // default frequency (in kHz)
    _ = setFrequency(0.440);
 }

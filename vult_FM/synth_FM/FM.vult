@@ -6,8 +6,8 @@
 // For future reference, note that using at least a temp variable in process() force vult to put that in cpp and halves computation times (???)
 
 
-// FIXME: obvious duplicated code
-fun process() {
+// giving wavetables to be used by both oscilator (tedious but this way we save on memory and copy in case of polyphony)
+fun process(wavetable_modulator, wavetable_carrier) {
     // audio sampling rate
     mem fs: real;
     
@@ -48,19 +48,19 @@ fun process() {
        val carrier_phase = 0.0;
        // only modulate if we got level on modulator
        if (modulator_env > 0.0) {
-          val modulator_val = (modulator:OSC.process() + 1.0) * modulator_env;
+          val modulator_val = (modulator:OSC.process(wavetable_modulator) + 1.0) * modulator_env;
 	  carrier_phase = modulator_val * carrier_half_phase;
        }
        // modulate the (base) phase of the carrier
        _ = carrier:OSC.setPhase(carrier_phase);
-       carrier_val = carrier:OSC.process() * carrier_env ;
+       carrier_val = carrier:OSC.process(wavetable_carrier) * carrier_env ;
     }
 
     return carrier_val;
 }
 
 // update the buffer, to be fetch afterward
-and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
+and process_bufferTo(wavetable_modulator, wavetable_carrier, nb: int, oBuffer: array(real, 256)) {
     mem buffer_modulator;
     nb = clip(nb, 0, size(oBuffer));
     if (nb == 0) {
@@ -135,9 +135,9 @@ and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
           i = i + 1;
         }
       } else {
-        _ = modulator:OSC.process_bufferTo_simple(nb, buffer_modulator_env,   buffer_modulator);
+        _ = modulator:OSC.process_bufferTo_simple(wavetable_modulator, nb, buffer_modulator_env,   buffer_modulator);
       }
-      _ = carrier:OSC.process_bufferTo(nb, buffer_carrier_env, buffer_modulator, modulator_level, oBuffer);
+      _ = carrier:OSC.process_bufferTo(wavetable_carrier, nb, buffer_carrier_env, buffer_modulator, modulator_level, oBuffer);
     }
 }
 and setSamplerate(newFs:real) {

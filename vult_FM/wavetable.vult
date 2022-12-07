@@ -1,0 +1,81 @@
+
+// handling wavetables and combinations thereof, to be passed-down to OSC
+
+// note that wavetable should be big enough to avoid fixed float limits upon later computations (let say at least 100). Too small and audio artifacts will occur (e.g. sine 2048 not so great) too big and CPU will take a hit. 4096 hears a good tradeoff
+
+// 0 -> sine,
+external sin_wave(channel:int, index:int) : real @[wave(channels=1, file="sinus_4096.wav")];
+
+// return value for selectes wavetable (first channel hard-coded), between [0..sample size[
+fun getSample(wavetableIdx: int, index: int): real {
+  // modulo will be taken care of by the generated code 
+  val sample = 0.0;
+  if (wavetableIdx == 0) {
+     sample = sin_wave(0, index);
+  }
+  return sample;
+}
+
+// return value for wavetable passed in parameter, between [0..wavetable size[
+fun getSampleFrom(wavetable, index: int): real {
+   if (index >= size(wavetable)) {
+     index = index % size(wavetable);
+   }
+   return wavetable[index];
+}
+
+
+// how many wavetables we have so far?
+fun getNbWavetables() {
+  return 1;
+}
+
+// morph between two consecutive wavetables depending on index, copy to buffer
+// Waring: wavetables will not be interpolated, if one is shorter than destination table, it will repeat, if larger then only a portion will be used.
+fun morphTo(wavetableIdx: real, buffer) {
+  val wavetable1 = int(floor(wavetableIdx));
+  val wavetable2 = wavetable1 + 1;
+  val ratio = wavetableIdx % 1.0;
+  val i = 0;
+  val s1, s2;
+  while (i < size(buffer)) {
+    s1 = getSample(wavetable1, i);
+    s2 = getSample(wavetable2, i);
+    buffer[i] = s1 + ratio * (s2 - s1);
+    i = i + 1;
+  }
+}
+
+
+// used to allocate a wavetable array (sync size with below!)
+fun bufferWavetable() {
+  val buff: array(real, 4096);
+  return buff;
+}
+
+// to be synced with above!
+fun bufferSize() {
+  return 4096;
+}
+
+// retrieve a random morphed wavetable (also used as a hack to help vult infer morph() parameters type)
+fun getRandomMorph() {
+  val basetable = 0;
+  if (getNbWavetables() > 1) {
+    basetable = irandom() % (getNbWavetables() - 1);
+  }
+  val wavetableIdx = real(basetable) + random();
+  val buffer = bufferWavetable();
+  morphTo(wavetableIdx, buffer);
+  return buffer;
+}
+
+// really to please vult transpiler, get a random sample from a randomly morphed wavetable
+fun getRandRandomMorph() {
+  val wavetable = getRandomMorph();
+  val idx = 0;
+  if (size(wavetable) > 0) {
+    idx = irandom() % size(wavetable);
+  }
+  return getSampleFrom(wavetable, idx);
+}

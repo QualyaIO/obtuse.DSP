@@ -4,34 +4,36 @@
 
 // retrieve sample from a specific voice
 fun getSample(voice: int) {
-       if (voice == 0) {
-           return voice0:FM.process();
-       }
-       else if (voice == 1) {
-            return voice1:FM.process();
-       }
-       else if (voice == 2) {
-            return voice2:FM.process();
-       }
-       else if (voice == 3) {
-            return voice3:FM.process();
-       }
+   mem wavetable_modulator;
+   mem wavetable_carrier;
+   if (voice == 0) {
+        return voice0:FM.process(wavetable_modulator, wavetable_carrier);
+   }
+   else if (voice == 1) {
+        return voice1:FM.process(wavetable_modulator, wavetable_carrier);
+   }
+   else if (voice == 2) {
+        return voice2:FM.process(wavetable_modulator, wavetable_carrier);
+   }
+   else if (voice == 3) {
+        return voice3:FM.process(wavetable_modulator, wavetable_carrier);
+   }
    return 0.0;
 }
 
 // run buffer for specified voice (buffered version of getSample), filling specified buffer
 and runVoice(voice: int, nb: int, buff: array(real, 256)) {
        if (voice == 0) {
-           _ = voice0:FM.process_bufferTo(nb, buff);
+           _ = voice0:FM.process_bufferTo(wavetable_modulator, wavetable_carrier, nb, buff);
        }
        else if (voice == 1) {
-	   _ = voice1:FM.process_bufferTo(nb, buff);
+           _ = voice1:FM.process_bufferTo(wavetable_modulator, wavetable_carrier, nb, buff);
        }
        else if (voice == 2) {
-           _ = voice2:FM.process_bufferTo(nb, buff);
+           _ = voice2:FM.process_bufferTo(wavetable_modulator, wavetable_carrier, nb, buff);
        }
        else if (voice == 3) {
-           _ = voice3:FM.process_bufferTo(nb, buff);
+           _ = voice3:FM.process_bufferTo(wavetable_modulator, wavetable_carrier, nb, buff);
        }
 }
 
@@ -99,15 +101,52 @@ and synthGetSize(): int {
   return 0;
 }
 
+// Wavetable.getNbWavetables()
+and synthGetNbWavetables():int {
+  return Wavetable.getNbWavetables();
+}
+
+// destined to FM modulator oscillator
+and synthSetModulatorWavetable(wavetableIdx: real) {
+  // only update if necessary, costly
+  mem initModulatorWavetable;
+  mem lastModulatorWavetableIdx;
+  if (not(initModulatorWavetable) || wavetableIdx <> lastModulatorWavetableIdx) {
+    Wavetable.morphTo(wavetableIdx, wavetable_modulator); 
+    lastModulatorWavetableIdx = wavetableIdx;
+    initModulatorWavetable = true;
+  }
+}
+
+// destined to FM carrier oscillator
+and synthSetCarrierWavetable(wavetableIdx: real) {
+  // only update if necessary, costly
+  mem initCarrierWavetable;
+  mem lastCarrierWavetableIdx;
+  if (not(initCarrierWavetable) || wavetableIdx <> lastCarrierWavetableIdx) {
+    Wavetable.morphTo(wavetableIdx, wavetable_carrier); 
+    lastCarrierWavetableIdx = wavetableIdx;
+    initCarrierWavetable = true;
+  }
+}
+
+
 /* end parameters for synths */
 
 and default() @[init] {
-      _ = voice0:FM.default();
-      _ = voice0:FM.setPoly(true);
-      _ = voice1:FM.default();
-      _ = voice1:FM.setPoly(true);
-      _ = voice2:FM.default();
-      _ = voice2:FM.setPoly(true);
-      _ = voice3:FM.default();
-      _ = voice3:FM.setPoly(true);
+  wavetable_modulator = Wavetable.bufferWavetable();
+  wavetable_carrier = Wavetable.bufferWavetable();
+  initModulatorWavetable = false;
+  initCarrierWavetable = false;
+  // default to sine
+  _ = synthSetModulatorWavetable(0.0);
+  _ = synthSetCarrierWavetable(0.0);
+  _ = voice0:FM.default();
+  _ = voice0:FM.setPoly(true);
+  _ = voice1:FM.default();
+  _ = voice1:FM.setPoly(true);
+  _ = voice2:FM.default();
+  _ = voice2:FM.setPoly(true);
+  _ = voice3:FM.default();
+  _ = voice3:FM.setPoly(true);
 }
