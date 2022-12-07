@@ -5,17 +5,33 @@
 fix16_t synthFM_Wavetable_getSample(int wavetableIdx, int index){
    fix16_t sample;
    sample = 0x0 /* 0.000000 */;
-   if(wavetableIdx == 0){
-      sample = synthFM_Wavetable_sin_wave(0,index);
+   switch(wavetableIdx) {
+      case 0:
+         sample = synthFM_Wavetable_sin_wave(0,index);
+      break;
+      case 1:
+         sample = synthFM_Wavetable_tri_wave(0,index);
+      break;
+      case 2:
+         sample = synthFM_Wavetable_saw_wave(0,index);
+      break;
+      case 3:
+         sample = synthFM_Wavetable_square_wave(0,index);
+      break;
+    
    }
    return sample;
 }
 
 void synthFM_Wavetable_morphTo(fix16_t wavetableIdx, fix16_t (&buffer)[4096]){
+   wavetableIdx = fix_clip(wavetableIdx,0x0 /* 0.000000 */,0x40000 /* 4.000000 */);
    int wavetable1;
    wavetable1 = fix_to_int(fix_floor(wavetableIdx));
    int wavetable2;
    wavetable2 = (1 + wavetable1);
+   if(wavetable2 >= 4){
+      wavetable2 = 0;
+   }
    fix16_t ratio;
    ratio = (wavetableIdx % 0x10000 /* 1.000000 */);
    int i;
@@ -33,8 +49,8 @@ void synthFM_Wavetable_morphTo(fix16_t wavetableIdx, fix16_t (&buffer)[4096]){
 void synthFM_Wavetable_getRandomMorph(fix16_t (&_output_)[4096]){
    int basetable;
    basetable = 0;
-   if(1 > 1){
-      basetable = (irandom() % 0);
+   if(4 > 1){
+      basetable = (irandom() % 3);
    }
    fix16_t wavetableIdx;
    wavetableIdx = (fix_random() + int_to_fix(basetable));

@@ -5,6 +5,12 @@
 
 // 0 -> sine,
 external sin_wave(channel:int, index:int) : real @[wave(channels=1, file="sinus_4096.wav")];
+// 1 -> triangle
+external tri_wave(channel:int, index:int) : real @[wave(channels=1, file="triangle_4096.wav")];
+// 2 -> sawtooth
+external saw_wave(channel:int, index:int) : real @[wave(channels=1, file="sawtooth_4096.wav")];
+// 3 -> square
+external square_wave(channel:int, index:int) : real @[wave(channels=1, file="square_4096.wav")];
 
 // return value for selectes wavetable (first channel hard-coded), between [0..sample size[
 fun getSample(wavetableIdx: int, index: int): real {
@@ -12,6 +18,15 @@ fun getSample(wavetableIdx: int, index: int): real {
   val sample = 0.0;
   if (wavetableIdx == 0) {
      sample = sin_wave(0, index);
+  }
+  else if (wavetableIdx == 1) {
+     sample = tri_wave(0, index);
+  }
+  else if (wavetableIdx == 2) {
+     sample = saw_wave(0, index);
+  }
+  else if (wavetableIdx == 3) {
+     sample = square_wave(0, index);
   }
   return sample;
 }
@@ -27,17 +42,23 @@ fun getSampleFrom(wavetable, index: int): real {
 
 // how many wavetables we have so far?
 fun getNbWavetables() {
-  return 1;
+  return 4;
 }
 
-// morph between two consecutive wavetables depending on index, copy to buffer
+// morph between two consecutive wavetables depending on index, copy to buffer. If value is above nb wavetable - 1, then it will morph again between last and first wavetable
 // Waring: wavetables will not be interpolated, if one is shorter than destination table, it will repeat, if larger then only a portion will be used.
 fun morphTo(wavetableIdx: real, buffer) {
+  wavetableIdx = clip(wavetableIdx, 0.0, real(getNbWavetables()));
   val wavetable1 = int(floor(wavetableIdx));
   val wavetable2 = wavetable1 + 1;
+  // loop morphing
+  if (wavetable2 >= getNbWavetables()) {
+    wavetable2 = 0;
+  }
   val ratio = wavetableIdx % 1.0;
   val i = 0;
   val s1, s2;
+  // weight between the two selected wavetables
   while (i < size(buffer)) {
     s1 = getSample(wavetable1, i);
     s2 = getSample(wavetable2, i);
