@@ -594,6 +594,56 @@ static_inline void synthSampler_Poly_synthSetCarrierWavetable_init(synthSampler_
 static_inline void synthSampler_Poly_synthSetCarrierWavetable(synthSampler_Poly__ctx_type_0 &_ctx, fix16_t wavetableIdx){
 }
 
+typedef synthSampler_Poly__ctx_type_0 synthSampler_Poly_synthSetModulatorRatio_type;
+
+static_inline void synthSampler_Poly_synthSetModulatorRatio_init(synthSampler_Poly__ctx_type_0 &_output_){
+   synthSampler_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSampler_Poly_synthSetModulatorRatio(synthSampler_Poly__ctx_type_0 &_ctx, fix16_t ratio){
+}
+
+typedef synthSampler_Poly__ctx_type_0 synthSampler_Poly_synthSetCarrierRatio_type;
+
+static_inline void synthSampler_Poly_synthSetCarrierRatio_init(synthSampler_Poly__ctx_type_0 &_output_){
+   synthSampler_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSampler_Poly_synthSetCarrierRatio(synthSampler_Poly__ctx_type_0 &_ctx, fix16_t ratio){
+}
+
+typedef synthSampler_Poly__ctx_type_0 synthSampler_Poly_synthSetModulatorLevel_type;
+
+static_inline void synthSampler_Poly_synthSetModulatorLevel_init(synthSampler_Poly__ctx_type_0 &_output_){
+   synthSampler_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSampler_Poly_synthSetModulatorLevel(synthSampler_Poly__ctx_type_0 &_ctx, fix16_t level){
+}
+
+typedef synthSampler_Poly__ctx_type_0 synthSampler_Poly_synthSetModulatorADSR_type;
+
+static_inline void synthSampler_Poly_synthSetModulatorADSR_init(synthSampler_Poly__ctx_type_0 &_output_){
+   synthSampler_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSampler_Poly_synthSetModulatorADSR(synthSampler_Poly__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
+}
+
+typedef synthSampler_Poly__ctx_type_0 synthSampler_Poly_synthSetCarrierADSR_type;
+
+static_inline void synthSampler_Poly_synthSetCarrierADSR_init(synthSampler_Poly__ctx_type_0 &_output_){
+   synthSampler_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSampler_Poly_synthSetCarrierADSR(synthSampler_Poly__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
+}
+
 typedef synthSampler_Poly__ctx_type_0 synthSampler_Poly_default_type;
 
 static_inline void synthSampler_Poly_default_init(synthSampler_Poly__ctx_type_0 &_output_){
@@ -773,6 +823,61 @@ static_inline void synthSampler_Voice_synthSetCarrierWavetable_init(synthSampler
 
 static_inline void synthSampler_Voice_synthSetCarrierWavetable(synthSampler_Voice__ctx_type_0 &_ctx, fix16_t wavetableIdx){
    synthSampler_Poly_synthSetCarrierWavetable(_ctx.poly,wavetableIdx);
+};
+
+typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_synthSetModulatorRatio_type;
+
+static_inline void synthSampler_Voice_synthSetModulatorRatio_init(synthSampler_Voice__ctx_type_0 &_output_){
+   synthSampler_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSampler_Voice_synthSetModulatorRatio(synthSampler_Voice__ctx_type_0 &_ctx, fix16_t ratio){
+   synthSampler_Poly_synthSetModulatorRatio(_ctx.poly,ratio);
+};
+
+typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_synthSetCarrierRatio_type;
+
+static_inline void synthSampler_Voice_synthSetCarrierRatio_init(synthSampler_Voice__ctx_type_0 &_output_){
+   synthSampler_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSampler_Voice_synthSetCarrierRatio(synthSampler_Voice__ctx_type_0 &_ctx, fix16_t ratio){
+   synthSampler_Poly_synthSetCarrierRatio(_ctx.poly,ratio);
+};
+
+typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_synthSetModulatorLevel_type;
+
+static_inline void synthSampler_Voice_synthSetModulatorLevel_init(synthSampler_Voice__ctx_type_0 &_output_){
+   synthSampler_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSampler_Voice_synthSetModulatorLevel(synthSampler_Voice__ctx_type_0 &_ctx, fix16_t level){
+   synthSampler_Poly_synthSetModulatorLevel(_ctx.poly,level);
+};
+
+typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_synthSetModulatorADSR_type;
+
+static_inline void synthSampler_Voice_synthSetModulatorADSR_init(synthSampler_Voice__ctx_type_0 &_output_){
+   synthSampler_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSampler_Voice_synthSetModulatorADSR(synthSampler_Voice__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
+   synthSampler_Poly_synthSetModulatorADSR(_ctx.poly,a,d,s,r);
+};
+
+typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_synthSetCarrierADSR_type;
+
+static_inline void synthSampler_Voice_synthSetCarrierADSR_init(synthSampler_Voice__ctx_type_0 &_output_){
+   synthSampler_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSampler_Voice_synthSetCarrierADSR(synthSampler_Voice__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
+   synthSampler_Poly_synthSetCarrierADSR(_ctx.poly,a,d,s,r);
 };
 
 typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_default_type;

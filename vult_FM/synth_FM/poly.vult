@@ -131,6 +131,46 @@ and synthSetCarrierWavetable(wavetableIdx: real) {
 }
 
 
+// FM.setModulatorRatio()
+and synthSetModulatorRatio(ratio: real) {
+  _ = voice0:FM.setModulatorRatio(ratio);
+  _ = voice1:FM.setModulatorRatio(ratio);
+  _ = voice2:FM.setModulatorRatio(ratio);
+  _ = voice3:FM.setModulatorRatio(ratio);
+}
+
+// FM.setCarrierRatio()
+and synthSetCarrierRatio(ratio: real) {
+  _ = voice0:FM.setCarrierRatio(ratio);
+  _ = voice1:FM.setCarrierRatio(ratio);
+  _ = voice2:FM.setCarrierRatio(ratio);
+  _ = voice3:FM.setCarrierRatio(ratio);
+}
+
+// FM.setModulatorLevel()
+and synthSetModulatorLevel(level: real) {
+  _ = voice0:FM.setModulatorLevel(level);
+  _ = voice1:FM.setModulatorLevel(level);
+  _ = voice2:FM.setModulatorLevel(level);
+  _ = voice3:FM.setModulatorLevel(level);
+}
+
+// FM.setModulatorADSR()
+and synthSetModulatorADSR(a:real , d: real, s: real, r: real) {
+  _ = voice0:FM.setModulatorADSR(a, d, s, r);
+  _ = voice1:FM.setModulatorADSR(a, d, s, r);
+  _ = voice2:FM.setModulatorADSR(a, d, s, r);
+  _ = voice3:FM.setModulatorADSR(a, d, s, r);
+}
+
+// FM.setCarrierADSR()
+and synthSetCarrierADSR(a:real , d: real, s: real, r: real) {
+  _ = voice0:FM.setCarrierADSR(a, d, s, r);
+  _ = voice1:FM.setCarrierADSR(a, d, s, r);
+  _ = voice2:FM.setCarrierADSR(a, d, s, r);
+  _ = voice3:FM.setCarrierADSR(a, d, s, r);
+}
+
 /* end parameters for synths */
 
 and default() @[init] {

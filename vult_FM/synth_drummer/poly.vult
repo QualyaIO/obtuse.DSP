@@ -112,6 +112,26 @@ and synthSetModulatorWavetable(wavetableIdx: real) {
 and synthSetCarrierWavetable(wavetableIdx: real) {
 }
 
+// FM.setModulatorRatio()
+and synthSetModulatorRatio(ratio: real) {
+}
+
+// FM.setCarrierRatio()
+and synthSetCarrierRatio(ratio: real) {
+}
+
+// FM.setModulatorLevel()
+and synthSetModulatorLevel(level: real) {
+}
+
+// FM.setModulatorADSR()
+and synthSetModulatorADSR(a:real , d: real, s: real, r: real) {
+}
+
+// FM.setCarrierADSR()
+and synthSetCarrierADSR(a:real , d: real, s: real, r: real) {
+}
+
 /* end parameters for synths */
  
 

@@ -4340,6 +4340,66 @@ uint8_t synthFM_Notes_noteOff(synthFM_Notes__ctx_type_0 &_ctx, int note, int cha
 
 void synthFM_ADSR__ctx_type_0_init(synthFM_ADSR__ctx_type_0 &_output_){
    synthFM_ADSR__ctx_type_0 _ctx;
+   _ctx.getMaxValues_ret_3 = 0x0 /* 0.000000 */;
+   _ctx.getMaxValues_ret_2 = 0x0 /* 0.000000 */;
+   _ctx.getMaxValues_ret_1 = 0x0 /* 0.000000 */;
+   _ctx.getMaxValues_ret_0 = 0x0 /* 0.000000 */;
+   _output_ = _ctx;
+   return ;
+}
+
+void synthFM_ADSR_getMaxValues(synthFM_ADSR__ctx_type_0 &_ctx){
+   fix16_t max_t;
+   max_t = 0x3c0000 /* 60.000000 */;
+   _ctx.getMaxValues_ret_0 = max_t;
+   _ctx.getMaxValues_ret_1 = max_t;
+   _ctx.getMaxValues_ret_2 = 0x10000 /* 1.000000 */;
+   _ctx.getMaxValues_ret_3 = max_t;
+   return ;
+}
+
+fix16_t synthFM_ADSR_getMaxAttack(synthFM_ADSR__ctx_type_1 &_ctx){
+   fix16_t max_a;
+   synthFM_ADSR_getMaxValues(_ctx._inst173);
+   max_a = synthFM_ADSR_getMaxValues_ret_0(_ctx._inst173);
+   synthFM_ADSR_getMaxValues_ret_1(_ctx._inst173);
+   synthFM_ADSR_getMaxValues_ret_2(_ctx._inst173);
+   synthFM_ADSR_getMaxValues_ret_3(_ctx._inst173);
+   return max_a;
+}
+
+fix16_t synthFM_ADSR_getMaxDecay(synthFM_ADSR__ctx_type_2 &_ctx){
+   fix16_t max_d;
+   synthFM_ADSR_getMaxValues(_ctx._inst173);
+   synthFM_ADSR_getMaxValues_ret_0(_ctx._inst173);
+   max_d = synthFM_ADSR_getMaxValues_ret_1(_ctx._inst173);
+   synthFM_ADSR_getMaxValues_ret_2(_ctx._inst173);
+   synthFM_ADSR_getMaxValues_ret_3(_ctx._inst173);
+   return max_d;
+}
+
+fix16_t synthFM_ADSR_getMaxSurtain(synthFM_ADSR__ctx_type_3 &_ctx){
+   fix16_t max_s;
+   synthFM_ADSR_getMaxValues(_ctx._inst173);
+   synthFM_ADSR_getMaxValues_ret_0(_ctx._inst173);
+   synthFM_ADSR_getMaxValues_ret_1(_ctx._inst173);
+   max_s = synthFM_ADSR_getMaxValues_ret_2(_ctx._inst173);
+   synthFM_ADSR_getMaxValues_ret_3(_ctx._inst173);
+   return max_s;
+}
+
+fix16_t synthFM_ADSR_getMaxRelease(synthFM_ADSR__ctx_type_4 &_ctx){
+   fix16_t max_r;
+   synthFM_ADSR_getMaxValues(_ctx._inst173);
+   synthFM_ADSR_getMaxValues_ret_0(_ctx._inst173);
+   synthFM_ADSR_getMaxValues_ret_1(_ctx._inst173);
+   synthFM_ADSR_getMaxValues_ret_2(_ctx._inst173);
+   max_r = synthFM_ADSR_getMaxValues_ret_3(_ctx._inst173);
+   return max_r;
+}
+
+void synthFM_ADSR__ctx_type_5_init(synthFM_ADSR__ctx_type_5 &_output_){
+   synthFM_ADSR__ctx_type_5 _ctx;
    _ctx.target = 0x0 /* 0.000000 */;
    _ctx.step = 0x0 /* 0.000000 */;
    _ctx.state = 0;
@@ -4354,13 +4414,14 @@ void synthFM_ADSR__ctx_type_0_init(synthFM_ADSR__ctx_type_0 &_output_){
    _ctx.a_step = 0x0 /* 0.000000 */;
    _ctx.a = 0x0 /* 0.000000 */;
    synthFM_Util__ctx_type_1_init(_ctx._inst351);
+   synthFM_ADSR__ctx_type_0_init(_ctx._inst2173);
    synthFM_Util__ctx_type_1_init(_ctx._inst151);
    synthFM_ADSR_default(_ctx);
    _output_ = _ctx;
    return ;
 }
 
-fix16_t synthFM_ADSR_process(synthFM_ADSR__ctx_type_0 &_ctx, uint8_t bgate){
+fix16_t synthFM_ADSR_process(synthFM_ADSR__ctx_type_5 &_ctx, uint8_t bgate){
    fix16_t scale;
    scale = 0x3e80000 /* 1000.000000 */;
    fix16_t scale_i;
@@ -4420,7 +4481,7 @@ fix16_t synthFM_ADSR_process(synthFM_ADSR__ctx_type_0 &_ctx, uint8_t bgate){
    return fix_clip(fix_mul(_ctx.out,scale_i),0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
 }
 
-uint8_t synthFM_ADSR_process_bufferTo(synthFM_ADSR__ctx_type_0 &_ctx, uint8_t bgate, int nb, fix16_t (&oBuffer)[256]){
+uint8_t synthFM_ADSR_process_bufferTo(synthFM_ADSR__ctx_type_5 &_ctx, uint8_t bgate, int nb, fix16_t (&oBuffer)[256]){
    nb = int_clip(nb,0,256);
    if(nb == 0){
       nb = 256;
@@ -4495,7 +4556,7 @@ uint8_t synthFM_ADSR_process_bufferTo(synthFM_ADSR__ctx_type_0 &_ctx, uint8_t bg
    return idle;
 }
 
-void synthFM_ADSR_updateSteps(synthFM_ADSR__ctx_type_0 &_ctx){
+void synthFM_ADSR_updateSteps(synthFM_ADSR__ctx_type_5 &_ctx){
    fix16_t min_t;
    min_t = 0x28f /* 0.010000 */;
    _ctx.a_step = fix_div(_ctx.a_target,fix_mul(_ctx.fs,(_ctx.a + min_t)));
@@ -4503,13 +4564,20 @@ void synthFM_ADSR_updateSteps(synthFM_ADSR__ctx_type_0 &_ctx){
    _ctx.r_step = fix_div((- _ctx.s),fix_mul(_ctx.fs,(_ctx.r + min_t)));
 }
 
-void synthFM_ADSR_config(synthFM_ADSR__ctx_type_0 &_ctx, fix16_t newA, fix16_t newD, fix16_t newS, fix16_t newR){
-   fix16_t max_t;
-   max_t = 0x3c0000 /* 60.000000 */;
-   _ctx.a = fix_clip(newA,0x0 /* 0.000000 */,max_t);
-   _ctx.d = fix_clip(newD,0x0 /* 0.000000 */,max_t);
-   _ctx.s = fix_clip(newS,0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
-   _ctx.r = fix_clip(newR,0x0 /* 0.000000 */,max_t);
+void synthFM_ADSR_config(synthFM_ADSR__ctx_type_5 &_ctx, fix16_t newA, fix16_t newD, fix16_t newS, fix16_t newR){
+   fix16_t max_a;
+   fix16_t max_d;
+   fix16_t max_s;
+   fix16_t max_r;
+   synthFM_ADSR_getMaxValues(_ctx._inst2173);
+   max_a = synthFM_ADSR_getMaxValues_ret_0(_ctx._inst2173);
+   max_d = synthFM_ADSR_getMaxValues_ret_1(_ctx._inst2173);
+   max_s = synthFM_ADSR_getMaxValues_ret_2(_ctx._inst2173);
+   max_r = synthFM_ADSR_getMaxValues_ret_3(_ctx._inst2173);
+   _ctx.a = fix_clip(newA,0x0 /* 0.000000 */,max_a);
+   _ctx.d = fix_clip(newD,0x0 /* 0.000000 */,max_d);
+   _ctx.s = fix_clip(newS,0x0 /* 0.000000 */,max_s);
+   _ctx.r = fix_clip(newR,0x0 /* 0.000000 */,max_r);
    synthFM_ADSR_updateSteps(_ctx);
 }
 
@@ -4517,7 +4585,7 @@ void synthFM_FM__ctx_type_0_init(synthFM_FM__ctx_type_0 &_output_){
    synthFM_FM__ctx_type_0 _ctx;
    synthFM_Notes__ctx_type_0_init(_ctx.playingnotes);
    _ctx.n = 0;
-   synthFM_ADSR__ctx_type_0_init(_ctx.modulatoradsr);
+   synthFM_ADSR__ctx_type_5_init(_ctx.modulatoradsr);
    _ctx.modulator_level = 0x0 /* 0.000000 */;
    _ctx.modulator_env = 0x0 /* 0.000000 */;
    _ctx.modulatorRatio = 0x0 /* 0.000000 */;
@@ -4526,7 +4594,7 @@ void synthFM_FM__ctx_type_0_init(synthFM_FM__ctx_type_0 &_output_){
    _ctx.gate = false;
    _ctx.fs = 0x0 /* 0.000000 */;
    _ctx.env_decimation_factor = 0;
-   synthFM_ADSR__ctx_type_0_init(_ctx.carrieradsr);
+   synthFM_ADSR__ctx_type_5_init(_ctx.carrieradsr);
    _ctx.carrier_half_phase = 0x0 /* 0.000000 */;
    _ctx.carrier_env = 0x0 /* 0.000000 */;
    _ctx.carrierRatio = 0x0 /* 0.000000 */;
@@ -5975,6 +6043,8 @@ void synthFM_FM_default(synthFM_FM__ctx_type_0 &_ctx){
    synthFM_OSC_default(_ctx.modulator);
    synthFM_ADSR_default(_ctx.carrieradsr);
    synthFM_ADSR_default(_ctx.modulatoradsr);
+   synthFM_FM_setModulatorADSR(_ctx,0x0 /* 0.000000 */,0x0 /* 0.000000 */,0x8000 /* 0.500000 */,0x0 /* 0.000000 */);
+   synthFM_FM_setCarrierADSR(_ctx,0x0 /* 0.000000 */,0x0 /* 0.000000 */,0x8000 /* 0.500000 */,0x0 /* 0.000000 */);
    synthFM_FM_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    synthFM_FM_setCarrierRatio(_ctx,0x10000 /* 1.000000 */);
    synthFM_FM_setModulatorRatio(_ctx,0x20000 /* 2.000000 */);

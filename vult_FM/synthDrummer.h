@@ -444,6 +444,56 @@ static_inline void synthDrummer_Poly_synthSetCarrierWavetable_init(synthDrummer_
 static_inline void synthDrummer_Poly_synthSetCarrierWavetable(synthDrummer_Poly__ctx_type_0 &_ctx, fix16_t wavetableIdx){
 }
 
+typedef synthDrummer_Poly__ctx_type_0 synthDrummer_Poly_synthSetModulatorRatio_type;
+
+static_inline void synthDrummer_Poly_synthSetModulatorRatio_init(synthDrummer_Poly__ctx_type_0 &_output_){
+   synthDrummer_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Poly_synthSetModulatorRatio(synthDrummer_Poly__ctx_type_0 &_ctx, fix16_t ratio){
+}
+
+typedef synthDrummer_Poly__ctx_type_0 synthDrummer_Poly_synthSetCarrierRatio_type;
+
+static_inline void synthDrummer_Poly_synthSetCarrierRatio_init(synthDrummer_Poly__ctx_type_0 &_output_){
+   synthDrummer_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Poly_synthSetCarrierRatio(synthDrummer_Poly__ctx_type_0 &_ctx, fix16_t ratio){
+}
+
+typedef synthDrummer_Poly__ctx_type_0 synthDrummer_Poly_synthSetModulatorLevel_type;
+
+static_inline void synthDrummer_Poly_synthSetModulatorLevel_init(synthDrummer_Poly__ctx_type_0 &_output_){
+   synthDrummer_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Poly_synthSetModulatorLevel(synthDrummer_Poly__ctx_type_0 &_ctx, fix16_t level){
+}
+
+typedef synthDrummer_Poly__ctx_type_0 synthDrummer_Poly_synthSetModulatorADSR_type;
+
+static_inline void synthDrummer_Poly_synthSetModulatorADSR_init(synthDrummer_Poly__ctx_type_0 &_output_){
+   synthDrummer_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Poly_synthSetModulatorADSR(synthDrummer_Poly__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
+}
+
+typedef synthDrummer_Poly__ctx_type_0 synthDrummer_Poly_synthSetCarrierADSR_type;
+
+static_inline void synthDrummer_Poly_synthSetCarrierADSR_init(synthDrummer_Poly__ctx_type_0 &_output_){
+   synthDrummer_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Poly_synthSetCarrierADSR(synthDrummer_Poly__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
+}
+
 typedef synthDrummer_Poly__ctx_type_0 synthDrummer_Poly_default_type;
 
 static_inline void synthDrummer_Poly_default_init(synthDrummer_Poly__ctx_type_0 &_output_){
@@ -706,6 +756,61 @@ static_inline void synthDrummer_Voice_synthSetCarrierWavetable_init(synthDrummer
 
 static_inline void synthDrummer_Voice_synthSetCarrierWavetable(synthDrummer_Voice__ctx_type_0 &_ctx, fix16_t wavetableIdx){
    synthDrummer_Poly_synthSetCarrierWavetable(_ctx.poly,wavetableIdx);
+};
+
+typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_synthSetModulatorRatio_type;
+
+static_inline void synthDrummer_Voice_synthSetModulatorRatio_init(synthDrummer_Voice__ctx_type_0 &_output_){
+   synthDrummer_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Voice_synthSetModulatorRatio(synthDrummer_Voice__ctx_type_0 &_ctx, fix16_t ratio){
+   synthDrummer_Poly_synthSetModulatorRatio(_ctx.poly,ratio);
+};
+
+typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_synthSetCarrierRatio_type;
+
+static_inline void synthDrummer_Voice_synthSetCarrierRatio_init(synthDrummer_Voice__ctx_type_0 &_output_){
+   synthDrummer_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Voice_synthSetCarrierRatio(synthDrummer_Voice__ctx_type_0 &_ctx, fix16_t ratio){
+   synthDrummer_Poly_synthSetCarrierRatio(_ctx.poly,ratio);
+};
+
+typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_synthSetModulatorLevel_type;
+
+static_inline void synthDrummer_Voice_synthSetModulatorLevel_init(synthDrummer_Voice__ctx_type_0 &_output_){
+   synthDrummer_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Voice_synthSetModulatorLevel(synthDrummer_Voice__ctx_type_0 &_ctx, fix16_t level){
+   synthDrummer_Poly_synthSetModulatorLevel(_ctx.poly,level);
+};
+
+typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_synthSetModulatorADSR_type;
+
+static_inline void synthDrummer_Voice_synthSetModulatorADSR_init(synthDrummer_Voice__ctx_type_0 &_output_){
+   synthDrummer_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Voice_synthSetModulatorADSR(synthDrummer_Voice__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
+   synthDrummer_Poly_synthSetModulatorADSR(_ctx.poly,a,d,s,r);
+};
+
+typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_synthSetCarrierADSR_type;
+
+static_inline void synthDrummer_Voice_synthSetCarrierADSR_init(synthDrummer_Voice__ctx_type_0 &_output_){
+   synthDrummer_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Voice_synthSetCarrierADSR(synthDrummer_Voice__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
+   synthDrummer_Poly_synthSetCarrierADSR(_ctx.poly,a,d,s,r);
 };
 
 typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_default_type;

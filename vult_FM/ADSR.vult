@@ -2,6 +2,35 @@
 // Magic numbers:
 // 1024.0 : improves numeric precision in fixed-point
 
+// attack: time (s) to peak output at 1.0 -- limit to 60s (for fixed point sake)
+// decay: time (s) to get to sustain level -- limit to 60s
+// sustain: level when note is held (0..1)
+// release: time (s) to get from sustain level to 0 -- limit to 60s
+// max values for ADSR, used to clamp in config()
+fun getMaxValues() {
+   val max_t = 60.0;
+   return (max_t, max_t, 1.0, max_t);
+}
+
+fun getMaxAttack() {
+  val max_a, _, _, _ = getMaxValues();
+  return max_a;
+}
+
+fun getMaxDecay() {
+  val _, max_d, _, _ = getMaxValues();
+  return max_d;
+}
+
+fun getMaxSurtain() {
+  val _, _, max_s, _ = getMaxValues();
+  return max_s;
+}
+
+fun getMaxRelease() {
+  val _, _, _, max_r = getMaxValues();
+  return max_r;
+}
 
 fun process(bgate:bool) {
    // uber state machine
@@ -216,12 +245,12 @@ and setSamplerate(newFs:real) {
 // release: time (s) to get from sustain level to 0 -- limit to 60s
 // Note: will set internally minimal value of 0.01, suitable for at least 10kHz
 and config(newA, newD, newS, newR) {
-   val max_t = 60.0;
+   val max_a, max_d, max_s, max_r = getMaxValues(); 
    // sanity check
-   a =  clip(newA, 0.0, max_t);
-   d =  clip(newD, 0.0, max_t);
-   s =  clip(newS, 0.0, 1.0);
-   r =  clip(newR, 0.0, max_t);
+   a =  clip(newA, 0.0, max_a);
+   d =  clip(newD, 0.0, max_d);
+   s =  clip(newS, 0.0, max_s);
+   r =  clip(newR, 0.0, max_r);
    // so heavy computations
    _ = updateSteps();
 }

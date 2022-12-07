@@ -157,9 +157,15 @@ and setSamplerate(newFs:real) {
 }
 // ratio for each operator. Keep in mind the max effective frequency, below samplingrate/2!
 and setCarrierRatio(ratio: real) {
+   if (ratio < 0.0) {
+     ratio = 0.0;
+   }
    mem carrierRatio = ratio;
 }
 and setModulatorRatio(ratio: real) {
+   if (ratio < 0.0) {
+     ratio = 0.0;
+   }
    mem modulatorRatio = ratio;
 }
 // effect of modulator [0..1]
@@ -221,6 +227,15 @@ and noteOff(note:int, channel:int) {
    }
 }
 
+// change oscillators envelopes
+and setModulatorADSR(a, d, s, r) {
+    _ = carrieradsr:ADSR.config(a, d, s, r);
+}
+
+and setCarrierADSR(a, d, s, r) {
+    _ = modulatoradsr:ADSR.config(a, d, s, r);
+}
+
 // to be called on start
 and default() @[init] {
     buffer_modulator = Util.buffer();
@@ -238,6 +253,10 @@ and default() @[init] {
     _ = modulator:OSC.default();
     _ = carrieradsr:ADSR.default();
     _ = modulatoradsr:ADSR.default();
+
+    // default envelops
+    _ = setModulatorADSR(0.0, 0.0, 0.5, 0.0);
+    _ = setCarrierADSR(0.0, 0.0, 0.5, 0.0);
 
     // default sampling rate (in kHz)
     _ = setSamplerate(44.100);
