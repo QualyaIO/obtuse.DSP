@@ -33,3 +33,4 @@ Features
 - tremolo (e.g. at Voice level)
 - interpolate between wavetables (for morph or even to retrieve samples)
 - also folding for wavetable?
+- option to adjust relative phase for morphing

@@ -55,6 +55,10 @@ fun morphTo(wavetableIdx: real, buffer) {
   if (wavetable2 >= getNbWavetables()) {
     wavetable2 = 0;
   }
+  // 100% back to first wavetable at max
+  if (wavetable1 >= getNbWavetables()) {
+    wavetable1 = 0;
+  }
   val ratio = wavetableIdx % 1.0;
   val i = 0;
   val s1, s2;

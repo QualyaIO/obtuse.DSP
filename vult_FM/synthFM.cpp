@@ -32,6 +32,9 @@ void synthFM_Wavetable_morphTo(fix16_t wavetableIdx, fix16_t (&buffer)[4096]){
    if(wavetable2 >= 4){
       wavetable2 = 0;
    }
+   if(wavetable1 >= 4){
+      wavetable1 = 0;
+   }
    fix16_t ratio;
    ratio = (wavetableIdx % 0x10000 /* 1.000000 */);
    int i;

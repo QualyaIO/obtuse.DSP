@@ -432,59 +432,139 @@ void handleCC(byte channel, byte cc, byte value) {
     value = 127;
   }
   float ratio = value / 127.0;
+  switch (cc) {
+    // effect depends on active filter
+    // ladder cuttoff, from 0 to nyquist (in kHz)
+    // SVF freq, from 0 to nyquist (in kHz)
+    case 62:
+      {
+        /*
+          float cut = ratio * (sampleRate / 2000.0);
+          Sprint("Setting ladder cutoff to: ");
+          Sprintln(cut);
+          effects_Ladder_setCutOff(context_ladder, float_to_fix(cut));
+        */
+        float freq = ratio * (sampleRate / 2000.0);
+        Sprint("Setting SVF freq to: ");
+        Sprintln(freq);
+        effects_SVF_setFreq(context_svf, float_to_fix(freq));
+      }
+      break;
 
-  // effect depends on active filter
-  // ladder cuttoff, from 0 to nyquist (in kHz)
-  // SVF freq, from 0 to nyquist (in kHz)
-  if (cc == 62) {
-    /*
-      float cut = ratio * (sampleRate / 2000.0);
-      Sprint("Setting ladder cutoff to: ");
-      Sprintln(cut);
-      effects_Ladder_setCutOff(context_ladder, float_to_fix(cut));
-    */
-    float freq = ratio * (sampleRate / 2000.0);
-    Sprint("Setting SVF freq to: ");
-    Sprintln(freq);
-    effects_SVF_setFreq(context_svf, float_to_fix(freq));
-  }
-  // Ladder: resonance from 0 to 3
-  // SVF: Q from 0 to ... 5?
-  else if (cc == 63) {
-    /*
-      float res = (ratio) * 3.0;
-      Sprint("Setting ladder resonance cutoff to: ");
-      Sprintln(res);
-      effects_Ladder_setResonance(context_ladder, float_to_fix(res));
-    */
-    float q = ratio * 3.0;
-    Sprint("Setting SVF Q to: ");
-    Sprintln(q);
-    effects_SVF_setQ(context_svf, float_to_fix(q));
-  }
-  else if (cc == 75) {
-    int type = round(ratio * 4);
-    Sprint("Setting SVF type to: ");
-    Sprint(type);
-    if (type == 0) {
-      Sprintln(" (disabled)");
-    }
-    else if (type == 1) {
-      Sprintln(" (low pass)");
-    }
-    else if (type == 2) {
-      Sprintln(" (high pass)");
-    }
-    else if (type == 3) {
-      Sprintln(" (band pass)");
-    }
-    else if (type == 4) {
-      Sprintln(" (notch)");
-    }
-    else {
-      Sprintln(" (unknown)");
-    }
-    effects_SVF_setType(context_svf, type);
+    // Ladder: resonance from 0 to 3
+    // SVF: Q from 0 to ... 5?
+    case 63:
+      {
+        /*
+          float res = (ratio) * 3.0;
+          Sprint("Setting ladder resonance cutoff to: ");
+          Sprintln(res);
+          effects_Ladder_setResonance(context_ladder, float_to_fix(res));
+        */
+        float q = ratio * 3.0;
+        Sprint("Setting SVF Q to: ");
+        Sprintln(q);
+        effects_SVF_setQ(context_svf, float_to_fix(q));
+      }
+      break;
+
+    // SVF type
+    case 75:
+      {
+        int type = round(ratio * 4);
+        Sprint("Setting SVF type to: ");
+        Sprint(type);
+        switch (type) {
+          case 0:
+            Sprintln(" (disabled)");
+            break;
+          case 1:
+            Sprintln(" (low pass)");
+            break;
+          case 2:
+            Sprintln(" (high pass)");
+            break;
+          case 3:
+            Sprintln(" (band pass)");
+            break;
+          case 4:
+            Sprintln(" (notch)");
+            break;
+          default:
+            Sprintln(" (unknown)");
+            break;
+        }
+        effects_SVF_setType(context_svf, type);
+      }
+      break;
+
+    // FM carrier wavetable
+    case 78:
+      {
+        float wavetable = ratio * synthFM_Voice_synthGetNbWavetables(contextv0);
+        float wavetable_ratio = fmod(wavetable, 1.0);
+        Sprint("Carrier wavetable: ");
+        Sprint(int((1 - wavetable_ratio) * 100));
+        if (wavetable < 1) {
+          Sprint("% sine ");
+          Sprint(int(wavetable_ratio * 100));
+          Sprintln("% and triangle.");
+        }
+        else if (wavetable < 2) {
+          Sprint("%  triangle and ");
+          Sprint(int(wavetable_ratio * 100));
+          Sprintln("% saw.");
+        }
+        else if (wavetable < 3) {
+          Sprint("%  saw and ");
+          Sprint(int(wavetable_ratio * 100));
+          Sprintln("% square.");
+        }
+        else if (wavetable < 4) {
+          Sprint("%  square and ");
+          Sprint(int(wavetable_ratio * 100));
+          Sprintln("% sine.");
+        }
+        else {
+          Sprintln(wavetable);
+        }
+        synthFM_Voice_synthSetCarrierWavetable(contextv0, float_to_fix(wavetable));
+      }
+      break;
+
+    // FM Modulator wavetable
+    case 83:
+      {
+        float wavetable = ratio * synthFM_Voice_synthGetNbWavetables(contextv0);
+        float wavetable_ratio = fmod(wavetable, 1.0);
+        Sprint("Modulator wavetable: ");
+        Sprint(int((1 - wavetable_ratio) * 100));
+        if (wavetable < 1) {
+          Sprint("% sine ");
+          Sprint(int(wavetable_ratio * 100));
+          Sprintln("% and triangle.");
+        }
+        else if (wavetable < 2) {
+          Sprint("%  triangle and ");
+          Sprint(int(wavetable_ratio * 100));
+          Sprintln("% saw.");
+        }
+        else if (wavetable < 3) {
+          Sprint("%  saw and ");
+          Sprint(int(wavetable_ratio * 100));
+          Sprintln("% square.");
+        }
+        else if (wavetable < 4) {
+          Sprint("%  square and ");
+          Sprint(int(wavetable_ratio * 100));
+          Sprintln("% sine.");
+        }
+        else {
+          Sprintln(wavetable);
+        }
+        synthFM_Voice_synthSetModulatorWavetable(contextv0, float_to_fix(wavetable));
+      }
+      break;
   }
 }
 
