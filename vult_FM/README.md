@@ -32,3 +32,4 @@ Features
 - velocity: not only linear? save for monophonic?
 - tremolo (e.g. at Voice level)
 - interpolate between wavetables (for morph or even to retrieve samples)
+- also folding for wavetable?
