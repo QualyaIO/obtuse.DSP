@@ -11,6 +11,12 @@ For now, use `make_vult.sh` to transpile all files -- and set some specific opti
 
 WARNING: Drummer for some reason does not work on Os optim (default). Tested fine with Ofast.
 
+# Folders
+
+- vult: vult source
+- data: orig sound files and scripts used for wavetables and instruments
+- examples: Arduino sketch, 4 voices FM, 4 voices sampler, 4 voices drummer, reverb and filter controlled by MIDI
+
 # TODO
 
 

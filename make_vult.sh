@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Generate FM synth"
-vultc -ccode voice.vult -real fixed -i synth_FM -o synthFM -output-prefix synthFM_
+vultc -ccode vult/voice.vult -real fixed -i vult/synth_FM -o synthFM -output-prefix synthFM_
 
 # not needed anymore nor desirable since the morphed wavetables will be in RAM anyway
 #echo "(setting wavetables to RAM)"
@@ -9,10 +9,10 @@ vultc -ccode voice.vult -real fixed -i synth_FM -o synthFM -output-prefix synthF
 
 
 echo "Generate Sampler synth"
-vultc -ccode voice.vult -real fixed -i synth_sampler -o synthSampler -output-prefix synthSampler_
+vultc -ccode vult/voice.vult -real fixed -i vult/synth_sampler -o synthSampler -output-prefix synthSampler_
 
 echo "Generate Drummer synth"
-vultc -ccode voice.vult -real fixed -i synth_drummer -o synthDrummer -output-prefix synthDrummer_
+vultc -ccode vult/voice.vult -real fixed -i vult/synth_drummer -o synthDrummer -output-prefix synthDrummer_
 
 echo "Generate Effects"
-vultc -ccode reverb.vult ladder.vult SVF.vult -real fixed -o effects -output-prefix effects_
+vultc -ccode vult/reverb.vult vult/ladder.vult vult/SVF.vult -real fixed -o effects -output-prefix effects_
