@@ -31,7 +31,6 @@ Fixes
 - voice: buffer_alt with fixed 4 voices
 - better fix pop when a voice is stolen
 - timeout for voices?
-- make drummer work no matter the optimisation??
 
 Features
 

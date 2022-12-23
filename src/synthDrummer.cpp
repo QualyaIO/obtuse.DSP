@@ -58,6 +58,7 @@ void synthDrummer_Drummer_process_bufferTo(synthDrummer_Drummer__ctx_type_2 &_ct
    }
    fix16_t value;
    int i;
+   i = 0;
    while(i < nb){
       value = 0x0 /* 0.000000 */;
       if((_ctx.slice >= 0) && (_ctx.slice <= 12)){

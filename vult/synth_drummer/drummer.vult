@@ -66,7 +66,8 @@ and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
      nb = size(oBuffer);
   }
 
-  val value, i;
+  val value;
+  val i = 0;
 
   while (i < nb) {
     value = 0.0;
