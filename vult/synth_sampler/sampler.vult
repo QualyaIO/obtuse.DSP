@@ -316,8 +316,8 @@ and default() @[init] {
   crossfade = false;
   // defaults for current sample
   sampleFs = 30.0;
-  // here C4
-  sampleNote = 60;
+  // here C5
+  sampleNote = 72;
   // looping sample
   _ = setLoop(true);
   _ = setLoopStart(5073);

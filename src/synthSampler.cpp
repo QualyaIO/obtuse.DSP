@@ -572,7 +572,7 @@ void synthSampler_Sampler_default(synthSampler_Sampler__ctx_type_2 &_ctx){
    }
    _ctx.crossfade = false;
    _ctx.sampleFs = 0x1e0000 /* 30.000000 */;
-   _ctx.sampleNote = 60;
+   _ctx.sampleNote = 72;
    synthSampler_Sampler_setLoop(_ctx,true);
    synthSampler_Sampler_setLoopStart(_ctx,5073);
    synthSampler_Sampler_setLoopEnd(_ctx,5992);
