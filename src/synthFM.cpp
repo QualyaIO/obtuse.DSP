@@ -4494,8 +4494,6 @@ uint8_t synthFM_ADSR_process_bufferTo(synthFM_ADSR__ctx_type_5 &_ctx, uint8_t bg
    idle = true;
    int i;
    i = 0;
-   fix16_t v;
-   v = 0x0 /* 0.000000 */;
    while(i < nb){
       if(synthFM_Util_edge(_ctx._inst351,bgate)){
          _ctx.state = 1;
