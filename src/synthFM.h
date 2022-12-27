@@ -787,7 +787,7 @@ static_inline void synthFM_FM_setModulatorADSR_init(synthFM_FM__ctx_type_0 &_out
 }
 
 static_inline void synthFM_FM_setModulatorADSR(synthFM_FM__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
-   synthFM_ADSR_config(_ctx.carrieradsr,a,d,s,r);
+   synthFM_ADSR_config(_ctx.modulatoradsr,a,d,s,r);
 };
 
 typedef synthFM_FM__ctx_type_0 synthFM_FM_setCarrierADSR_type;
@@ -798,7 +798,7 @@ static_inline void synthFM_FM_setCarrierADSR_init(synthFM_FM__ctx_type_0 &_outpu
 }
 
 static_inline void synthFM_FM_setCarrierADSR(synthFM_FM__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
-   synthFM_ADSR_config(_ctx.modulatoradsr,a,d,s,r);
+   synthFM_ADSR_config(_ctx.carrieradsr,a,d,s,r);
 };
 
 typedef synthFM_FM__ctx_type_0 synthFM_FM_default_type;
