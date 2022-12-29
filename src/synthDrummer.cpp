@@ -572,6 +572,7 @@ void synthDrummer_Voice__ctx_type_0_init(synthDrummer_Voice__ctx_type_0 &_output
    _ctx.normalize = false;
    _ctx.leftovers_decay = 0x0 /* 0.000000 */;
    _ctx.leftovers = 0x0 /* 0.000000 */;
+   int_init_array(4,0,_ctx.last_velocities);
    fix_init_array(4,0x0 /* 0.000000 */,_ctx.last_values);
    _ctx.fs = 0x0 /* 0.000000 */;
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v3);
@@ -711,6 +712,7 @@ void synthDrummer_Voice_noteOff(synthDrummer_Voice__ctx_type_0 &_ctx, int note, 
 
 void synthDrummer_Voice_noteOn(synthDrummer_Voice__ctx_type_0 &_ctx, int note, int velocity, int channel){
    note = int_clip(note,0,127);
+   velocity = int_clip(velocity,0,127);
    if(_ctx.notes[note] <= 0){
       int v;
       v = synthDrummer_Notes_firstNote(_ctx.voicesinactive);
@@ -727,9 +729,21 @@ void synthDrummer_Voice_noteOn(synthDrummer_Voice__ctx_type_0 &_ctx, int note, i
             if(synthDrummer_Poly_shouldLeftOvers(_ctx.poly)){
                _ctx.leftovers = (_ctx.leftovers + _ctx.last_values[((-1) + v)]);
             }
+            else
+            {
+               int diff_velocity;
+               diff_velocity = (_ctx.last_velocities[((-1) + v)] + (- velocity));
+               fix16_t diff_level;
+               diff_level = 0x0 /* 0.000000 */;
+               if(diff_velocity > 0){
+                  diff_level = fix_mul(0x204 /* 0.007874 */,int_to_fix(diff_velocity));
+               }
+               _ctx.leftovers = (_ctx.leftovers + fix_mul(diff_level,_ctx.last_values[((-1) + v)]));
+            }
             synthDrummer_Poly_sendNoteOn(_ctx.poly,((-1) + v),note,velocity,channel);
             _ctx.notes[note] = v;
             _ctx.voices[((-1) + v)] = note;
+            _ctx.last_velocities[((-1) + v)] = velocity;
          }
       }
    }

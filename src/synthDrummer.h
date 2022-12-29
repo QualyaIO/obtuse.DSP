@@ -604,6 +604,7 @@ typedef struct synthDrummer_Voice__ctx_type_0 {
    uint8_t normalize;
    fix16_t leftovers_decay;
    fix16_t leftovers;
+   int last_velocities[4];
    fix16_t last_values[4];
    fix16_t fs;
    fix16_t buffer_v3[256];

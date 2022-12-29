@@ -172,9 +172,14 @@ and noteOff(note:int, channel:int) {
 }
 
 // transmit noteOn to new voice (oldest inactive). If none, will turn off and steal oldest active. update inner states active/inactive voice
+// note: pitch as MIDI code
+// velocity: 0..127
+// channnel: 1..16
 and noteOn(note:int, velocity:int, channel:int){
+   mem last_velocities;
    // only 128 midi notes
    note = clip(note, 0, 127);
+   velocity = clip(velocity, 0, 127);
    // ignore note if already with a voice
    if (notes[note] <= 0) {
       // at least one free voice, take the oldest
@@ -194,15 +199,25 @@ and noteOn(note:int, velocity:int, channel:int){
       if (v > 0) {
          // voice removed successfully from inactive ones and added to active ones (arbitrary channel 0 and velocity 127)
          if (voicesinactive:Notes.noteOff(v - 1, 0) && voicesactive:Notes.noteOn(v - 1, 127, 0)) {
-            // retrieve last value of this voice if option should be set
+            // retrieve last value of this voice to mitigate pops. If synth discourage this option (e.g. FM with simpler OSC waveform) then only take into account difference in levels if new note is at lower velocity
             if (poly:Poly.shouldLeftOvers()) {
                leftovers = leftovers + last_values[v-1];
+            } else {
+               val diff_velocity = last_velocities[v-1] - velocity;
+               val diff_level = 0.0; 
+               // only enable leftovers if new velocity is lower
+               if (diff_velocity > 0) {
+                  // velocity should be capped at 127
+                  diff_level = real(diff_velocity) / 127.0;
+               }
+               leftovers = leftovers + last_values[v-1] * diff_level;
             }
 	    // forward info
 	    _ = poly:Poly.sendNoteOn(v - 1, note, velocity, channel);
             // update arrays
             notes[note] = v;
             voices[v-1] = note;
+            last_velocities[v-1] = velocity;
          }
       }
    }
@@ -328,6 +343,7 @@ and default() @[init] {
    mem notes: array(int, 128);
    // FIXME: hard-coded 4 voices
    mem last_values: array(real, 4);
+   mem last_velocities: array(int, 4);
 
    // monophonic algo used to keep track of active voices...
    _ = voicesactive:Notes.default();
