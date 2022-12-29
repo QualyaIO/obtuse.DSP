@@ -194,8 +194,10 @@ and noteOn(note:int, velocity:int, channel:int){
       if (v > 0) {
          // voice removed successfully from inactive ones and added to active ones (arbitrary channel 0 and velocity 127)
          if (voicesinactive:Notes.noteOff(v - 1, 0) && voicesactive:Notes.noteOn(v - 1, 127, 0)) {
-            // retrieve last value of this voice
-            leftovers = leftovers + last_values[v-1];
+            // retrieve last value of this voice if option should be set
+            if (poly:Poly.shouldLeftOvers()) {
+               leftovers = leftovers + last_values[v-1];
+            }
 	    // forward info
 	    _ = poly:Poly.sendNoteOn(v - 1, note, velocity, channel);
             // update arrays
@@ -324,6 +326,7 @@ and default() @[init] {
     // which notes are active, if so to which voice? (to select voice and prune duplicated note on/off). Stores voice number + 1
    _ = setNbVoices(number_voices);
    mem notes: array(int, 128);
+   // FIXME: hard-coded 4 voices
    mem last_values: array(real, 4);
 
    // monophonic algo used to keep track of active voices...

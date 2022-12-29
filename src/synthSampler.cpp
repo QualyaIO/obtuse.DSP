@@ -847,6 +847,7 @@ void synthSampler_Poly__ctx_type_0_init(synthSampler_Poly__ctx_type_0 &_output_)
    synthSampler_Sampler__ctx_type_2_init(_ctx.voice2);
    synthSampler_Sampler__ctx_type_2_init(_ctx.voice1);
    synthSampler_Sampler__ctx_type_2_init(_ctx.voice0);
+   _ctx.should_leftovers = false;
    synthSampler_Poly_default(_ctx);
    _output_ = _ctx;
    return ;
@@ -872,6 +873,7 @@ fix16_t synthSampler_Poly_getSample(synthSampler_Poly__ctx_type_0 &_ctx, int voi
 }
 
 void synthSampler_Poly_default(synthSampler_Poly__ctx_type_0 &_ctx){
+   _ctx.should_leftovers = true;
    synthSampler_Sampler_default(_ctx.voice0);
    synthSampler_Sampler_setPoly(_ctx.voice0,true);
    synthSampler_Sampler_default(_ctx.voice1);
@@ -1046,7 +1048,9 @@ void synthSampler_Voice_noteOn(synthSampler_Voice__ctx_type_0 &_ctx, int note, i
       v = synthSampler_Notes_firstNote(_ctx.voicesinactive);
       if(v > 0){
          if(synthSampler_Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && synthSampler_Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)){
-            _ctx.leftovers = (_ctx.leftovers + _ctx.last_values[((-1) + v)]);
+            if(synthSampler_Poly_shouldLeftOvers(_ctx.poly)){
+               _ctx.leftovers = (_ctx.leftovers + _ctx.last_values[((-1) + v)]);
+            }
             synthSampler_Poly_sendNoteOn(_ctx.poly,((-1) + v),note,velocity,channel);
             _ctx.notes[note] = v;
             _ctx.voices[((-1) + v)] = note;

@@ -6061,6 +6061,7 @@ void synthFM_Poly__ctx_type_0_init(synthFM_Poly__ctx_type_0 &_output_){
    synthFM_FM__ctx_type_0_init(_ctx.voice2);
    synthFM_FM__ctx_type_0_init(_ctx.voice1);
    synthFM_FM__ctx_type_0_init(_ctx.voice0);
+   _ctx.should_leftovers = false;
    _ctx.lastModulatorWavetableIdx = 0x0 /* 0.000000 */;
    _ctx.lastCarrierWavetableIdx = 0x0 /* 0.000000 */;
    _ctx.initModulatorWavetable = false;
@@ -6090,6 +6091,7 @@ fix16_t synthFM_Poly_getSample(synthFM_Poly__ctx_type_0 &_ctx, int voice){
 }
 
 void synthFM_Poly_default(synthFM_Poly__ctx_type_0 &_ctx){
+   _ctx.should_leftovers = false;
    {
       _ctx.wavetable_modulator[0] = 0x0 /* 0.000000 */;
       _ctx.wavetable_modulator[1] = 0x0 /* 0.000000 */;
@@ -14464,7 +14466,9 @@ void synthFM_Voice_noteOn(synthFM_Voice__ctx_type_0 &_ctx, int note, int velocit
       v = synthFM_Notes_firstNote(_ctx.voicesinactive);
       if(v > 0){
          if(synthFM_Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && synthFM_Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)){
-            _ctx.leftovers = (_ctx.leftovers + _ctx.last_values[((-1) + v)]);
+            if(synthFM_Poly_shouldLeftOvers(_ctx.poly)){
+               _ctx.leftovers = (_ctx.leftovers + _ctx.last_values[((-1) + v)]);
+            }
             synthFM_Poly_sendNoteOn(_ctx.poly,((-1) + v),note,velocity,channel);
             _ctx.notes[note] = v;
             _ctx.voices[((-1) + v)] = note;

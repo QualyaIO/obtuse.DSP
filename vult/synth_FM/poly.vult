@@ -173,7 +173,14 @@ and synthSetCarrierADSR(a:real , d: real, s: real, r: real) {
 
 /* end parameters for synths */
 
+// used by voice to know if this should use leftovers trick to compensate for stealing voice with this synth engine (typically something not wanted for simple waveforms, e.g. from OSC for FM
+and shouldLeftOvers(): bool {
+  mem should_leftovers;
+  return should_leftovers;
+}
+
 and default() @[init] {
+  should_leftovers = false;
   wavetable_modulator = Wavetable.bufferWavetable();
   wavetable_carrier = Wavetable.bufferWavetable();
   initModulatorWavetable = false;

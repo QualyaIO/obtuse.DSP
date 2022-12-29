@@ -817,6 +817,7 @@ typedef struct synthFM_Poly__ctx_type_0 {
    synthFM_FM__ctx_type_0 voice2;
    synthFM_FM__ctx_type_0 voice1;
    synthFM_FM__ctx_type_0 voice0;
+   uint8_t should_leftovers;
    fix16_t lastModulatorWavetableIdx;
    fix16_t lastCarrierWavetableIdx;
    uint8_t initModulatorWavetable;
@@ -1074,6 +1075,17 @@ static_inline void synthFM_Poly_synthSetCarrierADSR(synthFM_Poly__ctx_type_0 &_c
    synthFM_FM_setCarrierADSR(_ctx.voice2,a,d,s,r);
    synthFM_FM_setCarrierADSR(_ctx.voice3,a,d,s,r);
 }
+
+typedef synthFM_Poly__ctx_type_0 synthFM_Poly_shouldLeftOvers_type;
+
+static_inline void synthFM_Poly_shouldLeftOvers_init(synthFM_Poly__ctx_type_0 &_output_){
+   synthFM_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthFM_Poly_shouldLeftOvers(synthFM_Poly__ctx_type_0 &_ctx){
+   return _ctx.should_leftovers;
+};
 
 typedef synthFM_Poly__ctx_type_0 synthFM_Poly_default_type;
 
