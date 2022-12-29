@@ -32,7 +32,17 @@ fun getMaxRelease() {
   return max_r;
 }
 
-fun process(bgate:bool) {
+
+// return release step from "current value" to 0, e.g. when note released earlier
+fun stepToRelease(curr_val: real) {
+   // parameters
+   mem a, d, r, fs;
+   // to avoid division by 0 and cliks, smooth at least a tiny bit. Note that sample rate of envelope should match that
+   mem min_t = 0.01;
+   return (-curr_val) / (fs * (r + min_t));
+}
+
+and process(bgate:bool) {
    // uber state machine
    mem state: int;
    // target values
@@ -40,7 +50,7 @@ fun process(bgate:bool) {
    mem a_step: real;
    mem d_step: real;
    mem r_step: real;
-   // current output and then current step toward target
+   // current output and step toward target
    mem out: real;
    mem step: real;
    // current target
@@ -77,7 +87,7 @@ fun process(bgate:bool) {
       }
       // gate off, to go release
       if (not(bgate)) {
-         step = r_step;
+         step = stepToRelease(out*scale_i);
          target = 0.0;
          state = 4;
       }
@@ -86,7 +96,7 @@ fun process(bgate:bool) {
    if (state == 2) {
       // gate off, to go release
       if (not(bgate)) {
-         step = r_step;
+         step = stepToRelease(out*scale_i);
          target = 0.0;
          state = 4;
       }
@@ -166,7 +176,7 @@ and process_bufferTo(bgate:bool, nb:int, oBuffer: array(real, 256)): bool {
            }
            // gate off, to go release
            if (not(bgate)) {
-              step = r_step;
+              step = stepToRelease(out*scale_i);
               target = 0.0;
               state = 4;
            }
@@ -175,7 +185,7 @@ and process_bufferTo(bgate:bool, nb:int, oBuffer: array(real, 256)): bool {
         if (state == 2) {
            // gate off, to go release
            if (not(bgate)) {
-              step = r_step;
+              step = stepToRelease(out*scale_i);
               target = 0.0;
               state = 4;
            }
@@ -202,7 +212,7 @@ and process_bufferTo(bgate:bool, nb:int, oBuffer: array(real, 256)): bool {
          // back to idle
          if (out <= 0.0) {
             out = 0.0;
-   	 state = 0;
+            state = 0;
             step = 0.0;
             target = 0.0;
          }
@@ -217,9 +227,6 @@ and process_bufferTo(bgate:bool, nb:int, oBuffer: array(real, 256)): bool {
 
 // once sample rate change, we need to adapt 
 and updateSteps() {
-   mem a, d, r, fs;
-   // to avoid division by 0 and cliks, smooth at least a tiny bit. Note that sample rate of envelope should match that
-   val min_t = 0.01;
    // to stay within fixed point limit we don't want the left part too big (target value as precise as the scale let it be, around 0.01 threshold), and the right part too big (too much time) -- rember limit [1/32767 .. 32767]
    // Note: because target will be scaled to 1000, compensate for sample rate in kHz
    a_step = a_target / (fs * (a + min_t));

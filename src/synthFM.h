@@ -558,20 +558,33 @@ typedef struct synthFM_ADSR__ctx_type_5 {
    fix16_t r_step;
    fix16_t r;
    fix16_t out;
+   fix16_t min_t;
    fix16_t fs;
    fix16_t d_step;
    fix16_t d;
    fix16_t a_target;
    fix16_t a_step;
    fix16_t a;
-   synthFM_Util__ctx_type_1 _inst351;
-   synthFM_ADSR__ctx_type_0 _inst2173;
+   synthFM_ADSR__ctx_type_0 _inst3673;
+   synthFM_Util__ctx_type_1 _inst1851;
    synthFM_Util__ctx_type_1 _inst151;
 } synthFM_ADSR__ctx_type_5;
 
-typedef synthFM_ADSR__ctx_type_5 synthFM_ADSR_process_type;
+typedef synthFM_ADSR__ctx_type_5 synthFM_ADSR_stepToRelease_type;
 
 void synthFM_ADSR__ctx_type_5_init(synthFM_ADSR__ctx_type_5 &_output_);
+
+static_inline void synthFM_ADSR_stepToRelease_init(synthFM_ADSR__ctx_type_5 &_output_){
+   synthFM_ADSR__ctx_type_5_init(_output_);
+   return ;
+}
+
+static_inline fix16_t synthFM_ADSR_stepToRelease(synthFM_ADSR__ctx_type_5 &_ctx, fix16_t curr_val){
+   _ctx.min_t = 0x28f /* 0.010000 */;
+   return fix_div((- curr_val),fix_mul(_ctx.fs,(_ctx.min_t + _ctx.r)));
+}
+
+typedef synthFM_ADSR__ctx_type_5 synthFM_ADSR_process_type;
 
 static_inline void synthFM_ADSR_process_init(synthFM_ADSR__ctx_type_5 &_output_){
    synthFM_ADSR__ctx_type_5_init(_output_);
@@ -596,7 +609,11 @@ static_inline void synthFM_ADSR_updateSteps_init(synthFM_ADSR__ctx_type_5 &_outp
    return ;
 }
 
-void synthFM_ADSR_updateSteps(synthFM_ADSR__ctx_type_5 &_ctx);
+static_inline void synthFM_ADSR_updateSteps(synthFM_ADSR__ctx_type_5 &_ctx){
+   _ctx.a_step = fix_div(_ctx.a_target,fix_mul(_ctx.fs,(_ctx.a + _ctx.min_t)));
+   _ctx.d_step = fix_div((_ctx.s + (- _ctx.a_target)),fix_mul(_ctx.fs,(_ctx.d + _ctx.min_t)));
+   _ctx.r_step = fix_div((- _ctx.s),fix_mul(_ctx.fs,(_ctx.min_t + _ctx.r)));
+}
 
 typedef synthFM_ADSR__ctx_type_5 synthFM_ADSR_setSamplerate_type;
 

@@ -4407,14 +4407,15 @@ void synthFM_ADSR__ctx_type_5_init(synthFM_ADSR__ctx_type_5 &_output_){
    _ctx.r_step = 0x0 /* 0.000000 */;
    _ctx.r = 0x0 /* 0.000000 */;
    _ctx.out = 0x0 /* 0.000000 */;
+   _ctx.min_t = 0x0 /* 0.000000 */;
    _ctx.fs = 0x0 /* 0.000000 */;
    _ctx.d_step = 0x0 /* 0.000000 */;
    _ctx.d = 0x0 /* 0.000000 */;
    _ctx.a_target = 0x0 /* 0.000000 */;
    _ctx.a_step = 0x0 /* 0.000000 */;
    _ctx.a = 0x0 /* 0.000000 */;
-   synthFM_Util__ctx_type_1_init(_ctx._inst351);
-   synthFM_ADSR__ctx_type_0_init(_ctx._inst2173);
+   synthFM_ADSR__ctx_type_0_init(_ctx._inst3673);
+   synthFM_Util__ctx_type_1_init(_ctx._inst1851);
    synthFM_Util__ctx_type_1_init(_ctx._inst151);
    synthFM_ADSR_default(_ctx);
    _output_ = _ctx;
@@ -4446,14 +4447,14 @@ fix16_t synthFM_ADSR_process(synthFM_ADSR__ctx_type_5 &_ctx, uint8_t bgate){
          _ctx.state = 2;
       }
       if(bool_not(bgate)){
-         _ctx.step = _ctx.r_step;
+         _ctx.step = synthFM_ADSR_stepToRelease(_ctx,fix_mul(_ctx.out,scale_i));
          _ctx.target = 0x0 /* 0.000000 */;
          _ctx.state = 4;
       }
    }
    if(_ctx.state == 2){
       if(bool_not(bgate)){
-         _ctx.step = _ctx.r_step;
+         _ctx.step = synthFM_ADSR_stepToRelease(_ctx,fix_mul(_ctx.out,scale_i));
          _ctx.target = 0x0 /* 0.000000 */;
          _ctx.state = 4;
       }
@@ -4495,7 +4496,7 @@ uint8_t synthFM_ADSR_process_bufferTo(synthFM_ADSR__ctx_type_5 &_ctx, uint8_t bg
    int i;
    i = 0;
    while(i < nb){
-      if(synthFM_Util_edge(_ctx._inst351,bgate)){
+      if(synthFM_Util_edge(_ctx._inst1851,bgate)){
          _ctx.state = 1;
          _ctx.target = fix_mul(_ctx.a_target,scale);
          _ctx.step = _ctx.a_step;
@@ -4515,14 +4516,14 @@ uint8_t synthFM_ADSR_process_bufferTo(synthFM_ADSR__ctx_type_5 &_ctx, uint8_t bg
                _ctx.state = 2;
             }
             if(bool_not(bgate)){
-               _ctx.step = _ctx.r_step;
+               _ctx.step = synthFM_ADSR_stepToRelease(_ctx,fix_mul(_ctx.out,scale_i));
                _ctx.target = 0x0 /* 0.000000 */;
                _ctx.state = 4;
             }
          }
          if(_ctx.state == 2){
             if(bool_not(bgate)){
-               _ctx.step = _ctx.r_step;
+               _ctx.step = synthFM_ADSR_stepToRelease(_ctx,fix_mul(_ctx.out,scale_i));
                _ctx.target = 0x0 /* 0.000000 */;
                _ctx.state = 4;
             }
@@ -4554,24 +4555,16 @@ uint8_t synthFM_ADSR_process_bufferTo(synthFM_ADSR__ctx_type_5 &_ctx, uint8_t bg
    return idle;
 }
 
-void synthFM_ADSR_updateSteps(synthFM_ADSR__ctx_type_5 &_ctx){
-   fix16_t min_t;
-   min_t = 0x28f /* 0.010000 */;
-   _ctx.a_step = fix_div(_ctx.a_target,fix_mul(_ctx.fs,(_ctx.a + min_t)));
-   _ctx.d_step = fix_div((_ctx.s + (- _ctx.a_target)),fix_mul(_ctx.fs,(_ctx.d + min_t)));
-   _ctx.r_step = fix_div((- _ctx.s),fix_mul(_ctx.fs,(_ctx.r + min_t)));
-}
-
 void synthFM_ADSR_config(synthFM_ADSR__ctx_type_5 &_ctx, fix16_t newA, fix16_t newD, fix16_t newS, fix16_t newR){
    fix16_t max_a;
    fix16_t max_d;
    fix16_t max_s;
    fix16_t max_r;
-   synthFM_ADSR_getMaxValues(_ctx._inst2173);
-   max_a = synthFM_ADSR_getMaxValues_ret_0(_ctx._inst2173);
-   max_d = synthFM_ADSR_getMaxValues_ret_1(_ctx._inst2173);
-   max_s = synthFM_ADSR_getMaxValues_ret_2(_ctx._inst2173);
-   max_r = synthFM_ADSR_getMaxValues_ret_3(_ctx._inst2173);
+   synthFM_ADSR_getMaxValues(_ctx._inst3673);
+   max_a = synthFM_ADSR_getMaxValues_ret_0(_ctx._inst3673);
+   max_d = synthFM_ADSR_getMaxValues_ret_1(_ctx._inst3673);
+   max_s = synthFM_ADSR_getMaxValues_ret_2(_ctx._inst3673);
+   max_r = synthFM_ADSR_getMaxValues_ret_3(_ctx._inst3673);
    _ctx.a = fix_clip(newA,0x0 /* 0.000000 */,max_a);
    _ctx.d = fix_clip(newD,0x0 /* 0.000000 */,max_d);
    _ctx.s = fix_clip(newS,0x0 /* 0.000000 */,max_s);
