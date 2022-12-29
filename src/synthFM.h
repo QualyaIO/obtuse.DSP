@@ -580,9 +580,8 @@ static_inline void synthFM_ADSR_stepToRelease_init(synthFM_ADSR__ctx_type_5 &_ou
 }
 
 static_inline fix16_t synthFM_ADSR_stepToRelease(synthFM_ADSR__ctx_type_5 &_ctx, fix16_t curr_val){
-   _ctx.min_t = 0x28f /* 0.010000 */;
    return fix_div((- curr_val),fix_mul(_ctx.fs,(_ctx.min_t + _ctx.r)));
-}
+};
 
 typedef synthFM_ADSR__ctx_type_5 synthFM_ADSR_process_type;
 
@@ -647,6 +646,7 @@ static_inline void synthFM_ADSR_default_init(synthFM_ADSR__ctx_type_5 &_output_)
 
 static_inline void synthFM_ADSR_default(synthFM_ADSR__ctx_type_5 &_ctx){
    _ctx.a_target = 0x10000 /* 1.000000 */;
+   _ctx.min_t = 0x28f /* 0.010000 */;
    synthFM_ADSR_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    synthFM_ADSR_config(_ctx,0x0 /* 0.000000 */,0x0 /* 0.000000 */,0x8000 /* 0.500000 */,0x0 /* 0.000000 */);
 }
@@ -712,10 +712,10 @@ static_inline void synthFM_FM_setCarrierRatio_init(synthFM_FM__ctx_type_0 &_outp
 }
 
 static_inline void synthFM_FM_setCarrierRatio(synthFM_FM__ctx_type_0 &_ctx, fix16_t ratio){
-   if(ratio < 0x0 /* 0.000000 */){
-      ratio = 0x0 /* 0.000000 */;
-   }
    _ctx.carrierRatio = ratio;
+   if(_ctx.carrierRatio < 0x0 /* 0.000000 */){
+      synthFM_OSC_setFrequency(_ctx.carrier,(- _ctx.carrierRatio));
+   }
 }
 
 typedef synthFM_FM__ctx_type_0 synthFM_FM_setModulatorRatio_type;
@@ -726,10 +726,10 @@ static_inline void synthFM_FM_setModulatorRatio_init(synthFM_FM__ctx_type_0 &_ou
 }
 
 static_inline void synthFM_FM_setModulatorRatio(synthFM_FM__ctx_type_0 &_ctx, fix16_t ratio){
-   if(ratio < 0x0 /* 0.000000 */){
-      ratio = 0x0 /* 0.000000 */;
-   }
    _ctx.modulatorRatio = ratio;
+   if(_ctx.modulatorRatio < 0x0 /* 0.000000 */){
+      synthFM_OSC_setFrequency(_ctx.modulator,(- _ctx.modulatorRatio));
+   }
 }
 
 typedef synthFM_FM__ctx_type_0 synthFM_FM_setModulatorLevel_type;
@@ -763,8 +763,12 @@ static_inline void synthFM_FM_setFrequency_init(synthFM_FM__ctx_type_0 &_output_
 }
 
 static_inline void synthFM_FM_setFrequency(synthFM_FM__ctx_type_0 &_ctx, fix16_t freq){
-   synthFM_OSC_setFrequency(_ctx.carrier,fix_mul(_ctx.carrierRatio,freq));
-   synthFM_OSC_setFrequency(_ctx.modulator,fix_mul(_ctx.modulatorRatio,freq));
+   if(_ctx.carrierRatio >= 0x0 /* 0.000000 */){
+      synthFM_OSC_setFrequency(_ctx.carrier,fix_mul(_ctx.carrierRatio,freq));
+   }
+   if(_ctx.modulatorRatio >= 0x0 /* 0.000000 */){
+      synthFM_OSC_setFrequency(_ctx.modulator,fix_mul(_ctx.modulatorRatio,freq));
+   }
 }
 
 typedef synthFM_FM__ctx_type_0 synthFM_FM_setPoly_type;

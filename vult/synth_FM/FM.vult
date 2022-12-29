@@ -156,17 +156,18 @@ and setSamplerate(newFs:real) {
     _ = modulatoradsr:ADSR.setSamplerate(ADSR_fs);
 }
 // ratio for each operator. Keep in mind the max effective frequency, below samplingrate/2!
+// negative values: used a fixed frequency (in kHz) instead of a ratio (in which case the effect will be immediate)
 and setCarrierRatio(ratio: real) {
-   if (ratio < 0.0) {
-     ratio = 0.0;
-   }
    mem carrierRatio = ratio;
+   if (carrierRatio < 0.0) {
+      _ = carrier:OSC.setFrequency(-carrierRatio);
+   }
 }
 and setModulatorRatio(ratio: real) {
-   if (ratio < 0.0) {
-     ratio = 0.0;
-   }
    mem modulatorRatio = ratio;
+   if (modulatorRatio < 0.0) {
+      _ = modulator:OSC.setFrequency(-modulatorRatio);
+   }
 }
 // effect of modulator [0..1]
 and setModulatorLevel(newLevel: real) {
@@ -180,8 +181,12 @@ and setLevel(newLevel: real) {
 }
 // should be 0..nquist, in kHz
 and setFrequency(freq: real) {
-    _ = carrier:OSC.setFrequency(freq * carrierRatio);
-    _ = modulator:OSC.setFrequency(freq * modulatorRatio);
+    if (carrierRatio >= 0.0) {
+        _ = carrier:OSC.setFrequency(freq * carrierRatio);
+    }
+    if (modulatorRatio >= 0.0) {
+        _ = modulator:OSC.setFrequency(freq * modulatorRatio);
+    }
 }
 
 // set polpyphonic (true flag) or monophonic (false flag)

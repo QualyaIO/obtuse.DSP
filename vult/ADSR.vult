@@ -38,7 +38,7 @@ fun stepToRelease(curr_val: real) {
    // parameters
    mem a, d, r, fs;
    // to avoid division by 0 and cliks, smooth at least a tiny bit. Note that sample rate of envelope should match that
-   mem min_t = 0.01;
+   mem min_t;
    return (-curr_val) / (fs * (r + min_t));
 }
 
@@ -264,6 +264,7 @@ and config(newA, newD, newS, newR) {
 and default() @[init] {
    // Note: if fore some reason becomes < s, adapt decay to check if we reach sustain "from below" in process()
    mem a_target = 1.0;
+   mem min_t = 0.01;
    _ = setSamplerate(44.1);
    //_ = config(1.0, 1.0, 0.8, 1.0);
    _ = config(0.0, 0.0, 0.5, 0.0);
