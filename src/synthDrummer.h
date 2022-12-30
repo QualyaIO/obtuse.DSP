@@ -505,6 +505,16 @@ static_inline void synthDrummer_Poly_synthSetModulatorTargetLevel_init(synthDrum
 static_inline void synthDrummer_Poly_synthSetModulatorTargetLevel(synthDrummer_Poly__ctx_type_0 &_ctx, uint8_t targetLevel){
 }
 
+typedef synthDrummer_Poly__ctx_type_0 synthDrummer_Poly_synthSetModulatorPhaseShift_type;
+
+static_inline void synthDrummer_Poly_synthSetModulatorPhaseShift_init(synthDrummer_Poly__ctx_type_0 &_output_){
+   synthDrummer_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Poly_synthSetModulatorPhaseShift(synthDrummer_Poly__ctx_type_0 &_ctx, fix16_t ratio){
+}
+
 typedef synthDrummer_Poly__ctx_type_0 synthDrummer_Poly_synthSetModulatorADSR_type;
 
 static_inline void synthDrummer_Poly_synthSetModulatorADSR_init(synthDrummer_Poly__ctx_type_0 &_output_){
@@ -860,6 +870,17 @@ static_inline void synthDrummer_Voice_synthSetModulatorTargetLevel_init(synthDru
 
 static_inline void synthDrummer_Voice_synthSetModulatorTargetLevel(synthDrummer_Voice__ctx_type_0 &_ctx, uint8_t targetLevel){
    synthDrummer_Poly_synthSetModulatorTargetLevel(_ctx.poly,targetLevel);
+};
+
+typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_synthSetModulatorPhaseShift_type;
+
+static_inline void synthDrummer_Voice_synthSetModulatorPhaseShift_init(synthDrummer_Voice__ctx_type_0 &_output_){
+   synthDrummer_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Voice_synthSetModulatorPhaseShift(synthDrummer_Voice__ctx_type_0 &_ctx, fix16_t ratio){
+   synthDrummer_Poly_synthSetModulatorPhaseShift(_ctx.poly,ratio);
 };
 
 typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_synthSetModulatorADSR_type;

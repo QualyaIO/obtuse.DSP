@@ -146,6 +146,10 @@ and synthSetModulatorLevel(level: real) {
 and synthSetModulatorTargetLevel(targetLevel: bool) {
 }
 
+// FM.setModulatorPhaseShift
+and synthSetModulatorPhaseShift(ratio: real) {
+}
+
 // FM.setModulatorADSR()
 and synthSetModulatorADSR(a:real , d: real, s: real, r: real) {
 }

@@ -15,6 +15,8 @@ fun process(wavetable_modulator, wavetable_carrier) {
     mem carrier_half_phase;
     // used when target volume
     mem modulator_level_coeff;
+    // shift modulator phase upon reset
+    mem modulator_phase_shift: real;
 
     // reduce cost of envelopes, only computes once in a while
     mem env_decimation_factor;
@@ -54,6 +56,7 @@ fun process(wavetable_modulator, wavetable_carrier) {
 	   carrier_level = 1.0 - (modulator:OSC.process(wavetable_modulator) + 1.0) * modulator_env * modulator_level_coeff;
 	 } else {
 	   _ = modulator:OSC.resetPhase();
+	   _ = modulator:OSC.setPhase(modulator_phase_shift);
 	 }
 	 carrier_val = carrier:OSC.process(wavetable_carrier) * carrier_env * carrier_level;
        }
@@ -67,6 +70,7 @@ fun process(wavetable_modulator, wavetable_carrier) {
 	   carrier_phase = modulator_val * carrier_half_phase;
 	 } else {
 	   _ = modulator:OSC.resetPhase();
+	   _ = modulator:OSC.setPhase(modulator_phase_shift);
 	 }
 	 _ = carrier:OSC.setPhase(carrier_phase);
 	 carrier_val = carrier:OSC.process(wavetable_carrier) * carrier_env ;
@@ -77,6 +81,7 @@ fun process(wavetable_modulator, wavetable_carrier) {
       _ = carrier:OSC.resetPhase();
       if (modulator_env <= 0.0) {
         _ = modulator:OSC.resetPhase();
+	_ = modulator:OSC.setPhase(modulator_phase_shift);
       }
     }
 
@@ -146,6 +151,7 @@ and process_bufferTo(wavetable_modulator, wavetable_carrier, nb: int, oBuffer: a
       _ = carrier:OSC.resetPhase();
       if (env_modulator_idle) {
         _ = modulator:OSC.resetPhase();
+	_ = modulator:OSC.setPhase(modulator_phase_shift);
       }
       // just silence on the output if its envelop is inactive
       val i = 0;
@@ -158,6 +164,7 @@ and process_bufferTo(wavetable_modulator, wavetable_carrier, nb: int, oBuffer: a
       // zero modulation if inactive
       if (env_modulator_idle) {
         _ = modulator:OSC.resetPhase();
+	_ = modulator:OSC.setPhase(modulator_phase_shift);
         val i = 0;
         while(i < nb) {
           buffer_modulator[i] = 0.0;
@@ -209,6 +216,12 @@ and setModulatorLevel(newLevel: real) {
 // if modulator should modulate level or stay with phase
 and setModulatorTargetLevel(targetLevel: bool) {
     modulator_target_level = targetLevel;
+}
+// ratio of phase shift for modulator (0..1)
+and setModulatorPhaseShift(phaseRatio: real) {
+  phaseRatio = clip(phaseRatio, 0.0, 1.0);
+  modulator_phase_shift = modulator:OSC.getSize() * phaseRatio;
+  modulator_phase_shift = modulator_phase_shift % modulator:OSC.getSize();
 }
 // set level of the output [0..1] (applied on the envelop)
 and setLevel(newLevel: real) {

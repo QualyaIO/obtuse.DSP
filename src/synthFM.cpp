@@ -4595,6 +4595,7 @@ void synthFM_FM__ctx_type_0_init(synthFM_FM__ctx_type_0 &_output_){
    _ctx.n = 0;
    synthFM_ADSR__ctx_type_5_init(_ctx.modulatoradsr);
    _ctx.modulator_target_level = false;
+   _ctx.modulator_phase_shift = 0x0 /* 0.000000 */;
    _ctx.modulator_level_coeff = 0x0 /* 0.000000 */;
    _ctx.modulator_level = 0x0 /* 0.000000 */;
    _ctx.modulator_env = 0x0 /* 0.000000 */;
@@ -4642,6 +4643,7 @@ fix16_t synthFM_FM_process(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetable_mod
          else
          {
             synthFM_OSC_resetPhase(_ctx.modulator);
+            synthFM_OSC_setPhase(_ctx.modulator,_ctx.modulator_phase_shift);
          }
          carrier_val = fix_mul(fix_mul(_ctx.carrier_env,carrier_level),synthFM_OSC_process(_ctx.carrier,wavetable_carrier));
       }
@@ -4657,6 +4659,7 @@ fix16_t synthFM_FM_process(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetable_mod
          else
          {
             synthFM_OSC_resetPhase(_ctx.modulator);
+            synthFM_OSC_setPhase(_ctx.modulator,_ctx.modulator_phase_shift);
          }
          synthFM_OSC_setPhase(_ctx.carrier,carrier_phase);
          carrier_val = fix_mul(_ctx.carrier_env,synthFM_OSC_process(_ctx.carrier,wavetable_carrier));
@@ -4667,6 +4670,7 @@ fix16_t synthFM_FM_process(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetable_mod
       synthFM_OSC_resetPhase(_ctx.carrier);
       if(_ctx.modulator_env <= 0x0 /* 0.000000 */){
          synthFM_OSC_resetPhase(_ctx.modulator);
+         synthFM_OSC_setPhase(_ctx.modulator,_ctx.modulator_phase_shift);
       }
    }
    return carrier_val;
@@ -4718,6 +4722,7 @@ void synthFM_FM_process_bufferTo(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetab
       synthFM_OSC_resetPhase(_ctx.carrier);
       if(env_modulator_idle){
          synthFM_OSC_resetPhase(_ctx.modulator);
+         synthFM_OSC_setPhase(_ctx.modulator,_ctx.modulator_phase_shift);
       }
       int i;
       i = 0;
@@ -4730,6 +4735,7 @@ void synthFM_FM_process_bufferTo(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetab
    {
       if(env_modulator_idle){
          synthFM_OSC_resetPhase(_ctx.modulator);
+         synthFM_OSC_setPhase(_ctx.modulator,_ctx.modulator_phase_shift);
          int i;
          i = 0;
          while(i < nb){

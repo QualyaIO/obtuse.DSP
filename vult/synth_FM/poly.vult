@@ -181,6 +181,14 @@ and synthSetModulatorTargetLevel(targetLevel: bool) {
   _ = voice3:FM.setModulatorTargetLevel(targetLevel);
 }
 
+// FM.setModulatorPhaseShift
+and synthSetModulatorPhaseShift(ratio: real) {
+  _ = voice0:FM.setModulatorPhaseShift(ratio);
+  _ = voice1:FM.setModulatorPhaseShift(ratio);
+  _ = voice2:FM.setModulatorPhaseShift(ratio);
+  _ = voice3:FM.setModulatorPhaseShift(ratio);
+}
+
 // FM.setModulatorADSR()
 and synthSetModulatorADSR(a:real , d: real, s: real, r: real) {
   _ = voice0:FM.setModulatorADSR(a, d, s, r);
