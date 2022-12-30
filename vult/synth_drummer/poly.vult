@@ -108,8 +108,14 @@ and synthGetNbWavetables(): int {
 and synthSetModulatorWavetable(wavetableIdx: real) {
 }
 
+and synthSetModulatorWavetablePhase(phaseIdx: real) {
+}
+
 // destined to FM modulator oscillator
 and synthSetCarrierWavetable(wavetableIdx: real) {
+}
+
+and synthSetCarrierWavetablePhase(phaseIdx: real) {
 }
 
 // FM.setModulatorRatio()

@@ -585,6 +585,16 @@ static_inline void synthSampler_Poly_synthSetModulatorWavetable_init(synthSample
 static_inline void synthSampler_Poly_synthSetModulatorWavetable(synthSampler_Poly__ctx_type_0 &_ctx, fix16_t wavetableIdx){
 }
 
+typedef synthSampler_Poly__ctx_type_0 synthSampler_Poly_synthSetModulatorWavetablePhase_type;
+
+static_inline void synthSampler_Poly_synthSetModulatorWavetablePhase_init(synthSampler_Poly__ctx_type_0 &_output_){
+   synthSampler_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSampler_Poly_synthSetModulatorWavetablePhase(synthSampler_Poly__ctx_type_0 &_ctx, fix16_t phaseIdx){
+}
+
 typedef synthSampler_Poly__ctx_type_0 synthSampler_Poly_synthSetCarrierWavetable_type;
 
 static_inline void synthSampler_Poly_synthSetCarrierWavetable_init(synthSampler_Poly__ctx_type_0 &_output_){
@@ -593,6 +603,16 @@ static_inline void synthSampler_Poly_synthSetCarrierWavetable_init(synthSampler_
 }
 
 static_inline void synthSampler_Poly_synthSetCarrierWavetable(synthSampler_Poly__ctx_type_0 &_ctx, fix16_t wavetableIdx){
+}
+
+typedef synthSampler_Poly__ctx_type_0 synthSampler_Poly_synthSetCarrierWavetablePhase_type;
+
+static_inline void synthSampler_Poly_synthSetCarrierWavetablePhase_init(synthSampler_Poly__ctx_type_0 &_output_){
+   synthSampler_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSampler_Poly_synthSetCarrierWavetablePhase(synthSampler_Poly__ctx_type_0 &_ctx, fix16_t phaseIdx){
 }
 
 typedef synthSampler_Poly__ctx_type_0 synthSampler_Poly_synthSetModulatorRatio_type;
@@ -837,6 +857,17 @@ static_inline void synthSampler_Voice_synthSetModulatorWavetable(synthSampler_Vo
    synthSampler_Poly_synthSetModulatorWavetable(_ctx.poly,wavetableIdx);
 };
 
+typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_synthSetModulatorWavetablePhase_type;
+
+static_inline void synthSampler_Voice_synthSetModulatorWavetablePhase_init(synthSampler_Voice__ctx_type_0 &_output_){
+   synthSampler_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSampler_Voice_synthSetModulatorWavetablePhase(synthSampler_Voice__ctx_type_0 &_ctx, fix16_t phaseIdx){
+   synthSampler_Poly_synthSetModulatorWavetablePhase(_ctx.poly,phaseIdx);
+};
+
 typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_synthSetCarrierWavetable_type;
 
 static_inline void synthSampler_Voice_synthSetCarrierWavetable_init(synthSampler_Voice__ctx_type_0 &_output_){
@@ -846,6 +877,17 @@ static_inline void synthSampler_Voice_synthSetCarrierWavetable_init(synthSampler
 
 static_inline void synthSampler_Voice_synthSetCarrierWavetable(synthSampler_Voice__ctx_type_0 &_ctx, fix16_t wavetableIdx){
    synthSampler_Poly_synthSetCarrierWavetable(_ctx.poly,wavetableIdx);
+};
+
+typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_synthSetCarrierWavetablePhase_type;
+
+static_inline void synthSampler_Voice_synthSetCarrierWavetablePhase_init(synthSampler_Voice__ctx_type_0 &_output_){
+   synthSampler_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSampler_Voice_synthSetCarrierWavetablePhase(synthSampler_Voice__ctx_type_0 &_ctx, fix16_t phaseIdx){
+   synthSampler_Poly_synthSetCarrierWavetablePhase(_ctx.poly,phaseIdx);
 };
 
 typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_synthSetModulatorRatio_type;

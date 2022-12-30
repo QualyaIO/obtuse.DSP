@@ -46,9 +46,11 @@ fun getNbWavetables() {
 }
 
 // morph between two consecutive wavetables depending on index, copy to buffer. If value is above nb wavetable - 1, then it will morph again between last and first wavetable
+// phase: shift phase (of first wavetable) by this amount. 0..1 converted to 0 .. size(buffer)
 // Waring: wavetables will not be interpolated, if one is shorter than destination table, it will repeat, if larger then only a portion will be used.
-fun morphTo(wavetableIdx: real, buffer) {
+fun morphTo(wavetableIdx: real, phase: real, buffer) {
   wavetableIdx = clip(wavetableIdx, 0.0, real(getNbWavetables()));
+  val phase_shift = int(real(size(buffer)) * phase);
   val wavetable1 = int(floor(wavetableIdx));
   val wavetable2 = wavetable1 + 1;
   // loop morphing
@@ -64,7 +66,7 @@ fun morphTo(wavetableIdx: real, buffer) {
   val s1, s2;
   // weight between the two selected wavetables
   while (i < size(buffer)) {
-    s1 = getSample(wavetable1, i);
+    s1 = getSample(wavetable1, i + phase_shift);
     s2 = getSample(wavetable2, i);
     buffer[i] = s1 + ratio * (s2 - s1);
     i = i + 1;
@@ -91,7 +93,7 @@ fun getRandomMorph() {
   }
   val wavetableIdx = real(basetable) + random();
   val buffer = bufferWavetable();
-  morphTo(wavetableIdx, buffer);
+  morphTo(wavetableIdx, 0.0, buffer);
   return buffer;
 }
 

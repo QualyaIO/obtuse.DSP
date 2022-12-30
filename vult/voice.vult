@@ -296,9 +296,17 @@ and synthSetModulatorWavetable(wavetableIdx: real) {
   _ = poly:Poly.synthSetModulatorWavetable(wavetableIdx);
 }
 
+and synthSetModulatorWavetablePhase(phaseIdx: real) {
+  _ = poly:Poly.synthSetModulatorWavetablePhase(phaseIdx);
+}
+
 // FM: destined to carrier oscillator
 and synthSetCarrierWavetable(wavetableIdx: real) {
   _ = poly:Poly.synthSetCarrierWavetable(wavetableIdx);
+}
+
+and synthSetCarrierWavetablePhase(phaseIdx: real) {
+  _ = poly:Poly.synthSetCarrierWavetablePhase(phaseIdx);
 }
 
 // FM.setModulatorRatio()

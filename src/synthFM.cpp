@@ -23,8 +23,10 @@ fix16_t synthFM_Wavetable_getSample(int wavetableIdx, int index){
    return sample;
 }
 
-void synthFM_Wavetable_morphTo(fix16_t wavetableIdx, fix16_t (&buffer)[4096]){
+void synthFM_Wavetable_morphTo(fix16_t wavetableIdx, fix16_t phase, fix16_t (&buffer)[4096]){
    wavetableIdx = fix_clip(wavetableIdx,0x0 /* 0.000000 */,0x40000 /* 4.000000 */);
+   int phase_shift;
+   phase_shift = fix_to_int((phase << 12));
    int wavetable1;
    wavetable1 = fix_to_int(fix_floor(wavetableIdx));
    int wavetable2;
@@ -42,7 +44,7 @@ void synthFM_Wavetable_morphTo(fix16_t wavetableIdx, fix16_t (&buffer)[4096]){
    fix16_t s1;
    fix16_t s2;
    while(i < 4096){
-      s1 = synthFM_Wavetable_getSample(wavetable1,i);
+      s1 = synthFM_Wavetable_getSample(wavetable1,(i + phase_shift));
       s2 = synthFM_Wavetable_getSample(wavetable2,i);
       buffer[i] = (s1 + fix_mul(ratio,(s2 + (- s1))));
       i = (1 + i);
@@ -4156,7 +4158,7 @@ void synthFM_Wavetable_getRandomMorph(fix16_t (&_output_)[4096]){
       buffer[4094] = 0x0 /* 0.000000 */;
       buffer[4095] = 0x0 /* 0.000000 */;
    }
-   synthFM_Wavetable_morphTo(wavetableIdx,buffer);
+   synthFM_Wavetable_morphTo(wavetableIdx,0x0 /* 0.000000 */,buffer);
    fix_copy_array(4096,_output_,buffer);
    return ;
 }
@@ -6102,7 +6104,9 @@ void synthFM_Poly__ctx_type_0_init(synthFM_Poly__ctx_type_0 &_output_){
    synthFM_FM__ctx_type_0_init(_ctx.voice1);
    synthFM_FM__ctx_type_0_init(_ctx.voice0);
    _ctx.should_leftovers = false;
+   _ctx.lastModulatorWavetablePhaseIdx = 0x0 /* 0.000000 */;
    _ctx.lastModulatorWavetableIdx = 0x0 /* 0.000000 */;
+   _ctx.lastCarrierWavetablePhaseIdx = 0x0 /* 0.000000 */;
    _ctx.lastCarrierWavetableIdx = 0x0 /* 0.000000 */;
    _ctx.initModulatorWavetable = false;
    _ctx.initCarrierWavetable = false;

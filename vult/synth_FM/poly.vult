@@ -108,28 +108,46 @@ and synthGetNbWavetables():int {
 
 // destined to FM modulator oscillator
 and synthSetModulatorWavetable(wavetableIdx: real) {
+  mem lastModulatorWavetablePhaseIdx;
   // only update if necessary, costly
   mem initModulatorWavetable;
   mem lastModulatorWavetableIdx;
   if (not(initModulatorWavetable) || wavetableIdx <> lastModulatorWavetableIdx) {
-    Wavetable.morphTo(wavetableIdx, wavetable_modulator); 
+    Wavetable.morphTo(wavetableIdx, lastModulatorWavetablePhaseIdx, wavetable_modulator); 
     lastModulatorWavetableIdx = wavetableIdx;
     initModulatorWavetable = true;
   }
 }
 
+and synthSetModulatorWavetablePhase(phaseIdx: real) {
+  // NB: not clamping phase so that it could be used at our advantage whene there is a diff between buffer size and wavetable size
+  // only update if necessary, costly
+  if (phaseIdx <> lastModulatorWavetablePhaseIdx) {
+    Wavetable.morphTo(lastModulatorWavetableIdx, phaseIdx, wavetable_modulator); 
+    lastModulatorWavetablePhaseIdx = phaseIdx;
+  }
+}
+
 // destined to FM carrier oscillator
 and synthSetCarrierWavetable(wavetableIdx: real) {
+  mem lastCarrierWavetablePhaseIdx;
   // only update if necessary, costly
   mem initCarrierWavetable;
   mem lastCarrierWavetableIdx;
   if (not(initCarrierWavetable) || wavetableIdx <> lastCarrierWavetableIdx) {
-    Wavetable.morphTo(wavetableIdx, wavetable_carrier); 
+    Wavetable.morphTo(wavetableIdx, lastCarrierWavetablePhaseIdx, wavetable_carrier); 
     lastCarrierWavetableIdx = wavetableIdx;
     initCarrierWavetable = true;
   }
 }
 
+and synthSetCarrierWavetablePhase(phaseIdx: real) {
+  // only update if necessary, costly
+  if (phaseIdx <> lastCarrierWavetablePhaseIdx) {
+    Wavetable.morphTo(lastCarrierWavetableIdx, phaseIdx, wavetable_carrier); 
+    lastCarrierWavetablePhaseIdx = phaseIdx;
+  }
+}
 
 // FM.setModulatorRatio()
 and synthSetModulatorRatio(ratio: real) {
