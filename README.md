@@ -31,6 +31,7 @@ Fixes
 - voice: buffer_alt with fixed 4 voices
 - better fix pop when a voice is stolen (e.g. take into account separately level and ADSR state?)
 - timeout for voices?
+- FM: same phase between modulator and carrier upon new ADSR?
 
 Features
 
