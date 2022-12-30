@@ -38,22 +38,22 @@ fun process(wavetable_modulator, wavetable_carrier) {
 
     // output value -- need to be explicitely initialized otherwise migth be random (?) producing audible clicks
     val carrier_val = 0.0;
-    // retrieve main envelope
+    // retrieve envelopes -- both, to make sure that modulator gets updated
     if (update_env) {
        carrier_env = carrieradsr:ADSR.process(gate) * level;
+       modulator_env = modulatoradsr:ADSR.process(gate);
     }
 
     // only going forward if we got sound on the output
     if (carrier_env > 0.0) {
-       if (update_env) {
-           modulator_env = modulatoradsr:ADSR.process(gate);
-       }
        // modulate volume
        if (modulator_target_level) {
 	 val carrier_level = 1.0;
 	 if (modulator_env > 0.0) {
 	   // -1..1 to 0..1
 	   carrier_level = 1.0 - (modulator:OSC.process(wavetable_modulator) + 1.0) * modulator_env * modulator_level_coeff;
+	 } else {
+	   _ = modulator:OSC.resetPhase();
 	 }
 	 carrier_val = carrier:OSC.process(wavetable_carrier) * carrier_env * carrier_level;
        }
@@ -65,10 +65,19 @@ fun process(wavetable_modulator, wavetable_carrier) {
 	 if (modulator_env > 0.0) {
 	   val modulator_val = (modulator:OSC.process(wavetable_modulator) + 1.0) * modulator_env;
 	   carrier_phase = modulator_val * carrier_half_phase;
+	 } else {
+	   _ = modulator:OSC.resetPhase();
 	 }
 	 _ = carrier:OSC.setPhase(carrier_phase);
 	 carrier_val = carrier:OSC.process(wavetable_carrier) * carrier_env ;
        }
+    }
+    // when an envelop ends we reset everything to make sure to start anew
+    else {
+      _ = carrier:OSC.resetPhase();
+      if (modulator_env <= 0.0) {
+        _ = modulator:OSC.resetPhase();
+      }
     }
 
     return carrier_val;
@@ -133,6 +142,11 @@ and process_bufferTo(wavetable_modulator, wavetable_carrier, nb: int, oBuffer: a
 
     // apply to carrier
     if (env_carrier_idle) {
+      // sync phase upon new envelopes -- albeit with a delay up to buffer size, compared to process()
+      _ = carrier:OSC.resetPhase();
+      if (env_modulator_idle) {
+        _ = modulator:OSC.resetPhase();
+      }
       // just silence on the output if its envelop is inactive
       val i = 0;
       while(i < nb) {
@@ -143,6 +157,7 @@ and process_bufferTo(wavetable_modulator, wavetable_carrier, nb: int, oBuffer: a
     } else {
       // zero modulation if inactive
       if (env_modulator_idle) {
+        _ = modulator:OSC.resetPhase();
         val i = 0;
         while(i < nb) {
           buffer_modulator[i] = 0.0;

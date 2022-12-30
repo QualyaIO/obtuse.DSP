@@ -4628,16 +4628,18 @@ fix16_t synthFM_FM_process(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetable_mod
    carrier_val = 0x0 /* 0.000000 */;
    if(update_env){
       _ctx.carrier_env = fix_mul(_ctx.level,synthFM_ADSR_process(_ctx.carrieradsr,_ctx.gate));
+      _ctx.modulator_env = synthFM_ADSR_process(_ctx.modulatoradsr,_ctx.gate);
    }
    if(_ctx.carrier_env > 0x0 /* 0.000000 */){
-      if(update_env){
-         _ctx.modulator_env = synthFM_ADSR_process(_ctx.modulatoradsr,_ctx.gate);
-      }
       if(_ctx.modulator_target_level){
          fix16_t carrier_level;
          carrier_level = 0x10000 /* 1.000000 */;
          if(_ctx.modulator_env > 0x0 /* 0.000000 */){
             carrier_level = (0x10000 /* 1.000000 */ + (- fix_mul(fix_mul(_ctx.modulator_env,_ctx.modulator_level_coeff),(0x10000 /* 1.000000 */ + synthFM_OSC_process(_ctx.modulator,wavetable_modulator)))));
+         }
+         else
+         {
+            synthFM_OSC_resetPhase(_ctx.modulator);
          }
          carrier_val = fix_mul(fix_mul(_ctx.carrier_env,carrier_level),synthFM_OSC_process(_ctx.carrier,wavetable_carrier));
       }
@@ -4650,8 +4652,19 @@ fix16_t synthFM_FM_process(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetable_mod
             modulator_val = fix_mul(_ctx.modulator_env,(0x10000 /* 1.000000 */ + synthFM_OSC_process(_ctx.modulator,wavetable_modulator)));
             carrier_phase = fix_mul(_ctx.carrier_half_phase,modulator_val);
          }
+         else
+         {
+            synthFM_OSC_resetPhase(_ctx.modulator);
+         }
          synthFM_OSC_setPhase(_ctx.carrier,carrier_phase);
          carrier_val = fix_mul(_ctx.carrier_env,synthFM_OSC_process(_ctx.carrier,wavetable_carrier));
+      }
+   }
+   else
+   {
+      synthFM_OSC_resetPhase(_ctx.carrier);
+      if(_ctx.modulator_env <= 0x0 /* 0.000000 */){
+         synthFM_OSC_resetPhase(_ctx.modulator);
       }
    }
    return carrier_val;
@@ -4700,6 +4713,10 @@ void synthFM_FM_process_bufferTo(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetab
       env_modulator_idle = synthFM_ADSR_process_bufferTo(_ctx.modulatoradsr,_ctx.gate,nb,_ctx.buffer_modulator_env);
    }
    if(env_carrier_idle){
+      synthFM_OSC_resetPhase(_ctx.carrier);
+      if(env_modulator_idle){
+         synthFM_OSC_resetPhase(_ctx.modulator);
+      }
       int i;
       i = 0;
       while(i < nb){
@@ -4710,6 +4727,7 @@ void synthFM_FM_process_bufferTo(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetab
    else
    {
       if(env_modulator_idle){
+         synthFM_OSC_resetPhase(_ctx.modulator);
          int i;
          i = 0;
          while(i < nb){
