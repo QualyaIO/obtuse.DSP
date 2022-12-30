@@ -10,9 +10,11 @@
 fun process(wavetable_modulator, wavetable_carrier) {
     // audio sampling rate
     mem fs: real;
-    
-    // prec-computed to speedup computations
+
+    // pre-computed to speedup computations
     mem carrier_half_phase;
+    // used when target volume
+    mem modulator_level_coeff;
 
     // reduce cost of envelopes, only computes once in a while
     mem env_decimation_factor;
@@ -51,7 +53,7 @@ fun process(wavetable_modulator, wavetable_carrier) {
 	 val carrier_level = 1.0;
 	 if (modulator_env > 0.0) {
 	   // -1..1 to 0..1
-	   carrier_level = (modulator:OSC.process(wavetable_modulator) + 1.0) * modulator_env * 0.5;
+	   carrier_level = 1.0 - (modulator:OSC.process(wavetable_modulator) + 1.0) * modulator_env * modulator_level_coeff;
 	 }
 	 carrier_val = carrier:OSC.process(wavetable_carrier) * carrier_env * carrier_level;
        }
@@ -81,7 +83,6 @@ and process_bufferTo(wavetable_modulator, wavetable_carrier, nb: int, oBuffer: a
     }
     // amount of phase modulation
     mem modulator_level;
-
     // buffers for envelops, decimated and the full 
     mem buffer_carrier_env_short;
     mem buffer_modulator_env_short;
@@ -187,6 +188,8 @@ and setModulatorLevel(newLevel: real) {
     modulator_level = newLevel;
     // directly manipulating the phase amount
     carrier_half_phase = real(carrier:OSC.getSize()) / 2.0 * modulator_level;
+    // will be used to change -1..1 to 0..1 range for modulating volume
+    modulator_level_coeff = 0.5 * modulator_level;
 }
 // if modulator should modulate level or stay with phase
 and setModulatorTargetLevel(targetLevel: bool) {

@@ -4195,6 +4195,8 @@ void synthFM_OSC_process_bufferTo(synthFM_OSC__ctx_type_0 &_ctx, fix16_t (&wavet
    half_phase = (_ctx.rsize >> 1);
    fix16_t phase_range;
    phase_range = fix_mul(half_phase,phase_shift_level);
+   fix16_t level_shift_coeff;
+   level_shift_coeff = (phase_shift_level >> 1);
    int i;
    i = 0;
    if(shift_level){
@@ -4203,7 +4205,7 @@ void synthFM_OSC_process_bufferTo(synthFM_OSC__ctx_type_0 &_ctx, fix16_t (&wavet
          while(_ctx.phase > _ctx.rsize){
             _ctx.phase = (_ctx.phase + (- _ctx.rsize));
          }
-         oBuffer[i] = (fix_mul(fix_mul(env[i],synthFM_Wavetable_getSampleFrom(wavetable,fix_to_int(_ctx.phase))),(0x10000 /* 1.000000 */ + phase_shift[i])) >> 1);
+         oBuffer[i] = fix_mul(fix_mul(env[i],synthFM_Wavetable_getSampleFrom(wavetable,fix_to_int(_ctx.phase))),(0x10000 /* 1.000000 */ + (- fix_mul(level_shift_coeff,(0x10000 /* 1.000000 */ + phase_shift[i])))));
          i = (1 + i);
       }
    }
@@ -4591,6 +4593,7 @@ void synthFM_FM__ctx_type_0_init(synthFM_FM__ctx_type_0 &_output_){
    _ctx.n = 0;
    synthFM_ADSR__ctx_type_5_init(_ctx.modulatoradsr);
    _ctx.modulator_target_level = false;
+   _ctx.modulator_level_coeff = 0x0 /* 0.000000 */;
    _ctx.modulator_level = 0x0 /* 0.000000 */;
    _ctx.modulator_env = 0x0 /* 0.000000 */;
    _ctx.modulatorRatio = 0x0 /* 0.000000 */;
@@ -4634,7 +4637,7 @@ fix16_t synthFM_FM_process(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetable_mod
          fix16_t carrier_level;
          carrier_level = 0x10000 /* 1.000000 */;
          if(_ctx.modulator_env > 0x0 /* 0.000000 */){
-            carrier_level = (fix_mul(_ctx.modulator_env,(0x10000 /* 1.000000 */ + synthFM_OSC_process(_ctx.modulator,wavetable_modulator))) >> 1);
+            carrier_level = (0x10000 /* 1.000000 */ + (- fix_mul(fix_mul(_ctx.modulator_env,_ctx.modulator_level_coeff),(0x10000 /* 1.000000 */ + synthFM_OSC_process(_ctx.modulator,wavetable_modulator)))));
          }
          carrier_val = fix_mul(fix_mul(_ctx.carrier_env,carrier_level),synthFM_OSC_process(_ctx.carrier,wavetable_carrier));
       }
