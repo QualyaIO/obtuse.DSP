@@ -231,7 +231,7 @@ static_inline void synthFM_OSC_process_bufferTo_init(synthFM_OSC__ctx_type_0 &_o
    return ;
 }
 
-void synthFM_OSC_process_bufferTo(synthFM_OSC__ctx_type_0 &_ctx, fix16_t (&wavetable)[4096], int nb, fix16_t (&env)[256], fix16_t (&phase_shift)[256], fix16_t phase_shift_level, fix16_t (&oBuffer)[256]);
+void synthFM_OSC_process_bufferTo(synthFM_OSC__ctx_type_0 &_ctx, fix16_t (&wavetable)[4096], int nb, fix16_t (&env)[256], fix16_t (&phase_shift)[256], fix16_t phase_shift_level, uint8_t shift_level, fix16_t (&oBuffer)[256]);
 
 typedef synthFM_OSC__ctx_type_0 synthFM_OSC_process_bufferTo_simple_type;
 
@@ -655,6 +655,7 @@ typedef struct synthFM_FM__ctx_type_0 {
    synthFM_Notes__ctx_type_0 playingnotes;
    int n;
    synthFM_ADSR__ctx_type_5 modulatoradsr;
+   uint8_t modulator_target_level;
    fix16_t modulator_level;
    fix16_t modulator_env;
    fix16_t modulatorRatio;
@@ -743,6 +744,17 @@ static_inline void synthFM_FM_setModulatorLevel(synthFM_FM__ctx_type_0 &_ctx, fi
    _ctx.modulator_level = newLevel;
    _ctx.carrier_half_phase = (fix_mul(_ctx.modulator_level,synthFM_OSC_getSize(_ctx.carrier)) >> 1);
 }
+
+typedef synthFM_FM__ctx_type_0 synthFM_FM_setModulatorTargetLevel_type;
+
+static_inline void synthFM_FM_setModulatorTargetLevel_init(synthFM_FM__ctx_type_0 &_output_){
+   synthFM_FM__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthFM_FM_setModulatorTargetLevel(synthFM_FM__ctx_type_0 &_ctx, uint8_t targetLevel){
+   _ctx.modulator_target_level = targetLevel;
+};
 
 typedef synthFM_FM__ctx_type_0 synthFM_FM_setLevel_type;
 
@@ -1069,6 +1081,20 @@ static_inline void synthFM_Poly_synthSetModulatorLevel(synthFM_Poly__ctx_type_0 
    synthFM_FM_setModulatorLevel(_ctx.voice3,level);
 }
 
+typedef synthFM_Poly__ctx_type_0 synthFM_Poly_synthSetModulatorTargetLevel_type;
+
+static_inline void synthFM_Poly_synthSetModulatorTargetLevel_init(synthFM_Poly__ctx_type_0 &_output_){
+   synthFM_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthFM_Poly_synthSetModulatorTargetLevel(synthFM_Poly__ctx_type_0 &_ctx, uint8_t targetLevel){
+   synthFM_FM_setModulatorTargetLevel(_ctx.voice0,targetLevel);
+   synthFM_FM_setModulatorTargetLevel(_ctx.voice1,targetLevel);
+   synthFM_FM_setModulatorTargetLevel(_ctx.voice2,targetLevel);
+   synthFM_FM_setModulatorTargetLevel(_ctx.voice3,targetLevel);
+}
+
 typedef synthFM_Poly__ctx_type_0 synthFM_Poly_synthSetModulatorADSR_type;
 
 static_inline void synthFM_Poly_synthSetModulatorADSR_init(synthFM_Poly__ctx_type_0 &_output_){
@@ -1321,6 +1347,17 @@ static_inline void synthFM_Voice_synthSetModulatorLevel_init(synthFM_Voice__ctx_
 
 static_inline void synthFM_Voice_synthSetModulatorLevel(synthFM_Voice__ctx_type_0 &_ctx, fix16_t level){
    synthFM_Poly_synthSetModulatorLevel(_ctx.poly,level);
+};
+
+typedef synthFM_Voice__ctx_type_0 synthFM_Voice_synthSetModulatorTargetLevel_type;
+
+static_inline void synthFM_Voice_synthSetModulatorTargetLevel_init(synthFM_Voice__ctx_type_0 &_output_){
+   synthFM_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthFM_Voice_synthSetModulatorTargetLevel(synthFM_Voice__ctx_type_0 &_ctx, uint8_t targetLevel){
+   synthFM_Poly_synthSetModulatorTargetLevel(_ctx.poly,targetLevel);
 };
 
 typedef synthFM_Voice__ctx_type_0 synthFM_Voice_synthSetModulatorADSR_type;

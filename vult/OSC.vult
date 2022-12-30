@@ -35,9 +35,10 @@ fun process(wavetable) {
 // env: envelope to apply (0..1)
 // phase shift: specify how to shift the base phase (-1 to 1, 0 center of phase) -- FIXME so that 0 does not change anything?
 // phase_shift_level: by how much we apply phase shift (0..1)
+// shift_level: if we should *actually* shift level instead of phase
 // oBuffer: output buffer to copy data to
 // FIXME: not check for phase_bases size, no option to by-pass
-and process_bufferTo(wavetable, nb: int, env: array(real, 256), phase_shift: array(real, 256), phase_shift_level: real, oBuffer: array(real, 256)) {
+and process_bufferTo(wavetable, nb: int, env: array(real, 256), phase_shift: array(real, 256), phase_shift_level: real, shift_level: bool, oBuffer: array(real, 256)) {
    nb = clip(nb, 0, size(oBuffer));
    if (nb == 0) {
       nb = size(oBuffer);
@@ -48,16 +49,30 @@ and process_bufferTo(wavetable, nb: int, env: array(real, 256), phase_shift: arr
    val phase_range = half_phase * phase_shift_level;
 
    val i = 0;
-   while (i < nb) {
-      // advance time, keep range in check here to maximize precision
-      phase = phase + step;
-      // slightly more efficient than the more robust modulo
-      while (phase > rsize) {
-         phase = phase - rsize;
-      }
-      // loop in sample
-      oBuffer[i]  = Wavetable.getSampleFrom(wavetable, int(half_phase + phase_range * phase_shift[i]  + phase)) * env[i];
-      i = i + 1;
+
+   // duplicate some code with outer loop test to minimize number of tests, here modulate volume
+   if (shift_level) {
+     while (i < nb) {
+        // advance time, keep range in check here to maximize precision
+        phase = phase + step;
+        // slightly more efficient than the more robust modulo
+        while (phase > rsize) {
+           phase = phase - rsize;
+        }
+        oBuffer[i]  = Wavetable.getSampleFrom(wavetable, int(phase)) * env[i] *   (phase_shift[i] + 1.0) * 0.5;
+        i = i + 1;
+     }
+   }
+   // modulate phase
+   else {
+     while (i < nb) {
+        phase = phase + step;
+        while (phase > rsize) {
+           phase = phase - rsize;
+        }
+        oBuffer[i]  = Wavetable.getSampleFrom(wavetable, int(half_phase + phase_range *   phase_shift[i]  + phase)) * env[i];
+        i = i + 1;
+     }
    }
 }
 

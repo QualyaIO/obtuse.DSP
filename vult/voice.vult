@@ -316,6 +316,12 @@ and synthSetModulatorLevel(level: real) {
   _ = poly:Poly.synthSetModulatorLevel(level);
 }
 
+
+// FM.setModulatorTargetLevel()
+and synthSetModulatorTargetLevel(targetLevel: bool) {
+  _ = poly:Poly.synthSetModulatorTargetLevel(targetLevel);
+}
+
 // FM.setModulatorADSR()
 and synthSetModulatorADSR(a:real , d: real, s: real, r: real) {
   _ = poly:Poly.synthSetModulatorADSR(a, d, s, r);

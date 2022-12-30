@@ -155,6 +155,14 @@ and synthSetModulatorLevel(level: real) {
   _ = voice3:FM.setModulatorLevel(level);
 }
 
+// FM.setModulatorTargetLevel()
+and synthSetModulatorTargetLevel(targetLevel: bool) {
+  _ = voice0:FM.setModulatorTargetLevel(targetLevel);
+  _ = voice1:FM.setModulatorTargetLevel(targetLevel);
+  _ = voice2:FM.setModulatorTargetLevel(targetLevel);
+  _ = voice3:FM.setModulatorTargetLevel(targetLevel);
+}
+
 // FM.setModulatorADSR()
 and synthSetModulatorADSR(a:real , d: real, s: real, r: real) {
   _ = voice0:FM.setModulatorADSR(a, d, s, r);

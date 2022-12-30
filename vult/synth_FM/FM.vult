@@ -18,6 +18,8 @@ fun process(wavetable_modulator, wavetable_carrier) {
     mem env_decimation_factor;
     mem carrier_env;
     mem modulator_env;
+    // if we should modulate sound level instead of phase
+    mem modulator_target_level: bool;
     // level of the synth, applied to envelop
     mem level;
     // number of iteration of this loop, for decimation
@@ -44,16 +46,27 @@ fun process(wavetable_modulator, wavetable_carrier) {
        if (update_env) {
            modulator_env = modulatoradsr:ADSR.process(gate);
        }
-       // apply to wavetables
-       val carrier_phase = 0.0;
-       // only modulate if we got level on modulator
-       if (modulator_env > 0.0) {
-          val modulator_val = (modulator:OSC.process(wavetable_modulator) + 1.0) * modulator_env;
-	  carrier_phase = modulator_val * carrier_half_phase;
+       // modulate volume
+       if (modulator_target_level) {
+	 val carrier_level = 1.0;
+	 if (modulator_env > 0.0) {
+	   // -1..1 to 0..1
+	   carrier_level = (modulator:OSC.process(wavetable_modulator) + 1.0) * modulator_env * 0.5;
+	 }
+	 carrier_val = carrier:OSC.process(wavetable_carrier) * carrier_env * carrier_level;
        }
        // modulate the (base) phase of the carrier
-       _ = carrier:OSC.setPhase(carrier_phase);
-       carrier_val = carrier:OSC.process(wavetable_carrier) * carrier_env ;
+       else {
+	 // apply to wavetables
+	 val carrier_phase = 0.0;
+	 // only modulate if we got level on modulator
+	 if (modulator_env > 0.0) {
+	   val modulator_val = (modulator:OSC.process(wavetable_modulator) + 1.0) * modulator_env;
+	   carrier_phase = modulator_val * carrier_half_phase;
+	 }
+	 _ = carrier:OSC.setPhase(carrier_phase);
+	 carrier_val = carrier:OSC.process(wavetable_carrier) * carrier_env ;
+       }
     }
 
     return carrier_val;
@@ -135,9 +148,9 @@ and process_bufferTo(wavetable_modulator, wavetable_carrier, nb: int, oBuffer: a
           i = i + 1;
         }
       } else {
-        _ = modulator:OSC.process_bufferTo_simple(wavetable_modulator, nb, buffer_modulator_env,   buffer_modulator);
+        _ = modulator:OSC.process_bufferTo_simple(wavetable_modulator, nb, buffer_modulator_env, buffer_modulator);
       }
-      _ = carrier:OSC.process_bufferTo(wavetable_carrier, nb, buffer_carrier_env, buffer_modulator, modulator_level, oBuffer);
+      _ = carrier:OSC.process_bufferTo(wavetable_carrier, nb, buffer_carrier_env, buffer_modulator, modulator_level, modulator_target_level, oBuffer);
     }
 }
 and setSamplerate(newFs:real) {
@@ -174,6 +187,10 @@ and setModulatorLevel(newLevel: real) {
     modulator_level = newLevel;
     // directly manipulating the phase amount
     carrier_half_phase = real(carrier:OSC.getSize()) / 2.0 * modulator_level;
+}
+// if modulator should modulate level or stay with phase
+and setModulatorTargetLevel(targetLevel: bool) {
+    modulator_target_level = targetLevel;
 }
 // set level of the output [0..1] (applied on the envelop)
 and setLevel(newLevel: real) {
@@ -268,6 +285,7 @@ and default() @[init] {
     
     // config for operators
     _ = setCarrierRatio(1.0);
+    _ = setModulatorTargetLevel(false);
     _ = setModulatorRatio(2.0);
     _ = setModulatorLevel(0.1);
     _ = setLevel(1.0);

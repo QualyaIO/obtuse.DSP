@@ -625,6 +625,16 @@ static_inline void synthSampler_Poly_synthSetModulatorLevel_init(synthSampler_Po
 static_inline void synthSampler_Poly_synthSetModulatorLevel(synthSampler_Poly__ctx_type_0 &_ctx, fix16_t level){
 }
 
+typedef synthSampler_Poly__ctx_type_0 synthSampler_Poly_synthSetModulatorTargetLevel_type;
+
+static_inline void synthSampler_Poly_synthSetModulatorTargetLevel_init(synthSampler_Poly__ctx_type_0 &_output_){
+   synthSampler_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSampler_Poly_synthSetModulatorTargetLevel(synthSampler_Poly__ctx_type_0 &_ctx, uint8_t targetLevel){
+}
+
 typedef synthSampler_Poly__ctx_type_0 synthSampler_Poly_synthSetModulatorADSR_type;
 
 static_inline void synthSampler_Poly_synthSetModulatorADSR_init(synthSampler_Poly__ctx_type_0 &_output_){
@@ -869,6 +879,17 @@ static_inline void synthSampler_Voice_synthSetModulatorLevel_init(synthSampler_V
 
 static_inline void synthSampler_Voice_synthSetModulatorLevel(synthSampler_Voice__ctx_type_0 &_ctx, fix16_t level){
    synthSampler_Poly_synthSetModulatorLevel(_ctx.poly,level);
+};
+
+typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_synthSetModulatorTargetLevel_type;
+
+static_inline void synthSampler_Voice_synthSetModulatorTargetLevel_init(synthSampler_Voice__ctx_type_0 &_output_){
+   synthSampler_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSampler_Voice_synthSetModulatorTargetLevel(synthSampler_Voice__ctx_type_0 &_ctx, uint8_t targetLevel){
+   synthSampler_Poly_synthSetModulatorTargetLevel(_ctx.poly,targetLevel);
 };
 
 typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_synthSetModulatorADSR_type;

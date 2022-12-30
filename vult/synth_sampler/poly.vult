@@ -136,6 +136,10 @@ and synthSetCarrierRatio(ratio: real) {
 and synthSetModulatorLevel(level: real) {
 }
 
+// FM.setModulatorTargetLevel()
+and synthSetModulatorTargetLevel(targetLevel: bool) {
+}
+
 // FM.setModulatorADSR()
 and synthSetModulatorADSR(a:real , d: real, s: real, r: real) {
 }
