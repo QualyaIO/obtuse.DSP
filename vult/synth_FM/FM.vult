@@ -59,7 +59,7 @@ fun process(wavetable_modulator, wavetable_carrier) {
 	   carrier_level = 1.0 - (modulator_val + 1.0) * modulator_env * modulator_level_coeff;
 	   // apply feedback, if any
 	   if (modulator_feedback_half_phase <> 0.0) {
-             _ = modulator:OSC.setPhase((modulator_feedback_half_phase + 1.0) * modulator_val);
+             _ = modulator:OSC.setPhase(modulator_phase_shift + (modulator_val + 1.0) * modulator_feedback_half_phase);
 	   }
 	 } else {
 	   _ = modulator:OSC.resetPhase();
@@ -77,7 +77,7 @@ fun process(wavetable_modulator, wavetable_carrier) {
 	   carrier_phase = (modulator_val + 1.0) * modulator_env * carrier_half_phase;
 	   // apply feedback, if any
 	   if (modulator_feedback_half_phase <> 0.0) {
-             _ = modulator:OSC.setPhase((modulator_feedback_half_phase + 1.0) * modulator_val);
+             _ = modulator:OSC.setPhase(modulator_phase_shift + (modulator_val + 1.0) * modulator_feedback_half_phase);
 	   }
 	 } else {
 	   _ = modulator:OSC.resetPhase();

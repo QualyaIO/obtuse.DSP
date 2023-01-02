@@ -176,10 +176,11 @@ and setFrequency(newFreq:real) {
 and setPhase(newPhase: real) {
    phase_base = newPhase;
 }
-// reset both base phase and current phase, typically used upon new note
+// reset both base phase and current phase, typically used upon new note. Also reset value used for feedback.
 and resetPhase() {
    phase = 0.0;
    phase_base = 0.0;
+   last_val_feedback = 0.0;
 }
 
 // size of wavetable

@@ -314,6 +314,7 @@ static_inline void synthFM_OSC_resetPhase_init(synthFM_OSC__ctx_type_0 &_output_
 static_inline void synthFM_OSC_resetPhase(synthFM_OSC__ctx_type_0 &_ctx){
    _ctx.phase = 0x0 /* 0.000000 */;
    _ctx.phase_base = 0x0 /* 0.000000 */;
+   _ctx.last_val_feedback = 0x0 /* 0.000000 */;
 }
 
 typedef synthFM_OSC__ctx_type_0 synthFM_OSC_getSize_type;
