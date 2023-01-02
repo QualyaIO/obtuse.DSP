@@ -189,6 +189,14 @@ and synthSetModulatorPhaseShift(ratio: real) {
   _ = voice3:FM.setModulatorPhaseShift(ratio);
 }
 
+// FM.setModulatorFeedback()
+and synthSetModulatorFeedback(ratio: real) {
+  _ = voice0:FM.setModulatorFeedback(ratio);
+  _ = voice1:FM.setModulatorFeedback(ratio);
+  _ = voice2:FM.setModulatorFeedback(ratio);
+  _ = voice3:FM.setModulatorFeedback(ratio);
+}
+
 // FM.setModulatorADSR()
 and synthSetModulatorADSR(a:real , d: real, s: real, r: real) {
   _ = voice0:FM.setModulatorADSR(a, d, s, r);

@@ -324,7 +324,6 @@ and synthSetModulatorLevel(level: real) {
   _ = poly:Poly.synthSetModulatorLevel(level);
 }
 
-
 // FM.setModulatorTargetLevel()
 and synthSetModulatorTargetLevel(targetLevel: bool) {
   _ = poly:Poly.synthSetModulatorTargetLevel(targetLevel);
@@ -333,6 +332,11 @@ and synthSetModulatorTargetLevel(targetLevel: bool) {
 // FM.setModulatorPhaseShift
 and synthSetModulatorPhaseShift(ratio: real) {
   _ = poly:Poly.synthSetModulatorPhaseShift(ratio);
+}
+
+// FM.setModulatorFeedback()
+and synthSetModulatorFeedback(ratio: real) {
+  _ = poly:Poly.synthSetModulatorFeedback(ratio);
 }
 
 // FM.setModulatorADSR()

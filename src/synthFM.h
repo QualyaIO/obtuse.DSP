@@ -1179,6 +1179,20 @@ static_inline void synthFM_Poly_synthSetModulatorPhaseShift(synthFM_Poly__ctx_ty
    synthFM_FM_setModulatorPhaseShift(_ctx.voice3,ratio);
 }
 
+typedef synthFM_Poly__ctx_type_0 synthFM_Poly_synthSetModulatorFeedback_type;
+
+static_inline void synthFM_Poly_synthSetModulatorFeedback_init(synthFM_Poly__ctx_type_0 &_output_){
+   synthFM_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthFM_Poly_synthSetModulatorFeedback(synthFM_Poly__ctx_type_0 &_ctx, fix16_t ratio){
+   synthFM_FM_setModulatorFeedback(_ctx.voice0,ratio);
+   synthFM_FM_setModulatorFeedback(_ctx.voice1,ratio);
+   synthFM_FM_setModulatorFeedback(_ctx.voice2,ratio);
+   synthFM_FM_setModulatorFeedback(_ctx.voice3,ratio);
+}
+
 typedef synthFM_Poly__ctx_type_0 synthFM_Poly_synthSetModulatorADSR_type;
 
 static_inline void synthFM_Poly_synthSetModulatorADSR_init(synthFM_Poly__ctx_type_0 &_output_){
@@ -1475,6 +1489,17 @@ static_inline void synthFM_Voice_synthSetModulatorPhaseShift_init(synthFM_Voice_
 
 static_inline void synthFM_Voice_synthSetModulatorPhaseShift(synthFM_Voice__ctx_type_0 &_ctx, fix16_t ratio){
    synthFM_Poly_synthSetModulatorPhaseShift(_ctx.poly,ratio);
+};
+
+typedef synthFM_Voice__ctx_type_0 synthFM_Voice_synthSetModulatorFeedback_type;
+
+static_inline void synthFM_Voice_synthSetModulatorFeedback_init(synthFM_Voice__ctx_type_0 &_output_){
+   synthFM_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthFM_Voice_synthSetModulatorFeedback(synthFM_Voice__ctx_type_0 &_ctx, fix16_t ratio){
+   synthFM_Poly_synthSetModulatorFeedback(_ctx.poly,ratio);
 };
 
 typedef synthFM_Voice__ctx_type_0 synthFM_Voice_synthSetModulatorADSR_type;
