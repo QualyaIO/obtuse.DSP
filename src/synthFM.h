@@ -203,6 +203,7 @@ typedef struct synthFM_OSC__ctx_type_0 {
    fix16_t rsize;
    fix16_t phase_base;
    fix16_t phase;
+   fix16_t last_val_feedback;
    fix16_t fs;
    fix16_t freq;
 } synthFM_OSC__ctx_type_0;
@@ -241,6 +242,15 @@ static_inline void synthFM_OSC_process_bufferTo_simple_init(synthFM_OSC__ctx_typ
 }
 
 void synthFM_OSC_process_bufferTo_simple(synthFM_OSC__ctx_type_0 &_ctx, fix16_t (&wavetable)[4096], int nb, fix16_t (&env)[256], fix16_t (&oBuffer)[256]);
+
+typedef synthFM_OSC__ctx_type_0 synthFM_OSC_process_bufferTo_feedback_type;
+
+static_inline void synthFM_OSC_process_bufferTo_feedback_init(synthFM_OSC__ctx_type_0 &_output_){
+   synthFM_OSC__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthFM_OSC_process_bufferTo_feedback(synthFM_OSC__ctx_type_0 &_ctx, fix16_t (&wavetable)[4096], int nb, fix16_t (&env)[256], fix16_t feedback, fix16_t (&oBuffer)[256]);
 
 typedef synthFM_OSC__ctx_type_0 synthFM_OSC_process_bufferTo_simplest_type;
 
@@ -659,6 +669,8 @@ typedef struct synthFM_FM__ctx_type_0 {
    fix16_t modulator_phase_shift;
    fix16_t modulator_level_coeff;
    fix16_t modulator_level;
+   fix16_t modulator_feedback_half_phase;
+   fix16_t modulator_feedback;
    fix16_t modulator_env;
    fix16_t modulatorRatio;
    synthFM_OSC__ctx_type_0 modulator;
@@ -770,6 +782,18 @@ static_inline void synthFM_FM_setModulatorPhaseShift(synthFM_FM__ctx_type_0 &_ct
    phaseRatio = fix_clip(phaseRatio,0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
    _ctx.modulator_phase_shift = fix_mul(phaseRatio,synthFM_OSC_getSize(_ctx.modulator));
    _ctx.modulator_phase_shift = (_ctx.modulator_phase_shift % synthFM_OSC_getSize(_ctx.modulator));
+}
+
+typedef synthFM_FM__ctx_type_0 synthFM_FM_setModulatorFeedback_type;
+
+static_inline void synthFM_FM_setModulatorFeedback_init(synthFM_FM__ctx_type_0 &_output_){
+   synthFM_FM__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthFM_FM_setModulatorFeedback(synthFM_FM__ctx_type_0 &_ctx, fix16_t feedback){
+   _ctx.modulator_feedback = feedback;
+   _ctx.modulator_feedback_half_phase = (fix_mul(feedback,synthFM_OSC_getSize(_ctx.modulator)) >> 1);
 }
 
 typedef synthFM_FM__ctx_type_0 synthFM_FM_setLevel_type;

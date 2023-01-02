@@ -1,4 +1,3 @@
-
 // oscillator, using waveables, to be passed as parameter for flexibility
 // TODO: duplicate code here as well between process and process_buffer (and "simpler" versions! for sake of efficiency)
 
@@ -96,10 +95,40 @@ and process_bufferTo_simple(wavetable, nb: int, env: array(real, 256), oBuffer: 
       }
       // loop in sample
       //v = getSample(int(phase_base + phase));
-      oBuffer[i]  = Wavetable.getSampleFrom(wavetable, int(phase_base + phase)) * env[i];
+      oBuffer[i] = Wavetable.getSampleFrom(wavetable, int(phase_base + phase)) * env[i];
       i = i + 1;
    }
 }
+
+// with feedback on phase rather than modulation. Note that only here is kept state of last value to apply feedback, do not alternate with other methods.,
+and process_bufferTo_feedback(wavetable, nb: int, env: array(real, 256), feedback: real, oBuffer: array(real, 256)) {
+   nb = clip(nb, 0, size(oBuffer));
+   if (nb == 0) {
+      nb = size(oBuffer);
+   }
+
+   // base for phase shift
+   val half_phase = rsize / 2.0;
+   val phase_range = half_phase * feedback;
+   // need to update feedack at n+1
+   mem last_val_feedback;
+   
+   val i = 0;
+   while (i < nb) {
+      // advance time, keep range in check here to maximize precision
+      phase = phase + step;
+      // slightly more efficient than the more robust modulo
+      while (phase > rsize) {
+         phase = phase - rsize;
+      }
+      // loop in sample
+      //v = getSample(int(phase_base + phase));
+      last_val_feedback =  Wavetable.getSampleFrom(wavetable, int(phase_base + half_phase + phase_range * last_val_feedback + phase)) * env[i];
+      oBuffer[i] = last_val_feedback;
+      i = i + 1;
+   }
+}
+
 
 // without envelop nor phase this one
 and process_bufferTo_simplest(wavetable, nb: int, oBuffer: array(real, 256)) {

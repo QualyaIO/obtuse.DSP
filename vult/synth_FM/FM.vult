@@ -17,6 +17,8 @@ fun process(wavetable_modulator, wavetable_carrier) {
     mem modulator_level_coeff;
     // shift modulator phase upon reset
     mem modulator_phase_shift: real;
+    // feedback ratio applied to modulator
+    mem modulator_feedback_half_phase: real;
 
     // reduce cost of envelopes, only computes once in a while
     mem env_decimation_factor;
@@ -53,7 +55,12 @@ fun process(wavetable_modulator, wavetable_carrier) {
 	 val carrier_level = 1.0;
 	 if (modulator_env > 0.0) {
 	   // -1..1 to 0..1
-	   carrier_level = 1.0 - (modulator:OSC.process(wavetable_modulator) + 1.0) * modulator_env * modulator_level_coeff;
+	   val modulator_val = modulator:OSC.process(wavetable_modulator);
+	   carrier_level = 1.0 - (modulator_val + 1.0) * modulator_env * modulator_level_coeff;
+	   // apply feedback, if any
+	   if (modulator_feedback_half_phase <> 0.0) {
+             _ = modulator:OSC.setPhase((modulator_feedback_half_phase + 1.0) * modulator_val);
+	   }
 	 } else {
 	   _ = modulator:OSC.resetPhase();
 	   _ = modulator:OSC.setPhase(modulator_phase_shift);
@@ -66,8 +73,12 @@ fun process(wavetable_modulator, wavetable_carrier) {
 	 val carrier_phase = 0.0;
 	 // only modulate if we got level on modulator
 	 if (modulator_env > 0.0) {
-	   val modulator_val = (modulator:OSC.process(wavetable_modulator) + 1.0) * modulator_env;
-	   carrier_phase = modulator_val * carrier_half_phase;
+	   val modulator_val = modulator:OSC.process(wavetable_modulator);
+	   carrier_phase = (modulator_val + 1.0) * modulator_env * carrier_half_phase;
+	   // apply feedback, if any
+	   if (modulator_feedback_half_phase <> 0.0) {
+             _ = modulator:OSC.setPhase((modulator_feedback_half_phase + 1.0) * modulator_val);
+	   }
 	 } else {
 	   _ = modulator:OSC.resetPhase();
 	   _ = modulator:OSC.setPhase(modulator_phase_shift);
@@ -97,6 +108,8 @@ and process_bufferTo(wavetable_modulator, wavetable_carrier, nb: int, oBuffer: a
     }
     // amount of phase modulation
     mem modulator_level;
+    // amount of feedback
+    mem modulator_feedback;
     // buffers for envelops, decimated and the full 
     mem buffer_carrier_env_short;
     mem buffer_modulator_env_short;
@@ -113,7 +126,6 @@ and process_bufferTo(wavetable_modulator, wavetable_carrier, nb: int, oBuffer: a
       env_df = 1;
     }
      
-
     if (env_decimation_factor > 1) {
       // compute number of samples for this buffer's decimation
       val nb_env = (n + nb) / env_decimation_factor;
@@ -171,7 +183,14 @@ and process_bufferTo(wavetable_modulator, wavetable_carrier, nb: int, oBuffer: a
           i = i + 1;
         }
       } else {
-        _ = modulator:OSC.process_bufferTo_simple(wavetable_modulator, nb, buffer_modulator_env, buffer_modulator);
+	// feedback for modulator
+	if (modulator_feedback <> 0.0) {
+          _ = modulator:OSC.process_bufferTo_feedback(wavetable_modulator, nb, buffer_modulator_env, modulator_feedback, buffer_modulator);
+	}
+	// no feedback
+	else {
+          _ = modulator:OSC.process_bufferTo_simple(wavetable_modulator, nb, buffer_modulator_env, buffer_modulator);
+	}
       }
       _ = carrier:OSC.process_bufferTo(wavetable_carrier, nb, buffer_carrier_env, buffer_modulator, modulator_level, modulator_target_level, oBuffer);
     }
@@ -222,6 +241,12 @@ and setModulatorPhaseShift(phaseRatio: real) {
   phaseRatio = clip(phaseRatio, 0.0, 1.0);
   modulator_phase_shift = modulator:OSC.getSize() * phaseRatio;
   modulator_phase_shift = modulator_phase_shift % modulator:OSC.getSize();
+}
+// feedback to modulator (should be 0..1)
+and setModulatorFeedback(feedback: real) {
+  modulator_feedback = feedback;
+  // directly compute shift in samples
+  modulator_feedback_half_phase = real(modulator:OSC.getSize()) / 2.0 * feedback;
 }
 // set level of the output [0..1] (applied on the envelop)
 and setLevel(newLevel: real) {
