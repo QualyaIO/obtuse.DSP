@@ -44,9 +44,9 @@ and process_bufferTo(wavetable, nb: int, env: array(real, 256), phase_shift: arr
       nb = size(oBuffer);
    }
    
-   // base for phase shift
-   val half_phase = rsize / 2.0;
-   val phase_range = half_phase * phase_shift_level;
+   // base for phase shift -- beware, if OSC > 4096 we might hit fixed point limit
+   val max_phase = rsize * 2.0;
+   val phase_range = max_phase * phase_shift_level;
    // base for volume shift
    val level_shift_coeff = 0.5 * phase_shift_level;
 
@@ -73,7 +73,7 @@ and process_bufferTo(wavetable, nb: int, env: array(real, 256), phase_shift: arr
         while (phase > rsize) {
            phase = phase - rsize;
         }
-        oBuffer[i]  = Wavetable.getSampleFrom(wavetable, int(half_phase + phase_range *   phase_shift[i]  + phase)) * env[i];
+        oBuffer[i]  = Wavetable.getSampleFrom(wavetable, int(max_phase + phase_range *   phase_shift[i]  + phase)) * env[i];
         i = i + 1;
      }
    }
@@ -109,8 +109,8 @@ and process_bufferTo_feedback(wavetable, nb: int, env: array(real, 256), feedbac
    }
 
    // base for phase shift
-   val half_phase = rsize / 2.0;
-   val phase_range = half_phase * feedback;
+   val max_phase = rsize * 2.0;
+   val phase_range = max_phase * feedback;
    // need to update feedack at n+1
    mem last_val_feedback;
    
@@ -124,7 +124,7 @@ and process_bufferTo_feedback(wavetable, nb: int, env: array(real, 256), feedbac
       }
       // loop in sample
       //v = getSample(int(phase_base + phase));
-      last_val_feedback =  Wavetable.getSampleFrom(wavetable, int(phase_base + half_phase + phase_range * last_val_feedback + phase)) * env[i];
+      last_val_feedback =  Wavetable.getSampleFrom(wavetable, int(phase_base + max_phase + phase_range * last_val_feedback + phase)) * env[i];
       oBuffer[i] = last_val_feedback;
       i = i + 1;
    }

@@ -669,9 +669,9 @@ typedef struct synthFM_FM__ctx_type_0 {
    uint8_t modulator_target_level;
    fix16_t modulator_phase_shift;
    fix16_t modulator_phase_range;
+   fix16_t modulator_max_phase;
    fix16_t modulator_level_coeff;
    fix16_t modulator_level;
-   fix16_t modulator_half_phase;
    fix16_t modulator_feedback;
    fix16_t modulator_env;
    fix16_t modulatorRatio;
@@ -682,7 +682,7 @@ typedef struct synthFM_FM__ctx_type_0 {
    int env_decimation_factor;
    synthFM_ADSR__ctx_type_5 carrieradsr;
    fix16_t carrier_phase_range;
-   fix16_t carrier_half_phase;
+   fix16_t carrier_max_phase;
    fix16_t carrier_env;
    fix16_t carrierRatio;
    synthFM_OSC__ctx_type_0 carrier;
@@ -759,8 +759,8 @@ static_inline void synthFM_FM_setModulatorLevel_init(synthFM_FM__ctx_type_0 &_ou
 
 static_inline void synthFM_FM_setModulatorLevel(synthFM_FM__ctx_type_0 &_ctx, fix16_t newLevel){
    _ctx.modulator_level = newLevel;
-   _ctx.carrier_half_phase = (synthFM_OSC_getSize(_ctx.carrier) >> 1);
-   _ctx.carrier_phase_range = fix_mul(_ctx.carrier_half_phase,_ctx.modulator_level);
+   _ctx.carrier_max_phase = (synthFM_OSC_getSize(_ctx.carrier) << 1);
+   _ctx.carrier_phase_range = fix_mul(_ctx.carrier_max_phase,_ctx.modulator_level);
    _ctx.modulator_level_coeff = (_ctx.modulator_level >> 1);
 }
 
@@ -797,8 +797,8 @@ static_inline void synthFM_FM_setModulatorFeedback_init(synthFM_FM__ctx_type_0 &
 
 static_inline void synthFM_FM_setModulatorFeedback(synthFM_FM__ctx_type_0 &_ctx, fix16_t feedback){
    _ctx.modulator_feedback = feedback;
-   _ctx.modulator_half_phase = (synthFM_OSC_getSize(_ctx.modulator) >> 1);
-   _ctx.modulator_phase_range = fix_mul(_ctx.modulator_half_phase,feedback);
+   _ctx.modulator_max_phase = (synthFM_OSC_getSize(_ctx.modulator) << 1);
+   _ctx.modulator_phase_range = fix_mul(_ctx.modulator_max_phase,feedback);
 }
 
 typedef synthFM_FM__ctx_type_0 synthFM_FM_setLevel_type;

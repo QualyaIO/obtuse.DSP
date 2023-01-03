@@ -4194,10 +4194,10 @@ void synthFM_OSC_process_bufferTo(synthFM_OSC__ctx_type_0 &_ctx, fix16_t (&wavet
    if(nb == 0){
       nb = 256;
    }
-   fix16_t half_phase;
-   half_phase = (_ctx.rsize >> 1);
+   fix16_t max_phase;
+   max_phase = (_ctx.rsize << 1);
    fix16_t phase_range;
-   phase_range = fix_mul(half_phase,phase_shift_level);
+   phase_range = fix_mul(max_phase,phase_shift_level);
    fix16_t level_shift_coeff;
    level_shift_coeff = (phase_shift_level >> 1);
    int i;
@@ -4219,7 +4219,7 @@ void synthFM_OSC_process_bufferTo(synthFM_OSC__ctx_type_0 &_ctx, fix16_t (&wavet
          while(_ctx.phase > _ctx.rsize){
             _ctx.phase = (_ctx.phase + (- _ctx.rsize));
          }
-         oBuffer[i] = fix_mul(env[i],synthFM_Wavetable_getSampleFrom(wavetable,fix_to_int((_ctx.phase + half_phase + fix_mul(phase_range,phase_shift[i])))));
+         oBuffer[i] = fix_mul(env[i],synthFM_Wavetable_getSampleFrom(wavetable,fix_to_int((_ctx.phase + max_phase + fix_mul(phase_range,phase_shift[i])))));
          i = (1 + i);
       }
    }
@@ -4247,10 +4247,10 @@ void synthFM_OSC_process_bufferTo_feedback(synthFM_OSC__ctx_type_0 &_ctx, fix16_
    if(nb == 0){
       nb = 256;
    }
-   fix16_t half_phase;
-   half_phase = (_ctx.rsize >> 1);
+   fix16_t max_phase;
+   max_phase = (_ctx.rsize << 1);
    fix16_t phase_range;
-   phase_range = fix_mul(feedback,half_phase);
+   phase_range = fix_mul(feedback,max_phase);
    int i;
    i = 0;
    while(i < nb){
@@ -4258,7 +4258,7 @@ void synthFM_OSC_process_bufferTo_feedback(synthFM_OSC__ctx_type_0 &_ctx, fix16_
       while(_ctx.phase > _ctx.rsize){
          _ctx.phase = (_ctx.phase + (- _ctx.rsize));
       }
-      _ctx.last_val_feedback = fix_mul(env[i],synthFM_Wavetable_getSampleFrom(wavetable,fix_to_int((_ctx.phase + _ctx.phase_base + half_phase + fix_mul(_ctx.last_val_feedback,phase_range)))));
+      _ctx.last_val_feedback = fix_mul(env[i],synthFM_Wavetable_getSampleFrom(wavetable,fix_to_int((_ctx.phase + _ctx.phase_base + max_phase + fix_mul(_ctx.last_val_feedback,phase_range)))));
       oBuffer[i] = _ctx.last_val_feedback;
       i = (1 + i);
    }
@@ -4620,9 +4620,9 @@ void synthFM_FM__ctx_type_0_init(synthFM_FM__ctx_type_0 &_output_){
    _ctx.modulator_target_level = false;
    _ctx.modulator_phase_shift = 0x0 /* 0.000000 */;
    _ctx.modulator_phase_range = 0x0 /* 0.000000 */;
+   _ctx.modulator_max_phase = 0x0 /* 0.000000 */;
    _ctx.modulator_level_coeff = 0x0 /* 0.000000 */;
    _ctx.modulator_level = 0x0 /* 0.000000 */;
-   _ctx.modulator_half_phase = 0x0 /* 0.000000 */;
    _ctx.modulator_feedback = 0x0 /* 0.000000 */;
    _ctx.modulator_env = 0x0 /* 0.000000 */;
    _ctx.modulatorRatio = 0x0 /* 0.000000 */;
@@ -4633,7 +4633,7 @@ void synthFM_FM__ctx_type_0_init(synthFM_FM__ctx_type_0 &_output_){
    _ctx.env_decimation_factor = 0;
    synthFM_ADSR__ctx_type_5_init(_ctx.carrieradsr);
    _ctx.carrier_phase_range = 0x0 /* 0.000000 */;
-   _ctx.carrier_half_phase = 0x0 /* 0.000000 */;
+   _ctx.carrier_max_phase = 0x0 /* 0.000000 */;
    _ctx.carrier_env = 0x0 /* 0.000000 */;
    _ctx.carrierRatio = 0x0 /* 0.000000 */;
    synthFM_OSC__ctx_type_0_init(_ctx.carrier);
@@ -4669,7 +4669,7 @@ fix16_t synthFM_FM_process(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetable_mod
             modulator_val = fix_mul(_ctx.modulator_env,synthFM_OSC_process(_ctx.modulator,wavetable_modulator));
             carrier_level = (0x10000 /* 1.000000 */ + (- fix_mul(_ctx.modulator_level_coeff,(_ctx.modulator_env + modulator_val))));
             if(_ctx.modulator_phase_range != 0x0 /* 0.000000 */){
-               synthFM_OSC_setPhase(_ctx.modulator,(_ctx.modulator_half_phase + _ctx.modulator_phase_shift + fix_mul(_ctx.modulator_phase_range,modulator_val)));
+               synthFM_OSC_setPhase(_ctx.modulator,(_ctx.modulator_max_phase + _ctx.modulator_phase_shift + fix_mul(_ctx.modulator_phase_range,modulator_val)));
             }
          }
          else
@@ -4686,9 +4686,9 @@ fix16_t synthFM_FM_process(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetable_mod
          if(_ctx.modulator_env > 0x0 /* 0.000000 */){
             fix16_t modulator_val;
             modulator_val = fix_mul(_ctx.modulator_env,synthFM_OSC_process(_ctx.modulator,wavetable_modulator));
-            carrier_phase = (_ctx.carrier_half_phase + fix_mul(_ctx.carrier_phase_range,modulator_val));
+            carrier_phase = (_ctx.carrier_max_phase + fix_mul(_ctx.carrier_phase_range,modulator_val));
             if(_ctx.modulator_phase_range != 0x0 /* 0.000000 */){
-               synthFM_OSC_setPhase(_ctx.modulator,(_ctx.modulator_half_phase + _ctx.modulator_phase_shift + fix_mul(_ctx.modulator_phase_range,modulator_val)));
+               synthFM_OSC_setPhase(_ctx.modulator,(_ctx.modulator_max_phase + _ctx.modulator_phase_shift + fix_mul(_ctx.modulator_phase_range,modulator_val)));
             }
          }
          else

@@ -12,14 +12,14 @@ fun process(wavetable_modulator, wavetable_carrier) {
     mem fs: real;
 
     // pre-computed to speedup computations
-    mem carrier_half_phase;
+    mem carrier_max_phase;
     mem carrier_phase_range;
     // used when target volume
     mem modulator_level_coeff;
     // shift modulator phase upon reset
     mem modulator_phase_shift: real;
     // feedback ratio applied to modulator
-    mem modulator_half_phase: real;
+    mem modulator_max_phase: real;
     mem modulator_phase_range: real;
 
     // reduce cost of envelopes, only computes once in a while
@@ -61,7 +61,7 @@ fun process(wavetable_modulator, wavetable_carrier) {
 	   carrier_level = 1.0 - (modulator_val + modulator_env) *  modulator_level_coeff;
 	   // apply feedback, if any
 	   if (modulator_phase_range <> 0.0) {
-             _ = modulator:OSC.setPhase(modulator_phase_shift + modulator_half_phase +  modulator_phase_range * modulator_val);
+             _ = modulator:OSC.setPhase(modulator_phase_shift + modulator_max_phase +  modulator_phase_range * modulator_val);
 	   }
 	 } else {
 	   _ = modulator:OSC.resetPhase();
@@ -76,10 +76,10 @@ fun process(wavetable_modulator, wavetable_carrier) {
 	 // only modulate if we got level on modulator
 	 if (modulator_env > 0.0) {
 	   val modulator_val = modulator:OSC.process(wavetable_modulator) * modulator_env;
-	   carrier_phase = carrier_half_phase + modulator_val * carrier_phase_range;
+	   carrier_phase = carrier_max_phase + modulator_val * carrier_phase_range;
 	   // apply feedback, if any
 	   if (modulator_phase_range <> 0.0) {
-             _ = modulator:OSC.setPhase(modulator_phase_shift + modulator_half_phase + modulator_phase_range * modulator_val);
+             _ = modulator:OSC.setPhase(modulator_phase_shift + modulator_max_phase + modulator_phase_range * modulator_val);
 	   }
 	 } else {
 	   _ = modulator:OSC.resetPhase();
@@ -229,9 +229,10 @@ and setModulatorRatio(ratio: real) {
 // effect of modulator [0..1]
 and setModulatorLevel(newLevel: real) {
     modulator_level = newLevel;
-    // directly manipulating the phase amount
-    carrier_half_phase = real(carrier:OSC.getSize()) / 2.0;
-    carrier_phase_range = carrier_half_phase * modulator_level;
+    // directly manipulating the phase amount -- up to twice the phase for increased effect
+    // FIXME: if OSC watevable is too big will fail due to fixed float restriction, * 2.0 okay with 4096 samples (due to the way it used afterward, even * 4.0 can overflow  much)
+    carrier_max_phase = real(carrier:OSC.getSize()) * 2.0;
+    carrier_phase_range = carrier_max_phase * modulator_level;
     // will be used to change -1..1 to 0..1 range for modulating volume
     modulator_level_coeff = 0.5 * modulator_level;
 }
@@ -249,8 +250,8 @@ and setModulatorPhaseShift(phaseRatio: real) {
 and setModulatorFeedback(feedback: real) {
   modulator_feedback = feedback;
   // directly compute shift in samples
-  modulator_half_phase = real(modulator:OSC.getSize()) / 2.0;
-  modulator_phase_range = modulator_half_phase * feedback;
+  modulator_max_phase = real(modulator:OSC.getSize()) * 2.0;
+  modulator_phase_range = modulator_max_phase * feedback;
 }
 // set level of the output [0..1] (applied on the envelop)
 and setLevel(newLevel: real) {
