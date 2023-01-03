@@ -13,12 +13,14 @@ fun process(wavetable_modulator, wavetable_carrier) {
 
     // pre-computed to speedup computations
     mem carrier_half_phase;
+    mem carrier_phase_range;
     // used when target volume
     mem modulator_level_coeff;
     // shift modulator phase upon reset
     mem modulator_phase_shift: real;
     // feedback ratio applied to modulator
-    mem modulator_feedback_half_phase: real;
+    mem modulator_half_phase: real;
+    mem modulator_phase_range: real;
 
     // reduce cost of envelopes, only computes once in a while
     mem env_decimation_factor;
@@ -54,12 +56,12 @@ fun process(wavetable_modulator, wavetable_carrier) {
        if (modulator_target_level) {
 	 val carrier_level = 1.0;
 	 if (modulator_env > 0.0) {
-	   // -1..1 to 0..1
-	   val modulator_val = modulator:OSC.process(wavetable_modulator);
-	   carrier_level = 1.0 - (modulator_val + 1.0) * modulator_env * modulator_level_coeff;
+	   val modulator_val = modulator:OSC.process(wavetable_modulator) * modulator_env;
+	   // modulator val will be -env .. env, shift to 0..2*env (max 0..2). Most efficient considering feedback needs envelope 
+	   carrier_level = 1.0 - (modulator_val + modulator_env) *  modulator_level_coeff;
 	   // apply feedback, if any
-	   if (modulator_feedback_half_phase <> 0.0) {
-             _ = modulator:OSC.setPhase(modulator_phase_shift + (modulator_val + 1.0) * modulator_feedback_half_phase);
+	   if (modulator_phase_range <> 0.0) {
+             _ = modulator:OSC.setPhase(modulator_phase_shift + modulator_half_phase +  modulator_phase_range * modulator_val);
 	   }
 	 } else {
 	   _ = modulator:OSC.resetPhase();
@@ -73,11 +75,11 @@ fun process(wavetable_modulator, wavetable_carrier) {
 	 val carrier_phase = 0.0;
 	 // only modulate if we got level on modulator
 	 if (modulator_env > 0.0) {
-	   val modulator_val = modulator:OSC.process(wavetable_modulator);
-	   carrier_phase = (modulator_val + 1.0) * modulator_env * carrier_half_phase;
+	   val modulator_val = modulator:OSC.process(wavetable_modulator) * modulator_env;
+	   carrier_phase = carrier_half_phase + modulator_val * carrier_phase_range;
 	   // apply feedback, if any
-	   if (modulator_feedback_half_phase <> 0.0) {
-             _ = modulator:OSC.setPhase(modulator_phase_shift + (modulator_val + 1.0) * modulator_feedback_half_phase);
+	   if (modulator_phase_range <> 0.0) {
+             _ = modulator:OSC.setPhase(modulator_phase_shift + modulator_half_phase + modulator_phase_range * modulator_val);
 	   }
 	 } else {
 	   _ = modulator:OSC.resetPhase();
@@ -192,7 +194,7 @@ and process_bufferTo(wavetable_modulator, wavetable_carrier, nb: int, oBuffer: a
           _ = modulator:OSC.process_bufferTo_simple(wavetable_modulator, nb, buffer_modulator_env, buffer_modulator);
 	}
       }
-      _ = carrier:OSC.process_bufferTo(wavetable_carrier, nb, buffer_carrier_env, buffer_modulator, modulator_level, modulator_target_level, oBuffer);
+      _ = carrier:OSC.process_bufferTo(wavetable_carrier, nb, buffer_carrier_env, buffer_modulator, buffer_modulator_env,  modulator_level, modulator_target_level, oBuffer);
     }
 }
 and setSamplerate(newFs:real) {
@@ -228,7 +230,8 @@ and setModulatorRatio(ratio: real) {
 and setModulatorLevel(newLevel: real) {
     modulator_level = newLevel;
     // directly manipulating the phase amount
-    carrier_half_phase = real(carrier:OSC.getSize()) / 2.0 * modulator_level;
+    carrier_half_phase = real(carrier:OSC.getSize()) / 2.0;
+    carrier_phase_range = carrier_half_phase * modulator_level;
     // will be used to change -1..1 to 0..1 range for modulating volume
     modulator_level_coeff = 0.5 * modulator_level;
 }
@@ -246,7 +249,8 @@ and setModulatorPhaseShift(phaseRatio: real) {
 and setModulatorFeedback(feedback: real) {
   modulator_feedback = feedback;
   // directly compute shift in samples
-  modulator_feedback_half_phase = real(modulator:OSC.getSize()) / 2.0 * feedback;
+  modulator_half_phase = real(modulator:OSC.getSize()) / 2.0;
+  modulator_phase_range = modulator_half_phase * feedback;
 }
 // set level of the output [0..1] (applied on the envelop)
 and setLevel(newLevel: real) {

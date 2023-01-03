@@ -33,11 +33,12 @@ fun process(wavetable) {
 // update the buffer, to be fetch afterward, returns last sample
 // env: envelope to apply (0..1)
 // phase shift: specify how to shift the base phase (-1 to 1, 0 center of phase) -- FIXME so that 0 does not change anything?
+// phase_env: envelope for phase shift, needed in case for shift_level
 // phase_shift_level: by how much we apply phase shift (0..1)
 // shift_level: if we should *actually* shift level instead of phase
 // oBuffer: output buffer to copy data to
 // FIXME: not check for phase_bases size, no option to by-pass
-and process_bufferTo(wavetable, nb: int, env: array(real, 256), phase_shift: array(real, 256), phase_shift_level: real, shift_level: bool, oBuffer: array(real, 256)) {
+and process_bufferTo(wavetable, nb: int, env: array(real, 256), phase_shift: array(real, 256), phase_env: array(real, 256), phase_shift_level: real, shift_level: bool, oBuffer: array(real, 256)) {
    nb = clip(nb, 0, size(oBuffer));
    if (nb == 0) {
       nb = size(oBuffer);
@@ -61,7 +62,7 @@ and process_bufferTo(wavetable, nb: int, env: array(real, 256), phase_shift: arr
            phase = phase - rsize;
         }
         // phase shift from -1..1 to 0..1, and don't change if there is no modulation 
-        oBuffer[i]  = Wavetable.getSampleFrom(wavetable, int(phase)) * env[i] * (1.0 - (phase_shift[i] + 1.0) * level_shift_coeff);
+        oBuffer[i]  = Wavetable.getSampleFrom(wavetable, int(phase)) * env[i] * (1.0 - (phase_shift[i] + phase_env[i]) * level_shift_coeff);
         i = i + 1;
      }
    }
