@@ -24,7 +24,7 @@ fun process(wavetable) {
       phase = phase - rsize;
    }
    // let others take care of modulo
-   return Wavetable.getSampleFrom(wavetable, int(phase_base + phase));
+   return Wavetable.getSampleFrom(wavetable, phase_base + phase);
 }
 
 
@@ -62,7 +62,7 @@ and process_bufferTo(wavetable, nb: int, env: array(real, 256), phase_shift: arr
            phase = phase - rsize;
         }
         // phase shift from -1..1 to 0..1, and don't change if there is no modulation 
-        oBuffer[i]  = Wavetable.getSampleFrom(wavetable, int(phase)) * env[i] * (1.0 - (phase_shift[i] + phase_env[i]) * level_shift_coeff);
+        oBuffer[i]  = Wavetable.getSampleFrom(wavetable, phase) * env[i] * (1.0 - (phase_shift[i] + phase_env[i]) * level_shift_coeff);
         i = i + 1;
      }
    }
@@ -73,7 +73,7 @@ and process_bufferTo(wavetable, nb: int, env: array(real, 256), phase_shift: arr
         while (phase > rsize) {
            phase = phase - rsize;
         }
-        oBuffer[i]  = Wavetable.getSampleFrom(wavetable, int(max_phase + phase_range *   phase_shift[i]  + phase)) * env[i];
+        oBuffer[i]  = Wavetable.getSampleFrom(wavetable, max_phase + phase_range *   phase_shift[i]  + phase) * env[i];
         i = i + 1;
      }
    }
@@ -96,7 +96,7 @@ and process_bufferTo_simple(wavetable, nb: int, env: array(real, 256), oBuffer: 
       }
       // loop in sample
       //v = getSample(int(phase_base + phase));
-      oBuffer[i] = Wavetable.getSampleFrom(wavetable, int(phase_base + phase)) * env[i];
+      oBuffer[i] = Wavetable.getSampleFrom(wavetable, phase_base + phase) * env[i];
       i = i + 1;
    }
 }
@@ -124,7 +124,7 @@ and process_bufferTo_feedback(wavetable, nb: int, env: array(real, 256), feedbac
       }
       // loop in sample
       //v = getSample(int(phase_base + phase));
-      last_val_feedback =  Wavetable.getSampleFrom(wavetable, int(phase_base + max_phase + phase_range * last_val_feedback + phase)) * env[i];
+      last_val_feedback =  Wavetable.getSampleFrom(wavetable, phase_base + max_phase + phase_range * last_val_feedback + phase) * env[i];
       oBuffer[i] = last_val_feedback;
       i = i + 1;
    }
@@ -148,7 +148,7 @@ and process_bufferTo_simplest(wavetable, nb: int, oBuffer: array(real, 256)) {
       }
       // loop in sample
       //v = getSample(int(phase_base + phase));
-      oBuffer[i]  = Wavetable.getSampleFrom(wavetable, int(phase_base + phase));
+      oBuffer[i]  = Wavetable.getSampleFrom(wavetable, phase_base + phase);
       i = i + 1;
    }
 }

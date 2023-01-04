@@ -170,12 +170,7 @@ static_inline fix16_t synthFM_Wavetable_square_wave(int channel, int index){
 
 fix16_t synthFM_Wavetable_getSample(int wavetableIdx, int index);
 
-static_inline fix16_t synthFM_Wavetable_getSampleFrom(fix16_t (&wavetable)[4096], int index){
-   if(index >= 4096){
-      index = (index % 4096);
-   }
-   return wavetable[index];
-}
+fix16_t synthFM_Wavetable_getSampleFrom(fix16_t (&wavetable)[4096], fix16_t index);
 
 static_inline int synthFM_Wavetable_getNbWavetables(){
    return 4;
@@ -222,7 +217,7 @@ static_inline fix16_t synthFM_OSC_process(synthFM_OSC__ctx_type_0 &_ctx, fix16_t
    while(_ctx.phase > _ctx.rsize){
       _ctx.phase = (_ctx.phase + (- _ctx.rsize));
    }
-   return synthFM_Wavetable_getSampleFrom(wavetable,fix_to_int((_ctx.phase + _ctx.phase_base)));
+   return synthFM_Wavetable_getSampleFrom(wavetable,(_ctx.phase + _ctx.phase_base));
 }
 
 typedef synthFM_OSC__ctx_type_0 synthFM_OSC_process_bufferTo_type;

@@ -32,11 +32,20 @@ fun getSample(wavetableIdx: int, index: int): real {
 }
 
 // return value for wavetable passed in parameter, between [0..wavetable size[
-fun getSampleFrom(wavetable, index: int): real {
-   if (index >= size(wavetable)) {
-     index = index % size(wavetable);
+fun getSampleFrom(wavetable, index: real): real {
+   val idx1 = int(index);
+   if (idx1 >= size(wavetable)) {
+     idx1 = idx1 % size(wavetable);
    }
-   return wavetable[index];
+   return wavetable[idx1];
+   // for later, to test interpolation
+   /*
+   val idx2 = int(index) + 1;
+   if (idx2 >= size(wavetable)) {
+     idx2 = idx2 % size(wavetable);
+   }
+   return wavetable[idx1] + (wavetable[idx2] - wavetable[idx1]) * (index % 1.0);
+   */
 }
 
 
@@ -104,5 +113,5 @@ fun getRandRandomMorph() {
   if (size(wavetable) > 0) {
     idx = irandom() % size(wavetable);
   }
-  return getSampleFrom(wavetable, idx);
+  return getSampleFrom(wavetable, real(idx));
 }
