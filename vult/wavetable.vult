@@ -34,8 +34,6 @@ fun getSample(wavetableIdx: int, index: int): real {
 // return value for wavetable passed in parameter, between [0..wavetable size[
 fun getSampleFrom(wavetable, index: real): real {
    val idx1 = int(index);
-   //return wavetable[idx1];
-   // for later, to test interpolation
    val idx2 = int(index) + 1;
    if (idx2 >= size(wavetable)) {
      idx2 = idx2 % size(wavetable);
