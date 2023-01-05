@@ -26,10 +26,15 @@ fix16_t synthFM_Wavetable_getSample(int wavetableIdx, int index){
 fix16_t synthFM_Wavetable_getSampleFrom(fix16_t (&wavetable)[4096], fix16_t index){
    int idx1;
    idx1 = fix_to_int(index);
-   if(idx1 >= 4096){
-      idx1 = (idx1 % 4096);
+   int idx2;
+   idx2 = (1 + fix_to_int(index));
+   if(idx2 >= 4096){
+      idx2 = (idx2 % 4096);
+      if(idx1 >= 4096){
+         idx1 = (idx1 % 4096);
+      }
    }
-   return wavetable[idx1];
+   return (wavetable[idx1] + fix_mul((index % 0x10000 /* 1.000000 */),(wavetable[idx2] + (- wavetable[idx1]))));
 }
 
 void synthFM_Wavetable_morphTo(fix16_t wavetableIdx, fix16_t phase, fix16_t (&buffer)[4096]){
