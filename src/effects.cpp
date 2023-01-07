@@ -6330,10 +6330,10 @@ void effects_Reverb_setReverbTime(effects_Reverb__ctx_type_0 &_ctx, fix16_t newR
 void effects_Reverb_setDelayms(effects_Reverb__ctx_type_0 &_ctx, fix16_t delayms){
    int delay;
    delay = fix_to_int(fix_mul(_ctx.fs,delayms));
-   _ctx.comb3delay = int_clip(delay,0,effects_CombFB_getMaxDelay(_ctx.comb3));
-   _ctx.comb0delay = int_clip(((-345) + _ctx.comb3delay),0,effects_CombFB_getMaxDelay(_ctx.comb0));
-   _ctx.comb1delay = int_clip(((-222) + _ctx.comb3delay),0,effects_CombFB_getMaxDelay(_ctx.comb1));
-   _ctx.comb2delay = int_clip(((-112) + _ctx.comb3delay),0,effects_CombFB_getMaxDelay(_ctx.comb2));
+   _ctx.comb3delay = int_clip(delay,1,effects_CombFB_getMaxDelay(_ctx.comb3));
+   _ctx.comb0delay = int_clip(((-345) + _ctx.comb3delay),1,effects_CombFB_getMaxDelay(_ctx.comb0));
+   _ctx.comb1delay = int_clip(((-222) + _ctx.comb3delay),1,effects_CombFB_getMaxDelay(_ctx.comb1));
+   _ctx.comb2delay = int_clip(((-112) + _ctx.comb3delay),1,effects_CombFB_getMaxDelay(_ctx.comb2));
    effects_CombFB_setDelay(_ctx.comb0,_ctx.comb0delay);
    effects_CombFB_setDelay(_ctx.comb1,_ctx.comb1delay);
    effects_CombFB_setDelay(_ctx.comb2,_ctx.comb2delay);

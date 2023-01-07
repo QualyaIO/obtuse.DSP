@@ -90,10 +90,10 @@ and setReverbTime(newReverbtime: real) {
 and setDelayms(delayms: real) {
   // convert to delay in samples, used as ref for others filters
   val delay = int(fs * delayms);
-  comb3delay = clip(delay, 0, comb3:CombFB.getMaxDelay());
-  comb0delay = clip(comb3delay - 345, 0, comb0:CombFB.getMaxDelay());
-  comb1delay = clip(comb3delay - 222, 0, comb1:CombFB.getMaxDelay());
-  comb2delay = clip(comb3delay - 112, 0, comb2:CombFB.getMaxDelay());
+  comb3delay = clip(delay, 1, comb3:CombFB.getMaxDelay());
+  comb0delay = clip(comb3delay - 345, 1, comb0:CombFB.getMaxDelay());
+  comb1delay = clip(comb3delay - 222, 1, comb1:CombFB.getMaxDelay());
+  comb2delay = clip(comb3delay - 112, 1, comb2:CombFB.getMaxDelay());
   _ = comb0:CombFB.setDelay(comb0delay);
   _ = comb1:CombFB.setDelay(comb1delay);
   _ = comb2:CombFB.setDelay(comb2delay);
