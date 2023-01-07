@@ -8165,8 +8165,6 @@ fix16_t effects_SVF_process(effects_SVF__ctx_type_0 &_ctx, fix16_t input){
    band = (_ctx.z1 + fix_mul(_ctx.g,high));
    fix16_t low;
    low = (_ctx.z2 + fix_mul(_ctx.g,band));
-   fix16_t notch;
-   notch = (high + low);
    _ctx.z1 = (band + fix_mul(_ctx.g,high));
    _ctx.z2 = (low + fix_mul(_ctx.g,band));
    fix16_t output;
@@ -8181,7 +8179,7 @@ fix16_t effects_SVF_process(effects_SVF__ctx_type_0 &_ctx, fix16_t input){
          output = band;
       break;
       case 4:
-         output = notch;
+         output = (high + low);
       break;
     default: 
       output = input;
