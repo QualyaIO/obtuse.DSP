@@ -65,7 +65,9 @@ and setFreq(newFreq: real) {
 
 // set... bandwidth?
 and setQ(newQ: real) {
-  q = newQ + 0.5;
+  if (newQ >= 0.0) {
+    q = newQ;
+  }
   _ = updateCoeffs();
 }
 
@@ -178,7 +180,7 @@ and default() @[init] {
    mem g_table: array(real, 1024);
    rsize = real(size(g_table));
    freq = 0.0;
-   q = 0.0;
+   q = 0.1;
    // will also call methods to update coeffs
    _ = setSamplerate(44.1);
  }
