@@ -678,6 +678,137 @@ static_inline void effects_Ladder_dummy_init(effects_Ladder__ctx_type_3 &_output
 
 void effects_Ladder_dummy(effects_Ladder__ctx_type_3 &_ctx);
 
+typedef struct effects_CombFF__ctx_type_0 {
+   fix16_t scale;
+   int pos;
+   fix16_t fs;
+   int delay;
+   fix16_t decay;
+   fix16_t buffer[2048];
+} effects_CombFF__ctx_type_0;
+
+typedef effects_CombFF__ctx_type_0 effects_CombFF_process_type;
+
+void effects_CombFF__ctx_type_0_init(effects_CombFF__ctx_type_0 &_output_);
+
+static_inline void effects_CombFF_process_init(effects_CombFF__ctx_type_0 &_output_){
+   effects_CombFF__ctx_type_0_init(_output_);
+   return ;
+}
+
+fix16_t effects_CombFF_process(effects_CombFF__ctx_type_0 &_ctx, fix16_t sample);
+
+typedef effects_CombFF__ctx_type_0 effects_CombFF_process_bufferTo_type;
+
+static_inline void effects_CombFF_process_bufferTo_init(effects_CombFF__ctx_type_0 &_output_){
+   effects_CombFF__ctx_type_0_init(_output_);
+   return ;
+}
+
+void effects_CombFF_process_bufferTo(effects_CombFF__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256], fix16_t (&oBuffer)[256]);
+
+typedef effects_CombFF__ctx_type_0 effects_CombFF_setDecay_type;
+
+static_inline void effects_CombFF_setDecay_init(effects_CombFF__ctx_type_0 &_output_){
+   effects_CombFF__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void effects_CombFF_setDecay(effects_CombFF__ctx_type_0 &_ctx, fix16_t newDecay){
+   _ctx.decay = fix_clip(newDecay,0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
+   _ctx.scale = fix_div(0x10000 /* 1.000000 */,(0x10000 /* 1.000000 */ + _ctx.decay));
+}
+
+typedef effects_CombFF__ctx_type_0 effects_CombFF_getMaxDelay_type;
+
+static_inline void effects_CombFF_getMaxDelay_init(effects_CombFF__ctx_type_0 &_output_){
+   effects_CombFF__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int effects_CombFF_getMaxDelay(effects_CombFF__ctx_type_0 &_ctx){
+   return 2048;
+};
+
+typedef effects_CombFF__ctx_type_0 effects_CombFF_getMaxDelayms_type;
+
+static_inline void effects_CombFF_getMaxDelayms_init(effects_CombFF__ctx_type_0 &_output_){
+   effects_CombFF__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline fix16_t effects_CombFF_getMaxDelayms(effects_CombFF__ctx_type_0 &_ctx){
+   if(_ctx.fs <= 0x0 /* 0.000000 */){
+      return 0x0 /* 0.000000 */;
+   }
+   return fix_div(0x8000000 /* 2048.000000 */,_ctx.fs);
+}
+
+typedef effects_CombFF__ctx_type_0 effects_CombFF_setDelay_type;
+
+static_inline void effects_CombFF_setDelay_init(effects_CombFF__ctx_type_0 &_output_){
+   effects_CombFF__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void effects_CombFF_setDelay(effects_CombFF__ctx_type_0 &_ctx, int newDelay){
+   _ctx.delay = int_clip(newDelay,0,effects_CombFF_getMaxDelay(_ctx));
+   _ctx.pos = 0;
+}
+
+typedef effects_CombFF__ctx_type_0 effects_CombFF_setDelayms_type;
+
+static_inline void effects_CombFF_setDelayms_init(effects_CombFF__ctx_type_0 &_output_){
+   effects_CombFF__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void effects_CombFF_setDelayms(effects_CombFF__ctx_type_0 &_ctx, fix16_t delayms){
+   effects_CombFF_setDelay(_ctx,fix_to_int(fix_mul(_ctx.fs,delayms)));
+};
+
+typedef effects_CombFF__ctx_type_0 effects_CombFF_setSamplerate_type;
+
+static_inline void effects_CombFF_setSamplerate_init(effects_CombFF__ctx_type_0 &_output_){
+   effects_CombFF__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void effects_CombFF_setSamplerate(effects_CombFF__ctx_type_0 &_ctx, fix16_t newFs){
+   if(newFs > 0x0 /* 0.000000 */){
+      _ctx.fs = newFs;
+   }
+};
+
+typedef effects_CombFF__ctx_type_0 effects_CombFF_default_type;
+
+static_inline void effects_CombFF_default_init(effects_CombFF__ctx_type_0 &_output_){
+   effects_CombFF__ctx_type_0_init(_output_);
+   return ;
+}
+
+void effects_CombFF_default(effects_CombFF__ctx_type_0 &_ctx);
+
+typedef struct effects_CombFF__ctx_type_1 {
+   effects_CombFF__ctx_type_0 _inst115;
+} effects_CombFF__ctx_type_1;
+
+typedef effects_CombFF__ctx_type_1 effects_CombFF_dummy_type;
+
+static_inline void effects_CombFF__ctx_type_1_init(effects_CombFF__ctx_type_1 &_output_){
+   effects_CombFF__ctx_type_1 _ctx;
+   effects_CombFF__ctx_type_0_init(_ctx._inst115);
+   _output_ = _ctx;
+   return ;
+}
+
+static_inline void effects_CombFF_dummy_init(effects_CombFF__ctx_type_1 &_output_){
+   effects_CombFF__ctx_type_1_init(_output_);
+   return ;
+}
+
+void effects_CombFF_dummy(effects_CombFF__ctx_type_1 &_ctx);
+
 typedef struct effects_SVF__ctx_type_0 {
    fix16_t z2;
    fix16_t z1;

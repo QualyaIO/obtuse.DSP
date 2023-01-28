@@ -94,7 +94,7 @@ and setSamplerate(newFs:real) {
 }
 
 and default() @[init] {
-   buffer = Util.buffer_large();
+   buffer = Buffer.buffer_large();
    _ = setSamplerate(44.100);
    _ = setDelayms(50.0);
    _ = setDecay(0.5);

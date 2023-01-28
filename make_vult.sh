@@ -15,4 +15,4 @@ echo "Generate Drummer synth"
 vultc -ccode vult/voice.vult -real fixed -i vult/synth_drummer -i vult/buffer_medium -o src/synthDrummer -output-prefix synthDrummer_
 
 echo "Generate Effects"
-vultc -ccode vult/reverb.vult vult/ladder.vult vult/SVF.vult -i vult/buffer_medium -real fixed -o src/effects -output-prefix effects_
+vultc -ccode vult/reverb.vult vult/ladder.vult vult/SVF.vult vult/combFB.vult vult/allpass.vult vult/combFF.vult -i vult/buffer_medium -real fixed -o src/effects -output-prefix effects_
