@@ -202,7 +202,7 @@ and default() @[init] {
                 [10000, 21500, 25500, 28500, 45500, 46500, 48550, 50100, 60000, 78000, 83500, 107000]
   );
   // will copy a new array
-  mem buffer_o = Util.buffer();
+  mem buffer_o = Buffer.buffer();
   // start with nothing
   slice = -1;
 }

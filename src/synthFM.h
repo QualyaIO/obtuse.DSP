@@ -14,6 +14,74 @@ typedef struct synthFM__tuple___real_real_real_real__ {
    fix16_t field_3;
 } synthFM__tuple___real_real_real_real__;
 
+static_inline int synthFM_Wavetable_sin_wave_samples(){
+   return 4096;
+};
+
+static_inline fix16_t synthFM_Wavetable_sin_wave(int channel, int index){
+   if(channel == 0){
+      return fix_wrap_array(synthFM_Wavetable_sin_wave_chan_0)[(index % 4096)];
+   }
+   return 0x0 /* 0.000000 */;
+}
+
+static_inline int synthFM_Wavetable_tri_wave_samples(){
+   return 4096;
+};
+
+static_inline fix16_t synthFM_Wavetable_tri_wave(int channel, int index){
+   if(channel == 0){
+      return fix_wrap_array(synthFM_Wavetable_tri_wave_chan_0)[(index % 4096)];
+   }
+   return 0x0 /* 0.000000 */;
+}
+
+static_inline int synthFM_Wavetable_saw_wave_samples(){
+   return 2048;
+};
+
+static_inline fix16_t synthFM_Wavetable_saw_wave(int channel, int index){
+   if(channel == 0){
+      return fix_wrap_array(synthFM_Wavetable_saw_wave_chan_0)[(index % 2048)];
+   }
+   return 0x0 /* 0.000000 */;
+}
+
+static_inline int synthFM_Wavetable_square_wave_samples(){
+   return 4096;
+};
+
+static_inline fix16_t synthFM_Wavetable_square_wave(int channel, int index){
+   if(channel == 0){
+      return fix_wrap_array(synthFM_Wavetable_square_wave_chan_0)[(index % 4096)];
+   }
+   return 0x0 /* 0.000000 */;
+}
+
+fix16_t synthFM_Wavetable_getSample(int wavetableIdx, int index);
+
+fix16_t synthFM_Wavetable_getSampleFrom(fix16_t (&wavetable)[4096], fix16_t index);
+
+static_inline int synthFM_Wavetable_getNbWavetables(){
+   return 4;
+};
+
+void synthFM_Wavetable_morphTo(fix16_t wavetableIdx, fix16_t phase, fix16_t (&buffer)[4096]);
+
+static_inline void synthFM_Wavetable_bufferWavetable(fix16_t (&_output_)[4096]){
+   fix16_t buff[4096];
+   fix_copy_array(4096,_output_,buff);
+   return ;
+}
+
+static_inline int synthFM_Wavetable_bufferSize(){
+   return 4096;
+};
+
+void synthFM_Wavetable_getRandomMorph(fix16_t (&_output_)[4096]);
+
+fix16_t synthFM_Wavetable_getRandRandomMorph();
+
 static_inline fix16_t synthFM_Util_noteToFrequency(int note){
    return fix_mul(0x217 /* 0.008176 */,fix_exp(fix_mul(0xec9 /* 0.057762 */,int_to_fix(note))));
 };
@@ -84,37 +152,25 @@ static_inline uint8_t synthFM_Util_change(synthFM_Util__ctx_type_3 &_ctx, fix16_
    return v;
 }
 
-static_inline void synthFM_Util_buffer(fix16_t (&_output_)[256]){
-   fix16_t buff[256];
-   fix_copy_array(256,_output_,buff);
-   return ;
-}
-
-static_inline void synthFM_Util_buffer_large(fix16_t (&_output_)[2048]){
-   fix16_t buff[2048];
-   fix_copy_array(2048,_output_,buff);
-   return ;
-}
-
-typedef struct synthFM_Util__ctx_type_6 {
+typedef struct synthFM_Util__ctx_type_4 {
    fix16_t x;
-} synthFM_Util__ctx_type_6;
+} synthFM_Util__ctx_type_4;
 
-typedef synthFM_Util__ctx_type_6 synthFM_Util_smooth_type;
+typedef synthFM_Util__ctx_type_4 synthFM_Util_smooth_type;
 
-static_inline void synthFM_Util__ctx_type_6_init(synthFM_Util__ctx_type_6 &_output_){
-   synthFM_Util__ctx_type_6 _ctx;
+static_inline void synthFM_Util__ctx_type_4_init(synthFM_Util__ctx_type_4 &_output_){
+   synthFM_Util__ctx_type_4 _ctx;
    _ctx.x = 0x0 /* 0.000000 */;
    _output_ = _ctx;
    return ;
 }
 
-static_inline void synthFM_Util_smooth_init(synthFM_Util__ctx_type_6 &_output_){
-   synthFM_Util__ctx_type_6_init(_output_);
+static_inline void synthFM_Util_smooth_init(synthFM_Util__ctx_type_4 &_output_){
+   synthFM_Util__ctx_type_4_init(_output_);
    return ;
 }
 
-static_inline fix16_t synthFM_Util_smooth(synthFM_Util__ctx_type_6 &_ctx, fix16_t input, fix16_t coeff){
+static_inline fix16_t synthFM_Util_smooth(synthFM_Util__ctx_type_4 &_ctx, fix16_t input, fix16_t coeff){
    _ctx.x = (_ctx.x + fix_mul(coeff,(input + (- _ctx.x))));
    return _ctx.x;
 }
@@ -123,74 +179,6 @@ static_inline fix16_t synthFM_Util_velocityToLevel(int velocity){
    velocity = int_clip(velocity,0,127);
    return fix_mul(0x204 /* 0.007874 */,int_to_fix(velocity));
 }
-
-static_inline int synthFM_Wavetable_sin_wave_samples(){
-   return 4096;
-};
-
-static_inline fix16_t synthFM_Wavetable_sin_wave(int channel, int index){
-   if(channel == 0){
-      return fix_wrap_array(synthFM_Wavetable_sin_wave_chan_0)[(index % 4096)];
-   }
-   return 0x0 /* 0.000000 */;
-}
-
-static_inline int synthFM_Wavetable_tri_wave_samples(){
-   return 4096;
-};
-
-static_inline fix16_t synthFM_Wavetable_tri_wave(int channel, int index){
-   if(channel == 0){
-      return fix_wrap_array(synthFM_Wavetable_tri_wave_chan_0)[(index % 4096)];
-   }
-   return 0x0 /* 0.000000 */;
-}
-
-static_inline int synthFM_Wavetable_saw_wave_samples(){
-   return 2048;
-};
-
-static_inline fix16_t synthFM_Wavetable_saw_wave(int channel, int index){
-   if(channel == 0){
-      return fix_wrap_array(synthFM_Wavetable_saw_wave_chan_0)[(index % 2048)];
-   }
-   return 0x0 /* 0.000000 */;
-}
-
-static_inline int synthFM_Wavetable_square_wave_samples(){
-   return 4096;
-};
-
-static_inline fix16_t synthFM_Wavetable_square_wave(int channel, int index){
-   if(channel == 0){
-      return fix_wrap_array(synthFM_Wavetable_square_wave_chan_0)[(index % 4096)];
-   }
-   return 0x0 /* 0.000000 */;
-}
-
-fix16_t synthFM_Wavetable_getSample(int wavetableIdx, int index);
-
-fix16_t synthFM_Wavetable_getSampleFrom(fix16_t (&wavetable)[4096], fix16_t index);
-
-static_inline int synthFM_Wavetable_getNbWavetables(){
-   return 4;
-};
-
-void synthFM_Wavetable_morphTo(fix16_t wavetableIdx, fix16_t phase, fix16_t (&buffer)[4096]);
-
-static_inline void synthFM_Wavetable_bufferWavetable(fix16_t (&_output_)[4096]){
-   fix16_t buff[4096];
-   fix_copy_array(4096,_output_,buff);
-   return ;
-}
-
-static_inline int synthFM_Wavetable_bufferSize(){
-   return 4096;
-};
-
-void synthFM_Wavetable_getRandomMorph(fix16_t (&_output_)[4096]);
-
-fix16_t synthFM_Wavetable_getRandRandomMorph();
 
 typedef struct synthFM_OSC__ctx_type_0 {
    fix16_t stepRatio;
@@ -413,6 +401,18 @@ static_inline void synthFM_Notes_noteOff_init(synthFM_Notes__ctx_type_0 &_output
 }
 
 uint8_t synthFM_Notes_noteOff(synthFM_Notes__ctx_type_0 &_ctx, int note, int channel);
+
+static_inline void synthFM_Buffer_buffer(fix16_t (&_output_)[256]){
+   fix16_t buff[256];
+   fix_copy_array(256,_output_,buff);
+   return ;
+}
+
+static_inline void synthFM_Buffer_buffer_large(fix16_t (&_output_)[2048]){
+   fix16_t buff[2048];
+   fix_copy_array(2048,_output_,buff);
+   return ;
+}
 
 typedef struct synthFM_ADSR__ctx_type_0 {
    fix16_t getMaxValues_ret_3;

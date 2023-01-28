@@ -354,10 +354,10 @@ and synthSetCarrierADSR(a:real , d: real, s: real, r: real) {
 and default() @[init] {
    _ = poly:Poly.default();
 
-   buffer_v0 = Util.buffer();
-   buffer_v1 = Util.buffer();
-   buffer_v2 = Util.buffer();
-   buffer_v3 = Util.buffer();
+   buffer_v0 = Buffer.buffer();
+   buffer_v1 = Buffer.buffer();
+   buffer_v2 = Buffer.buffer();
+   buffer_v3 = Buffer.buffer();
 
    mem voices: array(int, 4);
    number_voices = if number_voices == 0 then size(voices) else number_voices;

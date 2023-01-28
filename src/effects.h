@@ -7,114 +7,16 @@
 #include "vultin.h"
 #include "effects.tables.h"
 
-static_inline fix16_t effects_Util_noteToFrequency(int note){
-   return fix_mul(0x217 /* 0.008176 */,fix_exp(fix_mul(0xec9 /* 0.057762 */,int_to_fix(note))));
-};
-
-typedef struct effects_Util__ctx_type_1 {
-   uint8_t pre;
-} effects_Util__ctx_type_1;
-
-typedef effects_Util__ctx_type_1 effects_Util_edge_type;
-
-static_inline void effects_Util__ctx_type_1_init(effects_Util__ctx_type_1 &_output_){
-   effects_Util__ctx_type_1 _ctx;
-   _ctx.pre = false;
-   _output_ = _ctx;
-   return ;
-}
-
-static_inline void effects_Util_edge_init(effects_Util__ctx_type_1 &_output_){
-   effects_Util__ctx_type_1_init(_output_);
-   return ;
-}
-
-static_inline uint8_t effects_Util_edge(effects_Util__ctx_type_1 &_ctx, uint8_t x){
-   uint8_t ret;
-   ret = (x && bool_not(_ctx.pre));
-   _ctx.pre = x;
-   return ret;
-}
-
-static_inline fix16_t effects_Util_cubic_clipper(fix16_t x){
-   if(x <= -0xaaaa /* -0.666667 */){
-      return -0xaaaa /* -0.666667 */;
-   }
-   else
-   {
-      if(x >= 0xaaaa /* 0.666667 */){
-         return 0xaaaa /* 0.666667 */;
-      }
-      else
-      {
-         return (x + fix_mul(fix_mul(fix_mul(-0x5555 /* -0.333333 */,x),x),x));
-      }
-   }
-};
-
-typedef struct effects_Util__ctx_type_3 {
-   fix16_t pre_x;
-} effects_Util__ctx_type_3;
-
-typedef effects_Util__ctx_type_3 effects_Util_change_type;
-
-static_inline void effects_Util__ctx_type_3_init(effects_Util__ctx_type_3 &_output_){
-   effects_Util__ctx_type_3 _ctx;
-   _ctx.pre_x = 0x0 /* 0.000000 */;
-   _output_ = _ctx;
-   return ;
-}
-
-static_inline void effects_Util_change_init(effects_Util__ctx_type_3 &_output_){
-   effects_Util__ctx_type_3_init(_output_);
-   return ;
-}
-
-static_inline uint8_t effects_Util_change(effects_Util__ctx_type_3 &_ctx, fix16_t x){
-   uint8_t v;
-   v = (_ctx.pre_x != x);
-   _ctx.pre_x = x;
-   return v;
-}
-
-static_inline void effects_Util_buffer(fix16_t (&_output_)[256]){
+static_inline void effects_Buffer_buffer(fix16_t (&_output_)[256]){
    fix16_t buff[256];
    fix_copy_array(256,_output_,buff);
    return ;
 }
 
-static_inline void effects_Util_buffer_large(fix16_t (&_output_)[2048]){
+static_inline void effects_Buffer_buffer_large(fix16_t (&_output_)[2048]){
    fix16_t buff[2048];
    fix_copy_array(2048,_output_,buff);
    return ;
-}
-
-typedef struct effects_Util__ctx_type_6 {
-   fix16_t x;
-} effects_Util__ctx_type_6;
-
-typedef effects_Util__ctx_type_6 effects_Util_smooth_type;
-
-static_inline void effects_Util__ctx_type_6_init(effects_Util__ctx_type_6 &_output_){
-   effects_Util__ctx_type_6 _ctx;
-   _ctx.x = 0x0 /* 0.000000 */;
-   _output_ = _ctx;
-   return ;
-}
-
-static_inline void effects_Util_smooth_init(effects_Util__ctx_type_6 &_output_){
-   effects_Util__ctx_type_6_init(_output_);
-   return ;
-}
-
-static_inline fix16_t effects_Util_smooth(effects_Util__ctx_type_6 &_ctx, fix16_t input, fix16_t coeff){
-   _ctx.x = (_ctx.x + fix_mul(coeff,(input + (- _ctx.x))));
-   return _ctx.x;
-}
-
-static_inline fix16_t effects_Util_velocityToLevel(int velocity){
-   velocity = int_clip(velocity,0,127);
-   return fix_mul(0x204 /* 0.007874 */,int_to_fix(velocity));
 }
 
 typedef struct effects_CombFB__ctx_type_0 {
@@ -421,6 +323,104 @@ static_inline void effects_Reverb_default_init(effects_Reverb__ctx_type_0 &_outp
 
 void effects_Reverb_default(effects_Reverb__ctx_type_0 &_ctx);
 
+static_inline fix16_t effects_Util_noteToFrequency(int note){
+   return fix_mul(0x217 /* 0.008176 */,fix_exp(fix_mul(0xec9 /* 0.057762 */,int_to_fix(note))));
+};
+
+typedef struct effects_Util__ctx_type_1 {
+   uint8_t pre;
+} effects_Util__ctx_type_1;
+
+typedef effects_Util__ctx_type_1 effects_Util_edge_type;
+
+static_inline void effects_Util__ctx_type_1_init(effects_Util__ctx_type_1 &_output_){
+   effects_Util__ctx_type_1 _ctx;
+   _ctx.pre = false;
+   _output_ = _ctx;
+   return ;
+}
+
+static_inline void effects_Util_edge_init(effects_Util__ctx_type_1 &_output_){
+   effects_Util__ctx_type_1_init(_output_);
+   return ;
+}
+
+static_inline uint8_t effects_Util_edge(effects_Util__ctx_type_1 &_ctx, uint8_t x){
+   uint8_t ret;
+   ret = (x && bool_not(_ctx.pre));
+   _ctx.pre = x;
+   return ret;
+}
+
+static_inline fix16_t effects_Util_cubic_clipper(fix16_t x){
+   if(x <= -0xaaaa /* -0.666667 */){
+      return -0xaaaa /* -0.666667 */;
+   }
+   else
+   {
+      if(x >= 0xaaaa /* 0.666667 */){
+         return 0xaaaa /* 0.666667 */;
+      }
+      else
+      {
+         return (x + fix_mul(fix_mul(fix_mul(-0x5555 /* -0.333333 */,x),x),x));
+      }
+   }
+};
+
+typedef struct effects_Util__ctx_type_3 {
+   fix16_t pre_x;
+} effects_Util__ctx_type_3;
+
+typedef effects_Util__ctx_type_3 effects_Util_change_type;
+
+static_inline void effects_Util__ctx_type_3_init(effects_Util__ctx_type_3 &_output_){
+   effects_Util__ctx_type_3 _ctx;
+   _ctx.pre_x = 0x0 /* 0.000000 */;
+   _output_ = _ctx;
+   return ;
+}
+
+static_inline void effects_Util_change_init(effects_Util__ctx_type_3 &_output_){
+   effects_Util__ctx_type_3_init(_output_);
+   return ;
+}
+
+static_inline uint8_t effects_Util_change(effects_Util__ctx_type_3 &_ctx, fix16_t x){
+   uint8_t v;
+   v = (_ctx.pre_x != x);
+   _ctx.pre_x = x;
+   return v;
+}
+
+typedef struct effects_Util__ctx_type_4 {
+   fix16_t x;
+} effects_Util__ctx_type_4;
+
+typedef effects_Util__ctx_type_4 effects_Util_smooth_type;
+
+static_inline void effects_Util__ctx_type_4_init(effects_Util__ctx_type_4 &_output_){
+   effects_Util__ctx_type_4 _ctx;
+   _ctx.x = 0x0 /* 0.000000 */;
+   _output_ = _ctx;
+   return ;
+}
+
+static_inline void effects_Util_smooth_init(effects_Util__ctx_type_4 &_output_){
+   effects_Util__ctx_type_4_init(_output_);
+   return ;
+}
+
+static_inline fix16_t effects_Util_smooth(effects_Util__ctx_type_4 &_ctx, fix16_t input, fix16_t coeff){
+   _ctx.x = (_ctx.x + fix_mul(coeff,(input + (- _ctx.x))));
+   return _ctx.x;
+}
+
+static_inline fix16_t effects_Util_velocityToLevel(int velocity){
+   velocity = int_clip(velocity,0,127);
+   return fix_mul(0x204 /* 0.007874 */,int_to_fix(velocity));
+}
+
 typedef struct effects_Ladder__ctx_type_0 {
    fix16_t p3;
    fix16_t p2;
@@ -612,9 +612,9 @@ typedef struct effects_SVF__ctx_type_0 {
    fix16_t fs_nyquist;
    fix16_t fs;
    fix16_t freq;
-   effects_Util__ctx_type_6 _inst955;
+   effects_Util__ctx_type_4 _inst955;
    effects_Util__ctx_type_3 _inst173b;
-   effects_Util__ctx_type_6 _inst1655;
+   effects_Util__ctx_type_4 _inst1655;
    effects_Util__ctx_type_3 _inst103b;
    fix16_t R;
 } effects_SVF__ctx_type_0;

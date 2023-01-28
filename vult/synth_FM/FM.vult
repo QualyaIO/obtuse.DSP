@@ -321,11 +321,11 @@ and setCarrierADSR(a, d, s, r) {
 
 // to be called on start
 and default() @[init] {
-    buffer_modulator = Util.buffer();
-    buffer_carrier_env_short = Util.buffer();
-    buffer_modulator_env_short = Util.buffer();
-    buffer_carrier_env = Util.buffer();
-    buffer_modulator_env = Util.buffer();
+    buffer_modulator = Buffer.buffer();
+    buffer_carrier_env_short = Buffer.buffer();
+    buffer_modulator_env_short = Buffer.buffer();
+    buffer_carrier_env = Buffer.buffer();
+    buffer_modulator_env = Buffer.buffer();
 
     // should be a divisor of sample rate
     env_decimation_factor = 3;

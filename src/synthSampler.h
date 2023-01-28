@@ -77,37 +77,25 @@ static_inline uint8_t synthSampler_Util_change(synthSampler_Util__ctx_type_3 &_c
    return v;
 }
 
-static_inline void synthSampler_Util_buffer(fix16_t (&_output_)[256]){
-   fix16_t buff[256];
-   fix_copy_array(256,_output_,buff);
-   return ;
-}
-
-static_inline void synthSampler_Util_buffer_large(fix16_t (&_output_)[2048]){
-   fix16_t buff[2048];
-   fix_copy_array(2048,_output_,buff);
-   return ;
-}
-
-typedef struct synthSampler_Util__ctx_type_6 {
+typedef struct synthSampler_Util__ctx_type_4 {
    fix16_t x;
-} synthSampler_Util__ctx_type_6;
+} synthSampler_Util__ctx_type_4;
 
-typedef synthSampler_Util__ctx_type_6 synthSampler_Util_smooth_type;
+typedef synthSampler_Util__ctx_type_4 synthSampler_Util_smooth_type;
 
-static_inline void synthSampler_Util__ctx_type_6_init(synthSampler_Util__ctx_type_6 &_output_){
-   synthSampler_Util__ctx_type_6 _ctx;
+static_inline void synthSampler_Util__ctx_type_4_init(synthSampler_Util__ctx_type_4 &_output_){
+   synthSampler_Util__ctx_type_4 _ctx;
    _ctx.x = 0x0 /* 0.000000 */;
    _output_ = _ctx;
    return ;
 }
 
-static_inline void synthSampler_Util_smooth_init(synthSampler_Util__ctx_type_6 &_output_){
-   synthSampler_Util__ctx_type_6_init(_output_);
+static_inline void synthSampler_Util_smooth_init(synthSampler_Util__ctx_type_4 &_output_){
+   synthSampler_Util__ctx_type_4_init(_output_);
    return ;
 }
 
-static_inline fix16_t synthSampler_Util_smooth(synthSampler_Util__ctx_type_6 &_ctx, fix16_t input, fix16_t coeff){
+static_inline fix16_t synthSampler_Util_smooth(synthSampler_Util__ctx_type_4 &_ctx, fix16_t input, fix16_t coeff){
    _ctx.x = (_ctx.x + fix_mul(coeff,(input + (- _ctx.x))));
    return _ctx.x;
 }
@@ -194,6 +182,18 @@ static_inline void synthSampler_Notes_noteOff_init(synthSampler_Notes__ctx_type_
 }
 
 uint8_t synthSampler_Notes_noteOff(synthSampler_Notes__ctx_type_0 &_ctx, int note, int channel);
+
+static_inline void synthSampler_Buffer_buffer(fix16_t (&_output_)[256]){
+   fix16_t buff[256];
+   fix_copy_array(256,_output_,buff);
+   return ;
+}
+
+static_inline void synthSampler_Buffer_buffer_large(fix16_t (&_output_)[2048]){
+   fix16_t buff[2048];
+   fix_copy_array(2048,_output_,buff);
+   return ;
+}
 
 static_inline int synthSampler_Sampler_ocarina_samples(){
    return 38836;

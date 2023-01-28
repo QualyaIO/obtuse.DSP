@@ -77,37 +77,25 @@ static_inline uint8_t synthDrummer_Util_change(synthDrummer_Util__ctx_type_3 &_c
    return v;
 }
 
-static_inline void synthDrummer_Util_buffer(fix16_t (&_output_)[256]){
-   fix16_t buff[256];
-   fix_copy_array(256,_output_,buff);
-   return ;
-}
-
-static_inline void synthDrummer_Util_buffer_large(fix16_t (&_output_)[2048]){
-   fix16_t buff[2048];
-   fix_copy_array(2048,_output_,buff);
-   return ;
-}
-
-typedef struct synthDrummer_Util__ctx_type_6 {
+typedef struct synthDrummer_Util__ctx_type_4 {
    fix16_t x;
-} synthDrummer_Util__ctx_type_6;
+} synthDrummer_Util__ctx_type_4;
 
-typedef synthDrummer_Util__ctx_type_6 synthDrummer_Util_smooth_type;
+typedef synthDrummer_Util__ctx_type_4 synthDrummer_Util_smooth_type;
 
-static_inline void synthDrummer_Util__ctx_type_6_init(synthDrummer_Util__ctx_type_6 &_output_){
-   synthDrummer_Util__ctx_type_6 _ctx;
+static_inline void synthDrummer_Util__ctx_type_4_init(synthDrummer_Util__ctx_type_4 &_output_){
+   synthDrummer_Util__ctx_type_4 _ctx;
    _ctx.x = 0x0 /* 0.000000 */;
    _output_ = _ctx;
    return ;
 }
 
-static_inline void synthDrummer_Util_smooth_init(synthDrummer_Util__ctx_type_6 &_output_){
-   synthDrummer_Util__ctx_type_6_init(_output_);
+static_inline void synthDrummer_Util_smooth_init(synthDrummer_Util__ctx_type_4 &_output_){
+   synthDrummer_Util__ctx_type_4_init(_output_);
    return ;
 }
 
-static_inline fix16_t synthDrummer_Util_smooth(synthDrummer_Util__ctx_type_6 &_ctx, fix16_t input, fix16_t coeff){
+static_inline fix16_t synthDrummer_Util_smooth(synthDrummer_Util__ctx_type_4 &_ctx, fix16_t input, fix16_t coeff){
    _ctx.x = (_ctx.x + fix_mul(coeff,(input + (- _ctx.x))));
    return _ctx.x;
 }
@@ -115,6 +103,18 @@ static_inline fix16_t synthDrummer_Util_smooth(synthDrummer_Util__ctx_type_6 &_c
 static_inline fix16_t synthDrummer_Util_velocityToLevel(int velocity){
    velocity = int_clip(velocity,0,127);
    return fix_mul(0x204 /* 0.007874 */,int_to_fix(velocity));
+}
+
+static_inline void synthDrummer_Buffer_buffer(fix16_t (&_output_)[256]){
+   fix16_t buff[256];
+   fix_copy_array(256,_output_,buff);
+   return ;
+}
+
+static_inline void synthDrummer_Buffer_buffer_large(fix16_t (&_output_)[2048]){
+   fix16_t buff[2048];
+   fix_copy_array(2048,_output_,buff);
+   return ;
 }
 
 static_inline int synthDrummer_Drummer_drumkit_samples(){

@@ -312,7 +312,7 @@ and noteOff(note:int, channel:int) {
 and default() @[init] {
   size = ocarina_samples();
   // will copy a new array
-  buffer_cross = Util.buffer();
+  buffer_cross = Buffer.buffer();
   crossfade = false;
   // defaults for current sample
   sampleFs = 30.0;
@@ -323,7 +323,7 @@ and default() @[init] {
   _ = setLoopStart(5073);
   _ = setLoopEnd(5992);
   // will copy a new array
-  mem buffer_o = Util.buffer();
+  mem buffer_o = Buffer.buffer();
   // default level, waiting for velocity to take over
   _ = setLevel(1.0);
   _ = setSamplerate(44.1);

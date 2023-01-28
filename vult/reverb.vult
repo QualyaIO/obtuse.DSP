@@ -104,12 +104,12 @@ and setDelayms(delayms: real) {
 
 and default() @[init] {
   // many buffers!
-  buffer_c0 = Util.buffer();
-  buffer_c1 = Util.buffer();
-  buffer_c2 = Util.buffer();
-  buffer_c3 = Util.buffer();
-  buffer_a0 = Util.buffer();
-  buffer_a1 = Util.buffer();
+  buffer_c0 = Buffer.buffer();
+  buffer_c1 = Buffer.buffer();
+  buffer_c2 = Buffer.buffer();
+  buffer_c3 = Buffer.buffer();
+  buffer_a0 = Buffer.buffer();
+  buffer_a1 = Buffer.buffer();
   _ = setSamplerate(44.100);
   // to approximate default parameters found in litteratures
   reverbtime = 0.65;

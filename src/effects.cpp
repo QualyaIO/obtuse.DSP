@@ -8111,9 +8111,9 @@ void effects_SVF__ctx_type_0_init(effects_SVF__ctx_type_0 &_output_){
    _ctx.fs_nyquist = 0x0 /* 0.000000 */;
    _ctx.fs = 0x0 /* 0.000000 */;
    _ctx.freq = 0x0 /* 0.000000 */;
-   effects_Util__ctx_type_6_init(_ctx._inst955);
+   effects_Util__ctx_type_4_init(_ctx._inst955);
    effects_Util__ctx_type_3_init(_ctx._inst173b);
-   effects_Util__ctx_type_6_init(_ctx._inst1655);
+   effects_Util__ctx_type_4_init(_ctx._inst1655);
    effects_Util__ctx_type_3_init(_ctx._inst103b);
    _ctx.R = 0x0 /* 0.000000 */;
    effects_SVF_default(_ctx);
