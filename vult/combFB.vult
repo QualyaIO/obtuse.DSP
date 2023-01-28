@@ -26,7 +26,7 @@ fun process(sample: real) {
     return out * scale;
 }
 
-and process_bufferTo(nb: int, input: array(real, 256), oBuffer: array(real, 256)) {
+and process_bufferTo(nb: int, input, oBuffer) {
     nb = clip(nb, 0, size(oBuffer));
     if (nb == 0) {
        nb = size(oBuffer);
@@ -99,4 +99,10 @@ and default() @[init] {
    _ = setSamplerate(44.100);
    _ = setDelayms(50.0);
    _ = setDecay(0.5);
+}
+
+// to let vult find above the good buffer size
+fun dummy() {
+   val buff =  Buffer.buffer();
+   _ = process_bufferTo(0, buff, buff);
 }

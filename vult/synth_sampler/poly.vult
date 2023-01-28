@@ -20,7 +20,7 @@ fun getSample(voice: int) {
 }
 
 // run buffer for specified voice (buffered version of getSample), filling specified buffer
-and runVoice(voice: int, nb: int, buff: array(real, 256)) {
+and runVoice(voice: int, nb: int, buff) {
        if (voice == 0) {
            _ = voice0:Sampler.process_bufferTo(nb, buff);
        }
@@ -181,4 +181,10 @@ and default() @[init] {
       _ = voice2:Sampler.setPoly(true);
       _ = voice3:Sampler.default();
       _ = voice3:Sampler.setPoly(true);
+}
+
+// to let vult find above the good buffer size
+fun dummy() {
+   val buff =  Buffer.buffer();
+   _ = runVoice(0, 0, buff);
 }

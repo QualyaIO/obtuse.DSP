@@ -120,7 +120,7 @@ and process(input:real):real{
   }
 }
 
-and process_bufferTo(nb: int, input: array(real, 256), oBuffer: array(real, 256)) {
+and process_bufferTo(nb: int, input, oBuffer) {
   val min_nb = size(input);
   if (size(oBuffer) < min_nb) {
      min_nb = size(oBuffer);
@@ -202,4 +202,10 @@ and default(){
    rsize = real(size(tune_table));
    _ = setSamplerate(44.1);
    _ = setEstimationMethod(0);
+}
+
+// to let vult find above the good buffer size
+fun dummy() {
+   val buff =  Buffer.buffer();
+   _ = process_bufferTo(0, buff, buff);
 }

@@ -265,6 +265,26 @@ static_inline void synthDrummer_Drummer_default_init(synthDrummer_Drummer__ctx_t
 
 void synthDrummer_Drummer_default(synthDrummer_Drummer__ctx_type_2 &_ctx);
 
+typedef struct synthDrummer_Drummer__ctx_type_3 {
+   synthDrummer_Drummer__ctx_type_2 _inst1b;
+} synthDrummer_Drummer__ctx_type_3;
+
+typedef synthDrummer_Drummer__ctx_type_3 synthDrummer_Drummer_dummy_type;
+
+static_inline void synthDrummer_Drummer__ctx_type_3_init(synthDrummer_Drummer__ctx_type_3 &_output_){
+   synthDrummer_Drummer__ctx_type_3 _ctx;
+   synthDrummer_Drummer__ctx_type_2_init(_ctx._inst1b);
+   _output_ = _ctx;
+   return ;
+}
+
+static_inline void synthDrummer_Drummer_dummy_init(synthDrummer_Drummer__ctx_type_3 &_output_){
+   synthDrummer_Drummer__ctx_type_3_init(_output_);
+   return ;
+}
+
+void synthDrummer_Drummer_dummy(synthDrummer_Drummer__ctx_type_3 &_ctx);
+
 typedef struct synthDrummer_Poly__ctx_type_0 {
    synthDrummer_Drummer__ctx_type_2 voice3;
    synthDrummer_Drummer__ctx_type_2 voice2;
@@ -564,6 +584,26 @@ static_inline void synthDrummer_Poly_default_init(synthDrummer_Poly__ctx_type_0 
 }
 
 void synthDrummer_Poly_default(synthDrummer_Poly__ctx_type_0 &_ctx);
+
+typedef struct synthDrummer_Poly__ctx_type_1 {
+   synthDrummer_Poly__ctx_type_0 _inst179;
+} synthDrummer_Poly__ctx_type_1;
+
+typedef synthDrummer_Poly__ctx_type_1 synthDrummer_Poly_dummy_type;
+
+static_inline void synthDrummer_Poly__ctx_type_1_init(synthDrummer_Poly__ctx_type_1 &_output_){
+   synthDrummer_Poly__ctx_type_1 _ctx;
+   synthDrummer_Poly__ctx_type_0_init(_ctx._inst179);
+   _output_ = _ctx;
+   return ;
+}
+
+static_inline void synthDrummer_Poly_dummy_init(synthDrummer_Poly__ctx_type_1 &_output_){
+   synthDrummer_Poly__ctx_type_1_init(_output_);
+   return ;
+}
+
+void synthDrummer_Poly_dummy(synthDrummer_Poly__ctx_type_1 &_ctx);
 
 typedef struct synthDrummer_Notes__ctx_type_0 {
    uint8_t poly;
@@ -934,6 +974,22 @@ static_inline void synthDrummer_Voice_default_init(synthDrummer_Voice__ctx_type_
 }
 
 void synthDrummer_Voice_default(synthDrummer_Voice__ctx_type_0 &_ctx);
+
+typedef struct synthDrummer_Voice__ctx_type_1 {
+   synthDrummer_Voice__ctx_type_0 _inst275;
+   synthDrummer_Voice__ctx_type_0 _inst1b9;
+} synthDrummer_Voice__ctx_type_1;
+
+typedef synthDrummer_Voice__ctx_type_1 synthDrummer_Voice_dummy_type;
+
+void synthDrummer_Voice__ctx_type_1_init(synthDrummer_Voice__ctx_type_1 &_output_);
+
+static_inline void synthDrummer_Voice_dummy_init(synthDrummer_Voice__ctx_type_1 &_output_){
+   synthDrummer_Voice__ctx_type_1_init(_output_);
+   return ;
+}
+
+void synthDrummer_Voice_dummy(synthDrummer_Voice__ctx_type_1 &_ctx);
 
 
 

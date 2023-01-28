@@ -135,7 +135,7 @@ and process(bgate:bool) {
 
 // one gate for the whole buffer at the moment
 // return
-and process_bufferTo(bgate:bool, nb:int, oBuffer: array(real, 256)): bool {
+and process_bufferTo(bgate:bool, nb:int, oBuffer): bool {
    nb = clip(nb, 0, size(oBuffer));
    if (nb == 0) {
       nb = size(oBuffer);
@@ -268,4 +268,10 @@ and default() @[init] {
    _ = setSamplerate(44.1);
    //_ = config(1.0, 1.0, 0.8, 1.0);
    _ = config(0.0, 0.0, 0.5, 0.0);
+}
+
+// to let vult find above the good buffer size
+fun dummy() {
+   val buff =  Buffer.buffer();
+   _ = process_bufferTo(false, 0, buff);
 }

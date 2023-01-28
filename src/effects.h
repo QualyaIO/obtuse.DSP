@@ -130,6 +130,26 @@ static_inline void effects_CombFB_default_init(effects_CombFB__ctx_type_0 &_outp
 
 void effects_CombFB_default(effects_CombFB__ctx_type_0 &_ctx);
 
+typedef struct effects_CombFB__ctx_type_1 {
+   effects_CombFB__ctx_type_0 _inst13c;
+} effects_CombFB__ctx_type_1;
+
+typedef effects_CombFB__ctx_type_1 effects_CombFB_dummy_type;
+
+static_inline void effects_CombFB__ctx_type_1_init(effects_CombFB__ctx_type_1 &_output_){
+   effects_CombFB__ctx_type_1 _ctx;
+   effects_CombFB__ctx_type_0_init(_ctx._inst13c);
+   _output_ = _ctx;
+   return ;
+}
+
+static_inline void effects_CombFB_dummy_init(effects_CombFB__ctx_type_1 &_output_){
+   effects_CombFB__ctx_type_1_init(_output_);
+   return ;
+}
+
+void effects_CombFB_dummy(effects_CombFB__ctx_type_1 &_ctx);
+
 typedef struct effects_Allpass__ctx_type_0 {
    fix16_t scale;
    int pos;
@@ -242,6 +262,26 @@ static_inline void effects_Allpass_default_init(effects_Allpass__ctx_type_0 &_ou
 
 void effects_Allpass_default(effects_Allpass__ctx_type_0 &_ctx);
 
+typedef struct effects_Allpass__ctx_type_1 {
+   effects_Allpass__ctx_type_0 _inst156;
+} effects_Allpass__ctx_type_1;
+
+typedef effects_Allpass__ctx_type_1 effects_Allpass_dummy_type;
+
+static_inline void effects_Allpass__ctx_type_1_init(effects_Allpass__ctx_type_1 &_output_){
+   effects_Allpass__ctx_type_1 _ctx;
+   effects_Allpass__ctx_type_0_init(_ctx._inst156);
+   _output_ = _ctx;
+   return ;
+}
+
+static_inline void effects_Allpass_dummy_init(effects_Allpass__ctx_type_1 &_output_){
+   effects_Allpass__ctx_type_1_init(_output_);
+   return ;
+}
+
+void effects_Allpass_dummy(effects_Allpass__ctx_type_1 &_ctx);
+
 typedef struct effects_Reverb__ctx_type_0 {
    fix16_t reverbtime;
    fix16_t fs;
@@ -322,6 +362,26 @@ static_inline void effects_Reverb_default_init(effects_Reverb__ctx_type_0 &_outp
 }
 
 void effects_Reverb_default(effects_Reverb__ctx_type_0 &_ctx);
+
+typedef struct effects_Reverb__ctx_type_1 {
+   effects_Reverb__ctx_type_0 _inst1f2;
+} effects_Reverb__ctx_type_1;
+
+typedef effects_Reverb__ctx_type_1 effects_Reverb_dummy_type;
+
+static_inline void effects_Reverb__ctx_type_1_init(effects_Reverb__ctx_type_1 &_output_){
+   effects_Reverb__ctx_type_1 _ctx;
+   effects_Reverb__ctx_type_0_init(_ctx._inst1f2);
+   _output_ = _ctx;
+   return ;
+}
+
+static_inline void effects_Reverb_dummy_init(effects_Reverb__ctx_type_1 &_output_){
+   effects_Reverb__ctx_type_1_init(_output_);
+   return ;
+}
+
+void effects_Reverb_dummy(effects_Reverb__ctx_type_1 &_ctx);
 
 static_inline fix16_t effects_Util_noteToFrequency(int note){
    return fix_mul(0x217 /* 0.008176 */,fix_exp(fix_mul(0xec9 /* 0.057762 */,int_to_fix(note))));
@@ -598,6 +658,26 @@ static_inline void effects_Ladder_default(effects_Ladder__ctx_type_2 &_ctx){
    effects_Ladder_setEstimationMethod(_ctx,0);
 }
 
+typedef struct effects_Ladder__ctx_type_3 {
+   effects_Ladder__ctx_type_2 _inst163;
+} effects_Ladder__ctx_type_3;
+
+typedef effects_Ladder__ctx_type_3 effects_Ladder_dummy_type;
+
+static_inline void effects_Ladder__ctx_type_3_init(effects_Ladder__ctx_type_3 &_output_){
+   effects_Ladder__ctx_type_3 _ctx;
+   effects_Ladder__ctx_type_2_init(_ctx._inst163);
+   _output_ = _ctx;
+   return ;
+}
+
+static_inline void effects_Ladder_dummy_init(effects_Ladder__ctx_type_3 &_output_){
+   effects_Ladder__ctx_type_3_init(_output_);
+   return ;
+}
+
+void effects_Ladder_dummy(effects_Ladder__ctx_type_3 &_ctx);
+
 typedef struct effects_SVF__ctx_type_0 {
    fix16_t z2;
    fix16_t z1;
@@ -729,6 +809,26 @@ static_inline void effects_SVF_default(effects_SVF__ctx_type_0 &_ctx){
    _ctx.q = 0x1999 /* 0.100000 */;
    effects_SVF_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
 }
+
+typedef struct effects_SVF__ctx_type_1 {
+   effects_SVF__ctx_type_0 _inst1f;
+} effects_SVF__ctx_type_1;
+
+typedef effects_SVF__ctx_type_1 effects_SVF_dummy_type;
+
+static_inline void effects_SVF__ctx_type_1_init(effects_SVF__ctx_type_1 &_output_){
+   effects_SVF__ctx_type_1 _ctx;
+   effects_SVF__ctx_type_0_init(_ctx._inst1f);
+   _output_ = _ctx;
+   return ;
+}
+
+static_inline void effects_SVF_dummy_init(effects_SVF__ctx_type_1 &_output_){
+   effects_SVF__ctx_type_1_init(_output_);
+   return ;
+}
+
+void effects_SVF_dummy(effects_SVF__ctx_type_1 &_ctx);
 
 
 

@@ -17,7 +17,7 @@ fun process(sample: real) {
   return allpass1:Allpass.process(allpass0:Allpass.process(combs_filter));
 }
 
-and process_bufferTo(nb: int, input: array(real, 256), oBuffer: array(real, 256)) {
+and process_bufferTo(nb: int, input, oBuffer) {
   // one buffer for each filter, one for output
   mem buffer_c0, buffer_c1, buffer_c2, buffer_c3, buffer_a0, buffer_a1;
   nb = clip(nb, 0, size(oBuffer));
@@ -122,4 +122,10 @@ and default() @[init] {
   _ = allpass0:Allpass.setDelay(125);
   _ = allpass1:Allpass.setDelay(42);
 
+}
+
+// to let vult find above the good buffer size
+fun dummy() {
+   val buff =  Buffer.buffer();
+   _ = process_bufferTo(0, buff, buff);
 }

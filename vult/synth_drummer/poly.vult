@@ -20,7 +20,7 @@ fun getSample(voice: int) {
 }
 
 // run buffer for specified voice (buffered version of getSample), filling specified buffer
-and runVoice(voice: int, nb: int, buff: array(real, 256)) {
+and runVoice(voice: int, nb: int, buff) {
        if (voice == 0) {
            _ = voice0:Drummer.process_bufferTo(nb, buff);
        }
@@ -164,4 +164,10 @@ and default() @[init] {
       _ = voice1:Drummer.default();
       _ = voice2:Drummer.default();
       _ = voice3:Drummer.default();
+}
+
+// to let vult find above the good buffer size
+fun dummy() {
+   val buff =  Buffer.buffer();
+   _ = runVoice(0, 0, buff);
 }

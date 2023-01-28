@@ -102,7 +102,7 @@ fun process(wavetable_modulator, wavetable_carrier) {
 }
 
 // update the buffer, to be fetch afterward
-and process_bufferTo(wavetable_modulator, wavetable_carrier, nb: int, oBuffer: array(real, 256)) {
+and process_bufferTo(wavetable_modulator, wavetable_carrier, nb: int, oBuffer) {
     mem buffer_modulator;
     nb = clip(nb, 0, size(oBuffer));
     if (nb == 0) {
@@ -356,4 +356,10 @@ and default() @[init] {
     // monophonic by default
     _ = playingnotes:Notes.default();
     _ = setPoly(false);
+}
+
+// to let vult find above the good buffer size
+fun dummy(wavetable) {
+   val buff =  Buffer.buffer();
+   _ = process_bufferTo(wavetable, wavetable, 0, buff);
 }

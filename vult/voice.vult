@@ -46,7 +46,7 @@ fun process() {
 }
 
 // one buffer for all voice
-and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
+and process_bufferTo(nb: int, oBuffer) {
    // here used as temporary buffer to hold each voice
    mem buffer_v0;
    nb = clip(nb, 0, size(oBuffer));
@@ -101,7 +101,7 @@ and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
 
 // several buffer
 // FIXME: only set for 4 voices
-and process_bufferTo_alt(nb: int, oBuffer: array(real, 256)) {
+and process_bufferTo_alt(nb: int, oBuffer) {
    // temporary buffer to hold each voice
    mem buffer_v0, buffer_v1, buffer_v2, buffer_v3;
    nb = clip(nb, 0, size(oBuffer));
@@ -377,4 +377,11 @@ and default() @[init] {
 
    _ = setNormalize(true);
    _ = setSamplerate(44.1);
+}
+
+// to let vult find above the good buffer size
+fun dummy() {
+   val buff =  Buffer.buffer();
+   _ = process_bufferTo(0, buff);
+   _ = process_bufferTo_alt(0, buff);
 }

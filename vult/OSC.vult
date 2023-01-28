@@ -38,7 +38,7 @@ fun process(wavetable) {
 // shift_level: if we should *actually* shift level instead of phase
 // oBuffer: output buffer to copy data to
 // FIXME: not check for phase_bases size, no option to by-pass
-and process_bufferTo(wavetable, nb: int, env: array(real, 256), phase_shift: array(real, 256), phase_env: array(real, 256), phase_shift_level: real, shift_level: bool, oBuffer: array(real, 256)) {
+and process_bufferTo(wavetable, nb: int, env, phase_shift, phase_env, phase_shift_level: real, shift_level: bool, oBuffer) {
    nb = clip(nb, 0, size(oBuffer));
    if (nb == 0) {
       nb = size(oBuffer);
@@ -80,7 +80,7 @@ and process_bufferTo(wavetable, nb: int, env: array(real, 256), phase_shift: arr
 }
 
 // without phase this one
-and process_bufferTo_simple(wavetable, nb: int, env: array(real, 256), oBuffer: array(real, 256)) {
+and process_bufferTo_simple(wavetable, nb: int, env, oBuffer) {
    nb = clip(nb, 0, size(oBuffer));
    if (nb == 0) {
       nb = size(oBuffer);
@@ -102,7 +102,7 @@ and process_bufferTo_simple(wavetable, nb: int, env: array(real, 256), oBuffer: 
 }
 
 // with feedback on phase rather than modulation. Note that only here is kept state of last value to apply feedback, do not alternate with other methods.,
-and process_bufferTo_feedback(wavetable, nb: int, env: array(real, 256), feedback: real, oBuffer: array(real, 256)) {
+and process_bufferTo_feedback(wavetable, nb: int, env, feedback: real, oBuffer) {
    nb = clip(nb, 0, size(oBuffer));
    if (nb == 0) {
       nb = size(oBuffer);
@@ -132,7 +132,7 @@ and process_bufferTo_feedback(wavetable, nb: int, env: array(real, 256), feedbac
 
 
 // without envelop nor phase this one
-and process_bufferTo_simplest(wavetable, nb: int, oBuffer: array(real, 256)) {
+and process_bufferTo_simplest(wavetable, nb: int, oBuffer) {
    nb = clip(nb, 0, size(oBuffer));
    if (nb == 0) {
       nb = size(oBuffer);
@@ -195,4 +195,13 @@ and default() @[init] {
    _ = setSamplerate(44.1);
    // default frequency (in kHz)
    _ = setFrequency(0.440);
+}
+
+// to let vult find above the good buffer size
+fun dummy(wavetable) {
+   val buff =  Buffer.buffer();
+   _ = process_bufferTo(wavetable, 0, buff, buff, buff, 0.0, false, buff);
+   _ = process_bufferTo_simple(wavetable, 0, buff, buff);
+   _ = process_bufferTo_feedback(wavetable, 0, buff, 0.0, buff);
+   _ = process_bufferTo_simplest(wavetable, 0, buff);
 }

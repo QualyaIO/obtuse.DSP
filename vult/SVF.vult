@@ -111,7 +111,7 @@ and process(input:real):real {
    return output;
 }
 
-and process_bufferTo(nb: int, input: array(real, 256), oBuffer: array(real, 256)) {
+and process_bufferTo(nb: int, input, oBuffer) {
   val min_nb = size(input);
   if (size(oBuffer) < min_nb) {
      min_nb = size(oBuffer);
@@ -184,3 +184,9 @@ and default() @[init] {
    // will also call methods to update coeffs
    _ = setSamplerate(44.1);
  }
+
+// to let vult find above the good buffer size
+fun dummy() {
+   val buff =  Buffer.buffer();
+   _ = process_bufferTo(0, buff, buff);
+}

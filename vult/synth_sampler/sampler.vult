@@ -93,7 +93,7 @@ and process() {
 }
 
 
-and process_bufferTo(nb: int, oBuffer: array(real, 256)) {
+and process_bufferTo(nb: int, oBuffer) {
   nb = clip(nb, 0, size(oBuffer));
   if (nb == 0) {
      nb = size(oBuffer);
@@ -333,4 +333,10 @@ and default() @[init] {
   // monophonic by default
   _ = playingnotes:Notes.default();
   _ = setPoly(false);
+}
+
+// to let vult find above the good buffer size
+fun dummy() {
+   val buff =  Buffer.buffer();
+   _ = process_bufferTo(0, buff);
 }

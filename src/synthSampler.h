@@ -403,6 +403,26 @@ static_inline void synthSampler_Sampler_default_init(synthSampler_Sampler__ctx_t
 
 void synthSampler_Sampler_default(synthSampler_Sampler__ctx_type_2 &_ctx);
 
+typedef struct synthSampler_Sampler__ctx_type_3 {
+   synthSampler_Sampler__ctx_type_2 _inst1fd;
+} synthSampler_Sampler__ctx_type_3;
+
+typedef synthSampler_Sampler__ctx_type_3 synthSampler_Sampler_dummy_type;
+
+static_inline void synthSampler_Sampler__ctx_type_3_init(synthSampler_Sampler__ctx_type_3 &_output_){
+   synthSampler_Sampler__ctx_type_3 _ctx;
+   synthSampler_Sampler__ctx_type_2_init(_ctx._inst1fd);
+   _output_ = _ctx;
+   return ;
+}
+
+static_inline void synthSampler_Sampler_dummy_init(synthSampler_Sampler__ctx_type_3 &_output_){
+   synthSampler_Sampler__ctx_type_3_init(_output_);
+   return ;
+}
+
+void synthSampler_Sampler_dummy(synthSampler_Sampler__ctx_type_3 &_ctx);
+
 typedef struct synthSampler_Poly__ctx_type_0 {
    synthSampler_Sampler__ctx_type_2 voice3;
    synthSampler_Sampler__ctx_type_2 voice2;
@@ -715,6 +735,26 @@ static_inline void synthSampler_Poly_default_init(synthSampler_Poly__ctx_type_0 
 
 void synthSampler_Poly_default(synthSampler_Poly__ctx_type_0 &_ctx);
 
+typedef struct synthSampler_Poly__ctx_type_1 {
+   synthSampler_Poly__ctx_type_0 _inst179;
+} synthSampler_Poly__ctx_type_1;
+
+typedef synthSampler_Poly__ctx_type_1 synthSampler_Poly_dummy_type;
+
+static_inline void synthSampler_Poly__ctx_type_1_init(synthSampler_Poly__ctx_type_1 &_output_){
+   synthSampler_Poly__ctx_type_1 _ctx;
+   synthSampler_Poly__ctx_type_0_init(_ctx._inst179);
+   _output_ = _ctx;
+   return ;
+}
+
+static_inline void synthSampler_Poly_dummy_init(synthSampler_Poly__ctx_type_1 &_output_){
+   synthSampler_Poly__ctx_type_1_init(_output_);
+   return ;
+}
+
+void synthSampler_Poly_dummy(synthSampler_Poly__ctx_type_1 &_ctx);
+
 typedef struct synthSampler_Voice__ctx_type_0 {
    synthSampler_Notes__ctx_type_0 voicesinactive;
    synthSampler_Notes__ctx_type_0 voicesactive;
@@ -1006,6 +1046,22 @@ static_inline void synthSampler_Voice_default_init(synthSampler_Voice__ctx_type_
 }
 
 void synthSampler_Voice_default(synthSampler_Voice__ctx_type_0 &_ctx);
+
+typedef struct synthSampler_Voice__ctx_type_1 {
+   synthSampler_Voice__ctx_type_0 _inst275;
+   synthSampler_Voice__ctx_type_0 _inst1b9;
+} synthSampler_Voice__ctx_type_1;
+
+typedef synthSampler_Voice__ctx_type_1 synthSampler_Voice_dummy_type;
+
+void synthSampler_Voice__ctx_type_1_init(synthSampler_Voice__ctx_type_1 &_output_);
+
+static_inline void synthSampler_Voice_dummy_init(synthSampler_Voice__ctx_type_1 &_output_){
+   synthSampler_Voice__ctx_type_1_init(_output_);
+   return ;
+}
+
+void synthSampler_Voice_dummy(synthSampler_Voice__ctx_type_1 &_ctx);
 
 
 
