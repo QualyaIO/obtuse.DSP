@@ -7,13 +7,13 @@ fun process(sample: real) {
     // internal buffer, for delay
     mem buffer;
     // current position inside it
-    mem pos;
+    mem pos: int;
     // how far in the buffer in samples we go
-    mem delay;
+    mem delay: int;
     // attenuation for each pass
-    mem decay;
+    mem decay: real;
     // multiplicator to keep output amplitude in check (direclty related to decay, computed once)
-    mem scale;
+    mem scale: real;
 
     // buffer holds delayed signal 
     val decayed = buffer[pos] * decay;
