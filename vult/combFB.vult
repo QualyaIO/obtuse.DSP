@@ -1,7 +1,7 @@
 
 // Comb filter, i.e. delay with decay
 // Here more specifically implements a feedback comb filter
-// Output will be kept to -1..1 range
+// FIXME: output guaranteed to be kept in -1..1 range
 
 fun process(sample: real) {
     // internal buffer, for delay
