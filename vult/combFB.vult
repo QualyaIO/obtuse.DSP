@@ -72,7 +72,7 @@ and getMaxDelayms() : real {
 // Note: with fixed float cannot above 32767ms (just in case it would make sense to have a 30s buffer on a platform which needs fixed float).,
 and setDelay(newDelay: int) {
    mem fs;
-   delay = clip(newDelay, 0, getMaxDelay());
+   delay = clip(newDelay, 1, getMaxDelay());
    // reset position in buffer
    pos = 0;
 }
