@@ -1,0 +1,177 @@
+
+// probabilistic trigger sequencer, with options to affect length, spread, change over time
+
+// will possibly recompute triggers, to be called after each loop
+fun _refresh() {
+   // how long should be the loop?
+   mem length : int;
+   // up to 128 steps
+   mem triggers : array(bool, 128);
+   // associated probabilities that the step trigger
+   mem ptriggers : array(real, 128);
+   // probability that we recompute all
+   mem evolve : real;
+   // magnitude of the change, i.e. probability that each step will be recomputed
+   mem magnitude : real;
+   // up to which point triggers should be spread equally (starting with first step). E.g. with a density of 0.5 and balance of 1 will trigger every two steps. max balance deter change in loop.
+   mem balance : real;
+   // if the state changed in a way that we should recompute triggers no matter what
+   mem dirty : bool;
+
+   // we are about to change loop -- only effective if balance is not 1
+   if (dirty || balance < 1.0 && evolve > 0.0 && random()  <= evolve) {
+      val i = 0;
+      while (i < size(triggers) && i < length) {
+         // chance that we alter this step
+         if (dirty || magnitude > 0.0 && random() <= magnitude) {
+            triggers[i] = ptriggers[i] > 0.0 && random() <= ptriggers[i];
+         }
+         i = i + 1;
+      }
+   }
+   // flag applied
+   dirty = false;
+}
+
+// to call at each clock beat. Return true upon new trig
+// actually we have to return and int for process, 0 (false) and 1 (true) for trigger
+and process() : int {
+   // clock divider, e.g. if 2 will switch to next step every two call
+   mem divider : int;
+   // how many times we were called
+   mem ticks : int;
+   // shift trigger compared to clock
+   mem shift : int;
+   // what is our current step?
+   mem n : int;
+   // starting position in the loop
+   mem position : int;
+
+   // return value
+   val trig = 0;
+   if (length > 0) {
+      if (divider > 0 && (ticks + shift) % divider == 0) {
+         if (triggers[(n + position) % length]) {
+            trig = 1;
+         }
+         ticks = 0;
+         n = n + 1;
+      }
+      
+      // new loop, we might change triggers
+      if (n % length == position % length) {
+         _ = _refresh();
+         n = 0;
+      }
+      
+      ticks = ticks + 1;
+   }
+   return trig;
+}
+
+// manually restart loop (also might refresh triggers)
+and restartLoop() {
+   n = 0; 
+   _ = _refresh();
+}
+ 
+// reset both clock ticks and loop position, also refreshing triggers (e.g. for syncing)
+and reset() {
+   ticks = 0;
+   _ = restartLoop();
+}
+
+// recompute probabilities
+and _recompute() {
+   // proportion of the steps that should trigger (i.e. base probability of each step)
+   mem density : real;
+   // which step to tune probability to balance
+   val mod = 0;
+   // do we have enough space or not?
+   val sparse = true;
+
+   // compute every which step we should increase or decrease balance
+   if (density > 0.0 && density <= 0.5) {
+      mod = int(1.0 / density);
+   } else if (density > 0.5 && density < 1.0) {
+      mod = int(1.0 / (1.0 - density));
+      sparse = false;
+   }
+
+   val i = 0;
+   while (i < size(ptriggers) && i < length) {
+      i = i + 1;
+      // we have something to balance
+      if (mod > 1) {
+         // enough space, will accentuate on modulo, otherwise will accentuate on everything *but* modulo
+         if (i % mod == 0 || sparse) {
+            ptriggers[i] = density + balance * (1.0 - density);
+         }
+         else {
+            ptriggers[i] = density - balance * density;
+         }
+      }
+      // same probability for all
+      else {
+         ptriggers[i] = density; 
+      }
+   }
+}
+
+// change length of loop, recompute probabilities. Restart loop if shorter than current position, otherwise changes will be applied next loop.
+// TODO: only change steps that are added upon next loop? (e.g. dirty = previous length and use that in refresh)
+and setLength(newLength : int) {
+   newLength = clip(newLength, 0, size(triggers));
+   if (newLength <> length) {
+      length = newLength;
+      _ = _recompute();
+      dirty = true;
+      // already too advances in steps, reset
+      if (length <= n) {
+         _ = restartLoop();
+      }
+   }
+}
+
+// change clock divider, at least 1
+and setDivider(newDivider : int) {
+   divider = clip(newDivider, 1, newDivider);
+}
+
+// shift in ticks compared to clock
+and setShift(newShift : int) {
+   shift = clip(newShift, 0, newShift);
+}
+
+// change probability that loop will change next time
+and setEvolve(newEvolve : real) {
+   evolve = clip(newEvolve, 0.0, 1.0);
+}
+
+// upon changing loop, proportion of the steps that will be affected (implemented as a probability that each step is recomputed)
+and setMagnitude(newMagnitude : real) {
+   magnitude = clip(newMagnitude, 0.0, 1.0);
+}
+
+// change repartition of triggers, recompute probabilities. Changes will be applied upon next loop.
+and setBalance(newBalance : real) {
+   newBalance = clip(newBalance, 0.0, 1.0);
+   if (newBalance <> balance) {
+      dirty = true;
+      balance = newBalance;
+   }
+}
+
+// change the proportion of active steps. Changes will be applied upon next loop.
+and setDensity(newDensity : real) {
+   newDensity = clip(newDensity, 0.0, 1.0);
+   if (newDensity <> density) {
+      dirty = true;
+      density = newDensity;
+   }
+}
+
+// starting position of the loop, can be used to shift accentuation when balance is set
+and setPosition(newPosition : int) {
+   position = clip(newPosition, 0, size(triggers));
+}
