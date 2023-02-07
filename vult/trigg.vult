@@ -35,6 +35,7 @@ fun _refresh() {
 
 // to call at each clock beat. Return true upon new trig
 // actually we have to return and int for process, 0 (false) and 1 (true) for trigger
+// TODO: directly take clock (or even reset) as parameter? Implement buffer?
 and process() : int {
    // clock divider, e.g. if 2 will switch to next step every two call
    mem divider : int;
