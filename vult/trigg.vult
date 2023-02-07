@@ -50,6 +50,8 @@ and process() : int {
 
    // return value
    val trig = 0;
+
+   ticks = ticks + 1;
    if (length > 0) {
       if (divider > 0 && (ticks + shift) % divider == 0) {
          if (triggers[(n + position) % length]) {
@@ -65,7 +67,6 @@ and process() : int {
          n = 0;
       }
       
-      ticks = ticks + 1;
    }
    return trig;
 }
@@ -101,7 +102,6 @@ and _recompute() {
 
    val i = 0;
    while (i < size(ptriggers) && i < length) {
-      i = i + 1;
       // we have something to balance
       if (mod > 1) {
          // enough space, will accentuate on modulo, otherwise will accentuate on everything *but* modulo
@@ -116,10 +116,11 @@ and _recompute() {
       else {
          ptriggers[i] = density; 
       }
+      i = i + 1;
    }
 }
 
-// change length of loop, recompute probabilities. Restart loop if shorter than current position, otherwise changes will be applied next loop.
+// change length of loop, recompute probabilities and refresh triggers. Restart loop if shorter than current position, otherwise changes will be applied next loop.
 // TODO: only change steps that are added upon next loop? (e.g. dirty = previous length and use that in refresh)
 and setLength(newLength : int) {
    newLength = clip(newLength, 0, size(triggers));
@@ -127,6 +128,7 @@ and setLength(newLength : int) {
       length = newLength;
       _ = _recompute();
       dirty = true;
+      _ = _refresh();
       // already too advances in steps, reset
       if (length <= n) {
          _ = restartLoop();
@@ -154,20 +156,24 @@ and setMagnitude(newMagnitude : real) {
    magnitude = clip(newMagnitude, 0.0, 1.0);
 }
 
-// change repartition of triggers, recompute probabilities. Changes will be applied upon next loop.
+// change repartition of triggers, recompute probabilities, apply changes immediately (change loop).
 and setBalance(newBalance : real) {
    newBalance = clip(newBalance, 0.0, 1.0);
    if (newBalance <> balance) {
+      _ = _recompute();
       dirty = true;
+      _ = _refresh();
       balance = newBalance;
    }
 }
 
-// change the proportion of active steps. Changes will be applied upon next loop.
+// change the proportion of active steps, recompute probabilities, apply changes immediately (change loop).
 and setDensity(newDensity : real) {
    newDensity = clip(newDensity, 0.0, 1.0);
    if (newDensity <> density) {
+      _ = _recompute();
       dirty = true;
+      _ = _refresh();
       density = newDensity;
    }
 }
