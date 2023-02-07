@@ -1,5 +1,5 @@
 
-// probabilistic trigger sequencer, with options to affect length, spread, change over time
+// probabilistic trigger sequencer, with options to affect length, spread, change over time, or balance (accentuate most a pattern)
 
 // will possibly recompute triggers, to be called after each loop
 fun _refresh() {
@@ -13,13 +13,11 @@ fun _refresh() {
    mem evolve : real;
    // magnitude of the change, i.e. probability that each step will be recomputed
    mem magnitude : real;
-   // up to which point triggers should be spread equally (starting with first step). E.g. with a density of 0.5 and balance of 1 will trigger every two steps. max balance deter change in loop.
-   mem balance : real;
    // if the state changed in a way that we should recompute triggers no matter what
    mem dirty : bool;
 
-   // we are about to change loop -- only effective if balance is not 1
-   if (dirty || balance < 1.0 && evolve > 0.0 && random()  <= evolve) {
+   // we are about to change loop
+   if (dirty || evolve > 0.0 && random()  <= evolve) {
       val i = 0;
       while (i < size(triggers) && i < length) {
          // chance that we alter this step
@@ -85,6 +83,8 @@ and reset() {
 
 // recompute probabilities
 and _recompute() {
+   // up to which point triggers should be spread equally (starting with first step). E.g. with a density of 0.5 and balance of 1 will trigger every two steps. max balance deter change in loop.
+   mem balance : real;
    // proportion of the steps that should trigger (i.e. base probability of each step)
    mem density : real;
    // which step to tune probability to balance
@@ -93,24 +93,53 @@ and _recompute() {
    val sparse = true;
 
    // compute every which step we should increase or decrease balance
-   if (density > 0.0 && density <= 0.5) {
+   // (make sure we don't overflow)
+   if (density > 2.0 * eps() && density <= 0.5) {
       // rounding
       mod = int((1.0 / density) + 0.5);
-   } else if (density > 0.5 && density < 1.0) {
+   } else if (density > 0.5 && density < 1.0 - 2.0 * eps()) {
       mod = int(1.0 / (1.0 - density) + 0.5);
       sparse = false;
    }
+
+   // range of probilities for balance
+   val max_p = 1.0;
+   val min_p = 0.0;
+   // now trying to determine the max proba
+   if (mod > 0 && length > 0) {
+      // how many step to (de)accentuate
+      val nbplus ;
+      val nbminus;
+      if (sparse) {
+         nbplus = (length - 1 + mod) / mod;
+         nbminus = length - nbplus;
+      } else {
+         nbminus = length / mod;
+         nbplus = length - nbminus;
+      }
+      // density of accentuated steps
+      val modp = real(nbplus) / real(length);
+      // we have to cap proba for mod or the effective probability will be too high
+      if (modp >= density) {
+         max_p = density * real(length) / real(nbplus);
+      }
+      // or set a minimum probability on lower steps probability is not too low
+      else {
+         min_p = (density * real(length) - real(nbplus)) / real(nbminus);
+      }
+   }
+
 
    val i = 0;
    while (i < size(ptriggers) && i < length) {
       // we have something to balance
       if (mod > 1) {
-         // enough space, will accentuate on modulo, otherwise will accentuate on everything *but* modulo
+         // enough space, will accentuate on modulo, otherwise will accentuate on everything *but* modulo, shifting since we end sequence with lower prob
          if ( (i % mod == 0 && sparse) ||  ((i + mod + 1) % mod <> 0 && not(sparse)) ) {
-            ptriggers[i] = density + balance * (1.0 - density);
+            ptriggers[i] = density + balance * (max_p - density);
          }
          else {
-            ptriggers[i] = density - balance * density;
+            ptriggers[i] = density - balance * (density - min_p);
          }
       }
       // same probability for all
