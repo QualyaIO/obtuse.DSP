@@ -94,6 +94,7 @@ and _recompute() {
 
    // compute every which step we should increase or decrease balance
    // (make sure we don't overflow)
+   // Note to sync with _getAutolength()
    if (density > 2.0 * eps() && density <= 0.5) {
       // rounding
       mod = int((1.0 / density) + 0.5);
@@ -150,20 +151,61 @@ and _recompute() {
    }
 }
 
-// change length of loop, recompute probabilities and refresh triggers. Restart loop if shorter than current position, otherwise changes will be applied next loop.
-// TODO: only change steps that are added upon next loop? (e.g. dirty = previous length and use that in refresh)
-and setLength(newLength : int) {
+// return length computed depending on density -- at least length 1 if density > 0
+and _getAutolength() {
+   if (density <= 0.0) {
+      return 0;
+   }
+   // Note: to sync with _recompute()
+   if (density >= 1.0/real(size(triggers)) && density <= 0.5) {
+      // rounding
+      return int((1.0 / density) + 0.5);
+   }
+   if (density > 0.5 && density <= 1.0 - 1.0/real(size(triggers))) {
+      return int(1.0 / (1.0 - density) + 0.5);
+   }
+   return 1;
+}
+
+// to factorize code between setLength and setDensity. Return true if length has changed
+and _applyLength(newLength) : bool {
    newLength = clip(newLength, 0, size(triggers));
    if (newLength <> length) {
       length = newLength;
       _ = _recompute();
       dirty = true;
-      _ = _refresh();
-      // already too advances in steps, reset
+      // already too advances in steps, reset loop (and refresh there)
       if (length <= n) {
          _ = restartLoop();
       }
+      else {
+         _ = _refresh();
+      }
+      return true;
    }
+   return false;
+}
+
+// change length of loop, recompute probabilities and refresh triggers. Restart loop if shorter than current position, otherwise changes will be applied next loop.
+// if set to <= 0, will autocompute length to have one cycle with accentuation -- and length will change automatically upon changing density
+// TODO: only change steps that are added upon next loop? (e.g. dirty = previous length and use that in refresh)
+and setLength(newLength : int) {
+   mem autolength;
+   newLength = clip(newLength, 0, size(triggers));
+   // starting to adapt length to density and pattern that wight arise from balance
+   if (newLength == 0 && not(autolength)) {
+      autolength = true;
+      newLength = _getAutolength();
+   }
+   else if (newLength > 0 && autolength) {
+      autolength = false;
+   }
+   _ = _applyLength(newLength);
+}
+
+// usefull to retrieve effect of autolength (when length set to 0)
+and getLength() : int {
+   return length;
 }
 
 // change clock divider, at least 1
@@ -198,17 +240,44 @@ and setBalance(newBalance : real) {
 }
 
 // change the proportion of active steps, recompute probabilities, apply changes immediately (change loop).
+// Note: if autolength is set, might restart loop and the new length is shorter than current step, will srestart loop
 and setDensity(newDensity : real) {
    newDensity = clip(newDensity, 0.0, 1.0);
    if (newDensity <> density) {
       density = newDensity;
-      _ = _recompute();
-      dirty = true;
-      _ = _refresh();
+      // should we recompute/refresh
+      val update = true;
+      // apply autolength if set
+      if (autolength) {
+         // tuning length might avoid us new calls to refresh state
+         update = not(_applyLength(_getAutolength()));
+      }
+      // at least recompute and refresh here
+      if (update) {
+         _ = _recompute();
+         dirty = true;
+         _ = _refresh();
+      }
    }
 }
 
 // starting position of the loop, can be used to shift accentuation when balance is set
 and setPosition(newPosition : int) {
    position = clip(newPosition, 0, size(triggers));
+}
+
+and default() @[init] {
+   // by default beat each clock
+   divider = 1;
+   // pattern of 16, 50% chance trigger accentuated on odd steps
+   length = 16;
+   density = 0.5;
+   balance = 0.5;
+   // change about every 5 loops, about one of the step
+   evolve = 0.2;
+   magnitude = 0.25;
+   // compute all of that
+   _ = _recompute();
+   dirty = true;
+   _ = _refresh();
 }
