@@ -88,36 +88,27 @@ and _recompute() {
    // proportion of the steps that should trigger (i.e. base probability of each step)
    mem density : real;
    // which step to tune probability to balance
-   val mod = 0;
-   // do we have enough space or not?
-   val sparse = true;
+   val mod = 0.0;
 
    // compute every which step we should increase or decrease balance
    // (make sure we don't overflow)
    // Note to sync with _getAutolength()
-   if (density > 2.0 * eps() && density <= 0.5) {
-      // rounding
-      mod = int((1.0 / density) + 0.5);
-   } else if (density > 0.5 && density < 1.0 - 2.0 * eps()) {
-      mod = int(1.0 / (1.0 - density) + 0.5);
-      sparse = false;
-   }
+   mod = 1.0 / density;
 
    // range of probilities for balance
    val max_p = 1.0;
    val min_p = 0.0;
    // now trying to determine the max proba
-   if (mod > 0 && length > 0) {
+   if (mod > 1.0 && length > 0) {
       // how many step to (de)accentuate
-      val nbplus ;
-      val nbminus;
-      if (sparse) {
-         nbplus = (length - 1 + mod) / mod;
-         nbminus = length - nbplus;
-      } else {
-         nbminus = length / mod;
-         nbplus = length - nbminus;
+      val fnbplus = real(length) * density;
+      val nbplus = int(fnbplus);
+      // round ceil above threshold
+      if (fnbplus % 1.0 > 1.0/real(size(triggers))) {
+         nbplus = nbplus + 1;
       }
+      val nbminus = length - nbplus;
+
       // density of accentuated steps
       val modp = real(nbplus) / real(length);
       // we have to cap proba for mod or the effective probability will be too high
@@ -130,14 +121,35 @@ and _recompute() {
       }
    }
 
-
+   // rounded mod, we will go back and forth between this one and + 1 once we accumulate enough float part
+   val imod = int(mod);
+   val accmod = 0.0;
+   // go through all indices
    val i = 0;
+   // reset counter periodically for applying modulo
+   val ci = 0;
+   // are we using imod+1?
+   val upmod = false;
    while (i < size(ptriggers) && i < length) {
-      // we have something to balance
-      if (mod > 1) {
-         // enough space, will accentuate on modulo, otherwise will accentuate on everything *but* modulo, shifting since we end sequence with lower prob
-         if ( (i % mod == 0 && sparse) ||  ((i + mod + 1) % mod <> 0 && not(sparse)) ) {
+      // tune probabilities
+      if (imod > 0) {
+         // enough to use upper mod, with some margin
+         if (accmod >= 1.0 - 1.0/real(size(triggers))) {
+            imod = int(mod) + 1;
+            accmod = accmod - 1.0;
+            upmod = true;
+         }
+         // accentuated step
+         if (ci % imod == 0) {
             ptriggers[i] = density + balance * (max_p - density);
+            if (upmod) {
+               // going back to regular mod
+               imod = int(mod);
+               upmod = false;
+            }
+            ci = 0;
+            // accumulate for changing mod
+            accmod = accmod + mod % 1.0;
          }
          else {
             ptriggers[i] = density - balance * (density - min_p);
@@ -147,6 +159,7 @@ and _recompute() {
       else {
          ptriggers[i] = density; 
       }
+      ci = ci + 1;
       i = i + 1;
    }
 }
@@ -156,15 +169,23 @@ and _getAutolength() {
    if (density <= 0.0) {
       return 0;
    }
-   // Note: to sync with _recompute()
-   if (density >= 1.0/real(size(triggers)) && density <= 0.5) {
-      // rounding
-      return int((1.0 / density) + 0.5);
+   val mod = 1.0/density;
+   val autolength = floor(mod);
+   val iautolength = int(autolength);
+   val mine = 1.0/real(size(triggers));
+
+   // when the fraction prat is high enough we will increase length to capture a pattern
+   if (mod % 1.0 > mine) {
+      autolength = 1.0 / (mod % 1.0) * mod;
+      // one more step if high enough
+      if (autolength % 1.0 > mine) {
+         iautolength = int(1.0 + autolength);
+      }
+      else {
+         iautolength = int(autolength);
+      }
    }
-   if (density > 0.5 && density <= 1.0 - 1.0/real(size(triggers))) {
-      return int(1.0 / (1.0 - density) + 0.5);
-   }
-   return 1;
+   return iautolength;
 }
 
 // to factorize code between setLength and setDensity. Return true if length has changed
@@ -190,15 +211,15 @@ and _applyLength(newLength) : bool {
 // if set to <= 0, will autocompute length to have one cycle with accentuation -- and length will change automatically upon changing density
 // TODO: only change steps that are added upon next loop? (e.g. dirty = previous length and use that in refresh)
 and setLength(newLength : int) {
-   mem autolength;
+   mem isautolength;
    newLength = clip(newLength, 0, size(triggers));
    // starting to adapt length to density and pattern that wight arise from balance
-   if (newLength == 0 && not(autolength)) {
-      autolength = true;
+   if (newLength == 0 && not(isautolength)) {
+      isautolength = true;
       newLength = _getAutolength();
    }
-   else if (newLength > 0 && autolength) {
-      autolength = false;
+   else if (newLength > 0 && isautolength) {
+      isautolength = false;
    }
    _ = _applyLength(newLength);
 }
@@ -248,7 +269,7 @@ and setDensity(newDensity : real) {
       // should we recompute/refresh
       val update = true;
       // apply autolength if set
-      if (autolength) {
+      if (isautolength) {
          // tuning length might avoid us new calls to refresh state
          update = not(_applyLength(_getAutolength()));
       }
