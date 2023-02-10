@@ -55,12 +55,15 @@ and process() : int {
          if (triggers[(n + position) % length]) {
             trig = 1;
          }
-         ticks = 0;
          n = n + 1;
+      }
+      // reset clock counter
+      if (ticks % divider == 0) {
+         ticks = 0;
       }
       
       // new loop, we might change triggers
-      if (n % length == position % length) {
+      if (n % length == 0) {
          _ = _refresh();
          n = 0;
       }
