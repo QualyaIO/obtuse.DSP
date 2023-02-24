@@ -1,0 +1,36 @@
+
+// generating chords using Tonnetz relationships
+
+//    8 - - 3
+//   / \   / \
+// 5 - - 0 - - 7
+//  \   / \   /
+//    9 - - 4 
+
+fun process() {
+  // which of the 12 notes is enabled or not in this scale. 0 being the root, it should be always true.
+  mem scale: array(bool, 12); 
+}
+
+// choose from one of the scale
+// 0: diatonic ionian (major)
+//    5 - - 0 - - 7
+//   / \   / \   / \   
+// 2 - - 9 - - 4 - - 11
+
+// 1: diatonic aeolian (minor)
+//    8 - - 3 - - 10
+//   / \   / \   / \   
+// 5 - - 0 - - 7 - - 2
+
+// won't change scale otherwise
+and setScale(id: int) {
+  // diatonic ionian (major)
+  if (id == 0) {
+    scale = [true, false, true, false, true, true, false, true, false, true, false, true];
+  }
+  // diatonic aeolian (minor)
+  else if (id == 1) {
+    scale = [true, false, true, true, false, true, false, true, true, false, true, false];
+  }
+}
