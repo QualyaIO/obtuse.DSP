@@ -12,12 +12,12 @@ void utils_Trigg__ctx_type_0_init(utils_Trigg__ctx_type_0 &_output_){
    _ctx.n = 0;
    _ctx.magnitude = 0x0 /* 0.000000 */;
    _ctx.length = 0;
+   _ctx.isautolength = false;
    _ctx.evolve = 0x0 /* 0.000000 */;
    _ctx.divider = 0;
    _ctx.dirty = false;
    _ctx.density = 0x0 /* 0.000000 */;
    _ctx.balance = 0x0 /* 0.000000 */;
-   _ctx.autolength = false;
    utils_Trigg_default(_ctx);
    _output_ = _ctx;
    return ;
@@ -46,10 +46,12 @@ int utils_Trigg_process(utils_Trigg__ctx_type_0 &_ctx){
          if(_ctx.triggers[((_ctx.n + _ctx.position) % _ctx.length)]){
             trig = 1;
          }
-         _ctx.ticks = 0;
          _ctx.n = (1 + _ctx.n);
       }
-      if((_ctx.n % _ctx.length) == (_ctx.position % _ctx.length)){
+      if((_ctx.ticks % _ctx.divider) == 0){
+         _ctx.ticks = 0;
+      }
+      if((_ctx.n % _ctx.length) == 0){
          utils_Trigg__refresh(_ctx);
          _ctx.n = 0;
       }
@@ -58,36 +60,23 @@ int utils_Trigg_process(utils_Trigg__ctx_type_0 &_ctx){
 }
 
 void utils_Trigg__recompute(utils_Trigg__ctx_type_0 &_ctx){
-   int mod;
-   mod = 0;
-   uint8_t sparse;
-   sparse = true;
-   if((_ctx.density > 0x0 /* 0.000000 */) && (_ctx.density <= 0x8000 /* 0.500000 */)){
-      mod = fix_to_int((0x8000 /* 0.500000 */ + fix_div(0x10000 /* 1.000000 */,_ctx.density)));
-   }
-   else
-   {
-      if((_ctx.density > 0x8000 /* 0.500000 */) && (_ctx.density < 0x10000 /* 1.000000 */)){
-         mod = fix_to_int((0x8000 /* 0.500000 */ + fix_div(0x10000 /* 1.000000 */,(0x10000 /* 1.000000 */ + (- _ctx.density)))));
-         sparse = false;
-      }
-   }
+   fix16_t mod;
+   mod = 0x0 /* 0.000000 */;
+   mod = fix_div(0x10000 /* 1.000000 */,_ctx.density);
    fix16_t max_p;
    max_p = 0x10000 /* 1.000000 */;
    fix16_t min_p;
    min_p = 0x0 /* 0.000000 */;
-   if((mod > 0) && (_ctx.length > 0)){
+   if((mod > 0x10000 /* 1.000000 */) && (_ctx.length > 0)){
+      fix16_t fnbplus;
+      fnbplus = fix_mul(_ctx.density,int_to_fix(_ctx.length));
       int nbplus;
+      nbplus = fix_to_int(fnbplus);
+      if((fnbplus % 0x10000 /* 1.000000 */) > 0x200 /* 0.007812 */){
+         nbplus = (1 + nbplus);
+      }
       int nbminus;
-      if(sparse){
-         nbplus = (((-1) + _ctx.length + mod) / mod);
-         nbminus = (_ctx.length + (- nbplus));
-      }
-      else
-      {
-         nbminus = (_ctx.length / mod);
-         nbplus = (_ctx.length + (- nbminus));
-      }
+      nbminus = (_ctx.length + (- nbplus));
       fix16_t modp;
       modp = fix_div(int_to_fix(nbplus),int_to_fix(_ctx.length));
       if(modp >= _ctx.density){
@@ -98,12 +87,31 @@ void utils_Trigg__recompute(utils_Trigg__ctx_type_0 &_ctx){
          min_p = fix_div(((- int_to_fix(nbplus)) + fix_mul(_ctx.density,int_to_fix(_ctx.length))),int_to_fix(nbminus));
       }
    }
+   int imod;
+   imod = fix_to_int(mod);
+   fix16_t accmod;
+   accmod = 0x0 /* 0.000000 */;
    int i;
    i = 0;
+   int ci;
+   ci = 0;
+   uint8_t upmod;
+   upmod = false;
    while((i < 128) && (i < _ctx.length)){
-      if(mod > 1){
-         if((((i % mod) == 0) && sparse) || ((((1 + i + mod) % mod) != 0) && bool_not(sparse))){
+      if(imod > 0){
+         if(accmod >= 0xfe00 /* 0.992188 */){
+            imod = (1 + fix_to_int(mod));
+            accmod = (-0x10000 /* -1.000000 */ + accmod);
+            upmod = true;
+         }
+         if((ci % imod) == 0){
             _ctx.ptriggers[i] = (_ctx.density + fix_mul(_ctx.balance,(max_p + (- _ctx.density))));
+            if(upmod){
+               imod = fix_to_int(mod);
+               upmod = false;
+            }
+            ci = 0;
+            accmod = (accmod + (mod % 0x10000 /* 1.000000 */));
          }
          else
          {
@@ -114,6 +122,7 @@ void utils_Trigg__recompute(utils_Trigg__ctx_type_0 &_ctx){
       {
          _ctx.ptriggers[i] = _ctx.density;
       }
+      ci = (1 + ci);
       i = (1 + i);
    }
 }
@@ -122,13 +131,25 @@ int utils_Trigg__getAutolength(utils_Trigg__ctx_type_0 &_ctx){
    if(_ctx.density <= 0x0 /* 0.000000 */){
       return 0;
    }
-   if((_ctx.density >= 0x200 /* 0.007812 */) && (_ctx.density <= 0x8000 /* 0.500000 */)){
-      return fix_to_int((0x8000 /* 0.500000 */ + fix_div(0x10000 /* 1.000000 */,_ctx.density)));
+   fix16_t mod;
+   mod = fix_div(0x10000 /* 1.000000 */,_ctx.density);
+   fix16_t autolength;
+   autolength = fix_floor(mod);
+   int iautolength;
+   iautolength = fix_to_int(autolength);
+   fix16_t mine;
+   mine = 0x200 /* 0.007812 */;
+   if((mod % 0x10000 /* 1.000000 */) > mine){
+      autolength = fix_mul(mod,fix_div(0x10000 /* 1.000000 */,(mod % 0x10000 /* 1.000000 */)));
+      if((autolength % 0x10000 /* 1.000000 */) > mine){
+         iautolength = fix_to_int((0x10000 /* 1.000000 */ + autolength));
+      }
+      else
+      {
+         iautolength = fix_to_int(autolength);
+      }
    }
-   if((_ctx.density > 0x8000 /* 0.500000 */) && (_ctx.density <= 0xfe00 /* 0.992188 */)){
-      return fix_to_int((0x8000 /* 0.500000 */ + fix_div(0x10000 /* 1.000000 */,(0x10000 /* 1.000000 */ + (- _ctx.density)))));
-   }
-   return 1;
+   return iautolength;
 }
 
 uint8_t utils_Trigg__applyLength(utils_Trigg__ctx_type_0 &_ctx, int newLength){
@@ -151,14 +172,14 @@ uint8_t utils_Trigg__applyLength(utils_Trigg__ctx_type_0 &_ctx, int newLength){
 
 void utils_Trigg_setLength(utils_Trigg__ctx_type_0 &_ctx, int newLength){
    newLength = int_clip(newLength,0,128);
-   if((newLength == 0) && bool_not(_ctx.autolength)){
-      _ctx.autolength = true;
+   if((newLength == 0) && bool_not(_ctx.isautolength)){
+      _ctx.isautolength = true;
       newLength = utils_Trigg__getAutolength(_ctx);
    }
    else
    {
-      if((newLength > 0) && _ctx.autolength){
-         _ctx.autolength = false;
+      if((newLength > 0) && _ctx.isautolength){
+         _ctx.isautolength = false;
       }
    }
    utils_Trigg__applyLength(_ctx,newLength);
@@ -180,7 +201,7 @@ void utils_Trigg_setDensity(utils_Trigg__ctx_type_0 &_ctx, fix16_t newDensity){
       _ctx.density = newDensity;
       uint8_t update;
       update = true;
-      if(_ctx.autolength){
+      if(_ctx.isautolength){
          update = bool_not(utils_Trigg__applyLength(_ctx,utils_Trigg__getAutolength(_ctx)));
       }
       if(update){
