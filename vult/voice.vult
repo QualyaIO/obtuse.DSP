@@ -354,10 +354,10 @@ and synthSetCarrierADSR(a:real , d: real, s: real, r: real) {
 and default() @[init] {
    _ = poly:Poly.default();
 
-   buffer_v0 = Buffer.buffer();
-   buffer_v1 = Buffer.buffer();
-   buffer_v2 = Buffer.buffer();
-   buffer_v3 = Buffer.buffer();
+   Buffer.buffer(buffer_v0);
+   Buffer.buffer(buffer_v1);
+   Buffer.buffer(buffer_v2);
+   Buffer.buffer(buffer_v3);
 
    mem voices: array(int, 4);
    number_voices = if number_voices == 0 then size(voices) else number_voices;
@@ -381,7 +381,8 @@ and default() @[init] {
 
 // to let vult find above the good buffer size
 fun dummy() {
-   val buff =  Buffer.buffer();
+   val buff;
+   Buffer.buffer(buff);
    _ = process_bufferTo(0, buff);
    _ = process_bufferTo_alt(0, buff);
 }

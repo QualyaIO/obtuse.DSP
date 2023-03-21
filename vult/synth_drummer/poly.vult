@@ -168,6 +168,7 @@ and default() @[init] {
 
 // to let vult find above the good buffer size
 fun dummy() {
-   val buff =  Buffer.buffer();
+   val buff;
+   Buffer.buffer(buff);
    _ = runVoice(0, 0, buff);
 }

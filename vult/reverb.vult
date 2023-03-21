@@ -104,12 +104,12 @@ and setDelayms(delayms: real) {
 
 and default() @[init] {
   // many buffers!
-  buffer_c0 = Buffer.buffer();
-  buffer_c1 = Buffer.buffer();
-  buffer_c2 = Buffer.buffer();
-  buffer_c3 = Buffer.buffer();
-  buffer_a0 = Buffer.buffer();
-  buffer_a1 = Buffer.buffer();
+  Buffer.buffer(buffer_c0);
+  Buffer.buffer(buffer_c1);
+  Buffer.buffer(buffer_c2);
+  Buffer.buffer(buffer_c3);
+  Buffer.buffer(buffer_a0);
+  Buffer.buffer(buffer_a1);
   _ = setSamplerate(44.100);
   // to approximate default parameters found in litteratures
   reverbtime = 0.65;
@@ -126,6 +126,7 @@ and default() @[init] {
 
 // to let vult find above the good buffer size
 fun dummy() {
-   val buff =  Buffer.buffer();
+   val buff;
+   Buffer.buffer(buff);
    _ = process_bufferTo(0, buff, buff);
 }

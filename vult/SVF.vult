@@ -187,6 +187,7 @@ and default() @[init] {
 
 // to let vult find above the good buffer size
 fun dummy() {
-   val buff =  Buffer.buffer();
+   val buff;
+   Buffer.buffer(buff);
    _ = process_bufferTo(0, buff, buff);
 }

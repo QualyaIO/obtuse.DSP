@@ -7,16 +7,14 @@
 #include "vultin.h"
 #include "effects.tables.h"
 
-static_inline void effects_Buffer_buffer(fix16_t (&_output_)[256]){
+static_inline void effects_Buffer_buffer(fix16_t (&oBuff)[256]){
    fix16_t buff[256];
-   fix_copy_array(256,_output_,buff);
-   return ;
+   fix_copy_array(256,buff,oBuff);
 }
 
-static_inline void effects_Buffer_buffer_large(fix16_t (&_output_)[2048]){
+static_inline void effects_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
    fix16_t buff[2048];
-   fix_copy_array(2048,_output_,buff);
-   return ;
+   fix_copy_array(2048,buff,oBuff);
 }
 
 typedef struct effects_CombFB__ctx_type_0 {
@@ -128,7 +126,12 @@ static_inline void effects_CombFB_default_init(effects_CombFB__ctx_type_0 &_outp
    return ;
 }
 
-void effects_CombFB_default(effects_CombFB__ctx_type_0 &_ctx);
+static_inline void effects_CombFB_default(effects_CombFB__ctx_type_0 &_ctx){
+   effects_Buffer_buffer_large(_ctx.buffer);
+   effects_CombFB_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
+   effects_CombFB_setDelayms(_ctx,0x320000 /* 50.000000 */);
+   effects_CombFB_setDecay(_ctx,0x8000 /* 0.500000 */);
+}
 
 typedef struct effects_CombFB__ctx_type_1 {
    effects_CombFB__ctx_type_0 _inst13c;
@@ -148,7 +151,11 @@ static_inline void effects_CombFB_dummy_init(effects_CombFB__ctx_type_1 &_output
    return ;
 }
 
-void effects_CombFB_dummy(effects_CombFB__ctx_type_1 &_ctx);
+static_inline void effects_CombFB_dummy(effects_CombFB__ctx_type_1 &_ctx){
+   fix16_t buff[256];
+   effects_Buffer_buffer(buff);
+   effects_CombFB_process_bufferTo(_ctx._inst13c,0,buff,buff);
+}
 
 typedef struct effects_Allpass__ctx_type_0 {
    fix16_t scale;
@@ -280,7 +287,11 @@ static_inline void effects_Allpass_dummy_init(effects_Allpass__ctx_type_1 &_outp
    return ;
 }
 
-void effects_Allpass_dummy(effects_Allpass__ctx_type_1 &_ctx);
+static_inline void effects_Allpass_dummy(effects_Allpass__ctx_type_1 &_ctx){
+   fix16_t buff[256];
+   effects_Buffer_buffer(buff);
+   effects_Allpass_process_bufferTo(_ctx._inst156,0,buff,buff);
+}
 
 typedef struct effects_Reverb__ctx_type_0 {
    fix16_t reverbtime;
@@ -381,7 +392,11 @@ static_inline void effects_Reverb_dummy_init(effects_Reverb__ctx_type_1 &_output
    return ;
 }
 
-void effects_Reverb_dummy(effects_Reverb__ctx_type_1 &_ctx);
+static_inline void effects_Reverb_dummy(effects_Reverb__ctx_type_1 &_ctx){
+   fix16_t buff[256];
+   effects_Buffer_buffer(buff);
+   effects_Reverb_process_bufferTo(_ctx._inst1f2,0,buff,buff);
+}
 
 static_inline fix16_t effects_Util_noteToFrequency(int note){
    return fix_mul(0x217 /* 0.008176 */,fix_exp(fix_mul(0xec9 /* 0.057762 */,int_to_fix(note))));
@@ -676,7 +691,11 @@ static_inline void effects_Ladder_dummy_init(effects_Ladder__ctx_type_3 &_output
    return ;
 }
 
-void effects_Ladder_dummy(effects_Ladder__ctx_type_3 &_ctx);
+static_inline void effects_Ladder_dummy(effects_Ladder__ctx_type_3 &_ctx){
+   fix16_t buff[256];
+   effects_Buffer_buffer(buff);
+   effects_Ladder_process_bufferTo(_ctx._inst163,0,buff,buff);
+}
 
 typedef struct effects_CombFF__ctx_type_0 {
    fix16_t scale;
@@ -787,7 +806,12 @@ static_inline void effects_CombFF_default_init(effects_CombFF__ctx_type_0 &_outp
    return ;
 }
 
-void effects_CombFF_default(effects_CombFF__ctx_type_0 &_ctx);
+static_inline void effects_CombFF_default(effects_CombFF__ctx_type_0 &_ctx){
+   effects_Buffer_buffer_large(_ctx.buffer);
+   effects_CombFF_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
+   effects_CombFF_setDelayms(_ctx,0x320000 /* 50.000000 */);
+   effects_CombFF_setDecay(_ctx,0x8000 /* 0.500000 */);
+}
 
 typedef struct effects_CombFF__ctx_type_1 {
    effects_CombFF__ctx_type_0 _inst115;
@@ -807,7 +831,11 @@ static_inline void effects_CombFF_dummy_init(effects_CombFF__ctx_type_1 &_output
    return ;
 }
 
-void effects_CombFF_dummy(effects_CombFF__ctx_type_1 &_ctx);
+static_inline void effects_CombFF_dummy(effects_CombFF__ctx_type_1 &_ctx){
+   fix16_t buff[256];
+   effects_Buffer_buffer(buff);
+   effects_CombFF_process_bufferTo(_ctx._inst115,0,buff,buff);
+}
 
 typedef struct effects_SVF__ctx_type_0 {
    fix16_t z2;
@@ -959,7 +987,11 @@ static_inline void effects_SVF_dummy_init(effects_SVF__ctx_type_1 &_output_){
    return ;
 }
 
-void effects_SVF_dummy(effects_SVF__ctx_type_1 &_ctx);
+static_inline void effects_SVF_dummy(effects_SVF__ctx_type_1 &_ctx){
+   fix16_t buff[256];
+   effects_Buffer_buffer(buff);
+   effects_SVF_process_bufferTo(_ctx._inst1f,0,buff,buff);
+}
 
 
 

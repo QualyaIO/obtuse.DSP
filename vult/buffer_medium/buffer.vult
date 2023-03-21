@@ -1,14 +1,14 @@
 
 // allocate an audio buffer
 // size tuned for current use, default non-blocking I2S buffer
-fun buffer() {
+fun buffer(oBuff) {
   val buff : array(real, 256);
-  return buff;
+  buff = oBuff;
 }
 
 // allocate an audio buffer, this one for things like effects. Be wary of memory consumption -- and most probably avoid to put in PROGMEM in MCU
 // Note: used in reverb, which needs at least 1123 samples for default values
-fun buffer_large() {
+fun buffer_large(oBuff) {
   val buff : array(real, 2048);
-  return buff;
+  buff = oBuff;
 }

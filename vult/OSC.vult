@@ -199,7 +199,8 @@ and default() @[init] {
 
 // to let vult find above the good buffer size
 fun dummy(wavetable) {
-   val buff =  Buffer.buffer();
+   val buff;
+   Buffer.buffer(buff);
    _ = process_bufferTo(wavetable, 0, buff, buff, buff, 0.0, false, buff);
    _ = process_bufferTo_simple(wavetable, 0, buff, buff);
    _ = process_bufferTo_feedback(wavetable, 0, buff, 0.0, buff);
