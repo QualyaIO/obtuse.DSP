@@ -106,13 +106,9 @@ static_inline fix16_t synthDrummer_Util_velocityToLevel(int velocity){
 }
 
 static_inline void synthDrummer_Buffer_buffer(fix16_t (&oBuff)[256]){
-   fix16_t buff[256];
-   fix_copy_array(256,buff,oBuff);
 }
 
 static_inline void synthDrummer_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
-   fix16_t buff[2048];
-   fix_copy_array(2048,buff,oBuff);
 }
 
 static_inline int synthDrummer_Drummer_drumkit_samples(){

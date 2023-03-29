@@ -184,13 +184,9 @@ static_inline void synthSampler_Notes_noteOff_init(synthSampler_Notes__ctx_type_
 uint8_t synthSampler_Notes_noteOff(synthSampler_Notes__ctx_type_0 &_ctx, int note, int channel);
 
 static_inline void synthSampler_Buffer_buffer(fix16_t (&oBuff)[256]){
-   fix16_t buff[256];
-   fix_copy_array(256,buff,oBuff);
 }
 
 static_inline void synthSampler_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
-   fix16_t buff[2048];
-   fix_copy_array(2048,buff,oBuff);
 }
 
 static_inline int synthSampler_Sampler_ocarina_samples(){

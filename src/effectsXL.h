@@ -8,13 +8,9 @@
 #include "effectsXL.tables.h"
 
 static_inline void effectsXL_Buffer_buffer(fix16_t (&oBuff)[256]){
-   fix16_t buff[256];
-   fix_copy_array(256,buff,oBuff);
 }
 
 static_inline void effectsXL_Buffer_buffer_large(fix16_t (&oBuff)[16384]){
-   fix16_t buff[16384];
-   fix_copy_array(16384,buff,oBuff);
 }
 
 typedef struct effectsXL_CombFB__ctx_type_0 {
