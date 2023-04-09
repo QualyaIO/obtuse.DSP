@@ -1,0 +1,170 @@
+
+// clock with swing and grouping
+
+
+// - . o . - . o . normal
+// - o . . - o . .  swing -
+// - . . o - . . o swing +
+// - . - . - . - . o . o . o . o . normal groupe size 8, ratio group 0.5
+// - - - - o . . o . . o . . o . .  swing -
+
+
+// inform the whole world about supported BPM and group range
+fun getMinBPM(): real {
+  return 0.002;
+}
+fun getMaxBPM(): real {
+  return 30000.0;
+}
+// below 2 would probably crash something (e.g. division by 0 in IBI computation of clock)
+fun getMinGroupSize(): int {
+  return 2;
+}
+fun getMaxGroupSize(): int {
+  return 128;
+}
+
+
+// time: passing by, in seconds, should be positive
+// return 1 upon first beat, 2 new beat from first sub-group, 3 for second sub-group (groupped by IBI length afterward), 0 otherwise
+// will return trigger upon first call (start with beat)
+fun process(time: real): int {
+  // check if first run (or if reset), since vult init to false
+  mem init: bool;
+  // beats per minutes
+  mem bpm: real;
+  // interval between beats, in seconds, for both sub-groups
+  mem ibiA: real;
+  mem ibiB: real;
+  // interval for next beat
+  mem ibi: real;
+  // when last beat occurred
+  mem lastBeat: real;
+  // how many beats to consider for swing.
+  mem groupSize: int;
+  // proportion belonging to first sub-group
+  mem groupRatio: real;
+  // size for first subgroup
+  mem subSize: int;
+  // where we are in the group
+  mem pos: int; 
+  // tune IBI, within sub-groups
+  mem swing: real;
+  //should be mix subgroups, even beat subgroup 1, odd subgroup 2
+  mem orderMix: bool;
+
+  val trigger = 0;
+  // special case, we overflowed the time, or clock is wrong, consider that we should trigger, reset position
+  if (not(init) || time < lastBeat) {
+    init = true;
+    lastBeat = time; 
+    trigger = 1;
+    pos = 1;
+    // starting with group A
+    ibi = ibiA;
+  }
+  // time to clock
+  else if (time - lastBeat >= ibi) {
+    // update time
+    lastBeat = lastBeat + ibi;
+
+    if (
+        (not(orderMix) && pos < subSize) ||
+        // in mix order, alternate between group A and B as long as there is enough group A left
+        (orderMix && ((pos/2 < subSize && pos % 2 == 0)  || (pos/2 > groupSize - subSize)) )
+        ) {
+      // update interval to come
+      ibi = ibiA;
+      // can accentuate first beat
+      if (pos == 0) {
+        trigger = 1;
+      } else {
+        trigger = 2;
+      }
+    }
+    else {
+      ibi = ibiB;
+      trigger = 3;
+    }
+    pos = pos + 1;
+    pos = pos % groupSize;
+  }
+  return trigger;
+}
+
+// reset position in group, trigger on next call
+and reset() {
+  init = false;
+}
+
+// refresh groups and IBI for both groups
+and _recompute() {
+  // at least one beat in each group (groupSize + 1 for rounding)
+  subSize = clip(int(real(groupSize + 1) * groupRatio), 1, groupSize - 1); 
+  // base IBI
+  val bibi = 60.0/bpm;
+  // compress first sub-group
+  if (swing <= 0.5) {
+    // 2ms minimum IBI
+    ibiA = clip(bibi * (swing * 2.0), 0.002, bibi);
+    // split IBI for the second sub-group
+    ibiB = (real(groupSize) * bibi - ibiA * real(subSize)) / real((groupSize - subSize));
+  }
+  // same algo there
+  else {
+    ibiB = clip(bibi * ((1.0 - swing) * 2.0), 0.002, bibi);
+    ibiA = (real(groupSize) * bibi - ibiB * real(groupSize - subSize)) / real(subSize);
+  }
+}
+
+// change current BPM, 0.002 to max 30000 bpm (to deal with fixed float range, and because why not)
+and setBPM(newBPM: real) {
+  newBPM = clip(newBPM, getMinBPM(), getMaxBPM());
+  if (newBPM <> bpm){
+    bpm = newBPM;
+    _ = _recompute();
+  }
+}
+
+// set how many beats to consider for swing. Typical swing is size 4 (I would say, for 4/4 signature, with a 2 divider) Clip from 2 (one beat in each sub-group) to 128. Can reset group position if we overflowed new group size.
+and setGroupSize(newGroupSize: int) {
+  newGroupSize = clip(newGroupSize, getMinGroupSize(), getMaxGroupSize());
+  if (newGroupSize <> groupSize) {
+    groupSize = newGroupSize;
+    _recompute();
+    // in case went already too far this group size
+    pos = pos % groupSize;
+  }
+}
+
+// how to divide the group, 0: one beat for first, rest for second, 0.5: half/half, 1: all but one for first, 1 for second
+and setGroupRatio(newGroupRatio: real) {
+  newGroupRatio = clip(newGroupRatio, 0.0, 1.0);
+  if (newGroupRatio <> groupRatio) {
+    groupRatio = newGroupRatio;
+    _ = _recompute();
+  }
+}
+// swing ratio, 0: min IBI (1ms) for first sub-group, 1: min for second sub-group. 0.5: neutral. min IBI: 1ms
+and setSwing(newSwing: real) {
+  newSwing = clip(newSwing, 0.0, 1.0);
+  if (swing <> newSwing) {
+    swing = newSwing;
+    _ = _recompute();
+  }
+}
+
+// change sub group order, from all 1, all 2 to 1 on even beats an 2 on odd beats
+and setOrderMix(flag: bool) {
+  orderMix = flag;
+}
+
+and default() @[init] {
+  // good ol' 120 BPM
+  _ = setBPM(120.0);
+  // classical swing for 4/4, combined with divider 2 to get on second beat
+  _ = setGroupSize(4);
+  _ = setGroupRatio(0.5);
+  // no swing at first
+  _ = setSwing(0.5);
+}

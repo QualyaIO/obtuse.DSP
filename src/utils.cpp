@@ -224,4 +224,107 @@ void utils_Trigg_default(utils_Trigg__ctx_type_0 &_ctx){
    utils_Trigg__refresh(_ctx);
 }
 
+void utils_Clock__ctx_type_4_init(utils_Clock__ctx_type_4 &_output_){
+   utils_Clock__ctx_type_4 _ctx;
+   _ctx.swing = 0x0 /* 0.000000 */;
+   _ctx.subSize = 0;
+   _ctx.pos = 0;
+   _ctx.orderMix = false;
+   _ctx.lastBeat = 0x0 /* 0.000000 */;
+   _ctx.init = false;
+   _ctx.ibiB = 0x0 /* 0.000000 */;
+   _ctx.ibiA = 0x0 /* 0.000000 */;
+   _ctx.ibi = 0x0 /* 0.000000 */;
+   _ctx.groupSize = 0;
+   _ctx.groupRatio = 0x0 /* 0.000000 */;
+   _ctx.bpm = 0x0 /* 0.000000 */;
+   utils_Clock_default(_ctx);
+   _output_ = _ctx;
+   return ;
+}
+
+int utils_Clock_process(utils_Clock__ctx_type_4 &_ctx, fix16_t time){
+   int trigger;
+   trigger = 0;
+   if(bool_not(_ctx.init) || (time < _ctx.lastBeat)){
+      _ctx.init = true;
+      _ctx.lastBeat = time;
+      trigger = 1;
+      _ctx.pos = 1;
+      _ctx.ibi = _ctx.ibiA;
+   }
+   else
+   {
+      if((time + (- _ctx.lastBeat)) >= _ctx.ibi){
+         _ctx.lastBeat = (_ctx.ibi + _ctx.lastBeat);
+         if((bool_not(_ctx.orderMix) && (_ctx.pos < _ctx.subSize)) || (_ctx.orderMix && ((((_ctx.pos / 2) < _ctx.subSize) && ((_ctx.pos % 2) == 0)) || ((_ctx.pos / 2) > (_ctx.groupSize + (- _ctx.subSize)))))){
+            _ctx.ibi = _ctx.ibiA;
+            if(_ctx.pos == 0){
+               trigger = 1;
+            }
+            else
+            {
+               trigger = 2;
+            }
+         }
+         else
+         {
+            _ctx.ibi = _ctx.ibiB;
+            trigger = 3;
+         }
+         _ctx.pos = (1 + _ctx.pos);
+         _ctx.pos = (_ctx.pos % _ctx.groupSize);
+      }
+   }
+   return trigger;
+}
+
+void utils_Clock__recompute(utils_Clock__ctx_type_4 &_ctx){
+   _ctx.subSize = int_clip(fix_to_int(fix_mul(_ctx.groupRatio,int_to_fix((1 + _ctx.groupSize)))),1,((-1) + _ctx.groupSize));
+   fix16_t bibi;
+   bibi = fix_div(0x3c0000 /* 60.000000 */,_ctx.bpm);
+   if(_ctx.swing <= 0x8000 /* 0.500000 */){
+      _ctx.ibiA = fix_clip((fix_mul(_ctx.swing,bibi) << 1),0x83 /* 0.002000 */,bibi);
+      _ctx.ibiB = fix_div(((- fix_mul(_ctx.ibiA,int_to_fix(_ctx.subSize))) + fix_mul(bibi,int_to_fix(_ctx.groupSize))),int_to_fix((_ctx.groupSize + (- _ctx.subSize))));
+   }
+   else
+   {
+      _ctx.ibiB = fix_clip((fix_mul(bibi,(0x10000 /* 1.000000 */ + (- _ctx.swing))) << 1),0x83 /* 0.002000 */,bibi);
+      _ctx.ibiA = fix_div(((- fix_mul(_ctx.ibiB,int_to_fix((_ctx.groupSize + (- _ctx.subSize))))) + fix_mul(bibi,int_to_fix(_ctx.groupSize))),int_to_fix(_ctx.subSize));
+   }
+}
+
+void utils_Clock_setBPM(utils_Clock__ctx_type_4 &_ctx, fix16_t newBPM){
+   newBPM = fix_clip(newBPM,0x83 /* 0.002000 */,0x75300000 /* 30000.000000 */);
+   if(newBPM != _ctx.bpm){
+      _ctx.bpm = newBPM;
+      utils_Clock__recompute(_ctx);
+   }
+}
+
+void utils_Clock_setGroupSize(utils_Clock__ctx_type_4 &_ctx, int newGroupSize){
+   newGroupSize = int_clip(newGroupSize,2,128);
+   if(newGroupSize != _ctx.groupSize){
+      _ctx.groupSize = newGroupSize;
+      utils_Clock__recompute(_ctx);
+      _ctx.pos = (_ctx.pos % _ctx.groupSize);
+   }
+}
+
+void utils_Clock_setGroupRatio(utils_Clock__ctx_type_4 &_ctx, fix16_t newGroupRatio){
+   newGroupRatio = fix_clip(newGroupRatio,0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
+   if(newGroupRatio != _ctx.groupRatio){
+      _ctx.groupRatio = newGroupRatio;
+      utils_Clock__recompute(_ctx);
+   }
+}
+
+void utils_Clock_setSwing(utils_Clock__ctx_type_4 &_ctx, fix16_t newSwing){
+   newSwing = fix_clip(newSwing,0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
+   if(_ctx.swing != newSwing){
+      _ctx.swing = newSwing;
+      utils_Clock__recompute(_ctx);
+   }
+}
+
 

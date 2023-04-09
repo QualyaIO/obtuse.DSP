@@ -197,6 +197,129 @@ static_inline void utils_Trigg_default_init(utils_Trigg__ctx_type_0 &_output_){
 
 void utils_Trigg_default(utils_Trigg__ctx_type_0 &_ctx);
 
+static_inline fix16_t utils_Clock_getMinBPM(){
+   return 0x83 /* 0.002000 */;
+};
+
+static_inline fix16_t utils_Clock_getMaxBPM(){
+   return 0x75300000 /* 30000.000000 */;
+};
+
+static_inline int utils_Clock_getMinGroupSize(){
+   return 2;
+};
+
+static_inline int utils_Clock_getMaxGroupSize(){
+   return 128;
+};
+
+typedef struct utils_Clock__ctx_type_4 {
+   fix16_t swing;
+   int subSize;
+   int pos;
+   uint8_t orderMix;
+   fix16_t lastBeat;
+   uint8_t init;
+   fix16_t ibiB;
+   fix16_t ibiA;
+   fix16_t ibi;
+   int groupSize;
+   fix16_t groupRatio;
+   fix16_t bpm;
+} utils_Clock__ctx_type_4;
+
+typedef utils_Clock__ctx_type_4 utils_Clock_process_type;
+
+void utils_Clock__ctx_type_4_init(utils_Clock__ctx_type_4 &_output_);
+
+static_inline void utils_Clock_process_init(utils_Clock__ctx_type_4 &_output_){
+   utils_Clock__ctx_type_4_init(_output_);
+   return ;
+}
+
+int utils_Clock_process(utils_Clock__ctx_type_4 &_ctx, fix16_t time);
+
+typedef utils_Clock__ctx_type_4 utils_Clock_reset_type;
+
+static_inline void utils_Clock_reset_init(utils_Clock__ctx_type_4 &_output_){
+   utils_Clock__ctx_type_4_init(_output_);
+   return ;
+}
+
+static_inline void utils_Clock_reset(utils_Clock__ctx_type_4 &_ctx){
+   _ctx.init = false;
+};
+
+typedef utils_Clock__ctx_type_4 utils_Clock__recompute_type;
+
+static_inline void utils_Clock__recompute_init(utils_Clock__ctx_type_4 &_output_){
+   utils_Clock__ctx_type_4_init(_output_);
+   return ;
+}
+
+void utils_Clock__recompute(utils_Clock__ctx_type_4 &_ctx);
+
+typedef utils_Clock__ctx_type_4 utils_Clock_setBPM_type;
+
+static_inline void utils_Clock_setBPM_init(utils_Clock__ctx_type_4 &_output_){
+   utils_Clock__ctx_type_4_init(_output_);
+   return ;
+}
+
+void utils_Clock_setBPM(utils_Clock__ctx_type_4 &_ctx, fix16_t newBPM);
+
+typedef utils_Clock__ctx_type_4 utils_Clock_setGroupSize_type;
+
+static_inline void utils_Clock_setGroupSize_init(utils_Clock__ctx_type_4 &_output_){
+   utils_Clock__ctx_type_4_init(_output_);
+   return ;
+}
+
+void utils_Clock_setGroupSize(utils_Clock__ctx_type_4 &_ctx, int newGroupSize);
+
+typedef utils_Clock__ctx_type_4 utils_Clock_setGroupRatio_type;
+
+static_inline void utils_Clock_setGroupRatio_init(utils_Clock__ctx_type_4 &_output_){
+   utils_Clock__ctx_type_4_init(_output_);
+   return ;
+}
+
+void utils_Clock_setGroupRatio(utils_Clock__ctx_type_4 &_ctx, fix16_t newGroupRatio);
+
+typedef utils_Clock__ctx_type_4 utils_Clock_setSwing_type;
+
+static_inline void utils_Clock_setSwing_init(utils_Clock__ctx_type_4 &_output_){
+   utils_Clock__ctx_type_4_init(_output_);
+   return ;
+}
+
+void utils_Clock_setSwing(utils_Clock__ctx_type_4 &_ctx, fix16_t newSwing);
+
+typedef utils_Clock__ctx_type_4 utils_Clock_setOrderMix_type;
+
+static_inline void utils_Clock_setOrderMix_init(utils_Clock__ctx_type_4 &_output_){
+   utils_Clock__ctx_type_4_init(_output_);
+   return ;
+}
+
+static_inline void utils_Clock_setOrderMix(utils_Clock__ctx_type_4 &_ctx, uint8_t flag){
+   _ctx.orderMix = flag;
+};
+
+typedef utils_Clock__ctx_type_4 utils_Clock_default_type;
+
+static_inline void utils_Clock_default_init(utils_Clock__ctx_type_4 &_output_){
+   utils_Clock__ctx_type_4_init(_output_);
+   return ;
+}
+
+static_inline void utils_Clock_default(utils_Clock__ctx_type_4 &_ctx){
+   utils_Clock_setBPM(_ctx,0x780000 /* 120.000000 */);
+   utils_Clock_setGroupSize(_ctx,4);
+   utils_Clock_setGroupRatio(_ctx,0x8000 /* 0.500000 */);
+   utils_Clock_setSwing(_ctx,0x8000 /* 0.500000 */);
+}
+
 
 
 #endif // UTILS_H
