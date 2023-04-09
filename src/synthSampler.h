@@ -183,16 +183,10 @@ static_inline void synthSampler_Notes_noteOff_init(synthSampler_Notes__ctx_type_
 
 uint8_t synthSampler_Notes_noteOff(synthSampler_Notes__ctx_type_0 &_ctx, int note, int channel);
 
-static_inline void synthSampler_Buffer_buffer(fix16_t (&_output_)[256]){
-   fix16_t buff[256];
-   fix_copy_array(256,_output_,buff);
-   return ;
+static_inline void synthSampler_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
 
-static_inline void synthSampler_Buffer_buffer_large(fix16_t (&_output_)[2048]){
-   fix16_t buff[2048];
-   fix_copy_array(2048,_output_,buff);
-   return ;
+static_inline void synthSampler_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
 }
 
 static_inline int synthSampler_Sampler_ocarina_samples(){
@@ -421,7 +415,11 @@ static_inline void synthSampler_Sampler_dummy_init(synthSampler_Sampler__ctx_typ
    return ;
 }
 
-void synthSampler_Sampler_dummy(synthSampler_Sampler__ctx_type_3 &_ctx);
+static_inline void synthSampler_Sampler_dummy(synthSampler_Sampler__ctx_type_3 &_ctx){
+   fix16_t buff[256];
+   synthSampler_Buffer_buffer(buff);
+   synthSampler_Sampler_process_bufferTo(_ctx._inst1fd,0,buff);
+}
 
 typedef struct synthSampler_Poly__ctx_type_0 {
    synthSampler_Sampler__ctx_type_2 voice3;
@@ -753,7 +751,11 @@ static_inline void synthSampler_Poly_dummy_init(synthSampler_Poly__ctx_type_1 &_
    return ;
 }
 
-void synthSampler_Poly_dummy(synthSampler_Poly__ctx_type_1 &_ctx);
+static_inline void synthSampler_Poly_dummy(synthSampler_Poly__ctx_type_1 &_ctx){
+   fix16_t buff[256];
+   synthSampler_Buffer_buffer(buff);
+   synthSampler_Poly_runVoice(_ctx._inst179,0,0,buff);
+}
 
 typedef struct synthSampler_Voice__ctx_type_0 {
    synthSampler_Notes__ctx_type_0 voicesinactive;
@@ -1061,7 +1063,12 @@ static_inline void synthSampler_Voice_dummy_init(synthSampler_Voice__ctx_type_1 
    return ;
 }
 
-void synthSampler_Voice_dummy(synthSampler_Voice__ctx_type_1 &_ctx);
+static_inline void synthSampler_Voice_dummy(synthSampler_Voice__ctx_type_1 &_ctx){
+   fix16_t buff[256];
+   synthSampler_Buffer_buffer(buff);
+   synthSampler_Voice_process_bufferTo(_ctx._inst1b9,0,buff);
+   synthSampler_Voice_process_bufferTo_alt(_ctx._inst275,0,buff);
+}
 
 
 

@@ -95,7 +95,7 @@ and setSamplerate(newFs:real) {
 }
 
 and default() @[init] {
-   buffer = Buffer.buffer_large();
+   Buffer.buffer_large(buffer);
    _ = setSamplerate(44.100);
    _ = setDelayms(50.0);
    _ = setDecay(0.5);
@@ -103,6 +103,7 @@ and default() @[init] {
 
 // to let vult find above the good buffer size
 fun dummy() {
-   val buff =  Buffer.buffer();
+   val buff;
+   Buffer.buffer(buff);
    _ = process_bufferTo(0, buff, buff);
 }

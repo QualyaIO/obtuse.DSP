@@ -202,13 +202,15 @@ and default() @[init] {
                 [10000, 21500, 25500, 28500, 45500, 46500, 48550, 50100, 60000, 78000, 83500, 107000]
   );
   // will copy a new array
-  mem buffer_o = Buffer.buffer();
+  mem buffer_o;
+  Buffer.buffer(buffer_o);
   // start with nothing
   slice = -1;
 }
 
 // to let vult find above the good buffer size
 fun dummy() {
-   val buff =  Buffer.buffer();
+  val buff;
+  Buffer.buffer(buff);
    _ = process_bufferTo(0, buff);
 }

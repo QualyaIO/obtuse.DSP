@@ -9,7 +9,7 @@ In case arduino template is used: `sed -i 's/pgm_read_word/pgm_read_dword/g' eng
 
 For now, use `make_vult.sh` to transpile all files -- and set some specific optimization for RP2040.
 
-WARNING: Drummer for some reason does not work on Os optim (default). Tested fine with Ofast.
+WARNING: Be wary where the struct are initialized to avoid problem with stack size, e.g. prefer in the body of the program, especially when large buffer are involved (effectsL or XL).
 
 # Folders
 

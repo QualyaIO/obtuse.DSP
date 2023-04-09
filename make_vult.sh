@@ -21,8 +21,8 @@ vultc -ccode vult/reverb.vult vult/ladder.vult vult/SVF.vult vult/combFB.vult vu
 echo "Generate Utils"
 vultc -ccode vult/trigg.vult -i vult/buffer_medium -real fixed -o src/utils -output-prefix utils_
 
-#echo "Generate Effects with large buffer"
-#vultc -ccode vult/reverb.vult vult/ladder.vult vult/SVF.vult vult/combFB.vult vult/allpass.vult vult/combFF.vult -i vult/buffer_large -real fixed -o src/effectsL -output-prefix effectsL_
+echo "Generate Effects with large buffer"
+vultc -ccode vult/reverb.vult vult/ladder.vult vult/SVF.vult vult/combFB.vult vult/allpass.vult vult/combFF.vult -i vult/buffer_large -real fixed -o src/effectsL -output-prefix effectsL_
 
-#echo "Generate Effects with extra large buffer"
-#vultc -ccode vult/reverb.vult vult/ladder.vult vult/SVF.vult vult/combFB.vult vult/allpass.vult vult/combFF.vult -i vult/buffer_extra_large -real fixed -o src/effectsXL -output-prefix effectsXL_
+echo "Generate Effects with extra large buffer"
+vultc -ccode vult/reverb.vult vult/ladder.vult vult/SVF.vult vult/combFB.vult vult/allpass.vult vult/combFF.vult -i vult/buffer_extra_large -real fixed -o src/effectsXL -output-prefix effectsXL_

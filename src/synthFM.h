@@ -180,16 +180,10 @@ static_inline fix16_t synthFM_Util_velocityToLevel(int velocity){
    return fix_mul(0x204 /* 0.007874 */,int_to_fix(velocity));
 }
 
-static_inline void synthFM_Buffer_buffer(fix16_t (&_output_)[256]){
-   fix16_t buff[256];
-   fix_copy_array(256,_output_,buff);
-   return ;
+static_inline void synthFM_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
 
-static_inline void synthFM_Buffer_buffer_large(fix16_t (&_output_)[2048]){
-   fix16_t buff[2048];
-   fix_copy_array(2048,_output_,buff);
-   return ;
+static_inline void synthFM_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
 }
 
 typedef struct synthFM_OSC__ctx_type_0 {
@@ -693,7 +687,11 @@ static_inline void synthFM_ADSR_dummy_init(synthFM_ADSR__ctx_type_6 &_output_){
    return ;
 }
 
-void synthFM_ADSR_dummy(synthFM_ADSR__ctx_type_6 &_ctx);
+static_inline void synthFM_ADSR_dummy(synthFM_ADSR__ctx_type_6 &_ctx){
+   fix16_t buff[256];
+   synthFM_Buffer_buffer(buff);
+   synthFM_ADSR_process_bufferTo(_ctx._inst182,false,0,buff);
+}
 
 typedef struct synthFM_FM__ctx_type_0 {
    synthFM_Notes__ctx_type_0 playingnotes;
@@ -939,7 +937,11 @@ static_inline void synthFM_FM_dummy_init(synthFM_FM__ctx_type_1 &_output_){
    return ;
 }
 
-void synthFM_FM_dummy(synthFM_FM__ctx_type_1 &_ctx, fix16_t (&wavetable)[4096]);
+static_inline void synthFM_FM_dummy(synthFM_FM__ctx_type_1 &_ctx, fix16_t (&wavetable)[4096]){
+   fix16_t buff[256];
+   synthFM_Buffer_buffer(buff);
+   synthFM_FM_process_bufferTo(_ctx._inst115,wavetable,wavetable,0,buff);
+}
 
 typedef struct synthFM_Poly__ctx_type_0 {
    fix16_t wavetable_modulator[4096];
@@ -1317,7 +1319,11 @@ static_inline void synthFM_Poly_dummy_init(synthFM_Poly__ctx_type_1 &_output_){
    return ;
 }
 
-void synthFM_Poly_dummy(synthFM_Poly__ctx_type_1 &_ctx);
+static_inline void synthFM_Poly_dummy(synthFM_Poly__ctx_type_1 &_ctx){
+   fix16_t buff[256];
+   synthFM_Buffer_buffer(buff);
+   synthFM_Poly_runVoice(_ctx._inst179,0,0,buff);
+}
 
 typedef struct synthFM_Voice__ctx_type_0 {
    synthFM_Notes__ctx_type_0 voicesinactive;
@@ -1625,7 +1631,12 @@ static_inline void synthFM_Voice_dummy_init(synthFM_Voice__ctx_type_1 &_output_)
    return ;
 }
 
-void synthFM_Voice_dummy(synthFM_Voice__ctx_type_1 &_ctx);
+static_inline void synthFM_Voice_dummy(synthFM_Voice__ctx_type_1 &_ctx){
+   fix16_t buff[256];
+   synthFM_Buffer_buffer(buff);
+   synthFM_Voice_process_bufferTo(_ctx._inst1b9,0,buff);
+   synthFM_Voice_process_bufferTo_alt(_ctx._inst275,0,buff);
+}
 
 
 
