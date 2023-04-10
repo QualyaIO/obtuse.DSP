@@ -197,14 +197,6 @@ static_inline void utils_Trigg_default_init(utils_Trigg__ctx_type_0 &_output_){
 
 void utils_Trigg_default(utils_Trigg__ctx_type_0 &_ctx);
 
-static_inline fix16_t utils_Clock_getMinBPM(){
-   return 0x83 /* 0.002000 */;
-};
-
-static_inline fix16_t utils_Clock_getMaxBPM(){
-   return 0x75300000 /* 30000.000000 */;
-};
-
 static_inline int utils_Clock_getMinGroupSize(){
    return 2;
 };
@@ -213,11 +205,20 @@ static_inline int utils_Clock_getMaxGroupSize(){
    return 128;
 };
 
+static_inline fix16_t utils_Clock_getMinBPM(){
+   return 0x4189 /* 0.256000 */;
+};
+
+static_inline fix16_t utils_Clock_getMaxBPM(){
+   return 0x75300000 /* 30000.000000 */;
+};
+
 typedef struct utils_Clock__ctx_type_4 {
    fix16_t swing;
    int subSize;
    int pos;
    uint8_t orderMix;
+   fix16_t lastTime;
    fix16_t lastBeat;
    uint8_t init;
    fix16_t ibiB;
