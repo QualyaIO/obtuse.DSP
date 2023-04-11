@@ -26,11 +26,43 @@ fun getMaxBPM(): real {
   return 30000.0;
 }
 
+// compare two times stored as seconds and fraction of seconds
+// return 1 if time2 > time 1, -1 if time2 < time 1, 0 if time2 == time1
+// FIXM: the whole thing is probably not the most optimized
+fun compareTimeFract(time1S: int, time1Fract: real, time2S: int, time2Fract: real): int {
+  // tedious normalization
+  while (time1Fract < 0.0) {
+    time1S = time1S - 1;
+    time1Fract = time1Fract + 1.0;
+  }
+  while (time1Fract > 1.0) {
+    time1S = time1S + 1;
+    time1Fract = time1Fract - 1.0;
+  }
+  while (time2Fract < 0.0) {
+    time2S = time2S - 1;
+    time2Fract = time2Fract + 1.0;
+  }
+  while (time2Fract > 1.0) {
+    time2S = time2S + 1;
+    time2Fract = time2Fract - 1.0;
+  }
 
-// time: passing by, in seconds, should be positive
+  if (time1S == time2S && time1Fract == time2Fract) {
+    return 0;
+  }
+  else if (time1S < time2S || (time1S == time2S && time1Fract <= time2Fract)) {
+    return 1;
+  }
+  else {
+    return -1;
+  }
+}
+
+// timeS, timeFract: passing by, in seconds. timeS is integer part (should be positive), timeFract is the remainder. Used to overcome float precision
 // return 1 upon first beat, 2 new beat from first sub-group, 3 for second sub-group (groupped by IBI length afterward), 0 otherwise
 // will return trigger upon first call (start with beat)
-fun process(time: real): int {
+fun process(timeS: int, timeFract: real): int {
   // check if first run (or if reset), since vult init to false
   mem init: bool;
   // beats per minutes
@@ -41,7 +73,8 @@ fun process(time: real): int {
   // interval for next beat
   mem ibi: real;
   // when last beat occurred
-  mem lastBeat: real;
+  mem lastBeatS: int;
+  mem lastBeatFract: real;
   // how many beats to consider for swing.
   mem groupSize: int;
   // proportion belonging to first sub-group
@@ -55,22 +88,30 @@ fun process(time: real): int {
   //should be mix subgroups, even beat subgroup 1, odd subgroup 2
   mem orderMix: bool;
   // make sure we advance time, otherwise we don't redo computations
-  mem lastTime: real;
+  mem lastTimeS: int;
+  mem lastTimeFract: real;
 
   val trigger = 0;
   // special case, we overflowed the time, or clock is wrong, consider that we should trigger, reset position
-  if (not(init) || time < lastBeat) {
+  if (not(init) || compareTimeFract(timeS, timeFract, lastBeatS, lastBeatFract) > 0) {
     init = true;
-    lastBeat = time; 
+    lastBeatS = timeS; 
+    lastBeatFract = timeFract; 
     trigger = 1;
     pos = 1;
     // starting with group A
     ibi = ibiA;
   }
-  // time to clock
-  else if (lastTime <> time && time - lastBeat >= ibi) {
+  // time to clock (time changed and we overshoot ibi)
+  else if (compareTimeFract(lastTimeS, lastTimeFract, timeS, timeFract) <> 0 && compareTimeFract(timeS - lastBeatS, timeFract - lastBeatFract, int(ibi), ibi % 1.0) <= 0) {
     // update time
-    lastBeat = lastBeat + ibi;
+    lastBeatS = lastBeatS + int(ibi);
+    lastBeatFract = lastBeatFract + ibi % 1.0;
+    // norm
+    while (lastBeatFract >= 1.0) {
+      lastBeatS = lastBeatS + 1;
+      lastBeatFract = lastBeatFract - 1.0;
+    }
 
     if (
         (not(orderMix) && pos < subSize) ||
@@ -93,7 +134,8 @@ fun process(time: real): int {
     pos = pos + 1;
     pos = pos % groupSize;
   }
-  lastTime = time;
+  lastTimeS = timeS;
+  lastTimeFract = timeFract;
   return trigger;
 }
 
