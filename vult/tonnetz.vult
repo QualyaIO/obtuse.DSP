@@ -1,17 +1,19 @@
 
 // generating chords using Tonnetz relationships
 
+// FIXME: vult as per used version (circa 0.4) dose not provide fixed float for log or log10, it computations cannot work at runtime
+fun logBase(x) @[table(size=128, min=0.1, max=60.0)] {
+  return log10(x)/log10(exp(1.0));
+}
 
-// super pow(), to overcome some limitation with vult
-// TODO: check up to which point pow() really differs with fixed float
+// super pow(), to overcome some limitation with vult, which does not ship with a pow for fixed float
 fun spow(base: real, x: real) {
-  val log_base = log10(base)/log10(exp(1.0));
-  return exp(log_base * x);
+  return exp(logBase(base) * x);
 }
 
 // compute cumulative beta for x [0..1] and a == 1
 fun beta(x: real, b: real): real  {
-  return 1.0 - spow((1.0 - x), b);
+  return clip(1.0 - spow((1.0 - x), b), 0.0, 1.0);
 }
 // generating chords using Tonnetz relationships
 
@@ -584,7 +586,7 @@ and _updateChords(bParam: real) {
   }
   else {
     // since the chords "loop", will compute in two halves
-    val maxi = (size(chords) - 1) / 2;
+    val maxi = real(size(chords) - 1) / 2.0;
 
     // current chords index
     val i = 0;
@@ -596,12 +598,12 @@ and _updateChords(bParam: real) {
                      
     // will scale to account for the fact that we aggregate two halves
     val scaleP = 0.0;
-    scaleP = (1.0 - chordP) * (real(maxi) / real(size(chords)-1));
+    scaleP = (1.0 - chordP) * (maxi / real(size(chords)-1));
  
     // starting first half
     i = i + 1;
-    while (i <= maxi) {
-      x = real(i) / real(maxi);
+    while (i <= int(maxi)) {
+      x = real(i) /maxi;
       chords[i] = chordP + beta(x, bParam) * scaleP;
       i = i + 1;
     }
@@ -609,7 +611,7 @@ and _updateChords(bParam: real) {
     // second half
     while (i < size(chords) - 1) {
       // index in this half
-      x = real(i - maxi) / real(maxi);
+      x = (real(i) - maxi) / maxi;
       // inverse cumulative function here for symmetry, the center of the array being the furthest from selected chord [0]
       chords[i] = 1.0 - beta(1.0-x, bParam) * scaleP;
       i = i + 1;
@@ -674,6 +676,7 @@ and setChordSpread(newSpread: real) {
       else {
         // using exponential scale. 
         // 0 mapped to ~ 54.5, 1 mapped to, conveniently, 1
+        // WARNING: do not exceed max logBase table
         val bParam = exp((1.0 - newSpread) * 4.0);
         _ = _updateChords(bParam);
       }
@@ -696,6 +699,7 @@ and setInversionSpread(newSpread: real) {
       else {
         // using exponential scale. 
         // 0 mapped to ~ 54.5, 1 mapped to, conveniently, 1
+        // WARNING: do not exceed max logBase table
         val bParam = exp((1.0 - newSpread) * 4.0);
         _ = _updateInversions(bParam);
       }
