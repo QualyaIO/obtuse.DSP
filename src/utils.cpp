@@ -440,29 +440,35 @@ void utils_Tonnetz_getChordInversion(int chord, int inversion, int (&_output_)[3
    inversion = int_clip(inversion,0,2);
    int notes[3];
    utils_Tonnetz_getChord(chord,notes);
+   int notesInv[3];
+   {
+      notesInv[0] = notes[0];
+      notesInv[1] = notes[1];
+      notesInv[2] = notes[2];
+   }
    switch(inversion) {
       case 1:
          {
-            notes[0] = notes[1];
-            notes[1] = notes[2];
-            notes[2] = (12 + notes[0]);
+            notesInv[0] = notes[1];
+            notesInv[1] = notes[2];
+            notesInv[2] = (12 + notes[0]);
          }
       break;
       case 2:
          {
-            notes[0] = notes[2];
-            notes[1] = (12 + notes[0]);
-            notes[2] = (12 + notes[1]);
+            notesInv[0] = notes[2];
+            notesInv[1] = (12 + notes[0]);
+            notesInv[2] = (12 + notes[1]);
          }
       break;
     
    }
-   int_copy_array(3,_output_,notes);
+   int_copy_array(3,_output_,notesInv);
    return ;
 }
 
-void utils_Tonnetz__ctx_type_4_init(utils_Tonnetz__ctx_type_4 &_output_){
-   utils_Tonnetz__ctx_type_4 _ctx;
+void utils_Tonnetz__ctx_type_8_init(utils_Tonnetz__ctx_type_8 &_output_){
+   utils_Tonnetz__ctx_type_8 _ctx;
    int_init_array(11,0,_ctx.shifts);
    _ctx.shift = 0;
    _ctx.scaleId = 0;
@@ -482,7 +488,7 @@ void utils_Tonnetz__ctx_type_4_init(utils_Tonnetz__ctx_type_4 &_output_){
    return ;
 }
 
-uint8_t utils_Tonnetz_isChordInShift(utils_Tonnetz__ctx_type_4 &_ctx, int checkChord, int checkShift){
+uint8_t utils_Tonnetz_isChordInShift(utils_Tonnetz__ctx_type_8 &_ctx, int checkChord, int checkShift){
    if(checkChord < 0){
       return false;
    }
@@ -491,7 +497,7 @@ uint8_t utils_Tonnetz_isChordInShift(utils_Tonnetz__ctx_type_4 &_ctx, int checkC
    return (_ctx.scale[((checkShift + notes[0]) % 12)] && _ctx.scale[((checkShift + notes[1]) % 12)] && _ctx.scale[((checkShift + notes[2]) % 12)]);
 }
 
-int utils_Tonnetz_drawChord(utils_Tonnetz__ctx_type_4 &_ctx, uint8_t lookAround){
+int utils_Tonnetz_drawChord(utils_Tonnetz__ctx_type_8 &_ctx, uint8_t lookAround){
    fix16_t tChords[6];
    int i;
    i = 0;
@@ -530,7 +536,7 @@ int utils_Tonnetz_drawChord(utils_Tonnetz__ctx_type_4 &_ctx, uint8_t lookAround)
    return (-1);
 }
 
-int utils_Tonnetz_drawInversion(utils_Tonnetz__ctx_type_4 &_ctx){
+int utils_Tonnetz_drawInversion(utils_Tonnetz__ctx_type_8 &_ctx){
    fix16_t pInversion;
    pInversion = fix_random();
    int i;
@@ -544,7 +550,7 @@ int utils_Tonnetz_drawInversion(utils_Tonnetz__ctx_type_4 &_ctx){
    return i;
 }
 
-void utils_Tonnetz_process(utils_Tonnetz__ctx_type_4 &_ctx){
+void utils_Tonnetz_process(utils_Tonnetz__ctx_type_8 &_ctx){
    int selectedChord;
    int notes[3];
    if(fix_random() < _ctx.pJump){
@@ -668,7 +674,7 @@ void utils_Tonnetz_process(utils_Tonnetz__ctx_type_4 &_ctx){
    return ;
 }
 
-void utils_Tonnetz_reset(utils_Tonnetz__ctx_type_4 &_ctx){
+void utils_Tonnetz_reset(utils_Tonnetz__ctx_type_8 &_ctx){
    _ctx.shift = 0;
    int i;
    i = 0;
@@ -678,7 +684,7 @@ void utils_Tonnetz_reset(utils_Tonnetz__ctx_type_4 &_ctx){
    }
 }
 
-void utils_Tonnetz_setScale(utils_Tonnetz__ctx_type_4 &_ctx, int id){
+void utils_Tonnetz_setScale(utils_Tonnetz__ctx_type_8 &_ctx, int id){
    id = int_clip(id,0,19);
    if(_ctx.scaleId != id){
       _ctx.scaleId = id;
@@ -687,15 +693,15 @@ void utils_Tonnetz_setScale(utils_Tonnetz__ctx_type_4 &_ctx, int id){
    }
 }
 
-void utils_Tonnetz__updateChords(utils_Tonnetz__ctx_type_4 &_ctx, fix16_t bParam){
+void utils_Tonnetz__updateChords(utils_Tonnetz__ctx_type_8 &_ctx, fix16_t bParam){
    bParam = fix_clip(bParam,0x0 /* 0.000000 */,bParam);
    if(6 == 1){
       _ctx.chords[0] = 0x10000 /* 1.000000 */;
    }
    else
    {
-      int maxi;
-      maxi = (5 / 2);
+      fix16_t maxi;
+      maxi = 0x28000 /* 2.500000 */;
       int i;
       i = 0;
       fix16_t x;
@@ -705,15 +711,15 @@ void utils_Tonnetz__updateChords(utils_Tonnetz__ctx_type_4 &_ctx, fix16_t bParam
       chordP = _ctx.chords[i];
       fix16_t scaleP;
       scaleP = 0x0 /* 0.000000 */;
-      scaleP = fix_mul(fix_mul(0x3333 /* 0.200000 */,int_to_fix(maxi)),(0x10000 /* 1.000000 */ + (- chordP)));
+      scaleP = fix_mul(fix_mul(0x3333 /* 0.200000 */,maxi),(0x10000 /* 1.000000 */ + (- chordP)));
       i = (1 + i);
-      while(i <= maxi){
-         x = fix_div(int_to_fix(i),int_to_fix(maxi));
+      while(i <= fix_to_int(maxi)){
+         x = fix_div(int_to_fix(i),maxi);
          _ctx.chords[i] = (chordP + fix_mul(scaleP,utils_Tonnetz_beta(x,bParam)));
          i = (1 + i);
       }
       while(i < 5){
-         x = fix_div(int_to_fix((i + (- maxi))),int_to_fix(maxi));
+         x = fix_div((int_to_fix(i) + (- maxi)),maxi);
          _ctx.chords[i] = (0x10000 /* 1.000000 */ + (- fix_mul(scaleP,utils_Tonnetz_beta((0x10000 /* 1.000000 */ + (- x)),bParam))));
          i = (1 + i);
       }
@@ -721,7 +727,7 @@ void utils_Tonnetz__updateChords(utils_Tonnetz__ctx_type_4 &_ctx, fix16_t bParam
    }
 }
 
-void utils_Tonnetz__updateInversions(utils_Tonnetz__ctx_type_4 &_ctx, fix16_t bParam){
+void utils_Tonnetz__updateInversions(utils_Tonnetz__ctx_type_8 &_ctx, fix16_t bParam){
    bParam = fix_clip(bParam,0x0 /* 0.000000 */,bParam);
    if(3 == 1){
       _ctx.inversions[0] = 0x10000 /* 1.000000 */;
@@ -755,7 +761,7 @@ void utils_Tonnetz__updateInversions(utils_Tonnetz__ctx_type_4 &_ctx, fix16_t bP
    }
 }
 
-void utils_Tonnetz_setChordSpread(utils_Tonnetz__ctx_type_4 &_ctx, fix16_t newSpread){
+void utils_Tonnetz_setChordSpread(utils_Tonnetz__ctx_type_8 &_ctx, fix16_t newSpread){
    newSpread = fix_clip(newSpread,0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
    if(newSpread != _ctx.chordSpread){
       _ctx.chordSpread = newSpread;
@@ -776,7 +782,7 @@ void utils_Tonnetz_setChordSpread(utils_Tonnetz__ctx_type_4 &_ctx, fix16_t newSp
    }
 }
 
-void utils_Tonnetz_setInversionSpread(utils_Tonnetz__ctx_type_4 &_ctx, fix16_t newSpread){
+void utils_Tonnetz_setInversionSpread(utils_Tonnetz__ctx_type_8 &_ctx, fix16_t newSpread){
    newSpread = fix_clip(newSpread,0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
    if(newSpread != _ctx.inversionSpread){
       _ctx.inversionSpread = newSpread;
@@ -797,7 +803,7 @@ void utils_Tonnetz_setInversionSpread(utils_Tonnetz__ctx_type_4 &_ctx, fix16_t n
    }
 }
 
-fix16_t utils_Tonnetz_getChordP(utils_Tonnetz__ctx_type_4 &_ctx, int chordId){
+fix16_t utils_Tonnetz_getChordP(utils_Tonnetz__ctx_type_8 &_ctx, int chordId){
    chordId = int_clip(chordId,0,6);
    int idx;
    idx = ((chordId + (- _ctx.chord)) % 6);
@@ -810,7 +816,7 @@ fix16_t utils_Tonnetz_getChordP(utils_Tonnetz__ctx_type_4 &_ctx, int chordId){
    }
 }
 
-void utils_Tonnetz_default(utils_Tonnetz__ctx_type_4 &_ctx){
+void utils_Tonnetz_default(utils_Tonnetz__ctx_type_8 &_ctx){
    _ctx.scaleId = (-1);
    utils_Tonnetz_setScale(_ctx,1);
    utils_Tonnetz_setRoot(_ctx,60);
