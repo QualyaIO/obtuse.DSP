@@ -299,13 +299,14 @@ fun getChord(chord: int) : array(int, 3) {
 fun getChordInversion(chord: int, inversion: int) : array(int, 3) {
   inversion = clip(inversion, 0, 2);
   val notes = getChord(chord);
+  val notesInv = [notes[0], notes[1], notes[2]];
   if (inversion == 1) {
-    notes = [notes[1], notes[2], notes[0] + 12];
+    notesInv = [notes[1], notes[2], notes[0] + 12];
   }
   else if (inversion == 2) {
-    notes = [notes[2], notes[0] + 12, notes[1] + 12];
+    notesInv = [notes[2], notes[0] + 12, notes[1] + 12];
   }
-  return notes;
+  return notesInv;
 }
 
 // check if this shift, possess this chord (as first note only, not checking inversions)
