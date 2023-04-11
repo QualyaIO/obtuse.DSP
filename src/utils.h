@@ -285,6 +285,119 @@ static_inline void utils_Tonnetz_default_init(utils_Tonnetz__ctx_type_8 &_output
 
 void utils_Tonnetz_default(utils_Tonnetz__ctx_type_8 &_ctx);
 
+typedef struct utils_Arp__ctx_type_0 {
+   int step;
+   int sequenceSize;
+   int sequence[32];
+   int playSequence[32];
+   fix16_t pRandomize;
+   fix16_t pRandomNotes;
+   int notes[16];
+   int nbNotes;
+   int mode;
+   uint8_t dirty;
+} utils_Arp__ctx_type_0;
+
+typedef utils_Arp__ctx_type_0 utils_Arp_reset_type;
+
+void utils_Arp__ctx_type_0_init(utils_Arp__ctx_type_0 &_output_);
+
+static_inline void utils_Arp_reset_init(utils_Arp__ctx_type_0 &_output_){
+   utils_Arp__ctx_type_0_init(_output_);
+   return ;
+}
+
+void utils_Arp_reset(utils_Arp__ctx_type_0 &_ctx);
+
+typedef utils_Arp__ctx_type_0 utils_Arp_process_type;
+
+static_inline void utils_Arp_process_init(utils_Arp__ctx_type_0 &_output_){
+   utils_Arp__ctx_type_0_init(_output_);
+   return ;
+}
+
+int utils_Arp_process(utils_Arp__ctx_type_0 &_ctx);
+
+typedef utils_Arp__ctx_type_0 utils_Arp__updateSequence_type;
+
+static_inline void utils_Arp__updateSequence_init(utils_Arp__ctx_type_0 &_output_){
+   utils_Arp__ctx_type_0_init(_output_);
+   return ;
+}
+
+void utils_Arp__updateSequence(utils_Arp__ctx_type_0 &_ctx);
+
+typedef utils_Arp__ctx_type_0 utils_Arp_setNotes_type;
+
+static_inline void utils_Arp_setNotes_init(utils_Arp__ctx_type_0 &_output_){
+   utils_Arp__ctx_type_0_init(_output_);
+   return ;
+}
+
+void utils_Arp_setNotes(utils_Arp__ctx_type_0 &_ctx, int (&newNotes)[16]);
+
+typedef utils_Arp__ctx_type_0 utils_Arp_setMode_type;
+
+static_inline void utils_Arp_setMode_init(utils_Arp__ctx_type_0 &_output_){
+   utils_Arp__ctx_type_0_init(_output_);
+   return ;
+}
+
+void utils_Arp_setMode(utils_Arp__ctx_type_0 &_ctx, int newMode);
+
+typedef utils_Arp__ctx_type_0 utils_Arp_setPRandomNotes_type;
+
+static_inline void utils_Arp_setPRandomNotes_init(utils_Arp__ctx_type_0 &_output_){
+   utils_Arp__ctx_type_0_init(_output_);
+   return ;
+}
+
+void utils_Arp_setPRandomNotes(utils_Arp__ctx_type_0 &_ctx, fix16_t p);
+
+typedef utils_Arp__ctx_type_0 utils_Arp_setPRandomize_type;
+
+static_inline void utils_Arp_setPRandomize_init(utils_Arp__ctx_type_0 &_output_){
+   utils_Arp__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void utils_Arp_setPRandomize(utils_Arp__ctx_type_0 &_ctx, fix16_t p){
+   _ctx.pRandomize = fix_clip(p,0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
+};
+
+typedef utils_Arp__ctx_type_0 utils_Arp_getNbModes_type;
+
+static_inline void utils_Arp_getNbModes_init(utils_Arp__ctx_type_0 &_output_){
+   utils_Arp__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int utils_Arp_getNbModes(utils_Arp__ctx_type_0 &_ctx){
+   return 6;
+};
+
+typedef utils_Arp__ctx_type_0 utils_Arp_getNbNotes_type;
+
+static_inline void utils_Arp_getNbNotes_init(utils_Arp__ctx_type_0 &_output_){
+   utils_Arp__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int utils_Arp_getNbNotes(utils_Arp__ctx_type_0 &_ctx){
+   return _ctx.nbNotes;
+};
+
+typedef utils_Arp__ctx_type_0 utils_Arp_getSequenceSize_type;
+
+static_inline void utils_Arp_getSequenceSize_init(utils_Arp__ctx_type_0 &_output_){
+   utils_Arp__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int utils_Arp_getSequenceSize(utils_Arp__ctx_type_0 &_ctx){
+   return _ctx.sequenceSize;
+};
+
 typedef struct utils_Trigg__ctx_type_0 {
    uint8_t triggers[128];
    int ticks;

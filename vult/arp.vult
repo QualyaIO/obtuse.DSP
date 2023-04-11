@@ -1,0 +1,184 @@
+
+// arpeggiator
+
+// reset sequence to beginning -- and chance to update random notes, if any
+fun reset() {
+  // how many active notes
+  mem nbNotes: int;
+  // notes index in the sequence (size of the sequence max)
+  mem sequence: array(int, 32);
+  // the actual sequence to be played, with possible random notes
+  mem playSequence: array(int, 32);
+  // size of current sequence
+  mem sequenceSize;
+  // flag set internally upon change which require randomization
+  mem dirty;
+  // position in current sequence
+  mem step;
+  // probability that each note of the sequence is randomly selected
+  mem pRandomNotes;
+  // proability to re-compute random notes upon new sequence (or reset)
+  mem pRandomize;
+
+  // recompute actual sequence to be played if state changed or randomized
+  if (dirty || (pRandomize > 0.0 && pRandomNotes > 0.0 && random() <= pRandomize)) {
+    val i = 0;
+    while (i < sequenceSize) {
+      if (pRandomNotes > 0.0 && random() <= pRandomNotes) {
+        playSequence[i] = irandom() % nbNotes; 
+      }
+      else {
+        playSequence[i] = sequence[i];
+      }
+      i = i + 1;
+    }
+  }
+  step = 0;
+  dirty = false;
+}
+
+// main function, return new note, -1 if none
+and process(): int {
+  // up to 16 notes in the arp. 0..127, -1 if inactive
+  mem notes: array(int, 16);
+  // type of arp (see setmode)
+  mem mode: int;
+  val newNote = notes[playSequence[step]];
+  step = step + 1;
+  // reset at the end of the sequence
+  if (step >= sequenceSize) {
+    _ = reset();
+  }
+  return newNote;
+}
+
+
+// recompute sequence array
+and _updateSequence() {
+  // update number of active step in the sequence
+  if (mode == 0 || mode == 1) {
+    sequenceSize = nbNotes; 
+  }
+  else if (mode == 2 || mode == 4) {
+    sequenceSize = nbNotes * 2 - 2; 
+  }
+  else if (mode == 3 || mode == 5) {
+    sequenceSize = nbNotes * 2; 
+  }
+  // update sequence
+  // TODO: probably more concise way to do it
+  val i = 0;
+  while (i < sequenceSize) {
+    // up
+    if (mode == 0) {
+      sequence[i] = i;
+    }
+    // down
+    else if (mode == 1) {
+      sequence[i] = nbNotes - 1 - i;
+    }
+    // up-down no repeat
+    else if (mode == 2) {
+      if (i < nbNotes) {
+        sequence[i] = i;
+      }
+      else {
+        sequence[i] = nbNotes - 2 - (i - nbNotes);
+      }
+    }
+    // up-down repeat
+    else if (mode == 3) {
+      if (i < nbNotes) {
+        sequence[i] = i;
+      }
+      else {
+        sequence[i] = nbNotes - 1 - (i - nbNotes);
+      }
+    }
+    // down-up no repeat
+    else if (mode == 4) {
+      if (i < nbNotes) {
+        sequence[i] = nbNotes - 1 - i;
+      }
+      else {
+        sequence[i] = (i - nbNotes) + 1;
+      }
+    }
+    // up-down repeat
+    else if (mode == 5) {
+      if (i < nbNotes) {
+        sequence[i] = nbNotes - 1 - i;
+      }
+      else {
+        sequence[i] = i - nbNotes;
+      }
+    }
+    i = i + 1;
+  }
+  // re-init sequence, flag state changed
+  dirty = true;
+  _ = reset();
+}
+
+// updates notes of the arp, expect increasing order of pitch 0..127. Notes below 0 will not be considered, above 127 will be clipped.
+// will reset sequence if the number of notes changes, otherwise left untouched
+and setNotes(newNotes: array(int, 16)) {
+  val i = 0;
+  val j = 0;
+  while (i < size(newNotes)){
+    if (newNotes[i] > 0) {
+      notes[j] = clip(newNotes[i], 0, 127);
+      j = j + 1;
+    }
+    i = i + 1;
+  }
+  // check if the number of active notes changed
+  if (j <> nbNotes) {
+    nbNotes = j;
+    _ = _updateSequence();
+  }
+}
+
+// changing type of sequence -- resetting sequence if changed
+// 0: up (1 2 3 1 2 3), sequence size nbNotes
+// 1: down (3 2 1 3 2 1), sequence size nbNotes
+// 2: up-down no repeat (1 2 3 2 1 2 3 2 1), sequence size nbNotes * 2 - 2
+// 3: up-down repeat (1 2 3 3 2 1 1 2 3), sequence size nbNotes * 2
+// 4: down-up no repeat (3 2 1 2 3 2 1), sequence size nbNotes * 2 - 2
+// 5: down-up repeat (3 2 1 1 2 3 3 2 1), sequence size nbNotes * 2
+and setMode(newMode: int) {
+  newMode = clip(newMode, 0, 5);
+  if (newMode <> mode) {
+    mode = newMode;
+    _ = _updateSequence();
+  }
+}
+
+// change probability that each note of the sequence is random. Changing this value will recompute sequence upon reset
+and setPRandomNotes(p: real) {
+  p = clip(p, 0.0, 1.0);
+  if (pRandomNotes <> p) {
+    pRandomNotes = p;
+    dirty = true;
+  }
+}
+
+// change probability that random notes would change upon new sequence
+and setPRandomize(p: real) {
+  pRandomize = clip(p, 0.0, 1.0);
+}
+
+// get number of modes
+and getNbModes() : int {
+  return 6;
+}
+
+// number of current active notes
+and getNbNotes() : int {
+  return nbNotes;
+}
+
+// length of current sequence
+and getSequenceSize() : int {
+  return sequenceSize;
+}

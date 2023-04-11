@@ -828,6 +828,155 @@ void utils_Tonnetz_default(utils_Tonnetz__ctx_type_8 &_ctx){
    utils_Tonnetz_setJump(_ctx,0x8000 /* 0.500000 */);
 }
 
+void utils_Arp__ctx_type_0_init(utils_Arp__ctx_type_0 &_output_){
+   utils_Arp__ctx_type_0 _ctx;
+   _ctx.step = 0;
+   _ctx.sequenceSize = 0;
+   int_init_array(32,0,_ctx.sequence);
+   int_init_array(32,0,_ctx.playSequence);
+   _ctx.pRandomize = 0x0 /* 0.000000 */;
+   _ctx.pRandomNotes = 0x0 /* 0.000000 */;
+   int_init_array(16,0,_ctx.notes);
+   _ctx.nbNotes = 0;
+   _ctx.mode = 0;
+   _ctx.dirty = false;
+   _output_ = _ctx;
+   return ;
+}
+
+void utils_Arp_reset(utils_Arp__ctx_type_0 &_ctx){
+   if(_ctx.dirty || ((_ctx.pRandomize > 0x0 /* 0.000000 */) && (_ctx.pRandomNotes > 0x0 /* 0.000000 */) && (fix_random() <= _ctx.pRandomize))){
+      int i;
+      i = 0;
+      while(i < _ctx.sequenceSize){
+         if((_ctx.pRandomNotes > 0x0 /* 0.000000 */) && (fix_random() <= _ctx.pRandomNotes)){
+            _ctx.playSequence[i] = (irandom() % _ctx.nbNotes);
+         }
+         else
+         {
+            _ctx.playSequence[i] = _ctx.sequence[i];
+         }
+         i = (1 + i);
+      }
+   }
+   _ctx.step = 0;
+   _ctx.dirty = false;
+}
+
+int utils_Arp_process(utils_Arp__ctx_type_0 &_ctx){
+   int newNote;
+   newNote = _ctx.notes[_ctx.playSequence[_ctx.step]];
+   _ctx.step = (1 + _ctx.step);
+   if(_ctx.step >= _ctx.sequenceSize){
+      utils_Arp_reset(_ctx);
+   }
+   return newNote;
+}
+
+void utils_Arp__updateSequence(utils_Arp__ctx_type_0 &_ctx){
+   if((_ctx.mode == 0) || (_ctx.mode == 1)){
+      _ctx.sequenceSize = _ctx.nbNotes;
+   }
+   else
+   {
+      if((_ctx.mode == 2) || (_ctx.mode == 4)){
+         _ctx.sequenceSize = ((-2) + (_ctx.nbNotes << 1));
+      }
+      else
+      {
+         if((_ctx.mode == 3) || (_ctx.mode == 5)){
+            _ctx.sequenceSize = (_ctx.nbNotes << 1);
+         }
+      }
+   }
+   int i;
+   i = 0;
+   while(i < _ctx.sequenceSize){
+      switch(_ctx.mode) {
+         case 0:
+            _ctx.sequence[i] = i;
+         break;
+         case 1:
+            _ctx.sequence[i] = ((-1) + _ctx.nbNotes + (- i));
+         break;
+         case 2:
+            if(i < _ctx.nbNotes){
+               _ctx.sequence[i] = i;
+            }
+            else
+            {
+               _ctx.sequence[i] = ((-2) + _ctx.nbNotes + (- (i + (- _ctx.nbNotes))));
+            }
+         break;
+         case 3:
+            if(i < _ctx.nbNotes){
+               _ctx.sequence[i] = i;
+            }
+            else
+            {
+               _ctx.sequence[i] = ((-1) + _ctx.nbNotes + (- (i + (- _ctx.nbNotes))));
+            }
+         break;
+         case 4:
+            if(i < _ctx.nbNotes){
+               _ctx.sequence[i] = ((-1) + _ctx.nbNotes + (- i));
+            }
+            else
+            {
+               _ctx.sequence[i] = (1 + i + (- _ctx.nbNotes));
+            }
+         break;
+         case 5:
+            if(i < _ctx.nbNotes){
+               _ctx.sequence[i] = ((-1) + _ctx.nbNotes + (- i));
+            }
+            else
+            {
+               _ctx.sequence[i] = (i + (- _ctx.nbNotes));
+            }
+         break;
+       
+      }
+      i = (1 + i);
+   }
+   _ctx.dirty = true;
+   utils_Arp_reset(_ctx);
+}
+
+void utils_Arp_setNotes(utils_Arp__ctx_type_0 &_ctx, int (&newNotes)[16]){
+   int i;
+   i = 0;
+   int j;
+   j = 0;
+   while(i < 16){
+      if(newNotes[i] > 0){
+         _ctx.notes[j] = int_clip(newNotes[i],0,127);
+         j = (1 + j);
+      }
+      i = (1 + i);
+   }
+   if(j != _ctx.nbNotes){
+      _ctx.nbNotes = j;
+      utils_Arp__updateSequence(_ctx);
+   }
+}
+
+void utils_Arp_setMode(utils_Arp__ctx_type_0 &_ctx, int newMode){
+   newMode = int_clip(newMode,0,5);
+   if(newMode != _ctx.mode){
+      _ctx.mode = newMode;
+      utils_Arp__updateSequence(_ctx);
+   }
+}
+
+void utils_Arp_setPRandomNotes(utils_Arp__ctx_type_0 &_ctx, fix16_t p){
+   p = fix_clip(p,0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
+   if(_ctx.pRandomNotes != p){
+      _ctx.pRandomNotes = p;
+      _ctx.dirty = true;
+   }
+}
+
 void utils_Trigg__ctx_type_0_init(utils_Trigg__ctx_type_0 &_output_){
    utils_Trigg__ctx_type_0 _ctx;
    bool_init_array(128,false,_ctx.triggers);
