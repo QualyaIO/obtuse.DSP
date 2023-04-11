@@ -1,36 +1,758 @@
 
 // generating chords using Tonnetz relationships
 
+
+// super pow(), to overcome some limitation with vult
+// TODO: check up to which point pow() really differs with fixed float
+fun spow(base: real, x: real) {
+  val log_base = log10(base)/log10(exp(1.0));
+  return exp(log_base * x);
+}
+
+// compute cumulative beta for x [0..1] and a == 1
+fun beta(x: real, b: real): real  {
+  return 1.0 - spow((1.0 - x), b);
+}
+// generating chords using Tonnetz relationships
+
 //    8 - - 3
 //   / \   / \
 // 5 - - 0 - - 7
 //  \   / \   /
 //    9 - - 4 
 
-fun process() {
-  // which of the 12 notes is enabled or not in this scale. 0 being the root, it should be always true.
-  mem scale: array(bool, 12); 
-}
-
-// choose from one of the scale
-// 0: diatonic ionian (major)
+// get scale, which notes among the 12 are included. all false if not handled.
+// 
+// 0: all notes
+//
+// 1: diatonic ionian (major)
 //    5 - - 0 - - 7
 //   / \   / \   / \   
 // 2 - - 9 - - 4 - - 11
-
-// 1: diatonic aeolian (minor)
+//
+// 2: diatonic dorian
+//    3 - - 10- - 5
+//   / \   / \   / \   
+// 0 - - 7 - - 2 - - 9
+//
+// 3: diatonic phrygian
+//    1 - - 8 - - 3
+//   / \   / \   / \   
+// 10- - 5 - - 0 - - 7
+//
+// 4: diatonic lydian
+//    0 - - 7 - - 2
+//   / \   / \   / \   
+// 9 - - 4 - - 11 - - 6
+//
+// 5: diatonic mixolydian
+//    10- - 5 - - 0
+//   / \   / \   / \   
+// 7 - - 2 - - 9  - - 4
+//
+// 6: diatonic aeolian (minor)
 //    8 - - 3 - - 10
 //   / \   / \   / \   
 // 5 - - 0 - - 7 - - 2
-
-// won't change scale otherwise
-and setScale(id: int) {
-  // diatonic ionian (major)
+//
+// 7: diatonic locrian
+//    6 - - 1 - - 8 
+//   / \   / \   / \   
+// 3 - - 10- - 5 - - 0
+//
+// 8: pentatonic major
+//          0 - - 7
+//         / \   /
+// 2 - - 9 - - 4 
+//
+// 9: pentatonic minor
+//          3 - - 10
+//         / \   /
+// 5 - - 0 - - 7 
+//
+// 10: melodic major
+//                   8
+//                  /
+//          10 - - 5
+//         / \   /
+// 0 - - 7 - - 2
+//  \   /
+//    4
+//
+// 11: melodic minor
+//                   3
+//                  /
+//          5 - - 0
+//         / \   /
+// 7 - - 2 - - 9
+//  \   /
+//    11
+//
+// 12: harmonic major
+// 5 - - 0 - - 7 - - 2
+//        \   / \   /     
+//          4 - - 11
+//           \   /     
+//             8
+//
+// 13: harmonic minor
+//       11
+//      / \ 
+//    8 - - 3
+//   / \   / \ 
+// 5 - - 0 - - 7  - - 2
+//
+// 14: hungarian major
+//          6
+//         / \
+//       3 - - 10
+//      / \   / 
+//    0 - - 7 
+//   / \   /
+// 9 - - 4
+//
+// 15: hungarian minor
+//       2
+//      / \
+//    11- - 6
+//   / \   / 
+// 8 - - 3 
+//  \   / \  
+//    0 - - 7
+//
+// 16: spanish heptatonic
+// 1 - - 8 - - 3 - - 10
+//  \   / \   / \   /     
+//    5 - - 0 - - 7
+//           \   /     
+//             4
+//
+// 17: flamenco
+//       6 - - 1
+//      / \   /
+//    3 - - 10
+//   / \   / 
+// 0 - - 7 
+//  \   /
+//    4
+//
+// 18: blues
+//             6 
+//            / \
+//          3 - - 10
+//         / \   /     
+// 5 - - 0 - - 7
+//
+// 19: enigmatic
+//       0 
+//        \
+//          4 - - 11
+//         / \   /     
+// 6 - - 1 - - 8
+//  \   /
+//    10
+//
+and getScale(id: int): array(bool, 12) {
+  val scale = [false, false, false, false, false, false, false, false, false, false, false, false];
+  // all
   if (id == 0) {
+    scale = [true, true, true, true, true, true, true, true, true, true, true, true];
+  }
+  // diatonic ionian (major)
+  else if (id == 1) {
     scale = [true, false, true, false, true, true, false, true, false, true, false, true];
   }
+  // diatonic dorian
+  else if (id == 2) {
+    scale = [true, false, true, true, false, true, false, true, false, true, true, false];
+  }
+  // diatonic phrygian
+  else if (id == 3) {
+    scale = [true, true, false, true, false, true, false, true, true, false, true, false];
+  }
+  // diatonic lydian
+  else if (id == 4) {
+    scale = [true, false, true, false, true, false, true, true, false, true, false, true];
+  }
+  // diatonic mixolydian
+  else if (id == 5) {
+    scale = [true, false, true, false, true, true, false, true, false, true, true, false];
+  }
   // diatonic aeolian (minor)
-  else if (id == 1) {
+  else if (id == 6) {
     scale = [true, false, true, true, false, true, false, true, true, false, true, false];
   }
+  // diatonic locrian
+  else if (id == 7) {
+    scale = [true, true, false, true, false, true, true, false, true, false, true, false];
+  }
+  // pentatonic major
+  else if (id == 8) {
+    scale = [true, false, true, false, true, false, false, true, false, true, false, false];
+  }
+  // pentatonic minor
+  else if (id == 9) {
+    scale = [true, false, false, true, false, true, false, true, false, false, true, false];
+  }
+  // melodic major
+  else if (id == 10) {
+    scale = [true, false, true, false, true, true, false, true, true, false, true, false];
+  }
+  // melodic minor
+  else if (id == 11) {
+    scale = [true, false, true, true, false, true, false, true, false, true, false, true];
+  }
+  // harmonic major
+  else if (id == 12) {
+    scale = [true, false, true, false, true, true, false, true, true, false, false, true];
+  }
+  // harmonic minor
+  else if (id == 13) {
+    scale = [true, false, true, true, false, true,  false, true, true, false, false, true];
+  }
+  // hungarian major
+  else if (id == 14) {
+    scale = [true, false, false, true, true, false, true, true, false, true, true, false];
+  }
+  // hungarian minor
+  else if (id == 15) {
+    scale = [true, false, true, true, false, false, true, true, true, false, false, true];
+  }
+  // spanish heptatonic
+  else if (id == 16) {
+    scale = [true, true, false, true, true, true, false, true, true, false, true, false];
+  }
+  // flamenco
+  else if (id == 17) {
+    scale = [true, true, false, true, true, false, true, true, false, false, true, false];
+  }
+  // blues
+  else if (id == 18) {
+    scale = [true, false, false, true, false, true, true, true, false, false, true, false];
+  }
+  // enigmantic
+  else if (id == 19) {
+    scale = [true, true, false, false, true, false, true, false, true, false, true, true];
+  }
+  return scale;
+}
+
+
+// return three notes, for selected chord, base 0, then first and second note (shift)
+// 0: augmented, 1: major, 2: suspended 4, 3: suspended 2, 4: minor, 5: diminished,
+fun getChord(chord: int) : array(int, 3) {
+  if (chord > 0) {
+    chord = chord % 6;
+  }
+  // augmented
+  // 0      
+  //  \      
+  //    1      
+  //      \    
+  //        2 
+  if (chord == 0) {
+    return [0, 4, 8];
+  }
+  // major
+  // 0 - - 2
+  //  \   /
+  //    1 
+  else if (chord == 1) {
+    return [0, 4, 7];
+  }
+  // suspensed 4
+  // 1 - - 0 - - 2
+  else if (chord == 2) {
+    return [0, 5, 7];
+  }
+  // suspended 2
+  // 0 - - 2 - - 1
+  else if (chord == 3) {
+    return [0, 2, 7];
+  }
+  // minor
+  //    1
+  //   / \ 
+  // 0 - - 2 
+  else if (chord == 4) {
+    return [0, 3, 7];
+  }
+  // diminished
+  //       2
+  //      /
+  //    1 
+  //   /
+  // 0 
+  else if (chord == 5) {
+    return [0, 3, 6];
+  }
+  // backup
+  else {
+    return [0, 0, 0];
+  }
+}
+
+// get chord with inversion
+// 0: no inversion
+// 1: first inversion
+// 2: second inversion
+fun getChordInversion(chord: int, inversion: int) : array(int, 3) {
+  inversion = clip(inversion, 0, 2);
+  val notes = getChord(chord);
+  if (inversion == 1) {
+    notes = [notes[1], notes[2], notes[0] + 12];
+  }
+  else if (inversion == 2) {
+    notes = [notes[2], notes[0] + 12, notes[1] + 12];
+  }
+  return notes;
+}
+
+// check if this shift, possess this chord (as first note only, not checking inversions)
+// 0: augmented, 1: major, 2: suspended 4, 3: suspended 2, 4: minor, 5: diminished. Loop beyond that.
+// if given chord is negative (which could happen upon invalid chord), will return false
+fun isChordInShift(checkChord: int, checkShift: int): bool {
+  if (checkChord < 0) {
+    return false;
+  }
+  // which of the 12 notes is enabled or not in this scale. 0 being the root, it should be always true.
+  mem scale: array(bool, 12); 
+  val notes = getChord(checkChord);
+  return scale[(notes[0] + checkShift) % 12] && scale[(notes[1] + checkShift) % 12] && scale[(notes[2] + checkShift) % 12];
+}
+
+// return a chord from current shift. If none, will return -1
+// lookAround: select chord among shift and notes next to it
+and drawChord(lookAround: bool) : int {
+  // main chord, index of chords
+  mem chord: int;
+  // chords probabilities, destined to be augmented, major, suspended 4, suspended 2, minor, diminished, but the array will be used as is [0] is the selected chord
+  mem chords: array(real, 6);
+  // temporary array to test chords probabilities
+  val tChords: array(real, 6);
+  // current shift compared to tonic in scale
+  mem shift: int;
+
+  val i = 0;
+  // current cumulative probability, for chords and temporary chords
+  val curcumP = 0.0;
+  val curcumTP = 0.0;
+  while (i < size(chords)) {
+    // criteria for selection
+    val cond = isChordInShift(i+chord, shift);
+    if (lookAround) {
+      cond = cond || 
+        // note: to sync with list in main function to select shifts
+        (isChordInShift(i+chord, shift + 3)) ||
+        (isChordInShift(i+chord, shift + 4)) ||
+        (isChordInShift(i+chord, shift + 5)) ||
+        (isChordInShift(i+chord, shift + 7)) ||
+        (isChordInShift(i+chord, shift + 8)) ||
+        (isChordInShift(i+chord, shift + 9));
+    }
+
+    // accumulate chord proba if selected
+    if (cond) {
+      // add this one chord proba to temp cumulative probability
+      tChords[i] = curcumTP + (chords[i] - curcumP);
+      curcumTP = tChords[i];
+    }
+    // only duplicate current p
+    else {
+      tChords[i] = curcumTP;
+    }
+    curcumP = chords[i];
+    i = i + 1;
+  }
+
+  // we got at least one chord, go through to select
+  if (curcumTP > 0.0) {
+    // select chord -- scaling draw to max proba
+    val pChord = random() * tChords[size(tChords) - 1];
+    // scroll chords to select
+    i = 0;
+    while (i < size(chords) && pChord > tChords[i]) {
+      i = i + 1;
+    }
+    // we should not need this check...
+    if (i < size(tChords)) {
+      return (i + chord) % size(chords);
+    }
+  }
+  // no chord for this shift, fallback
+  return -1;
+}
+
+// select an inversion
+and drawInversion(): int {
+  // inversion probabilities (none, fist, second)
+  mem inversions: array(real, 3);
+  // draw and find which inversion it is
+  val pInversion  = random();
+  val i = 0;
+  while (i < size(inversions) && pInversion > inversions[i]) {
+    i = i + 1;
+  }
+  // failsafe, e.g. in case probabilities were not initialized, no inversion
+  if (i >= size(inversions)) {
+    i = 0;
+  }
+  return i;
+}
+
+// generate a new chord depending on rules, returning three notes
+and process() {
+  // root note for the scale
+  mem root: int;
+  // up to which point we go beyond selected chord (0: no, 1: all)
+  mem chordSpread: real;
+  // up to which point we invert (0: no, 1: might equally do 0, first or second inversion)
+  mem inversionSpread: real;
+  // list of shift since root
+  mem shifts: array(int, 11);
+  // probability jump to another note (i.e. shift). NB: destination include current note
+  mem pJump: real;
+
+  // chord to be played
+  val selectedChord;
+
+  // notes of selected chord
+  val notes : array(int, 3);
+  
+  // should we jump?
+  if (random() < pJump) {
+    // select chord among current shift and those around
+    selectedChord = drawChord(true);
+    // list somehow duplicated from drawChord(), to sync
+    val lookShifts = [0, 3, 4, 5, 7, 8, 9];
+    // which and how many shifts possess the selected chord
+    val selectedShifts = [-1, -1, -1, -1, -1, -1, -1];
+    val nbShifts = 0;
+
+    // check all possible shifts with chord
+    if (selectedChord >= 0) {
+      val i = 0;
+      while (i < size(lookShifts)) {
+        // note: shift of shift here
+        if (isChordInShift(selectedChord, shift + lookShifts[i])) {
+          selectedShifts[nbShifts] = lookShifts[i];
+          nbShifts = nbShifts + 1;
+        }
+        i = i + 1;
+      }
+    }
+    // backup chord, can be applied to all
+    else {
+      selectedShifts = lookShifts;
+      nbShifts = size(selectedShifts);
+    }
+
+    // fallback in case something went wrong with the algo
+    if (nbShifts <= 0) {
+      selectedShifts = lookShifts;
+      nbShifts = size(selectedShifts);
+    }
+    
+    // shift becoem random among those shifts, not forgetting to recall current shift
+    shift  = (shift + selectedShifts[irandom() % nbShifts]) % 12;
+
+    // if the actual shift is root, then discard past shifts
+    if (shift == 0) {
+      val i = 0;
+      while (i < size(shifts)) {
+        shifts[i] = 0;
+        i = i + 1;
+      }
+    }
+    // add that to list of shifts or, if found there, jump back to it
+    else {
+      val i = 0;
+      // stop if found or reached end of shifts
+      while (i < size(shifts) && shifts[i] <> shift && shifts[i] <> 0) {
+        i = i + 1;
+      }
+      // reached and of shifts or end of array (the latter should not be possible), either way on step before will become our current shift
+      shifts[i-1] = shift;
+      // the rest of the array will be invalidated
+      while (i < size(shifts)) {
+        shifts[i] = 0;
+        i = i + 1;
+      }
+    }
+  }
+  // otherwise go back toward root, draw from here
+  else {
+    // find current shift, go through until a 0 is found or all is full
+    val i = 0;
+    while (i < size(shifts) && shifts[i] <> 0) {
+      i = i + 1;
+    }
+    // current shift at i-1, going back to i-2 found or reached the end
+    if (i > 1) {
+      shifts[i-1] = 0;
+      shift = shifts[i-2];
+    } else {
+      shifts[0] = 0;
+      shift = 0;
+    }
+
+    // draw chord, only for current shift
+    selectedChord = drawChord(false);
+  }
+
+
+  // special case: backup chord (0, 0, 0). Will play the same note on thee octaves.
+  if (selectedChord < 0) {
+    // no inversion for octave chord
+    notes = getChord(selectedChord);
+    val baseNote = shift + root;
+    // note too low, up it
+    if (baseNote < 12) {
+      baseNote = baseNote + 12;
+    }
+    // too high, down it
+    else if (baseNote > 127 - 12) {
+      baseNote = baseNote - 12;
+    }
+
+    notes[0] = baseNote - 12;
+    notes[1] = baseNote;
+    notes[2] = baseNote + 12;
+  }
+  // apply chord and shift
+  else {
+    // finally we can compute notes
+    notes = getChordInversion(selectedChord, drawInversion()); 
+    // note: not doing modulo 12 for n + shift, root will be the lowest
+    val i = 0;
+    while (i < size(notes)){
+      notes[i] = notes[i] + shift + root;
+      if (notes[i] > 127) {
+        notes[i] = notes[i] - 12;
+      }
+      i = i + 1;
+    }
+  }
+
+  return notes[0], notes[1], notes[2];
+}
+
+// reset shifts
+and reset() {
+  shift = 0;
+  val i = 0;
+  while (i < size(shifts)) {
+    shifts[i] = 0;
+    i = i +1;
+  }
+}
+
+
+// choose from one of the scale
+// will reset shifts upon change
+// will clip id to 0..19
+and setScale(id: int) {
+  mem scaleId;
+  id = clip(id, 0, 19);
+  if (scaleId <> id) {
+    scaleId = id;
+    scale = getScale(id);
+    reset();
+  }
+}
+
+// change root note (not resetting shifts)
+and setRoot(note: int) {
+  note = clip(note, 0, 127);
+  if (root <> note) {
+    root = note;
+  }
+}
+
+// internally update the probability that each chord appears
+// using cumulative beta function, 0 being selected chord and 1.0 the extreme opposite. Computed with regularized incomplete beta function, which, with a == 1 (what is wanted in orded to go from equiprobability with b == 1 to only select chord with b big), I_{x}(1,b) = 1 - (1 - x)^{b}
+// note that the function will be not called if spread == 0.0, directly set all p to 1.0 in order to clip to max
+
+// bParam: b parameter in the beta distribution
+and _updateChords(bParam: real) {
+  bParam = clip(bParam, 0.0, bParam);
+
+  // dismiss the easy case
+  if (size(chords) == 1) {
+    chords[0] = 1.0;
+  }
+  else {
+    // since the chords "loop", will compute in two halves
+    val maxi = (size(chords) - 1) / 2;
+
+    // current chords index
+    val i = 0;
+    // where we are in the cumulative function, starting with selected chord
+    val x = 1.0/real(size(chords));
+    chords[i] = beta(x, bParam);
+    // save base value for selected chord
+    val chordP = chords[i];
+                     
+    // will scale to account for the fact that we aggregate two halves
+    val scaleP = 0.0;
+    scaleP = (1.0 - chordP) * (real(maxi) / real(size(chords)-1));
+ 
+    // starting first half
+    i = i + 1;
+    while (i <= maxi) {
+      x = real(i) / real(maxi);
+      chords[i] = chordP + beta(x, bParam) * scaleP;
+      i = i + 1;
+    }
+
+    // second half
+    while (i < size(chords) - 1) {
+      // index in this half
+      x = real(i - maxi) / real(maxi);
+      // inverse cumulative function here for symmetry, the center of the array being the furthest from selected chord [0]
+      chords[i] = 1.0 - beta(1.0-x, bParam) * scaleP;
+      i = i + 1;
+    }
+
+    // mandatory 1 for last
+    chords[size(chords) - 1] = 1.0;
+  }
+}
+
+// sadly we have to duplicate code from _updateChords because the array is not the same size
+// bParam: b parameter in the beta distribution
+and _updateInversions(bParam: real) {
+  // below condensed code, see _updateChords for comments on the algo
+  bParam = clip(bParam, 0.0, bParam);
+  if (size(inversions) == 1) {
+    inversions[0] = 1.0;
+  }
+  else {
+    val maxi = (size(inversions) - 1) / 2;
+    val i = 0;
+    val x = 1.0/real(size(inversions));
+    inversions[i] = beta(x, bParam);
+    val inversionP = inversions[i];
+    val scaleP = 0.0;
+    scaleP = (1.0 - inversionP) * (real(maxi) / real(size(inversions)-1));
+    i = i + 1;
+    while (i <= maxi) {
+      x = real(i) / real(maxi);
+      inversions[i] = inversionP + beta(x, bParam) * scaleP;
+      i = i + 1;
+    }
+    while (i < size(inversions) - 1) {
+      x = real(i - maxi) / real(maxi);
+      inversions[i] = 1.0 - beta(1.0-x, bParam) * scaleP;
+      i = i + 1;
+    }
+    inversions[size(inversions) - 1] = 1.0;
+  }
+}
+
+// set main chord
+// 0: augmented, 1: major, 2: suspended 4, 3: suspended 2, 4: minor, 5: diminished
+and setChord(newChord: int) {
+  chord = clip(newChord, 0, size(chords) - 1);
+}
+
+// up to which point other chords will be considered, from 0 (only selected chord) to 1 (all chords equi-probable). Using exponential to map value to b parameter of beta distribution
+// TODO: -1 for most distant chords only, or all chord but selected?
+and setChordSpread(newSpread: real) {
+    newSpread = clip(newSpread, 0.0, 1.0);
+    if (newSpread <> chordSpread) {
+      chordSpread = newSpread;
+      // simple case, force selection of the one chord
+      if (chordSpread == 0.0) {
+        val i = 0;
+        while (i < size(chords)) {
+          chords[i] = 1.0;
+          i = i + 1;
+        }
+      }
+      else {
+        // using exponential scale. 
+        // 0 mapped to ~ 54.5, 1 mapped to, conveniently, 1
+        val bParam = exp((1.0 - newSpread) * 4.0);
+        _ = _updateChords(bParam);
+      }
+    }
+}
+
+// mirror chord spread... for inversion
+and setInversionSpread(newSpread: real) {
+    newSpread = clip(newSpread, 0.0, 1.0);
+    if (newSpread <> inversionSpread) {
+      inversionSpread = newSpread;
+      // simple case, force selection of the one chord
+      if (inversionSpread == 0.0) {
+        val i = 0;
+        while (i < size(inversions)) {
+          inversions[i] = 1.0;
+          i = i + 1;
+        }
+      }
+      else {
+        // using exponential scale. 
+        // 0 mapped to ~ 54.5, 1 mapped to, conveniently, 1
+        val bParam = exp((1.0 - newSpread) * 4.0);
+        _ = _updateInversions(bParam);
+      }
+    }
+
+}
+
+// retrieve probability associated to selected chords
+and getChordP(chordId: int): real {
+  chordId = clip(chordId, 0, size(chords));
+  // map chord of interest compared to selected chord
+  val idx = (chordId - chord) % size(chords);
+  // convert cumulative probability to probability
+  if (idx == 0) {
+    return chords[0];
+  } else {
+    return chords[idx] - chords[idx-1];
+  }
+}
+
+// how many chords we consider
+and getNbChords(): int {
+  return size(chords);
+}
+
+// getter for scale
+and getScaleId(): int {
+  return scaleId;
+}
+
+// how many scales we consider
+and getNbScales(): int {
+  return 20;
+}
+
+and getRoot(): int {
+  return root;
+}
+
+and setJump(p: real) {
+  pJump = clip(p, 0.0, 1.0);
+}
+
+and default() @[init] {
+  // hack to force scale change
+  scaleId = -1;
+  // diatonic ionian (major)
+  _ = setScale(1);
+  // middle C by default
+  _ = setRoot(60);
+  // major
+  _ = setChord(1); 
+  // prefer selected chord, hack to force update
+  chordSpread = 2.0;
+  _ = setChordSpread(0.5);
+  // same for inversions
+  inversionSpread = 2.0;
+  _ = setInversionSpread(0.5);
+  // might venture outside sometime
+  _ = setJump(0.5);
 }
