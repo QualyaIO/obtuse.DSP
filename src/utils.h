@@ -387,6 +387,17 @@ static_inline int utils_Arp_getNbNotes(utils_Arp__ctx_type_0 &_ctx){
    return _ctx.nbNotes;
 };
 
+typedef utils_Arp__ctx_type_0 utils_Arp_getMaxNbNotes_type;
+
+static_inline void utils_Arp_getMaxNbNotes_init(utils_Arp__ctx_type_0 &_output_){
+   utils_Arp__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int utils_Arp_getMaxNbNotes(utils_Arp__ctx_type_0 &_ctx){
+   return 16;
+};
+
 typedef utils_Arp__ctx_type_0 utils_Arp_getSequenceSize_type;
 
 static_inline void utils_Arp_getSequenceSize_init(utils_Arp__ctx_type_0 &_output_){

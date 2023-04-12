@@ -178,6 +178,11 @@ and getNbNotes() : int {
   return nbNotes;
 }
 
+// max number of supported notes -- to keep in sync with setNotes()
+and getMaxNbNotes() : int {
+  return 16;
+}
+
 // length of current sequence
 and getSequenceSize() : int {
   return sequenceSize;
