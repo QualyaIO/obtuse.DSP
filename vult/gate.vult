@@ -1,0 +1,193 @@
+
+// a gate handling polyphony
+// FIXME: does not keep velocity or channel info
+
+// should call setTime(), noteOn(), gate(), getNoteOff() and process until empty, getNoteOn() and process until empty.
+
+// implementing an list using double pointer on array
+// 128 int
+fun list() {
+   mem values: array(int, 128);
+   // index for beginning and end of array
+   // b: index of first element
+   // e: index of last element
+   mem b, e;
+}
+
+// number of element in the list
+and getListSize(): int {
+   return (e - b) % size(values);
+}
+
+// max number of element it can hold
+and getListMaxSize(): int {
+   return size(values);
+}
+
+// number of space let for writing
+and getListSpace(): int {
+   return size(values) - getListSize();
+}
+
+// add an element to the list, will erase previous values if full
+and push(v: int) {
+   values[e] = v;
+   e = (e + 1) % size(values);
+}
+
+// remove an element from the list, check size before -- last resort return -1 if nothing
+and pop(): int {
+   val v = -1;
+   if (getListSize() > 0) {
+      v = values[b];
+      b = (b + 1) % size(values);
+   }
+   return v;
+}
+
+// return value of the Nth element in the list without popping it, check size before -- last resort return -1 if nothing
+and peek(n: int): int {
+   val v = -1;
+   if (getListSize() > n) {
+      v = values[(b+n) % size(values)];
+   }
+   return v;
+}
+
+// remove and return one specific element. return value of deleted element -- last resort -1
+// warning: costly operation, moving around all data until tail
+and delete(n: int): int {
+   val ret = -1;
+   val s = getListSize();
+   if (n < s) {
+      ret = values[(b+n) % size(values)];
+      while(n < s) {
+         values[(b+n) % size(values)] = values[(b+n+1) % size(values)];
+         n = n + 1;
+      }
+      // reduce end by one
+      e = (e - 1) % size(values);
+   }
+   return ret;
+}
+
+// return index of the first element containing val, -1 if not found
+and search(value: int): int {
+   val idx = -1;
+   val s = getListSize();
+   val i = 0;
+   while (i < s && idx < 0) {
+      if(values[(b+i) % size(values)] == value) {
+         idx = i;
+      }
+      i = i + 1;
+   }
+   return idx;
+}
+
+// find and delete value, return true if successful (which might be misleading if the sought value is -1, being also a special code
+and deleteValue(value: int): bool {
+   val n = search(value);
+   return delete(n) == value;
+}
+
+
+// to be call after noteOn and setTime
+// Warning: take for granted that getNoteOff() was already processed in a previous loop, otherwise we might hit full capacity of the corresponding list
+fun process() {
+   // current time in seconds
+   mem time: real;
+   // which notes are active? (to prune duplicated note on). Store time of trigger, 0.0 if not triggered (keep negative number in case we overflow time, but could give wrong behavior for a short period upon overflow or if something happen at time 0.0)
+   mem notes: array(real, 128);
+   // contexts used:
+   // - notesActive:list, notes currently active (during ate)
+   // - notesOn: list, notes which needs to be played by outside
+   // - notesOff:list, the ones to turn off
+   // how long the gate, in seconds
+   mem gateDuration;
+
+   // scroll through current notes to check starting which is not outdated
+   val nbActive = notesActive:getListSize();
+   val found = false;
+   val i = 0;
+   val note;
+   while (not(found) && i < nbActive) {
+      note = notesActive:peek(i);
+      // extra check to make sure we are in range
+      if (note >= 0 && note < size(notes)) {
+         // check if we did not overflown and we are still within gate
+         if (time >= notes[note] && time - notes[note] < gateDuration) {
+            found = true;
+         }
+      }
+      // counting only outdated notes
+      if (not(found)) {
+         i = i + 1;
+      }
+   }
+   // transfer notes to be extinguished
+   while (i > 0) {
+      note = notesActive:pop();
+      if (note >= 0 && note < size(notes)) {
+        _ = notesOff:push(note);
+        notes[note] = 0.0;
+      }
+      i = i - 1;
+   }
+
+}
+
+// time: passing by, in seconds, should be strictly positive
+and setTime(newTime: real) {
+   time = newTime;
+}
+
+// activate note
+// Warning: does not take into account velocity or channel
+// Warning: take for granted that getNoteOn() was already processed in a previous loop, otherwise we might hit full capacity of the corresponding list
+// return false if the note was already triggered -- in which case it will extend the gate
+and noteOn(note:int, velocity:int, channel:int): bool {
+   note = clip(note, 0, 127);
+   // check if the note is already active
+   val newNote = notes[note] == 0.0;
+   // only declare a new note... if new
+   if (newNote) {
+      _ = notesOn:push(note);
+   }
+   // otherwise we will only attempt to delete previous note from current list to re-order active notes. (Not processing return value...)
+   else {
+     _ = notesActive:deleteValue(note);
+   }
+   // update timestamp anyhow
+   notes[note] = time;
+   // add to list of notes to process, both for gate and outside world
+   _ = notesActive:push(note);
+   return newNote;
+}
+
+// to be called by client if could not handle a noteOn, so we will try later even in case of retrigger
+and noteKill(note: int) {
+   note = clip(note, 0, 127);
+   _ = notesActive:deleteValue(note);
+   notes[note] = 0.0;
+}
+
+// return next note to turn off, -1 if nothing left.
+and getNoteOff(): int {
+   return notesOff:pop();
+}
+
+// return next note to turn on, -1 if nothing left.
+and getNoteOn(): int {
+   return notesOn:pop();
+}
+
+// set gate length, in seconds (minimum duration of 1ms, clip to it)
+and setDuration(duration: real) {
+   gateDuration = clip(duration, 0.001, duration);
+}
+
+and default() @[init] {
+   // 200ms gate by default
+   _ = setDuration(0.2);
+}

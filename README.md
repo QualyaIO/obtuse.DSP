@@ -34,6 +34,7 @@ Fixes
 - OSC > 4096 can prevent modulation, adjust max phase depending on size to avoid hitting fixed float limit during computations
 - SVF: not compute while disabled while avoiding noise upon start
 - combFB (and those using): output not guaranteed to be kept within -1..1
+- gate: velocity and channel not kept
 
 Features
 

@@ -13,6 +13,215 @@ typedef struct utils__tuple___int_int_int__ {
    int field_2;
 } utils__tuple___int_int_int__;
 
+typedef struct utils_Gate__ctx_type_0 {
+   int values[128];
+   int e;
+   int b;
+} utils_Gate__ctx_type_0;
+
+typedef utils_Gate__ctx_type_0 utils_Gate_list_type;
+
+void utils_Gate__ctx_type_0_init(utils_Gate__ctx_type_0 &_output_);
+
+static_inline void utils_Gate_list_init(utils_Gate__ctx_type_0 &_output_){
+   utils_Gate__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void utils_Gate_list(utils_Gate__ctx_type_0 &_ctx){
+}
+
+typedef utils_Gate__ctx_type_0 utils_Gate_getListSize_type;
+
+static_inline void utils_Gate_getListSize_init(utils_Gate__ctx_type_0 &_output_){
+   utils_Gate__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int utils_Gate_getListSize(utils_Gate__ctx_type_0 &_ctx){
+   return ((_ctx.e + (- _ctx.b)) % 128);
+};
+
+typedef utils_Gate__ctx_type_0 utils_Gate_getListMaxSize_type;
+
+static_inline void utils_Gate_getListMaxSize_init(utils_Gate__ctx_type_0 &_output_){
+   utils_Gate__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int utils_Gate_getListMaxSize(utils_Gate__ctx_type_0 &_ctx){
+   return 128;
+};
+
+typedef utils_Gate__ctx_type_0 utils_Gate_getListSpace_type;
+
+static_inline void utils_Gate_getListSpace_init(utils_Gate__ctx_type_0 &_output_){
+   utils_Gate__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int utils_Gate_getListSpace(utils_Gate__ctx_type_0 &_ctx){
+   return (128 + (- utils_Gate_getListSize(_ctx)));
+};
+
+typedef utils_Gate__ctx_type_0 utils_Gate_push_type;
+
+static_inline void utils_Gate_push_init(utils_Gate__ctx_type_0 &_output_){
+   utils_Gate__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void utils_Gate_push(utils_Gate__ctx_type_0 &_ctx, int v){
+   _ctx.values[_ctx.e] = v;
+   _ctx.e = ((1 + _ctx.e) % 128);
+}
+
+typedef utils_Gate__ctx_type_0 utils_Gate_pop_type;
+
+static_inline void utils_Gate_pop_init(utils_Gate__ctx_type_0 &_output_){
+   utils_Gate__ctx_type_0_init(_output_);
+   return ;
+}
+
+int utils_Gate_pop(utils_Gate__ctx_type_0 &_ctx);
+
+typedef utils_Gate__ctx_type_0 utils_Gate_peek_type;
+
+static_inline void utils_Gate_peek_init(utils_Gate__ctx_type_0 &_output_){
+   utils_Gate__ctx_type_0_init(_output_);
+   return ;
+}
+
+int utils_Gate_peek(utils_Gate__ctx_type_0 &_ctx, int n);
+
+typedef utils_Gate__ctx_type_0 utils_Gate_delete_type;
+
+static_inline void utils_Gate_delete_init(utils_Gate__ctx_type_0 &_output_){
+   utils_Gate__ctx_type_0_init(_output_);
+   return ;
+}
+
+int utils_Gate_delete(utils_Gate__ctx_type_0 &_ctx, int n);
+
+typedef utils_Gate__ctx_type_0 utils_Gate_search_type;
+
+static_inline void utils_Gate_search_init(utils_Gate__ctx_type_0 &_output_){
+   utils_Gate__ctx_type_0_init(_output_);
+   return ;
+}
+
+int utils_Gate_search(utils_Gate__ctx_type_0 &_ctx, int value);
+
+typedef utils_Gate__ctx_type_0 utils_Gate_deleteValue_type;
+
+static_inline void utils_Gate_deleteValue_init(utils_Gate__ctx_type_0 &_output_){
+   utils_Gate__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t utils_Gate_deleteValue(utils_Gate__ctx_type_0 &_ctx, int value){
+   int n;
+   n = utils_Gate_search(_ctx,value);
+   return (utils_Gate_delete(_ctx,n) == value);
+}
+
+typedef struct utils_Gate__ctx_type_1 {
+   fix16_t time;
+   utils_Gate__ctx_type_0 notesOn;
+   utils_Gate__ctx_type_0 notesOff;
+   utils_Gate__ctx_type_0 notesActive;
+   fix16_t notes[128];
+   fix16_t gateDuration;
+} utils_Gate__ctx_type_1;
+
+typedef utils_Gate__ctx_type_1 utils_Gate_process_type;
+
+void utils_Gate__ctx_type_1_init(utils_Gate__ctx_type_1 &_output_);
+
+static_inline void utils_Gate_process_init(utils_Gate__ctx_type_1 &_output_){
+   utils_Gate__ctx_type_1_init(_output_);
+   return ;
+}
+
+void utils_Gate_process(utils_Gate__ctx_type_1 &_ctx);
+
+typedef utils_Gate__ctx_type_1 utils_Gate_setTime_type;
+
+static_inline void utils_Gate_setTime_init(utils_Gate__ctx_type_1 &_output_){
+   utils_Gate__ctx_type_1_init(_output_);
+   return ;
+}
+
+static_inline void utils_Gate_setTime(utils_Gate__ctx_type_1 &_ctx, fix16_t newTime){
+   _ctx.time = newTime;
+};
+
+typedef utils_Gate__ctx_type_1 utils_Gate_noteOn_type;
+
+static_inline void utils_Gate_noteOn_init(utils_Gate__ctx_type_1 &_output_){
+   utils_Gate__ctx_type_1_init(_output_);
+   return ;
+}
+
+uint8_t utils_Gate_noteOn(utils_Gate__ctx_type_1 &_ctx, int note, int velocity, int channel);
+
+typedef utils_Gate__ctx_type_1 utils_Gate_noteKill_type;
+
+static_inline void utils_Gate_noteKill_init(utils_Gate__ctx_type_1 &_output_){
+   utils_Gate__ctx_type_1_init(_output_);
+   return ;
+}
+
+static_inline void utils_Gate_noteKill(utils_Gate__ctx_type_1 &_ctx, int note){
+   note = int_clip(note,0,127);
+   utils_Gate_deleteValue(_ctx.notesActive,note);
+   _ctx.notes[note] = 0x0 /* 0.000000 */;
+}
+
+typedef utils_Gate__ctx_type_1 utils_Gate_getNoteOff_type;
+
+static_inline void utils_Gate_getNoteOff_init(utils_Gate__ctx_type_1 &_output_){
+   utils_Gate__ctx_type_1_init(_output_);
+   return ;
+}
+
+static_inline int utils_Gate_getNoteOff(utils_Gate__ctx_type_1 &_ctx){
+   return utils_Gate_pop(_ctx.notesOff);
+};
+
+typedef utils_Gate__ctx_type_1 utils_Gate_getNoteOn_type;
+
+static_inline void utils_Gate_getNoteOn_init(utils_Gate__ctx_type_1 &_output_){
+   utils_Gate__ctx_type_1_init(_output_);
+   return ;
+}
+
+static_inline int utils_Gate_getNoteOn(utils_Gate__ctx_type_1 &_ctx){
+   return utils_Gate_pop(_ctx.notesOn);
+};
+
+typedef utils_Gate__ctx_type_1 utils_Gate_setDuration_type;
+
+static_inline void utils_Gate_setDuration_init(utils_Gate__ctx_type_1 &_output_){
+   utils_Gate__ctx_type_1_init(_output_);
+   return ;
+}
+
+static_inline void utils_Gate_setDuration(utils_Gate__ctx_type_1 &_ctx, fix16_t duration){
+   _ctx.gateDuration = fix_clip(duration,0x41 /* 0.001000 */,duration);
+};
+
+typedef utils_Gate__ctx_type_1 utils_Gate_default_type;
+
+static_inline void utils_Gate_default_init(utils_Gate__ctx_type_1 &_output_){
+   utils_Gate__ctx_type_1_init(_output_);
+   return ;
+}
+
+static_inline void utils_Gate_default(utils_Gate__ctx_type_1 &_ctx){
+   utils_Gate_setDuration(_ctx,0x3333 /* 0.200000 */);
+};
+
 static_inline fix16_t utils_Tonnetz_logBase_raw_c0(int index){
    return utils_Tonnetz_logBase_c0[index];
 };
