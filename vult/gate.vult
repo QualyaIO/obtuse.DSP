@@ -4,6 +4,39 @@
 
 // should call setTime(), noteOn(), gate(), getNoteOff() and process until empty, getNoteOn() and process until empty.
 
+// compare two times stored as seconds and fraction of seconds
+// return 1 if time2 > time 1, -1 if time2 < time 1, 0 if time2 == time1
+// FIXME: the whole thing is probably not the most optimized
+fun compareTimeFract(time1S: int, time1Fract: real, time2S: int, time2Fract: real): int {
+  // tedious normalization
+  while (time1Fract < 0.0) {
+    time1S = time1S - 1;
+    time1Fract = time1Fract + 1.0;
+  }
+  while (time1Fract > 1.0) {
+    time1S = time1S + 1;
+    time1Fract = time1Fract - 1.0;
+  }
+  while (time2Fract < 0.0) {
+    time2S = time2S - 1;
+    time2Fract = time2Fract + 1.0;
+  }
+  while (time2Fract > 1.0) {
+    time2S = time2S + 1;
+    time2Fract = time2Fract - 1.0;
+  }
+
+  if (time1S == time2S && time1Fract == time2Fract) {
+    return 0;
+  }
+  else if (time1S < time2S || (time1S == time2S && time1Fract <= time2Fract)) {
+    return 1;
+  }
+  else {
+    return -1;
+  }
+}
+
 // implementing an list using double pointer on array
 // 128 int
 fun list() {
@@ -91,14 +124,16 @@ and deleteValue(value: int): bool {
    return delete(n) == value;
 }
 
-
 // to be call after noteOn and setTime
 // Warning: take for granted that getNoteOff() was already processed in a previous loop, otherwise we might hit full capacity of the corresponding list
 fun process() {
-   // current time in seconds
-   mem time: real;
+   // current time in seconds, integer and fract parts
+   mem timeS: int;
+   mem timeFract: real;
    // which notes are active? (to prune duplicated note on). Store time of trigger, 0.0 if not triggered (keep negative number in case we overflow time, but could give wrong behavior for a short period upon overflow or if something happen at time 0.0)
-   mem notes: array(real, 128);
+   // two arrays because we store the two parts of the time (FIXME: very cumbersome)
+   mem notesS: array(int, 128);
+   mem notesFract: array(real, 128);
    // contexts used:
    // - notesActive:list, notes currently active (during ate)
    // - notesOn: list, notes which needs to be played by outside
@@ -114,9 +149,12 @@ fun process() {
    while (not(found) && i < nbActive) {
       note = notesActive:peek(i);
       // extra check to make sure we are in range
-      if (note >= 0 && note < size(notes)) {
+      if (note >= 0 && note < size(notesS) && note < size(notesFract)) {
          // check if we did not overflown and we are still within gate
-         if (time >= notes[note] && time - notes[note] < gateDuration) {
+         if (
+             compareTimeFract(notesS[note], notesFract[note], timeS, timeFract) >= 0 &&
+             compareTimeFract(timeS - notesS[note], timeFract - notesFract[note], int(gateDuration), gateDuration % 1.0) > 0
+             ) {
             found = true;
          }
       }
@@ -128,9 +166,10 @@ fun process() {
    // transfer notes to be extinguished
    while (i > 0) {
       note = notesActive:pop();
-      if (note >= 0 && note < size(notes)) {
+      if (note >= 0 && note < size(notesS) && note < size(notesFract)) {
         _ = notesOff:push(note);
-        notes[note] = 0.0;
+        notesS[note] = 0;
+        notesFract[note] = 0.0;
       }
       i = i - 1;
    }
@@ -138,8 +177,10 @@ fun process() {
 }
 
 // time: passing by, in seconds, should be strictly positive
-and setTime(newTime: real) {
-   time = newTime;
+// NOTE: round part should be >= 0 fract should be 0..1, otherwise will get costly quickly
+and setTime(newTimeS: int, newTimeFract: real) {
+   timeS = newTimeS;
+   timeFract = newTimeFract;
 }
 
 // activate note
@@ -149,7 +190,7 @@ and setTime(newTime: real) {
 and noteOn(note:int, velocity:int, channel:int): bool {
    note = clip(note, 0, 127);
    // check if the note is already active
-   val newNote = notes[note] == 0.0;
+   val newNote = notesS[note] == 0 && notesFract[note] == 0.0;
    // only declare a new note... if new
    if (newNote) {
       _ = notesOn:push(note);
@@ -159,7 +200,8 @@ and noteOn(note:int, velocity:int, channel:int): bool {
      _ = notesActive:deleteValue(note);
    }
    // update timestamp anyhow
-   notes[note] = time;
+   notesS[note] = timeS;
+   notesFract[note] = timeFract;
    // add to list of notes to process, both for gate and outside world
    _ = notesActive:push(note);
    return newNote;
@@ -169,7 +211,8 @@ and noteOn(note:int, velocity:int, channel:int): bool {
 and noteKill(note: int) {
    note = clip(note, 0, 127);
    _ = notesActive:deleteValue(note);
-   notes[note] = 0.0;
+   notesS[note] = 0;
+   notesFract[note] = 0.0;
 }
 
 // return next note to turn off, -1 if nothing left.
