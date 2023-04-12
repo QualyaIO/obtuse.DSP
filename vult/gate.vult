@@ -49,7 +49,8 @@ fun list() {
 
 // number of element in the list
 and getListSize(): int {
-   return (e - b) % size(values);
+  // reminder for self: % in C is not modulo, but remainder
+  return (e - b + size(values)) % size(values);
 }
 
 // max number of element it can hold
@@ -62,10 +63,15 @@ and getListSpace(): int {
    return size(values) - getListSize();
 }
 
-// add an element to the list, will erase previous values if full
-and push(v: int) {
-   values[e] = v;
-   e = (e + 1) % size(values);
+// add an element to the list, will fail and return false if full
+// FIXME: control for return code below
+and push(v: int) : bool {
+   if (getListSpace() > 0) {
+     values[e] = v;
+     e = (e + 1) % size(values);
+     return true;
+   }
+   return false;
 }
 
 // remove an element from the list, check size before -- last resort return -1 if nothing
@@ -99,7 +105,7 @@ and delete(n: int): int {
          n = n + 1;
       }
       // reduce end by one
-      e = (e - 1) % size(values);
+      e = (e - 1 + size(values)) % size(values);
    }
    return ret;
 }
@@ -173,7 +179,6 @@ fun process() {
       }
       i = i - 1;
    }
-
 }
 
 // time: passing by, in seconds, should be strictly positive
@@ -234,3 +239,4 @@ and default() @[init] {
    // 200ms gate by default
    _ = setDuration(0.2);
 }
+
