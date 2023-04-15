@@ -3,7 +3,7 @@
 #include "effectsXL.h"
 
 void effectsXL_CombFB__ctx_type_0_init(effectsXL_CombFB__ctx_type_0 &_output_){
-   effectsXL_CombFB__ctx_type_0 _ctx;
+   effectsXL_CombFB__ctx_type_0 &_ctx = _output_;
    _ctx.scale = 0x0 /* 0.000000 */;
    _ctx.pos = 0;
    _ctx.fs = 0x0 /* 0.000000 */;
@@ -11,7 +11,7 @@ void effectsXL_CombFB__ctx_type_0_init(effectsXL_CombFB__ctx_type_0 &_output_){
    _ctx.decay = 0x0 /* 0.000000 */;
    ;
    effectsXL_CombFB_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -43,7 +43,7 @@ void effectsXL_CombFB_process_bufferTo(effectsXL_CombFB__ctx_type_0 &_ctx, int n
 }
 
 void effectsXL_Allpass__ctx_type_0_init(effectsXL_Allpass__ctx_type_0 &_output_){
-   effectsXL_Allpass__ctx_type_0 _ctx;
+   effectsXL_Allpass__ctx_type_0 &_ctx = _output_;
    _ctx.scale = 0x0 /* 0.000000 */;
    _ctx.pos = 0;
    _ctx.fs = 0x0 /* 0.000000 */;
@@ -52,7 +52,7 @@ void effectsXL_Allpass__ctx_type_0_init(effectsXL_Allpass__ctx_type_0 &_output_)
    ;
    ;
    effectsXL_Allpass_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -94,7 +94,7 @@ void effectsXL_Allpass_default(effectsXL_Allpass__ctx_type_0 &_ctx){
 }
 
 void effectsXL_Reverb__ctx_type_0_init(effectsXL_Reverb__ctx_type_0 &_output_){
-   effectsXL_Reverb__ctx_type_0 _ctx;
+   effectsXL_Reverb__ctx_type_0 &_ctx = _output_;
    _ctx.reverbtime = 0x0 /* 0.000000 */;
    _ctx.fs = 0x0 /* 0.000000 */;
    _ctx.comb3delay = 0;
@@ -114,7 +114,7 @@ void effectsXL_Reverb__ctx_type_0_init(effectsXL_Reverb__ctx_type_0 &_output_){
    effectsXL_Allpass__ctx_type_0_init(_ctx.allpass1);
    effectsXL_Allpass__ctx_type_0_init(_ctx.allpass0);
    effectsXL_Reverb_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -204,12 +204,12 @@ void effectsXL_Reverb_default(effectsXL_Reverb__ctx_type_0 &_ctx){
 }
 
 void effectsXL_Ladder__ctx_type_0_init(effectsXL_Ladder__ctx_type_0 &_output_){
-   effectsXL_Ladder__ctx_type_0 _ctx;
+   effectsXL_Ladder__ctx_type_0 &_ctx = _output_;
    _ctx.p3 = 0x0 /* 0.000000 */;
    _ctx.p2 = 0x0 /* 0.000000 */;
    _ctx.p1 = 0x0 /* 0.000000 */;
    _ctx.p0 = 0x0 /* 0.000000 */;
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -266,12 +266,12 @@ fix16_t effectsXL_Ladder_heun(effectsXL_Ladder__ctx_type_0 &_ctx, fix16_t input,
 }
 
 void effectsXL_Ladder__ctx_type_1_init(effectsXL_Ladder__ctx_type_1 &_output_){
-   effectsXL_Ladder__ctx_type_1 _ctx;
+   effectsXL_Ladder__ctx_type_1 &_ctx = _output_;
    _ctx.p3 = 0x0 /* 0.000000 */;
    _ctx.p2 = 0x0 /* 0.000000 */;
    _ctx.p1 = 0x0 /* 0.000000 */;
    _ctx.p0 = 0x0 /* 0.000000 */;
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -302,7 +302,7 @@ fix16_t effectsXL_Ladder_euler(effectsXL_Ladder__ctx_type_1 &_ctx, fix16_t input
 }
 
 void effectsXL_Ladder__ctx_type_2_init(effectsXL_Ladder__ctx_type_2 &_output_){
-   effectsXL_Ladder__ctx_type_2 _ctx;
+   effectsXL_Ladder__ctx_type_2 &_ctx = _output_;
    ;
    _ctx.tuneRatio = 0x0 /* 0.000000 */;
    _ctx.rsize = 0x0 /* 0.000000 */;
@@ -316,7 +316,7 @@ void effectsXL_Ladder__ctx_type_2_init(effectsXL_Ladder__ctx_type_2 &_output_){
    _ctx.cut = 0x0 /* 0.000000 */;
    effectsXL_Util__ctx_type_3_init(_ctx._inst43b);
    effectsXL_Util__ctx_type_3_init(_ctx._inst13b);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -401,7 +401,7 @@ void effectsXL_Ladder_setSamplerate(effectsXL_Ladder__ctx_type_2 &_ctx, fix16_t 
 }
 
 void effectsXL_CombFF__ctx_type_0_init(effectsXL_CombFF__ctx_type_0 &_output_){
-   effectsXL_CombFF__ctx_type_0 _ctx;
+   effectsXL_CombFF__ctx_type_0 &_ctx = _output_;
    _ctx.scale = 0x0 /* 0.000000 */;
    _ctx.pos = 0;
    _ctx.fs = 0x0 /* 0.000000 */;
@@ -409,7 +409,7 @@ void effectsXL_CombFF__ctx_type_0_init(effectsXL_CombFF__ctx_type_0 &_output_){
    _ctx.decay = 0x0 /* 0.000000 */;
    ;
    effectsXL_CombFF_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -441,7 +441,7 @@ void effectsXL_CombFF_process_bufferTo(effectsXL_CombFF__ctx_type_0 &_ctx, int n
 }
 
 void effectsXL_SVF__ctx_type_0_init(effectsXL_SVF__ctx_type_0 &_output_){
-   effectsXL_SVF__ctx_type_0 _ctx;
+   effectsXL_SVF__ctx_type_0 &_ctx = _output_;
    _ctx.z2 = 0x0 /* 0.000000 */;
    _ctx.z1 = 0x0 /* 0.000000 */;
    _ctx.targetFreq = 0x0 /* 0.000000 */;
@@ -461,7 +461,7 @@ void effectsXL_SVF__ctx_type_0_init(effectsXL_SVF__ctx_type_0 &_output_){
    effectsXL_Util__ctx_type_3_init(_ctx._inst103b);
    _ctx.R = 0x0 /* 0.000000 */;
    effectsXL_SVF_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 

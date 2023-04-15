@@ -3,13 +3,13 @@
 #include "synthSampler.h"
 
 void synthSampler_Notes__ctx_type_0_init(synthSampler_Notes__ctx_type_0 &_output_){
-   synthSampler_Notes__ctx_type_0 _ctx;
+   synthSampler_Notes__ctx_type_0 &_ctx = _output_;
    _ctx.poly = false;
    int_init_array(128,0,_ctx.notes);
    _ctx.nb_notes = 0;
    int_init_array(128,0,_ctx.last_notes);
    synthSampler_Notes_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -92,7 +92,7 @@ uint8_t synthSampler_Notes_noteOff(synthSampler_Notes__ctx_type_0 &_ctx, int not
 }
 
 void synthSampler_Sampler__ctx_type_2_init(synthSampler_Sampler__ctx_type_2 &_output_){
-   synthSampler_Sampler__ctx_type_2 _ctx;
+   synthSampler_Sampler__ctx_type_2 &_ctx = _output_;
    _ctx.step = 0x0 /* 0.000000 */;
    _ctx.state = 0;
    _ctx.size = 0;
@@ -113,7 +113,7 @@ void synthSampler_Sampler__ctx_type_2_init(synthSampler_Sampler__ctx_type_2 &_ou
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_o);
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_cross);
    synthSampler_Sampler_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -328,14 +328,14 @@ void synthSampler_Sampler_default(synthSampler_Sampler__ctx_type_2 &_ctx){
 }
 
 void synthSampler_Poly__ctx_type_0_init(synthSampler_Poly__ctx_type_0 &_output_){
-   synthSampler_Poly__ctx_type_0 _ctx;
+   synthSampler_Poly__ctx_type_0 &_ctx = _output_;
    synthSampler_Sampler__ctx_type_2_init(_ctx.voice3);
    synthSampler_Sampler__ctx_type_2_init(_ctx.voice2);
    synthSampler_Sampler__ctx_type_2_init(_ctx.voice1);
    synthSampler_Sampler__ctx_type_2_init(_ctx.voice0);
    _ctx.should_leftovers = false;
    synthSampler_Poly_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -371,7 +371,7 @@ void synthSampler_Poly_default(synthSampler_Poly__ctx_type_0 &_ctx){
 }
 
 void synthSampler_Voice__ctx_type_0_init(synthSampler_Voice__ctx_type_0 &_output_){
-   synthSampler_Voice__ctx_type_0 _ctx;
+   synthSampler_Voice__ctx_type_0 &_ctx = _output_;
    synthSampler_Notes__ctx_type_0_init(_ctx.voicesinactive);
    synthSampler_Notes__ctx_type_0_init(_ctx.voicesactive);
    _ctx.voices_ratio = 0x0 /* 0.000000 */;
@@ -390,7 +390,7 @@ void synthSampler_Voice__ctx_type_0_init(synthSampler_Voice__ctx_type_0 &_output
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v1);
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v0);
    synthSampler_Voice_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -606,10 +606,10 @@ void synthSampler_Voice_default(synthSampler_Voice__ctx_type_0 &_ctx){
 }
 
 void synthSampler_Voice__ctx_type_1_init(synthSampler_Voice__ctx_type_1 &_output_){
-   synthSampler_Voice__ctx_type_1 _ctx;
+   synthSampler_Voice__ctx_type_1 &_ctx = _output_;
    synthSampler_Voice__ctx_type_0_init(_ctx._inst275);
    synthSampler_Voice__ctx_type_0_init(_ctx._inst1b9);
-   _output_ = _ctx;
+   
    return ;
 }
 

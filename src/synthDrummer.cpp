@@ -3,7 +3,7 @@
 #include "synthDrummer.h"
 
 void synthDrummer_Drummer__ctx_type_2_init(synthDrummer_Drummer__ctx_type_2 &_output_){
-   synthDrummer_Drummer__ctx_type_2 _ctx;
+   synthDrummer_Drummer__ctx_type_2 &_ctx = _output_;
    _ctx.step = 0x0 /* 0.000000 */;
    int_init_array(12,0,_ctx.slices_start);
    int_init_array(12,0,_ctx.slices_end);
@@ -18,7 +18,7 @@ void synthDrummer_Drummer__ctx_type_2_init(synthDrummer_Drummer__ctx_type_2 &_ou
    _ctx.fs = 0x0 /* 0.000000 */;
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_o);
    synthDrummer_Drummer_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -176,14 +176,14 @@ void synthDrummer_Drummer_default(synthDrummer_Drummer__ctx_type_2 &_ctx){
 }
 
 void synthDrummer_Poly__ctx_type_0_init(synthDrummer_Poly__ctx_type_0 &_output_){
-   synthDrummer_Poly__ctx_type_0 _ctx;
+   synthDrummer_Poly__ctx_type_0 &_ctx = _output_;
    synthDrummer_Drummer__ctx_type_2_init(_ctx.voice3);
    synthDrummer_Drummer__ctx_type_2_init(_ctx.voice2);
    synthDrummer_Drummer__ctx_type_2_init(_ctx.voice1);
    synthDrummer_Drummer__ctx_type_2_init(_ctx.voice0);
    _ctx.should_leftovers = false;
    synthDrummer_Poly_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -215,13 +215,13 @@ void synthDrummer_Poly_default(synthDrummer_Poly__ctx_type_0 &_ctx){
 }
 
 void synthDrummer_Notes__ctx_type_0_init(synthDrummer_Notes__ctx_type_0 &_output_){
-   synthDrummer_Notes__ctx_type_0 _ctx;
+   synthDrummer_Notes__ctx_type_0 &_ctx = _output_;
    _ctx.poly = false;
    int_init_array(128,0,_ctx.notes);
    _ctx.nb_notes = 0;
    int_init_array(128,0,_ctx.last_notes);
    synthDrummer_Notes_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -304,7 +304,7 @@ uint8_t synthDrummer_Notes_noteOff(synthDrummer_Notes__ctx_type_0 &_ctx, int not
 }
 
 void synthDrummer_Voice__ctx_type_0_init(synthDrummer_Voice__ctx_type_0 &_output_){
-   synthDrummer_Voice__ctx_type_0 _ctx;
+   synthDrummer_Voice__ctx_type_0 &_ctx = _output_;
    synthDrummer_Notes__ctx_type_0_init(_ctx.voicesinactive);
    synthDrummer_Notes__ctx_type_0_init(_ctx.voicesactive);
    _ctx.voices_ratio = 0x0 /* 0.000000 */;
@@ -323,7 +323,7 @@ void synthDrummer_Voice__ctx_type_0_init(synthDrummer_Voice__ctx_type_0 &_output
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v1);
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v0);
    synthDrummer_Voice_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -539,10 +539,10 @@ void synthDrummer_Voice_default(synthDrummer_Voice__ctx_type_0 &_ctx){
 }
 
 void synthDrummer_Voice__ctx_type_1_init(synthDrummer_Voice__ctx_type_1 &_output_){
-   synthDrummer_Voice__ctx_type_1 _ctx;
+   synthDrummer_Voice__ctx_type_1 &_ctx = _output_;
    synthDrummer_Voice__ctx_type_0_init(_ctx._inst275);
    synthDrummer_Voice__ctx_type_0_init(_ctx._inst1b9);
-   _output_ = _ctx;
+   
    return ;
 }
 

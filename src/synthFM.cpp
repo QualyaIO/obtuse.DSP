@@ -4189,7 +4189,7 @@ fix16_t synthFM_Wavetable_getRandRandomMorph(){
 }
 
 void synthFM_OSC__ctx_type_0_init(synthFM_OSC__ctx_type_0 &_output_){
-   synthFM_OSC__ctx_type_0 _ctx;
+   synthFM_OSC__ctx_type_0 &_ctx = _output_;
    _ctx.stepRatio = 0x0 /* 0.000000 */;
    _ctx.step = 0x0 /* 0.000000 */;
    _ctx.rsize = 0x0 /* 0.000000 */;
@@ -4199,7 +4199,7 @@ void synthFM_OSC__ctx_type_0_init(synthFM_OSC__ctx_type_0 &_output_){
    _ctx.fs = 0x0 /* 0.000000 */;
    _ctx.freq = 0x0 /* 0.000000 */;
    synthFM_OSC_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -4304,12 +4304,12 @@ void synthFM_OSC_setSamplerate(synthFM_OSC__ctx_type_0 &_ctx, fix16_t newFs){
 }
 
 void synthFM_OSC__ctx_type_1_init(synthFM_OSC__ctx_type_1 &_output_){
-   synthFM_OSC__ctx_type_1 _ctx;
+   synthFM_OSC__ctx_type_1 &_ctx = _output_;
    synthFM_OSC__ctx_type_0_init(_ctx._inst4ad);
    synthFM_OSC__ctx_type_0_init(_ctx._inst35f);
    synthFM_OSC__ctx_type_0_init(_ctx._inst2a3);
    synthFM_OSC__ctx_type_0_init(_ctx._inst133);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -4323,13 +4323,13 @@ void synthFM_OSC_dummy(synthFM_OSC__ctx_type_1 &_ctx, fix16_t (&wavetable)[4096]
 }
 
 void synthFM_Notes__ctx_type_0_init(synthFM_Notes__ctx_type_0 &_output_){
-   synthFM_Notes__ctx_type_0 _ctx;
+   synthFM_Notes__ctx_type_0 &_ctx = _output_;
    _ctx.poly = false;
    int_init_array(128,0,_ctx.notes);
    _ctx.nb_notes = 0;
    int_init_array(128,0,_ctx.last_notes);
    synthFM_Notes_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -4412,12 +4412,12 @@ uint8_t synthFM_Notes_noteOff(synthFM_Notes__ctx_type_0 &_ctx, int note, int cha
 }
 
 void synthFM_ADSR__ctx_type_0_init(synthFM_ADSR__ctx_type_0 &_output_){
-   synthFM_ADSR__ctx_type_0 _ctx;
+   synthFM_ADSR__ctx_type_0 &_ctx = _output_;
    _ctx.getMaxValues_ret_3 = 0x0 /* 0.000000 */;
    _ctx.getMaxValues_ret_2 = 0x0 /* 0.000000 */;
    _ctx.getMaxValues_ret_1 = 0x0 /* 0.000000 */;
    _ctx.getMaxValues_ret_0 = 0x0 /* 0.000000 */;
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -4472,7 +4472,7 @@ fix16_t synthFM_ADSR_getMaxRelease(synthFM_ADSR__ctx_type_4 &_ctx){
 }
 
 void synthFM_ADSR__ctx_type_5_init(synthFM_ADSR__ctx_type_5 &_output_){
-   synthFM_ADSR__ctx_type_5 _ctx;
+   synthFM_ADSR__ctx_type_5 &_ctx = _output_;
    _ctx.target = 0x0 /* 0.000000 */;
    _ctx.step = 0x0 /* 0.000000 */;
    _ctx.state = 0;
@@ -4491,7 +4491,7 @@ void synthFM_ADSR__ctx_type_5_init(synthFM_ADSR__ctx_type_5 &_output_){
    synthFM_Util__ctx_type_1_init(_ctx._inst1851);
    synthFM_Util__ctx_type_1_init(_ctx._inst151);
    synthFM_ADSR_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -4646,7 +4646,7 @@ void synthFM_ADSR_config(synthFM_ADSR__ctx_type_5 &_ctx, fix16_t newA, fix16_t n
 }
 
 void synthFM_FM__ctx_type_0_init(synthFM_FM__ctx_type_0 &_output_){
-   synthFM_FM__ctx_type_0 _ctx;
+   synthFM_FM__ctx_type_0 &_ctx = _output_;
    synthFM_Notes__ctx_type_0_init(_ctx.playingnotes);
    _ctx.n = 0;
    synthFM_ADSR__ctx_type_5_init(_ctx.modulatoradsr);
@@ -4676,7 +4676,7 @@ void synthFM_FM__ctx_type_0_init(synthFM_FM__ctx_type_0 &_output_){
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_carrier_env_short);
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_carrier_env);
    synthFM_FM_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -4891,7 +4891,7 @@ void synthFM_FM_default(synthFM_FM__ctx_type_0 &_ctx){
 }
 
 void synthFM_Poly__ctx_type_0_init(synthFM_Poly__ctx_type_0 &_output_){
-   synthFM_Poly__ctx_type_0 _ctx;
+   synthFM_Poly__ctx_type_0 &_ctx = _output_;
    ;
    ;
    synthFM_FM__ctx_type_0_init(_ctx.voice3);
@@ -4906,7 +4906,7 @@ void synthFM_Poly__ctx_type_0_init(synthFM_Poly__ctx_type_0 &_output_){
    _ctx.initModulatorWavetable = false;
    _ctx.initCarrierWavetable = false;
    synthFM_Poly_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -13142,7 +13142,7 @@ void synthFM_Poly_default(synthFM_Poly__ctx_type_0 &_ctx){
 }
 
 void synthFM_Voice__ctx_type_0_init(synthFM_Voice__ctx_type_0 &_output_){
-   synthFM_Voice__ctx_type_0 _ctx;
+   synthFM_Voice__ctx_type_0 &_ctx = _output_;
    synthFM_Notes__ctx_type_0_init(_ctx.voicesinactive);
    synthFM_Notes__ctx_type_0_init(_ctx.voicesactive);
    _ctx.voices_ratio = 0x0 /* 0.000000 */;
@@ -13161,7 +13161,7 @@ void synthFM_Voice__ctx_type_0_init(synthFM_Voice__ctx_type_0 &_output_){
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v1);
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v0);
    synthFM_Voice_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -13377,10 +13377,10 @@ void synthFM_Voice_default(synthFM_Voice__ctx_type_0 &_ctx){
 }
 
 void synthFM_Voice__ctx_type_1_init(synthFM_Voice__ctx_type_1 &_output_){
-   synthFM_Voice__ctx_type_1 _ctx;
+   synthFM_Voice__ctx_type_1 &_ctx = _output_;
    synthFM_Voice__ctx_type_0_init(_ctx._inst275);
    synthFM_Voice__ctx_type_0_init(_ctx._inst1b9);
-   _output_ = _ctx;
+   
    return ;
 }
 

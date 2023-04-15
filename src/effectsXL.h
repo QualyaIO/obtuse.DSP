@@ -136,9 +136,9 @@ typedef struct effectsXL_CombFB__ctx_type_1 {
 typedef effectsXL_CombFB__ctx_type_1 effectsXL_CombFB_dummy_type;
 
 static_inline void effectsXL_CombFB__ctx_type_1_init(effectsXL_CombFB__ctx_type_1 &_output_){
-   effectsXL_CombFB__ctx_type_1 _ctx;
+   effectsXL_CombFB__ctx_type_1 &_ctx = _output_;
    effectsXL_CombFB__ctx_type_0_init(_ctx._inst13c);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -272,9 +272,9 @@ typedef struct effectsXL_Allpass__ctx_type_1 {
 typedef effectsXL_Allpass__ctx_type_1 effectsXL_Allpass_dummy_type;
 
 static_inline void effectsXL_Allpass__ctx_type_1_init(effectsXL_Allpass__ctx_type_1 &_output_){
-   effectsXL_Allpass__ctx_type_1 _ctx;
+   effectsXL_Allpass__ctx_type_1 &_ctx = _output_;
    effectsXL_Allpass__ctx_type_0_init(_ctx._inst156);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -377,9 +377,9 @@ typedef struct effectsXL_Reverb__ctx_type_1 {
 typedef effectsXL_Reverb__ctx_type_1 effectsXL_Reverb_dummy_type;
 
 static_inline void effectsXL_Reverb__ctx_type_1_init(effectsXL_Reverb__ctx_type_1 &_output_){
-   effectsXL_Reverb__ctx_type_1 _ctx;
+   effectsXL_Reverb__ctx_type_1 &_ctx = _output_;
    effectsXL_Reverb__ctx_type_0_init(_ctx._inst1f2);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -405,9 +405,9 @@ typedef struct effectsXL_Util__ctx_type_1 {
 typedef effectsXL_Util__ctx_type_1 effectsXL_Util_edge_type;
 
 static_inline void effectsXL_Util__ctx_type_1_init(effectsXL_Util__ctx_type_1 &_output_){
-   effectsXL_Util__ctx_type_1 _ctx;
+   effectsXL_Util__ctx_type_1 &_ctx = _output_;
    _ctx.pre = false;
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -446,9 +446,9 @@ typedef struct effectsXL_Util__ctx_type_3 {
 typedef effectsXL_Util__ctx_type_3 effectsXL_Util_change_type;
 
 static_inline void effectsXL_Util__ctx_type_3_init(effectsXL_Util__ctx_type_3 &_output_){
-   effectsXL_Util__ctx_type_3 _ctx;
+   effectsXL_Util__ctx_type_3 &_ctx = _output_;
    _ctx.pre_x = 0x0 /* 0.000000 */;
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -471,9 +471,9 @@ typedef struct effectsXL_Util__ctx_type_4 {
 typedef effectsXL_Util__ctx_type_4 effectsXL_Util_smooth_type;
 
 static_inline void effectsXL_Util__ctx_type_4_init(effectsXL_Util__ctx_type_4 &_output_){
-   effectsXL_Util__ctx_type_4 _ctx;
+   effectsXL_Util__ctx_type_4 &_ctx = _output_;
    _ctx.x = 0x0 /* 0.000000 */;
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -676,9 +676,9 @@ typedef struct effectsXL_Ladder__ctx_type_3 {
 typedef effectsXL_Ladder__ctx_type_3 effectsXL_Ladder_dummy_type;
 
 static_inline void effectsXL_Ladder__ctx_type_3_init(effectsXL_Ladder__ctx_type_3 &_output_){
-   effectsXL_Ladder__ctx_type_3 _ctx;
+   effectsXL_Ladder__ctx_type_3 &_ctx = _output_;
    effectsXL_Ladder__ctx_type_2_init(_ctx._inst163);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -816,9 +816,9 @@ typedef struct effectsXL_CombFF__ctx_type_1 {
 typedef effectsXL_CombFF__ctx_type_1 effectsXL_CombFF_dummy_type;
 
 static_inline void effectsXL_CombFF__ctx_type_1_init(effectsXL_CombFF__ctx_type_1 &_output_){
-   effectsXL_CombFF__ctx_type_1 _ctx;
+   effectsXL_CombFF__ctx_type_1 &_ctx = _output_;
    effectsXL_CombFF__ctx_type_0_init(_ctx._inst115);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -972,9 +972,9 @@ typedef struct effectsXL_SVF__ctx_type_1 {
 typedef effectsXL_SVF__ctx_type_1 effectsXL_SVF_dummy_type;
 
 static_inline void effectsXL_SVF__ctx_type_1_init(effectsXL_SVF__ctx_type_1 &_output_){
-   effectsXL_SVF__ctx_type_1 _ctx;
+   effectsXL_SVF__ctx_type_1 &_ctx = _output_;
    effectsXL_SVF__ctx_type_0_init(_ctx._inst1f);
-   _output_ = _ctx;
+   
    return ;
 }
 

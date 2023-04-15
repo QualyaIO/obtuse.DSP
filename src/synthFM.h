@@ -93,9 +93,9 @@ typedef struct synthFM_Util__ctx_type_1 {
 typedef synthFM_Util__ctx_type_1 synthFM_Util_edge_type;
 
 static_inline void synthFM_Util__ctx_type_1_init(synthFM_Util__ctx_type_1 &_output_){
-   synthFM_Util__ctx_type_1 _ctx;
+   synthFM_Util__ctx_type_1 &_ctx = _output_;
    _ctx.pre = false;
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -134,9 +134,9 @@ typedef struct synthFM_Util__ctx_type_3 {
 typedef synthFM_Util__ctx_type_3 synthFM_Util_change_type;
 
 static_inline void synthFM_Util__ctx_type_3_init(synthFM_Util__ctx_type_3 &_output_){
-   synthFM_Util__ctx_type_3 _ctx;
+   synthFM_Util__ctx_type_3 &_ctx = _output_;
    _ctx.pre_x = 0x0 /* 0.000000 */;
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -159,9 +159,9 @@ typedef struct synthFM_Util__ctx_type_4 {
 typedef synthFM_Util__ctx_type_4 synthFM_Util_smooth_type;
 
 static_inline void synthFM_Util__ctx_type_4_init(synthFM_Util__ctx_type_4 &_output_){
-   synthFM_Util__ctx_type_4 _ctx;
+   synthFM_Util__ctx_type_4 &_ctx = _output_;
    _ctx.x = 0x0 /* 0.000000 */;
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -495,9 +495,9 @@ typedef struct synthFM_ADSR__ctx_type_1 {
 typedef synthFM_ADSR__ctx_type_1 synthFM_ADSR_getMaxAttack_type;
 
 static_inline void synthFM_ADSR__ctx_type_1_init(synthFM_ADSR__ctx_type_1 &_output_){
-   synthFM_ADSR__ctx_type_1 _ctx;
+   synthFM_ADSR__ctx_type_1 &_ctx = _output_;
    synthFM_ADSR__ctx_type_0_init(_ctx._inst173);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -515,9 +515,9 @@ typedef struct synthFM_ADSR__ctx_type_2 {
 typedef synthFM_ADSR__ctx_type_2 synthFM_ADSR_getMaxDecay_type;
 
 static_inline void synthFM_ADSR__ctx_type_2_init(synthFM_ADSR__ctx_type_2 &_output_){
-   synthFM_ADSR__ctx_type_2 _ctx;
+   synthFM_ADSR__ctx_type_2 &_ctx = _output_;
    synthFM_ADSR__ctx_type_0_init(_ctx._inst173);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -535,9 +535,9 @@ typedef struct synthFM_ADSR__ctx_type_3 {
 typedef synthFM_ADSR__ctx_type_3 synthFM_ADSR_getMaxSurtain_type;
 
 static_inline void synthFM_ADSR__ctx_type_3_init(synthFM_ADSR__ctx_type_3 &_output_){
-   synthFM_ADSR__ctx_type_3 _ctx;
+   synthFM_ADSR__ctx_type_3 &_ctx = _output_;
    synthFM_ADSR__ctx_type_0_init(_ctx._inst173);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -555,9 +555,9 @@ typedef struct synthFM_ADSR__ctx_type_4 {
 typedef synthFM_ADSR__ctx_type_4 synthFM_ADSR_getMaxRelease_type;
 
 static_inline void synthFM_ADSR__ctx_type_4_init(synthFM_ADSR__ctx_type_4 &_output_){
-   synthFM_ADSR__ctx_type_4 _ctx;
+   synthFM_ADSR__ctx_type_4 &_ctx = _output_;
    synthFM_ADSR__ctx_type_0_init(_ctx._inst173);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -676,9 +676,9 @@ typedef struct synthFM_ADSR__ctx_type_6 {
 typedef synthFM_ADSR__ctx_type_6 synthFM_ADSR_dummy_type;
 
 static_inline void synthFM_ADSR__ctx_type_6_init(synthFM_ADSR__ctx_type_6 &_output_){
-   synthFM_ADSR__ctx_type_6 _ctx;
+   synthFM_ADSR__ctx_type_6 &_ctx = _output_;
    synthFM_ADSR__ctx_type_5_init(_ctx._inst182);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -926,9 +926,9 @@ typedef struct synthFM_FM__ctx_type_1 {
 typedef synthFM_FM__ctx_type_1 synthFM_FM_dummy_type;
 
 static_inline void synthFM_FM__ctx_type_1_init(synthFM_FM__ctx_type_1 &_output_){
-   synthFM_FM__ctx_type_1 _ctx;
+   synthFM_FM__ctx_type_1 &_ctx = _output_;
    synthFM_FM__ctx_type_0_init(_ctx._inst115);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -1308,9 +1308,9 @@ typedef struct synthFM_Poly__ctx_type_1 {
 typedef synthFM_Poly__ctx_type_1 synthFM_Poly_dummy_type;
 
 static_inline void synthFM_Poly__ctx_type_1_init(synthFM_Poly__ctx_type_1 &_output_){
-   synthFM_Poly__ctx_type_1 _ctx;
+   synthFM_Poly__ctx_type_1 &_ctx = _output_;
    synthFM_Poly__ctx_type_0_init(_ctx._inst179);
-   _output_ = _ctx;
+   
    return ;
 }
 

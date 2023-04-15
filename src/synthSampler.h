@@ -18,9 +18,9 @@ typedef struct synthSampler_Util__ctx_type_1 {
 typedef synthSampler_Util__ctx_type_1 synthSampler_Util_edge_type;
 
 static_inline void synthSampler_Util__ctx_type_1_init(synthSampler_Util__ctx_type_1 &_output_){
-   synthSampler_Util__ctx_type_1 _ctx;
+   synthSampler_Util__ctx_type_1 &_ctx = _output_;
    _ctx.pre = false;
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -59,9 +59,9 @@ typedef struct synthSampler_Util__ctx_type_3 {
 typedef synthSampler_Util__ctx_type_3 synthSampler_Util_change_type;
 
 static_inline void synthSampler_Util__ctx_type_3_init(synthSampler_Util__ctx_type_3 &_output_){
-   synthSampler_Util__ctx_type_3 _ctx;
+   synthSampler_Util__ctx_type_3 &_ctx = _output_;
    _ctx.pre_x = 0x0 /* 0.000000 */;
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -84,9 +84,9 @@ typedef struct synthSampler_Util__ctx_type_4 {
 typedef synthSampler_Util__ctx_type_4 synthSampler_Util_smooth_type;
 
 static_inline void synthSampler_Util__ctx_type_4_init(synthSampler_Util__ctx_type_4 &_output_){
-   synthSampler_Util__ctx_type_4 _ctx;
+   synthSampler_Util__ctx_type_4 &_ctx = _output_;
    _ctx.x = 0x0 /* 0.000000 */;
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -404,9 +404,9 @@ typedef struct synthSampler_Sampler__ctx_type_3 {
 typedef synthSampler_Sampler__ctx_type_3 synthSampler_Sampler_dummy_type;
 
 static_inline void synthSampler_Sampler__ctx_type_3_init(synthSampler_Sampler__ctx_type_3 &_output_){
-   synthSampler_Sampler__ctx_type_3 _ctx;
+   synthSampler_Sampler__ctx_type_3 &_ctx = _output_;
    synthSampler_Sampler__ctx_type_2_init(_ctx._inst1fd);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -740,9 +740,9 @@ typedef struct synthSampler_Poly__ctx_type_1 {
 typedef synthSampler_Poly__ctx_type_1 synthSampler_Poly_dummy_type;
 
 static_inline void synthSampler_Poly__ctx_type_1_init(synthSampler_Poly__ctx_type_1 &_output_){
-   synthSampler_Poly__ctx_type_1 _ctx;
+   synthSampler_Poly__ctx_type_1 &_ctx = _output_;
    synthSampler_Poly__ctx_type_0_init(_ctx._inst179);
-   _output_ = _ctx;
+   
    return ;
 }
 

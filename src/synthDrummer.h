@@ -18,9 +18,9 @@ typedef struct synthDrummer_Util__ctx_type_1 {
 typedef synthDrummer_Util__ctx_type_1 synthDrummer_Util_edge_type;
 
 static_inline void synthDrummer_Util__ctx_type_1_init(synthDrummer_Util__ctx_type_1 &_output_){
-   synthDrummer_Util__ctx_type_1 _ctx;
+   synthDrummer_Util__ctx_type_1 &_ctx = _output_;
    _ctx.pre = false;
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -59,9 +59,9 @@ typedef struct synthDrummer_Util__ctx_type_3 {
 typedef synthDrummer_Util__ctx_type_3 synthDrummer_Util_change_type;
 
 static_inline void synthDrummer_Util__ctx_type_3_init(synthDrummer_Util__ctx_type_3 &_output_){
-   synthDrummer_Util__ctx_type_3 _ctx;
+   synthDrummer_Util__ctx_type_3 &_ctx = _output_;
    _ctx.pre_x = 0x0 /* 0.000000 */;
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -84,9 +84,9 @@ typedef struct synthDrummer_Util__ctx_type_4 {
 typedef synthDrummer_Util__ctx_type_4 synthDrummer_Util_smooth_type;
 
 static_inline void synthDrummer_Util__ctx_type_4_init(synthDrummer_Util__ctx_type_4 &_output_){
-   synthDrummer_Util__ctx_type_4 _ctx;
+   synthDrummer_Util__ctx_type_4 &_ctx = _output_;
    _ctx.x = 0x0 /* 0.000000 */;
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -266,9 +266,9 @@ typedef struct synthDrummer_Drummer__ctx_type_3 {
 typedef synthDrummer_Drummer__ctx_type_3 synthDrummer_Drummer_dummy_type;
 
 static_inline void synthDrummer_Drummer__ctx_type_3_init(synthDrummer_Drummer__ctx_type_3 &_output_){
-   synthDrummer_Drummer__ctx_type_3 _ctx;
+   synthDrummer_Drummer__ctx_type_3 &_ctx = _output_;
    synthDrummer_Drummer__ctx_type_2_init(_ctx._inst1b);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -590,9 +590,9 @@ typedef struct synthDrummer_Poly__ctx_type_1 {
 typedef synthDrummer_Poly__ctx_type_1 synthDrummer_Poly_dummy_type;
 
 static_inline void synthDrummer_Poly__ctx_type_1_init(synthDrummer_Poly__ctx_type_1 &_output_){
-   synthDrummer_Poly__ctx_type_1 _ctx;
+   synthDrummer_Poly__ctx_type_1 &_ctx = _output_;
    synthDrummer_Poly__ctx_type_0_init(_ctx._inst179);
-   _output_ = _ctx;
+   
    return ;
 }
 

@@ -3,7 +3,7 @@
 #include "effects.h"
 
 void effects_CombFB__ctx_type_0_init(effects_CombFB__ctx_type_0 &_output_){
-   effects_CombFB__ctx_type_0 _ctx;
+   effects_CombFB__ctx_type_0 &_ctx = _output_;
    _ctx.scale = 0x0 /* 0.000000 */;
    _ctx.pos = 0;
    _ctx.fs = 0x0 /* 0.000000 */;
@@ -11,7 +11,7 @@ void effects_CombFB__ctx_type_0_init(effects_CombFB__ctx_type_0 &_output_){
    _ctx.decay = 0x0 /* 0.000000 */;
    ;
    effects_CombFB_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -43,7 +43,7 @@ void effects_CombFB_process_bufferTo(effects_CombFB__ctx_type_0 &_ctx, int nb, f
 }
 
 void effects_Allpass__ctx_type_0_init(effects_Allpass__ctx_type_0 &_output_){
-   effects_Allpass__ctx_type_0 _ctx;
+   effects_Allpass__ctx_type_0 &_ctx = _output_;
    _ctx.scale = 0x0 /* 0.000000 */;
    _ctx.pos = 0;
    _ctx.fs = 0x0 /* 0.000000 */;
@@ -52,7 +52,7 @@ void effects_Allpass__ctx_type_0_init(effects_Allpass__ctx_type_0 &_output_){
    ;
    ;
    effects_Allpass_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -94,7 +94,7 @@ void effects_Allpass_default(effects_Allpass__ctx_type_0 &_ctx){
 }
 
 void effects_Reverb__ctx_type_0_init(effects_Reverb__ctx_type_0 &_output_){
-   effects_Reverb__ctx_type_0 _ctx;
+   effects_Reverb__ctx_type_0 &_ctx = _output_;
    _ctx.reverbtime = 0x0 /* 0.000000 */;
    _ctx.fs = 0x0 /* 0.000000 */;
    _ctx.comb3delay = 0;
@@ -114,7 +114,7 @@ void effects_Reverb__ctx_type_0_init(effects_Reverb__ctx_type_0 &_output_){
    effects_Allpass__ctx_type_0_init(_ctx.allpass1);
    effects_Allpass__ctx_type_0_init(_ctx.allpass0);
    effects_Reverb_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -204,12 +204,12 @@ void effects_Reverb_default(effects_Reverb__ctx_type_0 &_ctx){
 }
 
 void effects_Ladder__ctx_type_0_init(effects_Ladder__ctx_type_0 &_output_){
-   effects_Ladder__ctx_type_0 _ctx;
+   effects_Ladder__ctx_type_0 &_ctx = _output_;
    _ctx.p3 = 0x0 /* 0.000000 */;
    _ctx.p2 = 0x0 /* 0.000000 */;
    _ctx.p1 = 0x0 /* 0.000000 */;
    _ctx.p0 = 0x0 /* 0.000000 */;
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -266,12 +266,12 @@ fix16_t effects_Ladder_heun(effects_Ladder__ctx_type_0 &_ctx, fix16_t input, fix
 }
 
 void effects_Ladder__ctx_type_1_init(effects_Ladder__ctx_type_1 &_output_){
-   effects_Ladder__ctx_type_1 _ctx;
+   effects_Ladder__ctx_type_1 &_ctx = _output_;
    _ctx.p3 = 0x0 /* 0.000000 */;
    _ctx.p2 = 0x0 /* 0.000000 */;
    _ctx.p1 = 0x0 /* 0.000000 */;
    _ctx.p0 = 0x0 /* 0.000000 */;
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -302,7 +302,7 @@ fix16_t effects_Ladder_euler(effects_Ladder__ctx_type_1 &_ctx, fix16_t input, fi
 }
 
 void effects_Ladder__ctx_type_2_init(effects_Ladder__ctx_type_2 &_output_){
-   effects_Ladder__ctx_type_2 _ctx;
+   effects_Ladder__ctx_type_2 &_ctx = _output_;
    ;
    _ctx.tuneRatio = 0x0 /* 0.000000 */;
    _ctx.rsize = 0x0 /* 0.000000 */;
@@ -316,7 +316,7 @@ void effects_Ladder__ctx_type_2_init(effects_Ladder__ctx_type_2 &_output_){
    _ctx.cut = 0x0 /* 0.000000 */;
    effects_Util__ctx_type_3_init(_ctx._inst43b);
    effects_Util__ctx_type_3_init(_ctx._inst13b);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -401,7 +401,7 @@ void effects_Ladder_setSamplerate(effects_Ladder__ctx_type_2 &_ctx, fix16_t newF
 }
 
 void effects_CombFF__ctx_type_0_init(effects_CombFF__ctx_type_0 &_output_){
-   effects_CombFF__ctx_type_0 _ctx;
+   effects_CombFF__ctx_type_0 &_ctx = _output_;
    _ctx.scale = 0x0 /* 0.000000 */;
    _ctx.pos = 0;
    _ctx.fs = 0x0 /* 0.000000 */;
@@ -409,7 +409,7 @@ void effects_CombFF__ctx_type_0_init(effects_CombFF__ctx_type_0 &_output_){
    _ctx.decay = 0x0 /* 0.000000 */;
    ;
    effects_CombFF_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -441,7 +441,7 @@ void effects_CombFF_process_bufferTo(effects_CombFF__ctx_type_0 &_ctx, int nb, f
 }
 
 void effects_SVF__ctx_type_0_init(effects_SVF__ctx_type_0 &_output_){
-   effects_SVF__ctx_type_0 _ctx;
+   effects_SVF__ctx_type_0 &_ctx = _output_;
    _ctx.z2 = 0x0 /* 0.000000 */;
    _ctx.z1 = 0x0 /* 0.000000 */;
    _ctx.targetFreq = 0x0 /* 0.000000 */;
@@ -461,7 +461,7 @@ void effects_SVF__ctx_type_0_init(effects_SVF__ctx_type_0 &_output_){
    effects_Util__ctx_type_3_init(_ctx._inst103b);
    _ctx.R = 0x0 /* 0.000000 */;
    effects_SVF_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 
