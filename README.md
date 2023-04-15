@@ -20,7 +20,6 @@ WARNING: Be wary where the struct are initialized to avoid problem with stack si
 
 # TODO
 
-
 Interface
 
 - filters and reverb: method to ask for auto-resize of delay upon change in samplerate
@@ -42,3 +41,7 @@ Features
 - velocity: not only linear? save for monophonic?
 - tremolo (e.g. at Voice level)
 - also folding for wavetable?
+
+Vult
+
+- at this time Vult transpile init function in such a way that stack overflow can happen due to unnecessary temp variable and absence of NRVO (Named Return Value Optimization) by the compiler. There is currently a rack in the `make_vult.sh` script to circumvent that, it'd better fixed upstream.
