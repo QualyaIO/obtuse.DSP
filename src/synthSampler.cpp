@@ -515,7 +515,9 @@ void synthSampler_Voice_noteOff(synthSampler_Voice__ctx_type_0 &_ctx, int note, 
          synthSampler_Poly_sendNoteOff(_ctx.poly,((-1) + v),note,channel);
          _ctx.notes[note] = 0;
          _ctx.voices[((-1) + v)] = 0;
-         synthSampler_Notes_noteOn(_ctx.voicesinactive,((-1) + v),127,0);
+         if(v <= _ctx.number_voices){
+            synthSampler_Notes_noteOn(_ctx.voicesinactive,((-1) + v),127,0);
+         }
       }
    }
 }
@@ -526,7 +528,7 @@ void synthSampler_Voice_noteOn(synthSampler_Voice__ctx_type_0 &_ctx, int note, i
    if(_ctx.notes[note] <= 0){
       int v;
       v = synthSampler_Notes_firstNote(_ctx.voicesinactive);
-      if(v <= 0){
+      if((v <= 0) || (v > _ctx.number_voices)){
          int active_v;
          active_v = synthSampler_Notes_firstNote(_ctx.voicesactive);
          if(active_v > 0){
@@ -534,7 +536,7 @@ void synthSampler_Voice_noteOn(synthSampler_Voice__ctx_type_0 &_ctx, int note, i
          }
       }
       v = synthSampler_Notes_firstNote(_ctx.voicesinactive);
-      if(v > 0){
+      if((v > 0) && (v <= _ctx.number_voices)){
          if(synthSampler_Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && synthSampler_Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)){
             if(synthSampler_Poly_shouldLeftOvers(_ctx.poly)){
                _ctx.leftovers = (_ctx.leftovers + _ctx.last_values[((-1) + v)]);
@@ -569,12 +571,23 @@ void synthSampler_Voice_setNbVoices(synthSampler_Voice__ctx_type_0 &_ctx, int nb
       i = ((-1) + i);
    }
    i = synthSampler_Notes_nbNotes(_ctx.voicesinactive);
-   while(i < nbvoices){
-      synthSampler_Notes_noteOn(_ctx.voicesinactive,i,127,0);
-      i = (1 + i);
+   if(i < nbvoices){
+      while(i < nbvoices){
+         synthSampler_Notes_noteOn(_ctx.voicesinactive,i,127,0);
+         i = (1 + i);
+      }
+   }
+   else
+   {
+      while(i >= _ctx.number_voices){
+         synthSampler_Notes_noteOff(_ctx.voicesinactive,i,0);
+         i = ((-1) + i);
+      }
    }
    _ctx.number_voices = nbvoices;
-   _ctx.voices_ratio = fix_div(0x10000 /* 1.000000 */,int_to_fix(_ctx.number_voices));
+   if(_ctx.number_voices > 0){
+      _ctx.voices_ratio = fix_div(0x10000 /* 1.000000 */,int_to_fix(_ctx.number_voices));
+   }
 }
 
 void synthSampler_Voice_setSamplerate(synthSampler_Voice__ctx_type_0 &_ctx, fix16_t newFs){

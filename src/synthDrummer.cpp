@@ -448,7 +448,9 @@ void synthDrummer_Voice_noteOff(synthDrummer_Voice__ctx_type_0 &_ctx, int note, 
          synthDrummer_Poly_sendNoteOff(_ctx.poly,((-1) + v),note,channel);
          _ctx.notes[note] = 0;
          _ctx.voices[((-1) + v)] = 0;
-         synthDrummer_Notes_noteOn(_ctx.voicesinactive,((-1) + v),127,0);
+         if(v <= _ctx.number_voices){
+            synthDrummer_Notes_noteOn(_ctx.voicesinactive,((-1) + v),127,0);
+         }
       }
    }
 }
@@ -459,7 +461,7 @@ void synthDrummer_Voice_noteOn(synthDrummer_Voice__ctx_type_0 &_ctx, int note, i
    if(_ctx.notes[note] <= 0){
       int v;
       v = synthDrummer_Notes_firstNote(_ctx.voicesinactive);
-      if(v <= 0){
+      if((v <= 0) || (v > _ctx.number_voices)){
          int active_v;
          active_v = synthDrummer_Notes_firstNote(_ctx.voicesactive);
          if(active_v > 0){
@@ -467,7 +469,7 @@ void synthDrummer_Voice_noteOn(synthDrummer_Voice__ctx_type_0 &_ctx, int note, i
          }
       }
       v = synthDrummer_Notes_firstNote(_ctx.voicesinactive);
-      if(v > 0){
+      if((v > 0) && (v <= _ctx.number_voices)){
          if(synthDrummer_Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && synthDrummer_Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)){
             if(synthDrummer_Poly_shouldLeftOvers(_ctx.poly)){
                _ctx.leftovers = (_ctx.leftovers + _ctx.last_values[((-1) + v)]);
@@ -502,12 +504,23 @@ void synthDrummer_Voice_setNbVoices(synthDrummer_Voice__ctx_type_0 &_ctx, int nb
       i = ((-1) + i);
    }
    i = synthDrummer_Notes_nbNotes(_ctx.voicesinactive);
-   while(i < nbvoices){
-      synthDrummer_Notes_noteOn(_ctx.voicesinactive,i,127,0);
-      i = (1 + i);
+   if(i < nbvoices){
+      while(i < nbvoices){
+         synthDrummer_Notes_noteOn(_ctx.voicesinactive,i,127,0);
+         i = (1 + i);
+      }
+   }
+   else
+   {
+      while(i >= _ctx.number_voices){
+         synthDrummer_Notes_noteOff(_ctx.voicesinactive,i,0);
+         i = ((-1) + i);
+      }
    }
    _ctx.number_voices = nbvoices;
-   _ctx.voices_ratio = fix_div(0x10000 /* 1.000000 */,int_to_fix(_ctx.number_voices));
+   if(_ctx.number_voices > 0){
+      _ctx.voices_ratio = fix_div(0x10000 /* 1.000000 */,int_to_fix(_ctx.number_voices));
+   }
 }
 
 void synthDrummer_Voice_setSamplerate(synthDrummer_Voice__ctx_type_0 &_ctx, fix16_t newFs){
