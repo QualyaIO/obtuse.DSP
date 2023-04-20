@@ -68,19 +68,16 @@ static_inline int synthFM_Wavetable_getNbWavetables(){
 
 void synthFM_Wavetable_morphTo(fix16_t wavetableIdx, fix16_t phase, fix16_t (&buffer)[4096]);
 
-static_inline void synthFM_Wavetable_bufferWavetable(fix16_t (&_output_)[4096]){
-   fix16_t buff[4096];
-   fix_copy_array(4096,_output_,buff);
-   return ;
+static_inline void synthFM_Wavetable_bufferWavetable(fix16_t (&oBuff)[4096]){
 }
 
 static_inline int synthFM_Wavetable_bufferSize(){
    return 4096;
 };
 
-void synthFM_Wavetable_getRandomMorph(fix16_t (&_output_)[4096]);
+void synthFM_Wavetable_getRandomMorph(fix16_t (&oBuff)[4096]);
 
-fix16_t synthFM_Wavetable_getRandRandomMorph();
+fix16_t synthFM_Wavetable_getRandRandomMorph(fix16_t (&oBuff)[4096]);
 
 static_inline fix16_t synthFM_Util_noteToFrequency(int note){
    return fix_mul(0x217 /* 0.008176 */,fix_exp(fix_mul(0xec9 /* 0.057762 */,int_to_fix(note))));

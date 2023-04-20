@@ -223,8 +223,8 @@ and shouldLeftOvers(): bool {
 
 and default() @[init] {
   should_leftovers = false;
-  wavetable_modulator = Wavetable.bufferWavetable();
-  wavetable_carrier = Wavetable.bufferWavetable();
+  Wavetable.bufferWavetable(wavetable_modulator);
+  Wavetable.bufferWavetable(wavetable_carrier);
   initModulatorWavetable = false;
   initCarrierWavetable = false;
   // default to sine

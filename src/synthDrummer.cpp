@@ -512,7 +512,7 @@ void synthDrummer_Voice_setNbVoices(synthDrummer_Voice__ctx_type_0 &_ctx, int nb
    }
    else
    {
-      while(i >= _ctx.number_voices){
+      while(i >= nbvoices){
          synthDrummer_Notes_noteOff(_ctx.voicesinactive,i,0);
          i = ((-1) + i);
       }

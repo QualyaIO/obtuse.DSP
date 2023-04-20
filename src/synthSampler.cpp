@@ -579,7 +579,7 @@ void synthSampler_Voice_setNbVoices(synthSampler_Voice__ctx_type_0 &_ctx, int nb
    }
    else
    {
-      while(i >= _ctx.number_voices){
+      while(i >= nbvoices){
          synthSampler_Notes_noteOff(_ctx.voicesinactive,i,0);
          i = ((-1) + i);
       }
