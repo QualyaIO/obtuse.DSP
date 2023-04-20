@@ -187,7 +187,7 @@ and noteOn(note:int, velocity:int, channel:int){
       // at least one free voice, take the oldest
       // todo: check both active and inactive status?
       val v = voicesinactive:Notes.firstNote();
-      // no active voice, we will steal one
+      // no active voice, we will steal one (double check with actual number of voice)
       if (v <= 0 || v > number_voices) {
          val active_v = voicesactive:Notes.firstNote();
 	 // check we do indeed have one (the opposity would be a bug)
