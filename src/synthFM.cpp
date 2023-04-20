@@ -13350,7 +13350,7 @@ void synthFM_Voice_setNbVoices(synthFM_Voice__ctx_type_0 &_ctx, int nbvoices){
    }
    else
    {
-      while(i >= _ctx.number_voices){
+      while(i >= nbvoices){
          synthFM_Notes_noteOff(_ctx.voicesinactive,i,0);
          i = ((-1) + i);
       }

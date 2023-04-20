@@ -248,7 +248,7 @@ and setNbVoices(nbvoices: int) {
    }
    // turn off inactive voices if we decrease voices, highest first
    else {
-      while(i >= number_voices) {
+      while(i >= nbvoices) {
          _ = voicesinactive:Notes.noteOff(i, 0);
          i = i - 1;
       }
