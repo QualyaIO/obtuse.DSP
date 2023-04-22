@@ -10,3 +10,5 @@ Drums:
  - RLND_TR808: https://op1.fun/users/dustmason/patches/rlnd_tr808 dustmason
  - 808: https://op1.fun/users/newspaper/patches/808-drum newspaper
  - Christine_Mcvie_-_Thats_Saying_Alot: https://op1.fun/users/spider_gandhi/patches/christine_mcvie_ spider_gandhi
+
+ Samples folder: sampled by Mr. Ramadour from Logic Pro
