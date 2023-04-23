@@ -1,7 +1,7 @@
 
 // wrapping the .wav to give correct information to sampler
 
-external sample(channel:int, index:int) : real @[wave(channels=1, file="wav/ocarina.wav")];
+external sample(channel:int, index:int) : real @[wave(channels=1, file="wav/celesta.wav")];
 
 // return value for current wavetable (first channel hard-coded), between [0..sample size[
 fun getSample(index: int) {
@@ -18,21 +18,21 @@ fun getSampleFs(): real {
 }
 
 fun getSampleNote(): int {
-  // here C5
-  return 72;
+  // here C4
+  return 60;
 }
 
 // if looping should be enabled
 
 fun isSampleLoop(): bool {
-  return true;
+  return false;
 }
 
 // start and end shoul be within size
 fun getSampleLoopStart(): int {
-  return 5073;
+  return -1;
 }
 
 fun getSampleLoopEnd(): int {
-  return 5992;
+  return -1;
 }

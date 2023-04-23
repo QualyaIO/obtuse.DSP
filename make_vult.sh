@@ -12,6 +12,10 @@ echo "Generate Sampler synth ocarina"
 # this is the default sampler
 vultc -ccode vult/voice.vult -real fixed -i vult/synth_sampler -i vult/synth_sampler/ocarina -i vult/buffer_medium -o src/synthSampler -output-prefix synthSampler_
 
+echo "Generate Sampler synth celesta"
+# this is the default sampler
+vultc -ccode vult/voice.vult -real fixed -i vult/synth_sampler -i vult/synth_sampler/celesta -i vult/buffer_medium -o src/synthSamplerCelesta -output-prefix synthSamplerCelesta_
+
 echo "Generate Drummer synth"
 vultc -ccode vult/voice.vult -real fixed -i vult/synth_drummer -i vult/buffer_medium -o src/synthDrummer -output-prefix synthDrummer_
 

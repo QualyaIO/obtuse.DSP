@@ -105,23 +105,23 @@ static_inline fix16_t synthSampler_Util_velocityToLevel(int velocity){
    return fix_mul(0x204 /* 0.007874 */,int_to_fix(velocity));
 }
 
-static_inline int synthSampler_SampleWrapper_ocarina_samples(){
+static_inline int synthSampler_SampleWrapper_sample_samples(){
    return 38836;
 };
 
-static_inline fix16_t synthSampler_SampleWrapper_ocarina(int channel, int index){
+static_inline fix16_t synthSampler_SampleWrapper_sample(int channel, int index){
    if(channel == 0){
-      return fix_wrap_array(synthSampler_SampleWrapper_ocarina_chan_0)[(index % 38836)];
+      return fix_wrap_array(synthSampler_SampleWrapper_sample_chan_0)[(index % 38836)];
    }
    return 0x0 /* 0.000000 */;
 }
 
 static_inline fix16_t synthSampler_SampleWrapper_getSample(int index){
-   return synthSampler_SampleWrapper_ocarina(0,index);
+   return synthSampler_SampleWrapper_sample(0,index);
 };
 
 static_inline int synthSampler_SampleWrapper_getSampleSize(){
-   return synthSampler_SampleWrapper_ocarina_samples();
+   return synthSampler_SampleWrapper_sample_samples();
 };
 
 static_inline fix16_t synthSampler_SampleWrapper_getSampleFs(){
