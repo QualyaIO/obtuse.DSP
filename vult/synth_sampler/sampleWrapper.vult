@@ -1,0 +1,38 @@
+
+// wrapping the .wav to give correct information to sampler
+
+external ocarina(channel:int, index:int) : real @[wave(channels=1, file="ocarina.wav")];
+
+// return value for current wavetable (first channel hard-coded), between [0..sample size[
+fun getSample(index: int) {
+  return ocarina(0, index);
+}
+
+fun getSampleSize(): int {
+  return ocarina_samples();
+}
+
+// passing info from the file
+fun getSampleFs(): real {
+  return 30.0;
+}
+
+fun getSampleNote(): int {
+  // here C5
+  return 72;
+}
+
+// if looping should be enabled
+
+fun isSampleLoop(): bool {
+  return true;
+}
+
+// start and end shoul be within size
+fun getSampleLoopStart(): int {
+  return 5073;
+}
+
+fun getSampleLoopEnd(): int {
+  return 5992;
+}

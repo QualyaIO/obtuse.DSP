@@ -4,14 +4,7 @@
 
 // TODO: kill on noteOff
 
-external ocarina(channel:int, index:int) : real @[wave(channels=1, file="ocarina.wav")];
-
-// return value for current wavetable (first channel hard-coded), between [0..sample size[
-fun getSample(index: int) {
-  return ocarina(0, index);
-}
-
-and process() {
+fun process() {
   // absolutely needs init to set that
   mem size: int;
   // if we should loop on note held, if so start and end position in samples.
@@ -84,7 +77,7 @@ and process() {
       if (state == 2) {
         value = (buffer_cross[idx] + (pos % 1.0) * (buffer_cross[idx+1] - buffer_cross[idx])) * level;
       } else {
-        value = (getSample(idx) + (pos % 1.0) * (getSample(idx+1) - getSample(idx))) * level;
+        value = (SampleWrapper.getSample(idx) + (pos % 1.0) * (SampleWrapper.getSample(idx+1) - SampleWrapper.getSample(idx))) * level;
       }
     }
   }
@@ -153,7 +146,7 @@ and process_bufferTo(nb: int, oBuffer) {
         if (state == 2) {
           oBuffer[i] = (buffer_cross[idx] + (pos % 1.0) * (buffer_cross[idx+1] - buffer_cross[idx])) * level;
         } else {
-          oBuffer[i] = (getSample(idx) + (pos % 1.0) * (getSample(idx+1) - getSample(idx))) * level;
+          oBuffer[i] = (SampleWrapper.getSample(idx) + (pos % 1.0) * (SampleWrapper.getSample(idx+1) - SampleWrapper.getSample(idx))) * level;
         }
       }
     } else {
@@ -217,10 +210,10 @@ and updateCrossFade() {
       /*k = (real(i) - real(size(buffer_cross) - 1)/2.0) / (real(size(buffer_cross) - 1) / 2.0 );
       kE = sqrt(0.5 *(1.0 - k));
       kS = sqrt(0.5 * (1.0 + k));
-      buffer_cross[i] = (kE * getSample(idxE + i) + kS * getSample(idxS + i)) / (kE + kS);*/
+      buffer_cross[i] = (kE * SampleWrapper.getSample(idxE + i) + kS * SampleWrapper.getSample(idxS + i)) / (kE + kS);*/
       // equal voltage
       k = real(i) /  real(size(buffer_cross) - 1);
-      buffer_cross[i] = (1.0 - k) * getSample(idxE + i) + k * getSample(idxS + i);
+      buffer_cross[i] = (1.0 - k) * SampleWrapper.getSample(idxE + i) + k * SampleWrapper.getSample(idxS + i);
       i = i + 1;
    }
   }
@@ -310,18 +303,24 @@ and noteOff(note:int, channel:int) {
 }
 
 and default() @[init] {
-  size = ocarina_samples();
+  size = SampleWrapper.getSampleSize();
   // will copy a new array
   Buffer.buffer(buffer_cross);
   crossfade = false;
   // defaults for current sample
-  sampleFs = 30.0;
-  // here C5
-  sampleNote = 72;
-  // looping sample
-  _ = setLoop(true);
-  _ = setLoopStart(5073);
-  _ = setLoopEnd(5992);
+  sampleFs = SampleWrapper.getSampleFs();
+  sampleNote = SampleWrapper.getSampleNote();
+  // looping sample, checking for loop point (even though we need buffer around, that will be checked elsewhere)
+  if (SampleWrapper.isSampleLoop()) {
+    val lS = SampleWrapper.getSampleLoopStart();
+    val lE = SampleWrapper.getSampleLoopEnd();
+    // again, more checks will occur afterward, e.g. in updateCrossFade() 
+    if (lS  >= 0 && lE < size && lE >= lS) {
+       _ = setLoop(true);
+       _ = setLoopStart(lS);
+       _ = setLoopEnd(lE);
+    }
+  }
   // will copy a new array
   mem buffer_o;
   Buffer.buffer(buffer_o);
