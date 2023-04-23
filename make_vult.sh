@@ -8,8 +8,9 @@ vultc -ccode vult/voice.vult -real fixed -i vult/synth_FM -i vult/buffer_medium 
 #sed -i 's/static const fix16_t/static const fix16_t __not_in_flash("vult")/g' synthFM.tables.h
 
 
-echo "Generate Sampler synth"
-vultc -ccode vult/voice.vult -real fixed -i vult/synth_sampler -i vult/buffer_medium -o src/synthSampler -output-prefix synthSampler_
+echo "Generate Sampler synth ocarina"
+# this is the default sampler
+vultc -ccode vult/voice.vult -real fixed -i vult/synth_sampler -i vult/synth_sampler/ocarina -i vult/buffer_medium -o src/synthSampler -output-prefix synthSampler_
 
 echo "Generate Drummer synth"
 vultc -ccode vult/voice.vult -real fixed -i vult/synth_drummer -i vult/buffer_medium -o src/synthDrummer -output-prefix synthDrummer_
