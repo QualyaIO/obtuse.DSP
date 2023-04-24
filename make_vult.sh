@@ -21,8 +21,19 @@ for i in `ls -d ./vult/synth_sampler/*/ | cut -f4 -d'/'`; do
     vultc -ccode vult/voice.vult -real fixed -i vult/synth_sampler -i vult/synth_sampler/$i -i vult/buffer_medium -o src/${PREFIX} -output-prefix ${PREFIX}_
 done
 
-echo "Generate Drummer synth"
-vultc -ccode vult/voice.vult -real fixed -i vult/synth_drummer -i vult/synth_drummer/808 -i vult/buffer_medium -o src/synthDrummer -output-prefix synthDrummer_
+# same for drummer
+for i in `ls -d ./vult/synth_drummer/*/ | cut -f4 -d'/'`; do
+    echo "Generate Drummer synth $i"
+    # uppercase first letter of id 
+    # WARNING: only works with bash >= 4
+    PREFIX="synthDrummer${i^}"
+    # special treatment for default instrument
+    if [ $i == "808" ] ; then
+	PREFIX="synthDrummer"
+    fi
+    # this is the default sampler
+    vultc -ccode vult/voice.vult -real fixed -i vult/synth_drummer -i vult/synth_drummer/$i -i vult/buffer_medium -o src/${PREFIX} -output-prefix ${PREFIX}_
+done
 
 echo "Generate Effects"
 vultc -ccode vult/reverb.vult vult/ladder.vult vult/SVF.vult vult/combFB.vult vult/allpass.vult vult/combFF.vult -i vult/buffer_medium -real fixed -o src/effects -output-prefix effects_

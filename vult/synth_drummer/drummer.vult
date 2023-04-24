@@ -182,7 +182,7 @@ and noteOff(note:int, channel:int) {
 
 and default() @[init] {
   size = DrummerWrapper.getSampleSize();
-  // keep track of slices
+  // keep track of slices, both inclusive
   mem slices_start: array(int, 12);
   mem slices_end: array(int, 12);
   // defaults for current sample and DSP
