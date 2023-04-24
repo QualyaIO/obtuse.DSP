@@ -17,7 +17,6 @@ for i in `ls -d ./vult/synth_sampler/*/ | cut -f4 -d'/'`; do
     if [ $i == "ocarina" ] ; then
 	PREFIX="synthSampler"
     fi
-    # this is the default sampler
     vultc -ccode vult/voice.vult -real fixed -i vult/synth_sampler -i vult/synth_sampler/$i -i vult/buffer_medium -o src/${PREFIX} -output-prefix ${PREFIX}_
 done
 
@@ -31,7 +30,6 @@ for i in `ls -d ./vult/synth_drummer/*/ | cut -f4 -d'/'`; do
     if [ $i == "808" ] ; then
 	PREFIX="synthDrummer"
     fi
-    # this is the default sampler
     vultc -ccode vult/voice.vult -real fixed -i vult/synth_drummer -i vult/synth_drummer/$i -i vult/buffer_medium -o src/${PREFIX} -output-prefix ${PREFIX}_
 done
 
