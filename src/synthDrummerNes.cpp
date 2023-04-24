@@ -180,9 +180,37 @@ void synthDrummerNes_Drummer_default(synthDrummerNes_Drummer__ctx_type_0 &_ctx){
    synthDrummerNes_Drummer_setLevel(_ctx,0x10000 /* 1.000000 */);
    _ctx.sampleFs = 0x1e0000 /* 30.000000 */;
    synthDrummerNes_Drummer_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
-   synthDrummerNes_Drummer_setSlices(_ctx,{0,7000,14850,28000,43900,48000,57200,66600,68900,73300,85000,94500
-   },{6250,14000,26800,43400,47950,56900,66000,68500,72400,84600,94000,103500
-   });
+   int kit_slices_start[12];
+   {
+      kit_slices_start[0] = 0;
+      kit_slices_start[1] = 7000;
+      kit_slices_start[2] = 14850;
+      kit_slices_start[3] = 28000;
+      kit_slices_start[4] = 43900;
+      kit_slices_start[5] = 48000;
+      kit_slices_start[6] = 57200;
+      kit_slices_start[7] = 66600;
+      kit_slices_start[8] = 68900;
+      kit_slices_start[9] = 73300;
+      kit_slices_start[10] = 85000;
+      kit_slices_start[11] = 94500;
+   }
+   int kit_slices_end[12];
+   {
+      kit_slices_end[0] = 6250;
+      kit_slices_end[1] = 14000;
+      kit_slices_end[2] = 26800;
+      kit_slices_end[3] = 43400;
+      kit_slices_end[4] = 47950;
+      kit_slices_end[5] = 56900;
+      kit_slices_end[6] = 66000;
+      kit_slices_end[7] = 68500;
+      kit_slices_end[8] = 72400;
+      kit_slices_end[9] = 84600;
+      kit_slices_end[10] = 94000;
+      kit_slices_end[11] = 103500;
+   }
+   synthDrummerNes_Drummer_setSlices(_ctx,kit_slices_start,kit_slices_end);
    synthDrummerNes_Buffer_buffer(_ctx.buffer_o);
    _ctx.slice = (-1);
 }

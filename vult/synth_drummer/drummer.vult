@@ -190,7 +190,10 @@ and default() @[init] {
   sampleFs = DrummerWrapper.getSampleFs();
   _ = setSamplerate(44.1);
   // set default slices
-  _ = setSlices(DrummerWrapper.getSlicesStart(), DrummerWrapper.getSlicesEnd());
+  // note: need to use explicit temp variables to make c++ happy (would otherwise mix const array with non-const)
+  val kit_slices_start = DrummerWrapper.getSlicesStart();
+  val kit_slices_end = DrummerWrapper.getSlicesEnd();
+  _ = setSlices(kit_slices_start, kit_slices_end);
   // will copy a new array
   mem buffer_o;
   Buffer.buffer(buffer_o);
