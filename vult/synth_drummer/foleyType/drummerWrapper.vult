@@ -1,0 +1,28 @@
+
+// wrapping the .wav to give correct information to drummer
+
+external drumkit(channel:int, index:int) : real @[wave(channels=1, file="wav/foley_type_kit.wav")];
+
+// return value for current wavetable (first channel hard-coded), between [0..sample size[
+fun getSample(index: int) {
+  return drumkit(0, index);
+}
+
+fun getSampleSize(): int {
+  return drumkit_samples();
+}
+
+// passing info from the file
+fun getSampleFs(): real {
+  return 30.0;
+}
+
+// start indices of each sample (inclusive)
+fun getSlicesStart(): array(int, 12) {
+  return [0, 14900, 22150, 30100, 49700, 60700, 69100, 83350, 91100, 99850, 107700, 113800];
+}
+
+// stop indices of each sample (inclusive)
+fun getSlicesEnd(): array(int, 12) {
+  return [14300, 22000, 30035, 49550, 60400, 69010, 83300, 91010, 99800, 107550, 113600, 119800];
+}

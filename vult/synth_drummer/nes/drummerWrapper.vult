@@ -1,0 +1,28 @@
+
+// wrapping the .wav to give correct information to drummer
+
+external drumkit(channel:int, index:int) : real @[wave(channels=1, file="wav/nes_kit.wav")];
+
+// return value for current wavetable (first channel hard-coded), between [0..sample size[
+fun getSample(index: int) {
+  return drumkit(0, index);
+}
+
+fun getSampleSize(): int {
+  return drumkit_samples();
+}
+
+// passing info from the file
+fun getSampleFs(): real {
+  return 30.0;
+}
+
+// start indices of each sample (inclusive)
+fun getSlicesStart(): array(int, 12) {
+  return [0, 7000, 14850, 28000, 43900, 48000, 57200, 66600, 68900, 73300, 85000, 94500];
+}
+
+// stop indices of each sample (inclusive)
+fun getSlicesEnd(): array(int, 12) {
+  return [6250, 14000, 26800, 43400, 47950, 56900, 66000, 68500, 72400, 84600, 94000, 103500];
+}
