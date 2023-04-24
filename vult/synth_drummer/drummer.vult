@@ -4,14 +4,7 @@
 
 // TODO: kill on noteOff
 
-external drumkit(channel:int, index:int) : real @[wave(channels=1, file="808.wav")];
-
-// return value for current wavetable (first channel hard-coded), between [0..sample size[
-fun getSample(index: int) {
-  return drumkit(0, index);
-}
-
-and process() {
+fun process() {
   // absolutely needs init to set that
   mem size: int;
   // start and end positions for slices
@@ -51,7 +44,7 @@ and process() {
       posBase = 0;
       pos = 0.0;
     } else {
-      value = (getSample(idx) + (pos % 1.0) * (getSample(idx+1) - getSample(idx))) * level;
+      value = (DrummerWrapper.getSample(idx) + (pos % 1.0) * (DrummerWrapper.getSample(idx+1) - DrummerWrapper.getSample(idx))) * level;
     }
 
   }
@@ -94,7 +87,7 @@ and process_bufferTo(nb: int, oBuffer) {
         posBase = 0;
         pos = 0.0;
       } else {
-        value = (getSample(idx) + (pos % 1.0) * (getSample(idx+1) - getSample(idx))) * level;
+        value = (DrummerWrapper.getSample(idx) + (pos % 1.0) * (DrummerWrapper.getSample(idx+1) - DrummerWrapper.getSample(idx))) * level;
       }
       
     }
@@ -125,8 +118,8 @@ and setSlices(newSlicesStart: array(int, 12), newSlicesEnd: array(int, 12)) {
     val i = 0;
     val s, e;
     while (i < size(newSlicesStart)) {
-      s = clip(newSlicesStart[i], 0, drumkit_samples() - 1);
-      e = clip(newSlicesEnd[i], 0, drumkit_samples() - 1);
+      s = clip(newSlicesStart[i], 0, size - 1);
+      e = clip(newSlicesEnd[i], 0, size - 1);
       if (s <= e) {
         slices_start[i] = s;
         slices_end[i] = e;
@@ -188,19 +181,16 @@ and noteOff(note:int, channel:int) {
 }
 
 and default() @[init] {
-  size = drumkit_samples();
+  size = DrummerWrapper.getSampleSize();
   // keep track of slices
   mem slices_start: array(int, 12);
   mem slices_end: array(int, 12);
   // defaults for current sample and DSP
   _ = setLevel(1.0);
-  sampleFs = 30.0;
+  sampleFs = DrummerWrapper.getSampleFs();
   _ = setSamplerate(44.1);
   // set default slices
-  _ = setSlices(
-                [0, 11500, 22000, 26000, 28800, 45600, 46550, 49000, 50400, 61000, 78100, 83600],
-                [10000, 21500, 25500, 28500, 45500, 46500, 48550, 50100, 60000, 78000, 83500, 107000]
-  );
+  _ = setSlices(DrummerWrapper.getSlicesStart(), DrummerWrapper.getSlicesEnd());
   // will copy a new array
   mem buffer_o;
   Buffer.buffer(buffer_o);

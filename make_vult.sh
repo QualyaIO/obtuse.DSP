@@ -22,7 +22,7 @@ for i in `ls -d ./vult/synth_sampler/*/ | cut -f4 -d'/'`; do
 done
 
 echo "Generate Drummer synth"
-vultc -ccode vult/voice.vult -real fixed -i vult/synth_drummer -i vult/buffer_medium -o src/synthDrummer -output-prefix synthDrummer_
+vultc -ccode vult/voice.vult -real fixed -i vult/synth_drummer -i vult/synth_drummer/808 -i vult/buffer_medium -o src/synthDrummer -output-prefix synthDrummer_
 
 echo "Generate Effects"
 vultc -ccode vult/reverb.vult vult/ladder.vult vult/SVF.vult vult/combFB.vult vult/allpass.vult vult/combFF.vult -i vult/buffer_medium -real fixed -o src/effects -output-prefix effects_
