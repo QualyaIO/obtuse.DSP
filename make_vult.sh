@@ -7,6 +7,21 @@ vultc -ccode vult/voice.vult -real fixed -i vult/synth_FM -i vult/buffer_medium 
 #echo "(setting wavetables to RAM)"
 #sed -i 's/static const fix16_t/static const fix16_t __not_in_flash("vult")/g' synthFM.tables.h
 
+# loop all instruments in the sampler, retrieve id
+for i in `ls -d ./vult/synth_sampler/*/ | cut -f4 -d'/'`; do
+    echo "Generate Sampler synth $i"
+    # uppercase first letter of id 
+    # WARNING: only works with bash >= 4
+    PREFIX="synthSampler${i^}"
+    # special treatment for default instrument
+    if [ $i == "ocarina" ] ; then
+	PREFIX="synthSampler"
+    fi
+    # this is the default sampler
+    vultc -ccode vult/voice.vult -real fixed -i vult/synth_sampler -i vult/synth_sampler/$i -i vult/buffer_medium -o src/${PREFIX} -output-prefix ${PREFIX}_
+done
+
+
 
 echo "Generate Sampler synth ocarina"
 # this is the default sampler

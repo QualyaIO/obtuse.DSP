@@ -7,7 +7,7 @@ Tested with vult from comit `8167652f1fbc475f18cb5fecc2f8276e51a70238`. Note tha
 
 In case arduino template is used: `sed -i 's/pgm_read_word/pgm_read_dword/g' engine.*` (or whatever files using progmem)
 
-For now, use `make_vult.sh` to transpile all files -- and set some specific optimization for RP2040.
+For now, use `make_vult.sh` to transpile all files -- and set some specific optimization for RP2040 (note: script needs bash >= 4).
 
 WARNING: Be wary where the struct are initialized to avoid problem with stack size, e.g. prefer in the body of the program, especially when large buffer are involved (effectsL or XL).
 
