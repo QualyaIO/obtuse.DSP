@@ -41,6 +41,8 @@ Features
 - velocity: not only linear? save for monophonic?
 - tremolo (e.g. at Voice level)
 - also folding for wavetable?
+- sampler: option for repeating samples, beyond looping
+- sampler, drummer: option to kill on note off?
 
 Vult
 
