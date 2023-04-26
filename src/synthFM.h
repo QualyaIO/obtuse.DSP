@@ -1086,6 +1086,39 @@ static_inline void synthFM_Poly_synthSetLoopEnd_init(synthFM_Poly__ctx_type_0 &_
 static_inline void synthFM_Poly_synthSetLoopEnd(synthFM_Poly__ctx_type_0 &_ctx, int value){
 }
 
+typedef synthFM_Poly__ctx_type_0 synthFM_Poly_synthGetLoop_type;
+
+static_inline void synthFM_Poly_synthGetLoop_init(synthFM_Poly__ctx_type_0 &_output_){
+   synthFM_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthFM_Poly_synthGetLoop(synthFM_Poly__ctx_type_0 &_ctx){
+   return false;
+};
+
+typedef synthFM_Poly__ctx_type_0 synthFM_Poly_synthGetLoopStart_type;
+
+static_inline void synthFM_Poly_synthGetLoopStart_init(synthFM_Poly__ctx_type_0 &_output_){
+   synthFM_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthFM_Poly_synthGetLoopStart(synthFM_Poly__ctx_type_0 &_ctx){
+   return 0;
+};
+
+typedef synthFM_Poly__ctx_type_0 synthFM_Poly_synthGetLoopEnd_type;
+
+static_inline void synthFM_Poly_synthGetLoopEnd_init(synthFM_Poly__ctx_type_0 &_output_){
+   synthFM_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthFM_Poly_synthGetLoopEnd(synthFM_Poly__ctx_type_0 &_ctx){
+   return 0;
+};
+
 typedef synthFM_Poly__ctx_type_0 synthFM_Poly_synthGetSize_type;
 
 static_inline void synthFM_Poly_synthGetSize_init(synthFM_Poly__ctx_type_0 &_output_){
@@ -1449,6 +1482,39 @@ static_inline void synthFM_Voice_synthSetLoopEnd_init(synthFM_Voice__ctx_type_0 
 
 static_inline void synthFM_Voice_synthSetLoopEnd(synthFM_Voice__ctx_type_0 &_ctx, int value){
    synthFM_Poly_synthSetLoopEnd(_ctx.poly,value);
+};
+
+typedef synthFM_Voice__ctx_type_0 synthFM_Voice_synthGetLoop_type;
+
+static_inline void synthFM_Voice_synthGetLoop_init(synthFM_Voice__ctx_type_0 &_output_){
+   synthFM_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthFM_Voice_synthGetLoop(synthFM_Voice__ctx_type_0 &_ctx){
+   return synthFM_Poly_synthGetLoop(_ctx.poly);
+};
+
+typedef synthFM_Voice__ctx_type_0 synthFM_Voice_synthGetLoopStart_type;
+
+static_inline void synthFM_Voice_synthGetLoopStart_init(synthFM_Voice__ctx_type_0 &_output_){
+   synthFM_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthFM_Voice_synthGetLoopStart(synthFM_Voice__ctx_type_0 &_ctx){
+   return synthFM_Poly_synthGetLoopStart(_ctx.poly);
+};
+
+typedef synthFM_Voice__ctx_type_0 synthFM_Voice_synthGetLoopEnd_type;
+
+static_inline void synthFM_Voice_synthGetLoopEnd_init(synthFM_Voice__ctx_type_0 &_output_){
+   synthFM_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthFM_Voice_synthGetLoopEnd(synthFM_Voice__ctx_type_0 &_ctx){
+   return synthFM_Poly_synthGetLoopEnd(_ctx.poly);
 };
 
 typedef synthFM_Voice__ctx_type_0 synthFM_Voice_synthGetSize_type;

@@ -106,6 +106,22 @@ and synthSetLoopEnd(value: int) {
   _ = voice3:Sampler.setLoopEnd(value);
 }
 
+// Sampler.getLoop()
+and synthGetLoop(): bool {
+  return voice0:Sampler.getLoop();
+}
+
+// Sampler.getLoopStart()
+and synthGetLoopStart(): int {
+  return voice0:Sampler.getLoopStart();
+}
+
+// Sampler.getLoopEnd()
+and synthGetLoopEnd(): int {
+  return voice0:Sampler.getLoopEnd();
+}
+
+
 // Sampler.getSampleSize()
 and synthGetSize(): int {
   return voice0:Sampler.getSampleSize();

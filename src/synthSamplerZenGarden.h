@@ -345,6 +345,39 @@ static_inline void synthSamplerZenGarden_Sampler_setLoopEnd(synthSamplerZenGarde
    synthSamplerZenGarden_Sampler_updateCrossFade(_ctx);
 }
 
+typedef synthSamplerZenGarden_Sampler__ctx_type_0 synthSamplerZenGarden_Sampler_getLoop_type;
+
+static_inline void synthSamplerZenGarden_Sampler_getLoop_init(synthSamplerZenGarden_Sampler__ctx_type_0 &_output_){
+   synthSamplerZenGarden_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSamplerZenGarden_Sampler_getLoop(synthSamplerZenGarden_Sampler__ctx_type_0 &_ctx){
+   return _ctx.loopy;
+};
+
+typedef synthSamplerZenGarden_Sampler__ctx_type_0 synthSamplerZenGarden_Sampler_getLoopStart_type;
+
+static_inline void synthSamplerZenGarden_Sampler_getLoopStart_init(synthSamplerZenGarden_Sampler__ctx_type_0 &_output_){
+   synthSamplerZenGarden_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerZenGarden_Sampler_getLoopStart(synthSamplerZenGarden_Sampler__ctx_type_0 &_ctx){
+   return _ctx.loopS;
+};
+
+typedef synthSamplerZenGarden_Sampler__ctx_type_0 synthSamplerZenGarden_Sampler_getLoopEnd_type;
+
+static_inline void synthSamplerZenGarden_Sampler_getLoopEnd_init(synthSamplerZenGarden_Sampler__ctx_type_0 &_output_){
+   synthSamplerZenGarden_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerZenGarden_Sampler_getLoopEnd(synthSamplerZenGarden_Sampler__ctx_type_0 &_ctx){
+   return _ctx.loopE;
+};
+
 typedef synthSamplerZenGarden_Sampler__ctx_type_0 synthSamplerZenGarden_Sampler_getSampleSize_type;
 
 static_inline void synthSamplerZenGarden_Sampler_getSampleSize_init(synthSamplerZenGarden_Sampler__ctx_type_0 &_output_){
@@ -587,6 +620,39 @@ static_inline void synthSamplerZenGarden_Poly_synthSetLoopEnd(synthSamplerZenGar
    synthSamplerZenGarden_Sampler_setLoopEnd(_ctx.voice2,value);
    synthSamplerZenGarden_Sampler_setLoopEnd(_ctx.voice3,value);
 }
+
+typedef synthSamplerZenGarden_Poly__ctx_type_0 synthSamplerZenGarden_Poly_synthGetLoop_type;
+
+static_inline void synthSamplerZenGarden_Poly_synthGetLoop_init(synthSamplerZenGarden_Poly__ctx_type_0 &_output_){
+   synthSamplerZenGarden_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSamplerZenGarden_Poly_synthGetLoop(synthSamplerZenGarden_Poly__ctx_type_0 &_ctx){
+   return synthSamplerZenGarden_Sampler_getLoop(_ctx.voice0);
+};
+
+typedef synthSamplerZenGarden_Poly__ctx_type_0 synthSamplerZenGarden_Poly_synthGetLoopStart_type;
+
+static_inline void synthSamplerZenGarden_Poly_synthGetLoopStart_init(synthSamplerZenGarden_Poly__ctx_type_0 &_output_){
+   synthSamplerZenGarden_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerZenGarden_Poly_synthGetLoopStart(synthSamplerZenGarden_Poly__ctx_type_0 &_ctx){
+   return synthSamplerZenGarden_Sampler_getLoopStart(_ctx.voice0);
+};
+
+typedef synthSamplerZenGarden_Poly__ctx_type_0 synthSamplerZenGarden_Poly_synthGetLoopEnd_type;
+
+static_inline void synthSamplerZenGarden_Poly_synthGetLoopEnd_init(synthSamplerZenGarden_Poly__ctx_type_0 &_output_){
+   synthSamplerZenGarden_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerZenGarden_Poly_synthGetLoopEnd(synthSamplerZenGarden_Poly__ctx_type_0 &_ctx){
+   return synthSamplerZenGarden_Sampler_getLoopEnd(_ctx.voice0);
+};
 
 typedef synthSamplerZenGarden_Poly__ctx_type_0 synthSamplerZenGarden_Poly_synthGetSize_type;
 
@@ -901,6 +967,39 @@ static_inline void synthSamplerZenGarden_Voice_synthSetLoopEnd_init(synthSampler
 
 static_inline void synthSamplerZenGarden_Voice_synthSetLoopEnd(synthSamplerZenGarden_Voice__ctx_type_0 &_ctx, int value){
    synthSamplerZenGarden_Poly_synthSetLoopEnd(_ctx.poly,value);
+};
+
+typedef synthSamplerZenGarden_Voice__ctx_type_0 synthSamplerZenGarden_Voice_synthGetLoop_type;
+
+static_inline void synthSamplerZenGarden_Voice_synthGetLoop_init(synthSamplerZenGarden_Voice__ctx_type_0 &_output_){
+   synthSamplerZenGarden_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSamplerZenGarden_Voice_synthGetLoop(synthSamplerZenGarden_Voice__ctx_type_0 &_ctx){
+   return synthSamplerZenGarden_Poly_synthGetLoop(_ctx.poly);
+};
+
+typedef synthSamplerZenGarden_Voice__ctx_type_0 synthSamplerZenGarden_Voice_synthGetLoopStart_type;
+
+static_inline void synthSamplerZenGarden_Voice_synthGetLoopStart_init(synthSamplerZenGarden_Voice__ctx_type_0 &_output_){
+   synthSamplerZenGarden_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerZenGarden_Voice_synthGetLoopStart(synthSamplerZenGarden_Voice__ctx_type_0 &_ctx){
+   return synthSamplerZenGarden_Poly_synthGetLoopStart(_ctx.poly);
+};
+
+typedef synthSamplerZenGarden_Voice__ctx_type_0 synthSamplerZenGarden_Voice_synthGetLoopEnd_type;
+
+static_inline void synthSamplerZenGarden_Voice_synthGetLoopEnd_init(synthSamplerZenGarden_Voice__ctx_type_0 &_output_){
+   synthSamplerZenGarden_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerZenGarden_Voice_synthGetLoopEnd(synthSamplerZenGarden_Voice__ctx_type_0 &_ctx){
+   return synthSamplerZenGarden_Poly_synthGetLoopEnd(_ctx.poly);
 };
 
 typedef synthSamplerZenGarden_Voice__ctx_type_0 synthSamplerZenGarden_Voice_synthGetSize_type;

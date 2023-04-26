@@ -237,6 +237,21 @@ and setLoopEnd(newLoopE: int) {
   _ = updateCrossFade();
 }
 
+// if looping is currently enabled
+and getLoop(): bool {
+  return loopy;
+}
+
+// starting point of loop, in sample number -- beware that crossfade "bleed" before
+and getLoopStart(): int {
+  return loopS;
+}
+
+// end point of loop, in sample number -- beware that crossfade "bleed" before
+and getLoopEnd(): int {
+  return loopE;
+}
+
 // number of samples (note: valid once init)
 and getSampleSize() {
   return size;

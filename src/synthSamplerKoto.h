@@ -345,6 +345,39 @@ static_inline void synthSamplerKoto_Sampler_setLoopEnd(synthSamplerKoto_Sampler_
    synthSamplerKoto_Sampler_updateCrossFade(_ctx);
 }
 
+typedef synthSamplerKoto_Sampler__ctx_type_0 synthSamplerKoto_Sampler_getLoop_type;
+
+static_inline void synthSamplerKoto_Sampler_getLoop_init(synthSamplerKoto_Sampler__ctx_type_0 &_output_){
+   synthSamplerKoto_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSamplerKoto_Sampler_getLoop(synthSamplerKoto_Sampler__ctx_type_0 &_ctx){
+   return _ctx.loopy;
+};
+
+typedef synthSamplerKoto_Sampler__ctx_type_0 synthSamplerKoto_Sampler_getLoopStart_type;
+
+static_inline void synthSamplerKoto_Sampler_getLoopStart_init(synthSamplerKoto_Sampler__ctx_type_0 &_output_){
+   synthSamplerKoto_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerKoto_Sampler_getLoopStart(synthSamplerKoto_Sampler__ctx_type_0 &_ctx){
+   return _ctx.loopS;
+};
+
+typedef synthSamplerKoto_Sampler__ctx_type_0 synthSamplerKoto_Sampler_getLoopEnd_type;
+
+static_inline void synthSamplerKoto_Sampler_getLoopEnd_init(synthSamplerKoto_Sampler__ctx_type_0 &_output_){
+   synthSamplerKoto_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerKoto_Sampler_getLoopEnd(synthSamplerKoto_Sampler__ctx_type_0 &_ctx){
+   return _ctx.loopE;
+};
+
 typedef synthSamplerKoto_Sampler__ctx_type_0 synthSamplerKoto_Sampler_getSampleSize_type;
 
 static_inline void synthSamplerKoto_Sampler_getSampleSize_init(synthSamplerKoto_Sampler__ctx_type_0 &_output_){
@@ -587,6 +620,39 @@ static_inline void synthSamplerKoto_Poly_synthSetLoopEnd(synthSamplerKoto_Poly__
    synthSamplerKoto_Sampler_setLoopEnd(_ctx.voice2,value);
    synthSamplerKoto_Sampler_setLoopEnd(_ctx.voice3,value);
 }
+
+typedef synthSamplerKoto_Poly__ctx_type_0 synthSamplerKoto_Poly_synthGetLoop_type;
+
+static_inline void synthSamplerKoto_Poly_synthGetLoop_init(synthSamplerKoto_Poly__ctx_type_0 &_output_){
+   synthSamplerKoto_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSamplerKoto_Poly_synthGetLoop(synthSamplerKoto_Poly__ctx_type_0 &_ctx){
+   return synthSamplerKoto_Sampler_getLoop(_ctx.voice0);
+};
+
+typedef synthSamplerKoto_Poly__ctx_type_0 synthSamplerKoto_Poly_synthGetLoopStart_type;
+
+static_inline void synthSamplerKoto_Poly_synthGetLoopStart_init(synthSamplerKoto_Poly__ctx_type_0 &_output_){
+   synthSamplerKoto_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerKoto_Poly_synthGetLoopStart(synthSamplerKoto_Poly__ctx_type_0 &_ctx){
+   return synthSamplerKoto_Sampler_getLoopStart(_ctx.voice0);
+};
+
+typedef synthSamplerKoto_Poly__ctx_type_0 synthSamplerKoto_Poly_synthGetLoopEnd_type;
+
+static_inline void synthSamplerKoto_Poly_synthGetLoopEnd_init(synthSamplerKoto_Poly__ctx_type_0 &_output_){
+   synthSamplerKoto_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerKoto_Poly_synthGetLoopEnd(synthSamplerKoto_Poly__ctx_type_0 &_ctx){
+   return synthSamplerKoto_Sampler_getLoopEnd(_ctx.voice0);
+};
 
 typedef synthSamplerKoto_Poly__ctx_type_0 synthSamplerKoto_Poly_synthGetSize_type;
 
@@ -901,6 +967,39 @@ static_inline void synthSamplerKoto_Voice_synthSetLoopEnd_init(synthSamplerKoto_
 
 static_inline void synthSamplerKoto_Voice_synthSetLoopEnd(synthSamplerKoto_Voice__ctx_type_0 &_ctx, int value){
    synthSamplerKoto_Poly_synthSetLoopEnd(_ctx.poly,value);
+};
+
+typedef synthSamplerKoto_Voice__ctx_type_0 synthSamplerKoto_Voice_synthGetLoop_type;
+
+static_inline void synthSamplerKoto_Voice_synthGetLoop_init(synthSamplerKoto_Voice__ctx_type_0 &_output_){
+   synthSamplerKoto_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSamplerKoto_Voice_synthGetLoop(synthSamplerKoto_Voice__ctx_type_0 &_ctx){
+   return synthSamplerKoto_Poly_synthGetLoop(_ctx.poly);
+};
+
+typedef synthSamplerKoto_Voice__ctx_type_0 synthSamplerKoto_Voice_synthGetLoopStart_type;
+
+static_inline void synthSamplerKoto_Voice_synthGetLoopStart_init(synthSamplerKoto_Voice__ctx_type_0 &_output_){
+   synthSamplerKoto_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerKoto_Voice_synthGetLoopStart(synthSamplerKoto_Voice__ctx_type_0 &_ctx){
+   return synthSamplerKoto_Poly_synthGetLoopStart(_ctx.poly);
+};
+
+typedef synthSamplerKoto_Voice__ctx_type_0 synthSamplerKoto_Voice_synthGetLoopEnd_type;
+
+static_inline void synthSamplerKoto_Voice_synthGetLoopEnd_init(synthSamplerKoto_Voice__ctx_type_0 &_output_){
+   synthSamplerKoto_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerKoto_Voice_synthGetLoopEnd(synthSamplerKoto_Voice__ctx_type_0 &_ctx){
+   return synthSamplerKoto_Poly_synthGetLoopEnd(_ctx.poly);
 };
 
 typedef synthSamplerKoto_Voice__ctx_type_0 synthSamplerKoto_Voice_synthGetSize_type;

@@ -294,6 +294,21 @@ and synthSetLoopEnd(value: int) {
   _ =  poly:Poly.synthSetLoopEnd(value);
 }
 
+// Sampler.getLoop()
+and synthGetLoop(): bool {
+  return poly:Poly.synthGetLoop();
+}
+
+// Sampler.getLoopStart()
+and synthGetLoopStart(): int {
+  return poly:Poly.synthGetLoopStart();
+}
+
+// Sampler.getLoopEnd()
+and synthGetLoopEnd(): int {
+  return poly:Poly.synthGetLoopEnd();
+}
+
 // Sampler.getSampleSize()
 and synthGetSize(): int {
   return poly:Poly.synthGetSize();

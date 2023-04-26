@@ -426,6 +426,39 @@ static_inline void synthDrummerNes_Poly_synthSetLoopEnd_init(synthDrummerNes_Pol
 static_inline void synthDrummerNes_Poly_synthSetLoopEnd(synthDrummerNes_Poly__ctx_type_0 &_ctx, int value){
 }
 
+typedef synthDrummerNes_Poly__ctx_type_0 synthDrummerNes_Poly_synthGetLoop_type;
+
+static_inline void synthDrummerNes_Poly_synthGetLoop_init(synthDrummerNes_Poly__ctx_type_0 &_output_){
+   synthDrummerNes_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthDrummerNes_Poly_synthGetLoop(synthDrummerNes_Poly__ctx_type_0 &_ctx){
+   return false;
+};
+
+typedef synthDrummerNes_Poly__ctx_type_0 synthDrummerNes_Poly_synthGetLoopStart_type;
+
+static_inline void synthDrummerNes_Poly_synthGetLoopStart_init(synthDrummerNes_Poly__ctx_type_0 &_output_){
+   synthDrummerNes_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthDrummerNes_Poly_synthGetLoopStart(synthDrummerNes_Poly__ctx_type_0 &_ctx){
+   return 0;
+};
+
+typedef synthDrummerNes_Poly__ctx_type_0 synthDrummerNes_Poly_synthGetLoopEnd_type;
+
+static_inline void synthDrummerNes_Poly_synthGetLoopEnd_init(synthDrummerNes_Poly__ctx_type_0 &_output_){
+   synthDrummerNes_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthDrummerNes_Poly_synthGetLoopEnd(synthDrummerNes_Poly__ctx_type_0 &_ctx){
+   return 0;
+};
+
 typedef synthDrummerNes_Poly__ctx_type_0 synthDrummerNes_Poly_synthGetSize_type;
 
 static_inline void synthDrummerNes_Poly_synthGetSize_init(synthDrummerNes_Poly__ctx_type_0 &_output_){
@@ -817,6 +850,39 @@ static_inline void synthDrummerNes_Voice_synthSetLoopEnd_init(synthDrummerNes_Vo
 
 static_inline void synthDrummerNes_Voice_synthSetLoopEnd(synthDrummerNes_Voice__ctx_type_0 &_ctx, int value){
    synthDrummerNes_Poly_synthSetLoopEnd(_ctx.poly,value);
+};
+
+typedef synthDrummerNes_Voice__ctx_type_0 synthDrummerNes_Voice_synthGetLoop_type;
+
+static_inline void synthDrummerNes_Voice_synthGetLoop_init(synthDrummerNes_Voice__ctx_type_0 &_output_){
+   synthDrummerNes_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthDrummerNes_Voice_synthGetLoop(synthDrummerNes_Voice__ctx_type_0 &_ctx){
+   return synthDrummerNes_Poly_synthGetLoop(_ctx.poly);
+};
+
+typedef synthDrummerNes_Voice__ctx_type_0 synthDrummerNes_Voice_synthGetLoopStart_type;
+
+static_inline void synthDrummerNes_Voice_synthGetLoopStart_init(synthDrummerNes_Voice__ctx_type_0 &_output_){
+   synthDrummerNes_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthDrummerNes_Voice_synthGetLoopStart(synthDrummerNes_Voice__ctx_type_0 &_ctx){
+   return synthDrummerNes_Poly_synthGetLoopStart(_ctx.poly);
+};
+
+typedef synthDrummerNes_Voice__ctx_type_0 synthDrummerNes_Voice_synthGetLoopEnd_type;
+
+static_inline void synthDrummerNes_Voice_synthGetLoopEnd_init(synthDrummerNes_Voice__ctx_type_0 &_output_){
+   synthDrummerNes_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthDrummerNes_Voice_synthGetLoopEnd(synthDrummerNes_Voice__ctx_type_0 &_ctx){
+   return synthDrummerNes_Poly_synthGetLoopEnd(_ctx.poly);
 };
 
 typedef synthDrummerNes_Voice__ctx_type_0 synthDrummerNes_Voice_synthGetSize_type;

@@ -94,6 +94,21 @@ and synthSetLoopStart(value: int) {
 and synthSetLoopEnd(value: int) {
 }
 
+// Sampler.getLoop()
+and synthGetLoop(): bool {
+  return false;
+}
+
+// Sampler.getLoopStart()
+and synthGetLoopStart(): int {
+  return 0;
+}
+
+// Sampler.getLoopEnd()
+and synthGetLoopEnd(): int {
+  return 0;
+}
+
 // Sampler.getSampleSize()
 and synthGetSize(): int {
   return 0;

@@ -426,6 +426,39 @@ static_inline void synthDrummerBbox_Poly_synthSetLoopEnd_init(synthDrummerBbox_P
 static_inline void synthDrummerBbox_Poly_synthSetLoopEnd(synthDrummerBbox_Poly__ctx_type_0 &_ctx, int value){
 }
 
+typedef synthDrummerBbox_Poly__ctx_type_0 synthDrummerBbox_Poly_synthGetLoop_type;
+
+static_inline void synthDrummerBbox_Poly_synthGetLoop_init(synthDrummerBbox_Poly__ctx_type_0 &_output_){
+   synthDrummerBbox_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthDrummerBbox_Poly_synthGetLoop(synthDrummerBbox_Poly__ctx_type_0 &_ctx){
+   return false;
+};
+
+typedef synthDrummerBbox_Poly__ctx_type_0 synthDrummerBbox_Poly_synthGetLoopStart_type;
+
+static_inline void synthDrummerBbox_Poly_synthGetLoopStart_init(synthDrummerBbox_Poly__ctx_type_0 &_output_){
+   synthDrummerBbox_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthDrummerBbox_Poly_synthGetLoopStart(synthDrummerBbox_Poly__ctx_type_0 &_ctx){
+   return 0;
+};
+
+typedef synthDrummerBbox_Poly__ctx_type_0 synthDrummerBbox_Poly_synthGetLoopEnd_type;
+
+static_inline void synthDrummerBbox_Poly_synthGetLoopEnd_init(synthDrummerBbox_Poly__ctx_type_0 &_output_){
+   synthDrummerBbox_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthDrummerBbox_Poly_synthGetLoopEnd(synthDrummerBbox_Poly__ctx_type_0 &_ctx){
+   return 0;
+};
+
 typedef synthDrummerBbox_Poly__ctx_type_0 synthDrummerBbox_Poly_synthGetSize_type;
 
 static_inline void synthDrummerBbox_Poly_synthGetSize_init(synthDrummerBbox_Poly__ctx_type_0 &_output_){
@@ -817,6 +850,39 @@ static_inline void synthDrummerBbox_Voice_synthSetLoopEnd_init(synthDrummerBbox_
 
 static_inline void synthDrummerBbox_Voice_synthSetLoopEnd(synthDrummerBbox_Voice__ctx_type_0 &_ctx, int value){
    synthDrummerBbox_Poly_synthSetLoopEnd(_ctx.poly,value);
+};
+
+typedef synthDrummerBbox_Voice__ctx_type_0 synthDrummerBbox_Voice_synthGetLoop_type;
+
+static_inline void synthDrummerBbox_Voice_synthGetLoop_init(synthDrummerBbox_Voice__ctx_type_0 &_output_){
+   synthDrummerBbox_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthDrummerBbox_Voice_synthGetLoop(synthDrummerBbox_Voice__ctx_type_0 &_ctx){
+   return synthDrummerBbox_Poly_synthGetLoop(_ctx.poly);
+};
+
+typedef synthDrummerBbox_Voice__ctx_type_0 synthDrummerBbox_Voice_synthGetLoopStart_type;
+
+static_inline void synthDrummerBbox_Voice_synthGetLoopStart_init(synthDrummerBbox_Voice__ctx_type_0 &_output_){
+   synthDrummerBbox_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthDrummerBbox_Voice_synthGetLoopStart(synthDrummerBbox_Voice__ctx_type_0 &_ctx){
+   return synthDrummerBbox_Poly_synthGetLoopStart(_ctx.poly);
+};
+
+typedef synthDrummerBbox_Voice__ctx_type_0 synthDrummerBbox_Voice_synthGetLoopEnd_type;
+
+static_inline void synthDrummerBbox_Voice_synthGetLoopEnd_init(synthDrummerBbox_Voice__ctx_type_0 &_output_){
+   synthDrummerBbox_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthDrummerBbox_Voice_synthGetLoopEnd(synthDrummerBbox_Voice__ctx_type_0 &_ctx){
+   return synthDrummerBbox_Poly_synthGetLoopEnd(_ctx.poly);
 };
 
 typedef synthDrummerBbox_Voice__ctx_type_0 synthDrummerBbox_Voice_synthGetSize_type;
