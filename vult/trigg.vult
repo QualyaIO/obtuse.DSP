@@ -96,7 +96,9 @@ and _recompute() {
    // compute every which step we should increase or decrease balance
    // (make sure we don't overflow)
    // Note to sync with _getAutolength()
-   mod = 1.0 / density;
+   if (density > 0.0) {
+      mod = 1.0 / density;
+   }
 
    // range of probilities for balance
    val max_p = 1.0;
