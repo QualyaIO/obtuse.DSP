@@ -776,7 +776,11 @@ void utils_Tonnetz_process(utils_Tonnetz__ctx_type_8 &_ctx){
          while((i < 11) && (_ctx.shifts[i] != _ctx.shift) && (_ctx.shifts[i] != 0)){
             i = (1 + i);
          }
-         _ctx.shifts[((-1) + i)] = _ctx.shift;
+         if(i >= 11){
+            i = 10;
+         }
+         _ctx.shifts[i] = _ctx.shift;
+         i = (1 + i);
          while(i < 11){
             _ctx.shifts[i] = 0;
             i = (1 + i);

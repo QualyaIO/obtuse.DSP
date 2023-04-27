@@ -474,9 +474,13 @@ and process() {
       while (i < size(shifts) && shifts[i] <> shift && shifts[i] <> 0) {
         i = i + 1;
       }
-      // reached and of shifts or end of array (the latter should not be possible), either way on step before will become our current shift
-      shifts[i-1] = shift;
+      // we should have reached free slot for shift or cycled back to it. Either way current index becomes our shift. If we reached end of array (which should not be possible), go back on step.
+      if (i >= size(shifts)) {
+        i = size(shifts) - 1;
+      }
+      shifts[i] = shift;
       // the rest of the array will be invalidated
+      i = i + 1;
       while (i < size(shifts)) {
         shifts[i] = 0;
         i = i + 1;
