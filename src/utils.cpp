@@ -1200,7 +1200,9 @@ int utils_Trigg_process(utils_Trigg__ctx_type_0 &_ctx){
 void utils_Trigg__recompute(utils_Trigg__ctx_type_0 &_ctx){
    fix16_t mod;
    mod = 0x0 /* 0.000000 */;
-   mod = fix_div(0x10000 /* 1.000000 */,_ctx.density);
+   if(_ctx.density > 0x0 /* 0.000000 */){
+      mod = fix_div(0x10000 /* 1.000000 */,_ctx.density);
+   }
    fix16_t max_p;
    max_p = 0x10000 /* 1.000000 */;
    fix16_t min_p;
