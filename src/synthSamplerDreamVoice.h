@@ -225,8 +225,7 @@ uint8_t synthSamplerDreamVoice_Notes_noteOff(synthSamplerDreamVoice_Notes__ctx_t
 static_inline void synthSamplerDreamVoice_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
 
-static_inline void synthSamplerDreamVoice_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
-}
+void synthSamplerDreamVoice_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerDreamVoice_Sampler__ctx_type_0 {
    fix16_t step;

@@ -91,6 +91,15 @@ uint8_t synthSamplerBoesendorferGrandPiano_Notes_noteOff(synthSamplerBoesendorfe
    return false;
 }
 
+void synthSamplerBoesendorferGrandPiano_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
+   int i;
+   i = 0;
+   while(i < 2048){
+      oBuff[i] = 0x0 /* 0.000000 */;
+      i = (1 + i);
+   }
+}
+
 void synthSamplerBoesendorferGrandPiano_Sampler__ctx_type_0_init(synthSamplerBoesendorferGrandPiano_Sampler__ctx_type_0 &_output_){
    synthSamplerBoesendorferGrandPiano_Sampler__ctx_type_0 &_ctx = _output_;
    _ctx.step = 0x0 /* 0.000000 */;

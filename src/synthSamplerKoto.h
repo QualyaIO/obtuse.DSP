@@ -225,8 +225,7 @@ uint8_t synthSamplerKoto_Notes_noteOff(synthSamplerKoto_Notes__ctx_type_0 &_ctx,
 static_inline void synthSamplerKoto_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
 
-static_inline void synthSamplerKoto_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
-}
+void synthSamplerKoto_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerKoto_Sampler__ctx_type_0 {
    fix16_t step;

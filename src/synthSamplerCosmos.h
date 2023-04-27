@@ -225,8 +225,7 @@ uint8_t synthSamplerCosmos_Notes_noteOff(synthSamplerCosmos_Notes__ctx_type_0 &_
 static_inline void synthSamplerCosmos_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
 
-static_inline void synthSamplerCosmos_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
-}
+void synthSamplerCosmos_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerCosmos_Sampler__ctx_type_0 {
    fix16_t step;

@@ -225,8 +225,7 @@ uint8_t synthSamplerIndianSitar_Notes_noteOff(synthSamplerIndianSitar_Notes__ctx
 static_inline void synthSamplerIndianSitar_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
 
-static_inline void synthSamplerIndianSitar_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
-}
+void synthSamplerIndianSitar_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerIndianSitar_Sampler__ctx_type_0 {
    fix16_t step;

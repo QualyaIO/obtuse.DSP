@@ -91,6 +91,15 @@ uint8_t synthSamplerDrivenSynthLead_Notes_noteOff(synthSamplerDrivenSynthLead_No
    return false;
 }
 
+void synthSamplerDrivenSynthLead_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
+   int i;
+   i = 0;
+   while(i < 2048){
+      oBuff[i] = 0x0 /* 0.000000 */;
+      i = (1 + i);
+   }
+}
+
 void synthSamplerDrivenSynthLead_Sampler__ctx_type_0_init(synthSamplerDrivenSynthLead_Sampler__ctx_type_0 &_output_){
    synthSamplerDrivenSynthLead_Sampler__ctx_type_0 &_ctx = _output_;
    _ctx.step = 0x0 /* 0.000000 */;

@@ -225,8 +225,7 @@ uint8_t synthSamplerCelesta_Notes_noteOff(synthSamplerCelesta_Notes__ctx_type_0 
 static_inline void synthSamplerCelesta_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
 
-static_inline void synthSamplerCelesta_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
-}
+void synthSamplerCelesta_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerCelesta_Sampler__ctx_type_0 {
    fix16_t step;

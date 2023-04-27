@@ -225,8 +225,7 @@ uint8_t synthSamplerMysticVibes_Notes_noteOff(synthSamplerMysticVibes_Notes__ctx
 static_inline void synthSamplerMysticVibes_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
 
-static_inline void synthSamplerMysticVibes_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
-}
+void synthSamplerMysticVibes_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerMysticVibes_Sampler__ctx_type_0 {
    fix16_t step;

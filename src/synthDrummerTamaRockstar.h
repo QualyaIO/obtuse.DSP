@@ -135,8 +135,7 @@ void synthDrummerTamaRockstar_DrummerWrapper_getSlicesEnd(int (&_output_)[12]);
 static_inline void synthDrummerTamaRockstar_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
 
-static_inline void synthDrummerTamaRockstar_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
-}
+void synthDrummerTamaRockstar_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthDrummerTamaRockstar_Drummer__ctx_type_0 {
    fix16_t step;

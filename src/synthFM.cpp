@@ -87,6 +87,15 @@ fix16_t synthFM_Wavetable_getRandRandomMorph(fix16_t (&oBuff)[4096]){
    return synthFM_Wavetable_getSampleFrom(oBuff,int_to_fix(idx));
 }
 
+void synthFM_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
+   int i;
+   i = 0;
+   while(i < 2048){
+      oBuff[i] = 0x0 /* 0.000000 */;
+      i = (1 + i);
+   }
+}
+
 void synthFM_OSC__ctx_type_0_init(synthFM_OSC__ctx_type_0 &_output_){
    synthFM_OSC__ctx_type_0 &_ctx = _output_;
    _ctx.stepRatio = 0x0 /* 0.000000 */;

@@ -225,8 +225,7 @@ uint8_t synthSamplerPulsingPatterns_Notes_noteOff(synthSamplerPulsingPatterns_No
 static_inline void synthSamplerPulsingPatterns_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
 
-static_inline void synthSamplerPulsingPatterns_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
-}
+void synthSamplerPulsingPatterns_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerPulsingPatterns_Sampler__ctx_type_0 {
    fix16_t step;

@@ -225,8 +225,7 @@ uint8_t synthSamplerCello_Notes_noteOff(synthSamplerCello_Notes__ctx_type_0 &_ct
 static_inline void synthSamplerCello_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
 
-static_inline void synthSamplerCello_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
-}
+void synthSamplerCello_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerCello_Sampler__ctx_type_0 {
    fix16_t step;

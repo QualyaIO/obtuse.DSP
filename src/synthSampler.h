@@ -225,8 +225,7 @@ uint8_t synthSampler_Notes_noteOff(synthSampler_Notes__ctx_type_0 &_ctx, int not
 static_inline void synthSampler_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
 
-static_inline void synthSampler_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
-}
+void synthSampler_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSampler_Sampler__ctx_type_0 {
    fix16_t step;

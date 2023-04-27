@@ -225,8 +225,7 @@ uint8_t synthSamplerAuthenticStrings_Notes_noteOff(synthSamplerAuthenticStrings_
 static_inline void synthSamplerAuthenticStrings_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
 
-static_inline void synthSamplerAuthenticStrings_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
-}
+void synthSamplerAuthenticStrings_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerAuthenticStrings_Sampler__ctx_type_0 {
    fix16_t step;

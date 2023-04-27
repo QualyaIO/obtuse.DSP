@@ -91,6 +91,15 @@ uint8_t synthSamplerClarinet_Notes_noteOff(synthSamplerClarinet_Notes__ctx_type_
    return false;
 }
 
+void synthSamplerClarinet_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
+   int i;
+   i = 0;
+   while(i < 2048){
+      oBuff[i] = 0x0 /* 0.000000 */;
+      i = (1 + i);
+   }
+}
+
 void synthSamplerClarinet_Sampler__ctx_type_0_init(synthSamplerClarinet_Sampler__ctx_type_0 &_output_){
    synthSamplerClarinet_Sampler__ctx_type_0 &_ctx = _output_;
    _ctx.step = 0x0 /* 0.000000 */;

@@ -225,8 +225,7 @@ uint8_t synthSamplerBoesendorferGrandPiano_Notes_noteOff(synthSamplerBoesendorfe
 static_inline void synthSamplerBoesendorferGrandPiano_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
 
-static_inline void synthSamplerBoesendorferGrandPiano_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
-}
+void synthSamplerBoesendorferGrandPiano_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerBoesendorferGrandPiano_Sampler__ctx_type_0 {
    fix16_t step;

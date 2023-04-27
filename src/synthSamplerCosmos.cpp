@@ -91,6 +91,15 @@ uint8_t synthSamplerCosmos_Notes_noteOff(synthSamplerCosmos_Notes__ctx_type_0 &_
    return false;
 }
 
+void synthSamplerCosmos_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
+   int i;
+   i = 0;
+   while(i < 2048){
+      oBuff[i] = 0x0 /* 0.000000 */;
+      i = (1 + i);
+   }
+}
+
 void synthSamplerCosmos_Sampler__ctx_type_0_init(synthSamplerCosmos_Sampler__ctx_type_0 &_output_){
    synthSamplerCosmos_Sampler__ctx_type_0 &_ctx = _output_;
    _ctx.step = 0x0 /* 0.000000 */;

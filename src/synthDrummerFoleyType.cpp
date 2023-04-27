@@ -42,6 +42,15 @@ void synthDrummerFoleyType_DrummerWrapper_getSlicesEnd(int (&_output_)[12]){
    return ;
 }
 
+void synthDrummerFoleyType_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
+   int i;
+   i = 0;
+   while(i < 2048){
+      oBuff[i] = 0x0 /* 0.000000 */;
+      i = (1 + i);
+   }
+}
+
 void synthDrummerFoleyType_Drummer__ctx_type_0_init(synthDrummerFoleyType_Drummer__ctx_type_0 &_output_){
    synthDrummerFoleyType_Drummer__ctx_type_0 &_ctx = _output_;
    _ctx.step = 0x0 /* 0.000000 */;

@@ -225,8 +225,7 @@ uint8_t synthSamplerTimeWarp_Notes_noteOff(synthSamplerTimeWarp_Notes__ctx_type_
 static_inline void synthSamplerTimeWarp_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
 
-static_inline void synthSamplerTimeWarp_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
-}
+void synthSamplerTimeWarp_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerTimeWarp_Sampler__ctx_type_0 {
    fix16_t step;

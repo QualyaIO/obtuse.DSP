@@ -225,8 +225,7 @@ uint8_t synthSamplerZenGarden_Notes_noteOff(synthSamplerZenGarden_Notes__ctx_typ
 static_inline void synthSamplerZenGarden_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
 
-static_inline void synthSamplerZenGarden_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
-}
+void synthSamplerZenGarden_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerZenGarden_Sampler__ctx_type_0 {
    fix16_t step;

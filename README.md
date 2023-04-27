@@ -3,7 +3,7 @@ Audio DSP and synthesis engine using Vult. This version is aimed at and tested w
 
 Here expects `vultc -ccode voice.vult reverb.vult -real fixed -o engine ` (won't bother fixing progmem issues right now). Note: `-mac` option at times when tables are used.
 
-Tested with vult from comit `8167652f1fbc475f18cb5fecc2f8276e51a70238`. Note that vultin.h from vult was adapted to speed-up computation with fixed float (`fix_mul`).
+Tested with vult from commit `8167652f1fbc475f18cb5fecc2f8276e51a70238`. Note that vultin.h from vult was adapted to speed-up computation with fixed float (`fix_mul`).
 
 In case arduino template is used: `sed -i 's/pgm_read_word/pgm_read_dword/g' engine.*` (or whatever files using progmem)
 
@@ -24,6 +24,7 @@ Interface
 
 - filters and reverb: method to ask for auto-resize of delay upon change in samplerate
 - add mixer
+- C++ and class wrapper for Arduino?
 
 Fixes
 
@@ -47,3 +48,4 @@ Features
 Vult
 
 - at this time Vult transpile init function in such a way that stack overflow can happen due to unnecessary temp variable and absence of NRVO (Named Return Value Optimization) by the compiler. There is currently a rack in the `make_vult.sh` script to circumvent that, it'd better fixed upstream.
+- arrays >= 1000 are not initialized automatically to 0, Buffer wrapper even more useful for large buffers

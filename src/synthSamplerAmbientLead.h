@@ -225,8 +225,7 @@ uint8_t synthSamplerAmbientLead_Notes_noteOff(synthSamplerAmbientLead_Notes__ctx
 static_inline void synthSamplerAmbientLead_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
 
-static_inline void synthSamplerAmbientLead_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
-}
+void synthSamplerAmbientLead_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerAmbientLead_Sampler__ctx_type_0 {
    fix16_t step;

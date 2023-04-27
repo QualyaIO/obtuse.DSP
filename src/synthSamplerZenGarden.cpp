@@ -91,6 +91,15 @@ uint8_t synthSamplerZenGarden_Notes_noteOff(synthSamplerZenGarden_Notes__ctx_typ
    return false;
 }
 
+void synthSamplerZenGarden_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
+   int i;
+   i = 0;
+   while(i < 2048){
+      oBuff[i] = 0x0 /* 0.000000 */;
+      i = (1 + i);
+   }
+}
+
 void synthSamplerZenGarden_Sampler__ctx_type_0_init(synthSamplerZenGarden_Sampler__ctx_type_0 &_output_){
    synthSamplerZenGarden_Sampler__ctx_type_0 &_ctx = _output_;
    _ctx.step = 0x0 /* 0.000000 */;

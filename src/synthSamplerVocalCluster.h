@@ -225,8 +225,7 @@ uint8_t synthSamplerVocalCluster_Notes_noteOff(synthSamplerVocalCluster_Notes__c
 static_inline void synthSamplerVocalCluster_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
 
-static_inline void synthSamplerVocalCluster_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
-}
+void synthSamplerVocalCluster_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerVocalCluster_Sampler__ctx_type_0 {
    fix16_t step;

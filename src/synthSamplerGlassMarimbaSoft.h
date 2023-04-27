@@ -225,8 +225,7 @@ uint8_t synthSamplerGlassMarimbaSoft_Notes_noteOff(synthSamplerGlassMarimbaSoft_
 static_inline void synthSamplerGlassMarimbaSoft_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
 
-static_inline void synthSamplerGlassMarimbaSoft_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
-}
+void synthSamplerGlassMarimbaSoft_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerGlassMarimbaSoft_Sampler__ctx_type_0 {
    fix16_t step;
