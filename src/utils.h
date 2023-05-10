@@ -847,6 +847,7 @@ typedef struct utils_Clock__ctx_type_7 {
    uint8_t orderMix;
    int lastTimeS;
    fix16_t lastTimeFract;
+   int lastTicks;
    int lastBeatS;
    fix16_t lastBeatFract;
    uint8_t init;
@@ -975,6 +976,15 @@ static_inline void utils_Clock_getTicks_init(utils_Clock__ctx_type_7 &_output_){
 }
 
 int utils_Clock_getTicks(utils_Clock__ctx_type_7 &_ctx);
+
+typedef utils_Clock__ctx_type_7 utils_Clock_getNbNewTicks_type;
+
+static_inline void utils_Clock_getNbNewTicks_init(utils_Clock__ctx_type_7 &_output_){
+   utils_Clock__ctx_type_7_init(_output_);
+   return ;
+}
+
+int utils_Clock_getNbNewTicks(utils_Clock__ctx_type_7 &_ctx);
 
 typedef utils_Clock__ctx_type_7 utils_Clock_default_type;
 

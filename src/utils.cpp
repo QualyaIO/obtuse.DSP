@@ -1411,6 +1411,7 @@ void utils_Clock__ctx_type_7_init(utils_Clock__ctx_type_7 &_output_){
    _ctx.orderMix = false;
    _ctx.lastTimeS = 0;
    _ctx.lastTimeFract = 0x0 /* 0.000000 */;
+   _ctx.lastTicks = 0;
    _ctx.lastBeatS = 0;
    _ctx.lastBeatFract = 0x0 /* 0.000000 */;
    _ctx.init = false;
@@ -1545,6 +1546,18 @@ int utils_Clock_getTicks(utils_Clock__ctx_type_7 &_ctx){
       return int_clip(fix_to_int(fix_mul(int_to_fix(_ctx.ticks),fix_div(diffS,_ctx.ibi))),0,1024);
    }
    return 0;
+}
+
+int utils_Clock_getNbNewTicks(utils_Clock__ctx_type_7 &_ctx){
+   int curTicks;
+   curTicks = utils_Clock_getTicks(_ctx);
+   int newTicks;
+   newTicks = (curTicks + (- _ctx.lastTicks));
+   if(newTicks < 0){
+      newTicks = (newTicks % 1024);
+   }
+   _ctx.lastTicks = curTicks;
+   return newTicks;
 }
 
 void utils_Clock_default(utils_Clock__ctx_type_7 &_ctx){

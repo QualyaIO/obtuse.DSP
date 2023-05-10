@@ -1,6 +1,6 @@
 
 // clock with swing and grouping
-// use wit setTime(), then process() until no more beats (and max ticks for each beat), remaining ticks.
+// use wit setTime(), get ticks, then process() until no more beats (and max ticks for each beat after the first), remaining ticks.
 
 // - . o . - . o . normal
 // - o . . - o . .  swing -
@@ -261,6 +261,21 @@ and getTicks(): int {
   }
   return 0;
 }
+
+// only return number of new ticks since last call -- up to number of ticks per beats, make sense to call up to first beat or when there is no more beats
+// TODO: might detect if we changed beat to take that into account if we loop
+and getNbNewTicks(): int {
+  mem lastTicks;
+  val curTicks = getTicks();
+  val newTicks = (curTicks - lastTicks);
+  // we handle up to one beat late (minus one tick) between calls
+  if (newTicks < 0) {
+    newTicks = newTicks % getMaxTicks();
+  }
+  lastTicks = curTicks;
+  return newTicks;
+}
+
 
 and default() @[init] {
   // good ol' 120 BPM
