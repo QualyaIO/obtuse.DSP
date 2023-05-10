@@ -1373,7 +1373,7 @@ int utils_Clock_compareTimeFract(int time1S, fix16_t time1Fract, int time2S, fix
       time1S = ((-1) + time1S);
       time1Fract = (0x10000 /* 1.000000 */ + time1Fract);
    }
-   while(time1Fract > 0x10000 /* 1.000000 */){
+   while(time1Fract >= 0x10000 /* 1.000000 */){
       time1S = (1 + time1S);
       time1Fract = (-0x10000 /* -1.000000 */ + time1Fract);
    }
@@ -1381,7 +1381,7 @@ int utils_Clock_compareTimeFract(int time1S, fix16_t time1Fract, int time2S, fix
       time2S = ((-1) + time2S);
       time2Fract = (0x10000 /* 1.000000 */ + time2Fract);
    }
-   while(time2Fract > 0x10000 /* 1.000000 */){
+   while(time2Fract >= 0x10000 /* 1.000000 */){
       time2S = (1 + time2S);
       time2Fract = (-0x10000 /* -1.000000 */ + time2Fract);
    }
@@ -1400,8 +1400,11 @@ int utils_Clock_compareTimeFract(int time1S, fix16_t time1Fract, int time2S, fix
    }
 }
 
-void utils_Clock__ctx_type_5_init(utils_Clock__ctx_type_5 &_output_){
-   utils_Clock__ctx_type_5 &_ctx = _output_;
+void utils_Clock__ctx_type_7_init(utils_Clock__ctx_type_7 &_output_){
+   utils_Clock__ctx_type_7 &_ctx = _output_;
+   _ctx.timeS = 0;
+   _ctx.timeFract = 0x0 /* 0.000000 */;
+   _ctx.ticks = 0;
    _ctx.swing = 0x0 /* 0.000000 */;
    _ctx.subSize = 0;
    _ctx.pos = 0;
@@ -1422,20 +1425,20 @@ void utils_Clock__ctx_type_5_init(utils_Clock__ctx_type_5 &_output_){
    return ;
 }
 
-int utils_Clock_process(utils_Clock__ctx_type_5 &_ctx, int timeS, fix16_t timeFract){
+int utils_Clock_process(utils_Clock__ctx_type_7 &_ctx){
    int trigger;
    trigger = 0;
-   if(bool_not(_ctx.init) || (utils_Clock_compareTimeFract(timeS,timeFract,_ctx.lastBeatS,_ctx.lastBeatFract) > 0)){
+   if(bool_not(_ctx.init) || (utils_Clock_compareTimeFract(_ctx.timeS,_ctx.timeFract,_ctx.lastBeatS,_ctx.lastBeatFract) > 0)){
       _ctx.init = true;
-      _ctx.lastBeatS = timeS;
-      _ctx.lastBeatFract = timeFract;
+      _ctx.lastBeatS = _ctx.timeS;
+      _ctx.lastBeatFract = _ctx.timeFract;
       trigger = 1;
       _ctx.pos = 1;
       _ctx.ibi = _ctx.ibiA;
    }
    else
    {
-      if((utils_Clock_compareTimeFract(_ctx.lastTimeS,_ctx.lastTimeFract,timeS,timeFract) != 0) && (utils_Clock_compareTimeFract((timeS + (- _ctx.lastBeatS)),(timeFract + (- _ctx.lastBeatFract)),fix_to_int(_ctx.ibi),(_ctx.ibi % 0x10000 /* 1.000000 */)) <= 0)){
+      if((utils_Clock_compareTimeFract(_ctx.lastTimeS,_ctx.lastTimeFract,_ctx.timeS,_ctx.timeFract) != 0) && (utils_Clock_compareTimeFract((_ctx.timeS + (- _ctx.lastBeatS)),(_ctx.timeFract + (- _ctx.lastBeatFract)),fix_to_int(_ctx.ibi),(_ctx.ibi % 0x10000 /* 1.000000 */)) <= 0)){
          _ctx.lastBeatS = (_ctx.lastBeatS + fix_to_int(_ctx.ibi));
          _ctx.lastBeatFract = (_ctx.lastBeatFract + (_ctx.ibi % 0x10000 /* 1.000000 */));
          while(_ctx.lastBeatFract >= 0x10000 /* 1.000000 */){
@@ -1461,12 +1464,21 @@ int utils_Clock_process(utils_Clock__ctx_type_5 &_ctx, int timeS, fix16_t timeFr
          _ctx.pos = (_ctx.pos % _ctx.groupSize);
       }
    }
-   _ctx.lastTimeS = timeS;
-   _ctx.lastTimeFract = timeFract;
+   _ctx.lastTimeS = _ctx.timeS;
+   _ctx.lastTimeFract = _ctx.timeFract;
    return trigger;
 }
 
-void utils_Clock__recompute(utils_Clock__ctx_type_5 &_ctx){
+void utils_Clock_setTime(utils_Clock__ctx_type_7 &_ctx, int newTimeS, fix16_t newTimeFract){
+   _ctx.timeS = newTimeS;
+   _ctx.timeFract = newTimeFract;
+   while(_ctx.timeFract >= 0x10000 /* 1.000000 */){
+      _ctx.timeS = (1 + _ctx.timeS);
+      _ctx.timeFract = (-0x10000 /* -1.000000 */ + _ctx.timeFract);
+   }
+}
+
+void utils_Clock__recompute(utils_Clock__ctx_type_7 &_ctx){
    _ctx.subSize = int_clip(fix_to_int(fix_mul(_ctx.groupRatio,int_to_fix((1 + _ctx.groupSize)))),1,((-1) + _ctx.groupSize));
    uint8_t isIBIA;
    isIBIA = (_ctx.ibi == _ctx.ibiA);
@@ -1490,7 +1502,7 @@ void utils_Clock__recompute(utils_Clock__ctx_type_5 &_ctx){
    }
 }
 
-void utils_Clock_setBPM(utils_Clock__ctx_type_5 &_ctx, fix16_t newBPM){
+void utils_Clock_setBPM(utils_Clock__ctx_type_7 &_ctx, fix16_t newBPM){
    newBPM = fix_clip(newBPM,0x4189 /* 0.256000 */,0x75300000 /* 30000.000000 */);
    if(newBPM != _ctx.bpm){
       _ctx.bpm = newBPM;
@@ -1498,7 +1510,7 @@ void utils_Clock_setBPM(utils_Clock__ctx_type_5 &_ctx, fix16_t newBPM){
    }
 }
 
-void utils_Clock_setGroupSize(utils_Clock__ctx_type_5 &_ctx, int newGroupSize){
+void utils_Clock_setGroupSize(utils_Clock__ctx_type_7 &_ctx, int newGroupSize){
    newGroupSize = int_clip(newGroupSize,2,128);
    if(newGroupSize != _ctx.groupSize){
       _ctx.groupSize = newGroupSize;
@@ -1507,7 +1519,7 @@ void utils_Clock_setGroupSize(utils_Clock__ctx_type_5 &_ctx, int newGroupSize){
    }
 }
 
-void utils_Clock_setGroupRatio(utils_Clock__ctx_type_5 &_ctx, fix16_t newGroupRatio){
+void utils_Clock_setGroupRatio(utils_Clock__ctx_type_7 &_ctx, fix16_t newGroupRatio){
    newGroupRatio = fix_clip(newGroupRatio,0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
    if(newGroupRatio != _ctx.groupRatio){
       _ctx.groupRatio = newGroupRatio;
@@ -1515,12 +1527,32 @@ void utils_Clock_setGroupRatio(utils_Clock__ctx_type_5 &_ctx, fix16_t newGroupRa
    }
 }
 
-void utils_Clock_setSwing(utils_Clock__ctx_type_5 &_ctx, fix16_t newSwing){
+void utils_Clock_setSwing(utils_Clock__ctx_type_7 &_ctx, fix16_t newSwing){
    newSwing = fix_clip(newSwing,0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
    if(_ctx.swing != newSwing){
       _ctx.swing = newSwing;
       utils_Clock__recompute(_ctx);
    }
+}
+
+int utils_Clock_getTicks(utils_Clock__ctx_type_7 &_ctx){
+   if(utils_Clock_compareTimeFract((_ctx.timeS + (- _ctx.lastBeatS)),(_ctx.timeFract + (- _ctx.lastBeatFract)),fix_to_int(_ctx.ibi),(_ctx.ibi % 0x10000 /* 1.000000 */)) <= 0){
+      return _ctx.ticks;
+   }
+   fix16_t diffS;
+   diffS = (_ctx.timeFract + int_to_fix((_ctx.timeS + (- _ctx.lastBeatS))) + (- _ctx.lastBeatFract));
+   if(_ctx.ibi > 0x0 /* 0.000000 */){
+      return int_clip(fix_to_int(fix_mul(int_to_fix(_ctx.ticks),fix_div(diffS,_ctx.ibi))),0,1024);
+   }
+   return 0;
+}
+
+void utils_Clock_default(utils_Clock__ctx_type_7 &_ctx){
+   utils_Clock_setBPM(_ctx,0x780000 /* 120.000000 */);
+   utils_Clock_setNbTicks(_ctx,24);
+   utils_Clock_setGroupSize(_ctx,4);
+   utils_Clock_setGroupRatio(_ctx,0x8000 /* 0.500000 */);
+   utils_Clock_setSwing(_ctx,0x8000 /* 0.500000 */);
 }
 
 

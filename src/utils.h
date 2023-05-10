@@ -827,9 +827,20 @@ static_inline fix16_t utils_Clock_getMaxBPM(){
    return 0x75300000 /* 30000.000000 */;
 };
 
+static_inline int utils_Clock_getMinTicks(){
+   return 1;
+};
+
+static_inline int utils_Clock_getMaxTicks(){
+   return 1024;
+};
+
 int utils_Clock_compareTimeFract(int time1S, fix16_t time1Fract, int time2S, fix16_t time2Fract);
 
-typedef struct utils_Clock__ctx_type_5 {
+typedef struct utils_Clock__ctx_type_7 {
+   int timeS;
+   fix16_t timeFract;
+   int ticks;
    fix16_t swing;
    int subSize;
    int pos;
@@ -845,99 +856,134 @@ typedef struct utils_Clock__ctx_type_5 {
    int groupSize;
    fix16_t groupRatio;
    fix16_t bpm;
-} utils_Clock__ctx_type_5;
+} utils_Clock__ctx_type_7;
 
-typedef utils_Clock__ctx_type_5 utils_Clock_process_type;
+typedef utils_Clock__ctx_type_7 utils_Clock_process_type;
 
-void utils_Clock__ctx_type_5_init(utils_Clock__ctx_type_5 &_output_);
+void utils_Clock__ctx_type_7_init(utils_Clock__ctx_type_7 &_output_);
 
-static_inline void utils_Clock_process_init(utils_Clock__ctx_type_5 &_output_){
-   utils_Clock__ctx_type_5_init(_output_);
+static_inline void utils_Clock_process_init(utils_Clock__ctx_type_7 &_output_){
+   utils_Clock__ctx_type_7_init(_output_);
    return ;
 }
 
-int utils_Clock_process(utils_Clock__ctx_type_5 &_ctx, int timeS, fix16_t timeFract);
+int utils_Clock_process(utils_Clock__ctx_type_7 &_ctx);
 
-typedef utils_Clock__ctx_type_5 utils_Clock_reset_type;
+typedef utils_Clock__ctx_type_7 utils_Clock_setTime_type;
 
-static_inline void utils_Clock_reset_init(utils_Clock__ctx_type_5 &_output_){
-   utils_Clock__ctx_type_5_init(_output_);
+static_inline void utils_Clock_setTime_init(utils_Clock__ctx_type_7 &_output_){
+   utils_Clock__ctx_type_7_init(_output_);
    return ;
 }
 
-static_inline void utils_Clock_reset(utils_Clock__ctx_type_5 &_ctx){
+void utils_Clock_setTime(utils_Clock__ctx_type_7 &_ctx, int newTimeS, fix16_t newTimeFract);
+
+typedef utils_Clock__ctx_type_7 utils_Clock_reset_type;
+
+static_inline void utils_Clock_reset_init(utils_Clock__ctx_type_7 &_output_){
+   utils_Clock__ctx_type_7_init(_output_);
+   return ;
+}
+
+static_inline void utils_Clock_reset(utils_Clock__ctx_type_7 &_ctx){
    _ctx.init = false;
 };
 
-typedef utils_Clock__ctx_type_5 utils_Clock__recompute_type;
+typedef utils_Clock__ctx_type_7 utils_Clock__recompute_type;
 
-static_inline void utils_Clock__recompute_init(utils_Clock__ctx_type_5 &_output_){
-   utils_Clock__ctx_type_5_init(_output_);
+static_inline void utils_Clock__recompute_init(utils_Clock__ctx_type_7 &_output_){
+   utils_Clock__ctx_type_7_init(_output_);
    return ;
 }
 
-void utils_Clock__recompute(utils_Clock__ctx_type_5 &_ctx);
+void utils_Clock__recompute(utils_Clock__ctx_type_7 &_ctx);
 
-typedef utils_Clock__ctx_type_5 utils_Clock_setBPM_type;
+typedef utils_Clock__ctx_type_7 utils_Clock_setBPM_type;
 
-static_inline void utils_Clock_setBPM_init(utils_Clock__ctx_type_5 &_output_){
-   utils_Clock__ctx_type_5_init(_output_);
+static_inline void utils_Clock_setBPM_init(utils_Clock__ctx_type_7 &_output_){
+   utils_Clock__ctx_type_7_init(_output_);
    return ;
 }
 
-void utils_Clock_setBPM(utils_Clock__ctx_type_5 &_ctx, fix16_t newBPM);
+void utils_Clock_setBPM(utils_Clock__ctx_type_7 &_ctx, fix16_t newBPM);
 
-typedef utils_Clock__ctx_type_5 utils_Clock_setGroupSize_type;
+typedef utils_Clock__ctx_type_7 utils_Clock_setGroupSize_type;
 
-static_inline void utils_Clock_setGroupSize_init(utils_Clock__ctx_type_5 &_output_){
-   utils_Clock__ctx_type_5_init(_output_);
+static_inline void utils_Clock_setGroupSize_init(utils_Clock__ctx_type_7 &_output_){
+   utils_Clock__ctx_type_7_init(_output_);
    return ;
 }
 
-void utils_Clock_setGroupSize(utils_Clock__ctx_type_5 &_ctx, int newGroupSize);
+void utils_Clock_setGroupSize(utils_Clock__ctx_type_7 &_ctx, int newGroupSize);
 
-typedef utils_Clock__ctx_type_5 utils_Clock_setGroupRatio_type;
+typedef utils_Clock__ctx_type_7 utils_Clock_setGroupRatio_type;
 
-static_inline void utils_Clock_setGroupRatio_init(utils_Clock__ctx_type_5 &_output_){
-   utils_Clock__ctx_type_5_init(_output_);
+static_inline void utils_Clock_setGroupRatio_init(utils_Clock__ctx_type_7 &_output_){
+   utils_Clock__ctx_type_7_init(_output_);
    return ;
 }
 
-void utils_Clock_setGroupRatio(utils_Clock__ctx_type_5 &_ctx, fix16_t newGroupRatio);
+void utils_Clock_setGroupRatio(utils_Clock__ctx_type_7 &_ctx, fix16_t newGroupRatio);
 
-typedef utils_Clock__ctx_type_5 utils_Clock_setSwing_type;
+typedef utils_Clock__ctx_type_7 utils_Clock_setSwing_type;
 
-static_inline void utils_Clock_setSwing_init(utils_Clock__ctx_type_5 &_output_){
-   utils_Clock__ctx_type_5_init(_output_);
+static_inline void utils_Clock_setSwing_init(utils_Clock__ctx_type_7 &_output_){
+   utils_Clock__ctx_type_7_init(_output_);
    return ;
 }
 
-void utils_Clock_setSwing(utils_Clock__ctx_type_5 &_ctx, fix16_t newSwing);
+void utils_Clock_setSwing(utils_Clock__ctx_type_7 &_ctx, fix16_t newSwing);
 
-typedef utils_Clock__ctx_type_5 utils_Clock_setOrderMix_type;
+typedef utils_Clock__ctx_type_7 utils_Clock_setOrderMix_type;
 
-static_inline void utils_Clock_setOrderMix_init(utils_Clock__ctx_type_5 &_output_){
-   utils_Clock__ctx_type_5_init(_output_);
+static_inline void utils_Clock_setOrderMix_init(utils_Clock__ctx_type_7 &_output_){
+   utils_Clock__ctx_type_7_init(_output_);
    return ;
 }
 
-static_inline void utils_Clock_setOrderMix(utils_Clock__ctx_type_5 &_ctx, uint8_t flag){
+static_inline void utils_Clock_setOrderMix(utils_Clock__ctx_type_7 &_ctx, uint8_t flag){
    _ctx.orderMix = flag;
 };
 
-typedef utils_Clock__ctx_type_5 utils_Clock_default_type;
+typedef utils_Clock__ctx_type_7 utils_Clock_setNbTicks_type;
 
-static_inline void utils_Clock_default_init(utils_Clock__ctx_type_5 &_output_){
-   utils_Clock__ctx_type_5_init(_output_);
+static_inline void utils_Clock_setNbTicks_init(utils_Clock__ctx_type_7 &_output_){
+   utils_Clock__ctx_type_7_init(_output_);
    return ;
 }
 
-static_inline void utils_Clock_default(utils_Clock__ctx_type_5 &_ctx){
-   utils_Clock_setBPM(_ctx,0x780000 /* 120.000000 */);
-   utils_Clock_setGroupSize(_ctx,4);
-   utils_Clock_setGroupRatio(_ctx,0x8000 /* 0.500000 */);
-   utils_Clock_setSwing(_ctx,0x8000 /* 0.500000 */);
+static_inline void utils_Clock_setNbTicks(utils_Clock__ctx_type_7 &_ctx, int newTicks){
+   _ctx.ticks = int_clip(newTicks,1,1024);
+};
+
+typedef utils_Clock__ctx_type_7 utils_Clock_getNbTicks_type;
+
+static_inline void utils_Clock_getNbTicks_init(utils_Clock__ctx_type_7 &_output_){
+   utils_Clock__ctx_type_7_init(_output_);
+   return ;
 }
+
+static_inline int utils_Clock_getNbTicks(utils_Clock__ctx_type_7 &_ctx){
+   return _ctx.ticks;
+};
+
+typedef utils_Clock__ctx_type_7 utils_Clock_getTicks_type;
+
+static_inline void utils_Clock_getTicks_init(utils_Clock__ctx_type_7 &_output_){
+   utils_Clock__ctx_type_7_init(_output_);
+   return ;
+}
+
+int utils_Clock_getTicks(utils_Clock__ctx_type_7 &_ctx);
+
+typedef utils_Clock__ctx_type_7 utils_Clock_default_type;
+
+static_inline void utils_Clock_default_init(utils_Clock__ctx_type_7 &_output_){
+   utils_Clock__ctx_type_7_init(_output_);
+   return ;
+}
+
+void utils_Clock_default(utils_Clock__ctx_type_7 &_ctx);
 
 
 

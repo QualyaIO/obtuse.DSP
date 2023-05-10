@@ -1,6 +1,6 @@
 
 // clock with swing and grouping
-
+// use wit setTime(), then process() until no more beats (and max ticks for each beat), remaining ticks.
 
 // - . o . - . o . normal
 // - o . . - o . .  swing -
@@ -26,6 +26,14 @@ fun getMaxBPM(): real {
   return 30000.0;
 }
 
+// give some info about expected precision for ticks
+fun getMinTicks(): int {
+  return 1;
+}
+fun getMaxTicks(): int {
+  return 1024;
+}
+
 // compare two times stored as seconds and fraction of seconds
 // return 1 if time2 > time 1, -1 if time2 < time 1, 0 if time2 == time1
 // FIXM: the whole thing is probably not the most optimized
@@ -35,7 +43,7 @@ fun compareTimeFract(time1S: int, time1Fract: real, time2S: int, time2Fract: rea
     time1S = time1S - 1;
     time1Fract = time1Fract + 1.0;
   }
-  while (time1Fract > 1.0) {
+  while (time1Fract >= 1.0) {
     time1S = time1S + 1;
     time1Fract = time1Fract - 1.0;
   }
@@ -43,7 +51,7 @@ fun compareTimeFract(time1S: int, time1Fract: real, time2S: int, time2Fract: rea
     time2S = time2S - 1;
     time2Fract = time2Fract + 1.0;
   }
-  while (time2Fract > 1.0) {
+  while (time2Fract >= 1.0) {
     time2S = time2S + 1;
     time2Fract = time2Fract - 1.0;
   }
@@ -59,12 +67,14 @@ fun compareTimeFract(time1S: int, time1Fract: real, time2S: int, time2Fract: rea
   }
 }
 
-// timeS, timeFract: passing by, in seconds. timeS is integer part (should be positive), timeFract is the remainder. Used to overcome float precision
+// to be called after setTime()
 // return 1 upon first beat, 2 new beat from first sub-group, 3 for second sub-group (groupped by IBI length afterward), 0 otherwise
 // will return trigger upon first call (start with beat)
-fun process(timeS: int, timeFract: real): int {
+fun process(): int {
   // check if first run (or if reset), since vult init to false
   mem init: bool;
+  mem timeS: int;
+  mem timeFract: real;
   // beats per minutes
   mem bpm: real;
   // interval between beats, in seconds, for both sub-groups
@@ -137,6 +147,18 @@ fun process(timeS: int, timeFract: real): int {
   lastTimeS = timeS;
   lastTimeFract = timeFract;
   return trigger;
+}
+
+// timeS, timeFract: passing by, in seconds. timeS is integer part (should be positive), timeFract is the remainder. Used to overcome float precision
+// NOTE: round part should be >= 0 fract should be 0..1, otherwise will get costly quickly
+and setTime(newTimeS: int, newTimeFract: real) {
+  timeS = newTimeS;
+  timeFract = newTimeFract;
+  // norm
+  while (timeFract >= 1.0) {
+    timeS = timeS + 1;
+    timeFract = timeFract - 1.0;
+  }
 }
 
 // reset position in group, trigger on next call
@@ -214,9 +236,37 @@ and setOrderMix(flag: bool) {
   orderMix = flag;
 }
 
+// define how many ticks there should be per beat
+// note: constant even during swing
+and setNbTicks(newTicks: int) {
+  mem ticks = clip(newTicks, getMinTicks(), getMaxTicks());
+}
+
+// current number of ticks per beat
+and getNbTicks(): int {
+  return ticks;
+}
+
+// return number of ticks since last beat, maxed to one beat. Make sure to process until there is no more beat to get accurate ticks.
+and getTicks(): int {
+  // if we overshoot ibi, max ticks
+  if (compareTimeFract(timeS - lastBeatS, timeFract - lastBeatFract, int(ibi), ibi % 1.0) <= 0) {
+    return ticks;
+  }
+  // we should have two normalized values, we might loose some precision to go back to real
+  val diffS = real(timeS - lastBeatS) + (timeFract - lastBeatFract);
+  // where we are in current ibi
+  if (ibi > 0.0) {
+    return clip(int((diffS / ibi) * real(ticks)), 0, getMaxTicks());
+  }
+  return 0;
+}
+
 and default() @[init] {
   // good ol' 120 BPM
   _ = setBPM(120.0);
+  // one standard MIDI
+  _ = setNbTicks(24);
   // classical swing for 4/4, combined with divider 2 to get on second beat
   _ = setGroupSize(4);
   _ = setGroupRatio(0.5);
