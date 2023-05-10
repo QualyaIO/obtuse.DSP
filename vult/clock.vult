@@ -257,7 +257,7 @@ and getTicks(): int {
   val diffS = real(timeS - lastBeatS) + (timeFract - lastBeatFract);
   // where we are in current ibi
   if (ibi > 0.0) {
-    return clip(int((diffS / ibi) * real(ticks)), 0, getMaxTicks());
+    return clip(int((diffS / ibi) * real(ticks)), 0, ticks);
   }
   return 0;
 }
@@ -270,7 +270,7 @@ and getNbNewTicks(): int {
   val newTicks = (curTicks - lastTicks);
   // we handle up to one beat late (minus one tick) between calls
   if (newTicks < 0) {
-    newTicks = newTicks % getMaxTicks();
+    newTicks = newTicks % ticks;
   }
   lastTicks = curTicks;
   return newTicks;

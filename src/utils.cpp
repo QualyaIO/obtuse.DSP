@@ -1543,7 +1543,7 @@ int utils_Clock_getTicks(utils_Clock__ctx_type_7 &_ctx){
    fix16_t diffS;
    diffS = (_ctx.timeFract + int_to_fix((_ctx.timeS + (- _ctx.lastBeatS))) + (- _ctx.lastBeatFract));
    if(_ctx.ibi > 0x0 /* 0.000000 */){
-      return int_clip(fix_to_int(fix_mul(int_to_fix(_ctx.ticks),fix_div(diffS,_ctx.ibi))),0,1024);
+      return int_clip(fix_to_int(fix_mul(int_to_fix(_ctx.ticks),fix_div(diffS,_ctx.ibi))),0,_ctx.ticks);
    }
    return 0;
 }
@@ -1554,7 +1554,7 @@ int utils_Clock_getNbNewTicks(utils_Clock__ctx_type_7 &_ctx){
    int newTicks;
    newTicks = (curTicks + (- _ctx.lastTicks));
    if(newTicks < 0){
-      newTicks = (newTicks % 1024);
+      newTicks = (newTicks % _ctx.ticks);
    }
    _ctx.lastTicks = curTicks;
    return newTicks;
