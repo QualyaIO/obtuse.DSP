@@ -269,8 +269,9 @@ and getNbNewTicks(): int {
   val curTicks = getTicks();
   val newTicks = (curTicks - lastTicks);
   // we handle up to one beat late (minus one tick) between calls
-  if (newTicks < 0) {
-    newTicks = newTicks % ticks;
+  while (newTicks < 0) {
+    // I should not forget that a % b in C can be negative if a is negative, % is remainder
+    newTicks = newTicks + ticks;
   }
   lastTicks = curTicks;
   return newTicks;

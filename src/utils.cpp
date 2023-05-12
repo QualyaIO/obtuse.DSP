@@ -1553,8 +1553,8 @@ int utils_Clock_getNbNewTicks(utils_Clock__ctx_type_7 &_ctx){
    curTicks = utils_Clock_getTicks(_ctx);
    int newTicks;
    newTicks = (curTicks + (- _ctx.lastTicks));
-   if(newTicks < 0){
-      newTicks = (newTicks % _ctx.ticks);
+   while(newTicks < 0){
+      newTicks = (_ctx.ticks + newTicks);
    }
    _ctx.lastTicks = curTicks;
    return newTicks;
