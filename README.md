@@ -44,6 +44,7 @@ Features
 - also folding for wavetable?
 - sampler: option for repeating samples, beyond looping
 - sampler, drummer: option to kill on note off?
+- clock: a version which handle time signature and different division for swing
 
 Vult
 
