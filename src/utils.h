@@ -844,6 +844,7 @@ typedef struct utils_Clock__ctx_type_7 {
    fix16_t swing;
    int subSize;
    int pos;
+   int pendingTicks;
    uint8_t orderMix;
    int lastTimeS;
    fix16_t lastTimeFract;
@@ -898,15 +899,6 @@ static_inline void utils_Clock__recompute_init(utils_Clock__ctx_type_7 &_output_
 }
 
 void utils_Clock__recompute(utils_Clock__ctx_type_7 &_ctx);
-
-typedef utils_Clock__ctx_type_7 utils_Clock_setBPM_type;
-
-static_inline void utils_Clock_setBPM_init(utils_Clock__ctx_type_7 &_output_){
-   utils_Clock__ctx_type_7_init(_output_);
-   return ;
-}
-
-void utils_Clock_setBPM(utils_Clock__ctx_type_7 &_ctx, fix16_t newBPM);
 
 typedef utils_Clock__ctx_type_7 utils_Clock_setGroupSize_type;
 
@@ -985,6 +977,15 @@ static_inline void utils_Clock_getNbNewTicks_init(utils_Clock__ctx_type_7 &_outp
 }
 
 int utils_Clock_getNbNewTicks(utils_Clock__ctx_type_7 &_ctx);
+
+typedef utils_Clock__ctx_type_7 utils_Clock_setBPM_type;
+
+static_inline void utils_Clock_setBPM_init(utils_Clock__ctx_type_7 &_output_){
+   utils_Clock__ctx_type_7_init(_output_);
+   return ;
+}
+
+void utils_Clock_setBPM(utils_Clock__ctx_type_7 &_ctx, fix16_t newBPM);
 
 typedef utils_Clock__ctx_type_7 utils_Clock_default_type;
 

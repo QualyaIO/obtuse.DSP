@@ -194,15 +194,6 @@ and _recompute() {
   }
 }
 
-// change current BPM, 0.002 to max 30000 bpm (to deal with fixed float range, and because why not).
-and setBPM(newBPM: real) {
-  newBPM = clip(newBPM, getMinBPM(), getMaxBPM());
-  if (newBPM <> bpm){
-    bpm = newBPM;
-    _ = _recompute();
-  }
-}
-
 // set how many beats to consider for swing. Typical swing is size 4 (I would say, for 4/4 signature, with a 2 divider) Clip from 2 (one beat in each sub-group) to 128. Can reset group position if we overflowed new group size.
 and setGroupSize(newGroupSize: int) {
   newGroupSize = clip(newGroupSize, getMinGroupSize(), getMaxGroupSize());
@@ -243,6 +234,7 @@ and setNbTicks(newTicks: int) {
 }
 
 // current number of ticks per beat
+// carefull to handle shift that will occur upon change in BPM
 and getNbTicks(): int {
   return ticks;
 }
@@ -264,10 +256,15 @@ and getTicks(): int {
 
 // only return number of new ticks since last call -- up to number of ticks per beats, make sense to call up to first beat or when there is no more beats
 // TODO: might detect if we changed beat to take that into account if we loop
+// FIXME: upon BPM change the max number of ticks could actually be greater than current ticks, see also setBPM
 and getNbNewTicks(): int {
+  // ticks from last call
   mem lastTicks;
+  // pending ticks upon BPM change
+  mem pendingTicks;
   val curTicks = getTicks();
-  val newTicks = (curTicks - lastTicks);
+  val newTicks = (curTicks - lastTicks) + pendingTicks;
+  pendingTicks = 0;
   // we handle up to one beat late (minus one tick) between calls
   while (newTicks < 0) {
     // I should not forget that a % b in C can be negative if a is negative, % is remainder
@@ -276,6 +273,20 @@ and getNbNewTicks(): int {
   lastTicks = curTicks;
   return newTicks;
 }
+
+// change current BPM, 0.002 to max 30000 bpm (to deal with fixed float range, and because why not).
+and setBPM(newBPM: real) {
+  newBPM = clip(newBPM, getMinBPM(), getMaxBPM());
+  if (newBPM <> bpm){
+    // current ticks we might have missed
+    pendingTicks = pendingTicks + getNbNewTicks();
+    bpm = newBPM;
+    _ = _recompute();
+    // reset ticas with new BPM
+    lastTicks = getTicks();
+  }
+}
+
 
 
 and default() @[init] {
