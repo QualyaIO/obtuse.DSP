@@ -1554,6 +1554,15 @@ int utils_Clock_getNbNewTicks(utils_Clock__ctx_type_7 &_ctx){
    return newTicks;
 }
 
+void utils_Clock_setNbTicks(utils_Clock__ctx_type_7 &_ctx, int newTicks){
+   newTicks = int_clip(newTicks,1,4096);
+   if(newTicks != _ctx.ticks){
+      _ctx.pendingTicks = (_ctx.pendingTicks + utils_Clock_getNbNewTicks(_ctx));
+      _ctx.ticks = newTicks;
+      _ctx.lastTicks = utils_Clock_getTicks(_ctx);
+   }
+}
+
 void utils_Clock_setBPM(utils_Clock__ctx_type_7 &_ctx, fix16_t newBPM){
    newBPM = fix_clip(newBPM,0x4189 /* 0.256000 */,0x75300000 /* 30000.000000 */);
    if(newBPM != _ctx.bpm){

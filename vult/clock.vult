@@ -31,7 +31,8 @@ fun getMinTicks(): int {
   return 1;
 }
 fun getMaxTicks(): int {
-  return 1024;
+  // a bit arbitrary, could be way more
+  return 4096;
 }
 
 // compare two times stored as seconds and fraction of seconds
@@ -227,15 +228,10 @@ and setOrderMix(flag: bool) {
   orderMix = flag;
 }
 
-// define how many ticks there should be per beat
-// note: constant even during swing
-and setNbTicks(newTicks: int) {
-  mem ticks = clip(newTicks, getMinTicks(), getMaxTicks());
-}
-
 // current number of ticks per beat
 // carefull to handle shift that will occur upon change in BPM
 and getNbTicks(): int {
+  mem ticks;
   return ticks;
 }
 
@@ -274,6 +270,19 @@ and getNbNewTicks(): int {
   return newTicks;
 }
 
+// define how many ticks there should be per beat
+// note: constant even during swing
+and setNbTicks(newTicks: int) {
+  newTicks = clip(newTicks, getMinTicks(), getMaxTicks());
+  if (newTicks <> ticks) {
+    // current ticks we might have missed
+    pendingTicks = pendingTicks + getNbNewTicks();
+    ticks = newTicks;
+    // reset ticks with new ticks
+    lastTicks = getTicks();
+  }
+}
+
 // change current BPM, 0.002 to max 30000 bpm (to deal with fixed float range, and because why not).
 and setBPM(newBPM: real) {
   newBPM = clip(newBPM, getMinBPM(), getMaxBPM());
@@ -282,7 +291,7 @@ and setBPM(newBPM: real) {
     pendingTicks = pendingTicks + getNbNewTicks();
     bpm = newBPM;
     _ = _recompute();
-    // reset ticas with new BPM
+    // reset ticks with new BPM
     lastTicks = getTicks();
   }
 }

@@ -832,7 +832,7 @@ static_inline int utils_Clock_getMinTicks(){
 };
 
 static_inline int utils_Clock_getMaxTicks(){
-   return 1024;
+   return 4096;
 };
 
 int utils_Clock_compareTimeFract(int time1S, fix16_t time1Fract, int time2S, fix16_t time2Fract);
@@ -938,17 +938,6 @@ static_inline void utils_Clock_setOrderMix(utils_Clock__ctx_type_7 &_ctx, uint8_
    _ctx.orderMix = flag;
 };
 
-typedef utils_Clock__ctx_type_7 utils_Clock_setNbTicks_type;
-
-static_inline void utils_Clock_setNbTicks_init(utils_Clock__ctx_type_7 &_output_){
-   utils_Clock__ctx_type_7_init(_output_);
-   return ;
-}
-
-static_inline void utils_Clock_setNbTicks(utils_Clock__ctx_type_7 &_ctx, int newTicks){
-   _ctx.ticks = int_clip(newTicks,1,1024);
-};
-
 typedef utils_Clock__ctx_type_7 utils_Clock_getNbTicks_type;
 
 static_inline void utils_Clock_getNbTicks_init(utils_Clock__ctx_type_7 &_output_){
@@ -977,6 +966,15 @@ static_inline void utils_Clock_getNbNewTicks_init(utils_Clock__ctx_type_7 &_outp
 }
 
 int utils_Clock_getNbNewTicks(utils_Clock__ctx_type_7 &_ctx);
+
+typedef utils_Clock__ctx_type_7 utils_Clock_setNbTicks_type;
+
+static_inline void utils_Clock_setNbTicks_init(utils_Clock__ctx_type_7 &_output_){
+   utils_Clock__ctx_type_7_init(_output_);
+   return ;
+}
+
+void utils_Clock_setNbTicks(utils_Clock__ctx_type_7 &_ctx, int newTicks);
 
 typedef utils_Clock__ctx_type_7 utils_Clock_setBPM_type;
 
