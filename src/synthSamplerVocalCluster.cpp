@@ -8,6 +8,7 @@ void synthSamplerVocalCluster_Notes__ctx_type_0_init(synthSamplerVocalCluster_No
    int_init_array(128,0,_ctx.notes);
    _ctx.nb_notes = 0;
    int_init_array(128,0,_ctx.last_notes);
+   _ctx.ignoreDuplicates = false;
    synthSamplerVocalCluster_Notes_default(_ctx);
    
    return ;
@@ -29,31 +30,6 @@ int synthSamplerVocalCluster_Notes_lastNote(synthSamplerVocalCluster_Notes__ctx_
       last_played = _ctx.last_notes[((-1) + _ctx.nb_notes)];
    }
    return last_played;
-}
-
-uint8_t synthSamplerVocalCluster_Notes_noteOn(synthSamplerVocalCluster_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel){
-   note = int_clip(note,0,127);
-   if(_ctx.notes[note] <= 0){
-      if(bool_not(_ctx.poly)){
-         _ctx.nb_notes = (1 + _ctx.nb_notes);
-         if(_ctx.nb_notes > 128){
-            _ctx.nb_notes = 128;
-         }
-      }
-      else
-      {
-         int last_note;
-         last_note = synthSamplerVocalCluster_Notes_lastNote(_ctx);
-         if(last_note > 0){
-            _ctx.notes[((-1) + last_note)] = 0;
-         }
-         _ctx.nb_notes = 1;
-      }
-      _ctx.notes[note] = _ctx.nb_notes;
-      _ctx.last_notes[((-1) + _ctx.nb_notes)] = (1 + note);
-      return true;
-   }
-   return false;
 }
 
 uint8_t synthSamplerVocalCluster_Notes_noteOff(synthSamplerVocalCluster_Notes__ctx_type_0 &_ctx, int note, int channel){
@@ -89,6 +65,35 @@ uint8_t synthSamplerVocalCluster_Notes_noteOff(synthSamplerVocalCluster_Notes__c
       return true;
    }
    return false;
+}
+
+uint8_t synthSamplerVocalCluster_Notes_noteOn(synthSamplerVocalCluster_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel){
+   note = int_clip(note,0,127);
+   uint8_t isNew;
+   isNew = (_ctx.notes[note] <= 0);
+   if(bool_not(_ctx.ignoreDuplicates) || isNew){
+      if(bool_not(_ctx.poly)){
+         if(bool_not(isNew)){
+            synthSamplerVocalCluster_Notes_noteOff(_ctx,note,channel);
+         }
+         _ctx.nb_notes = (1 + _ctx.nb_notes);
+         if(_ctx.nb_notes > 128){
+            _ctx.nb_notes = 128;
+         }
+      }
+      else
+      {
+         int last_note;
+         last_note = synthSamplerVocalCluster_Notes_lastNote(_ctx);
+         if(last_note > 0){
+            _ctx.notes[((-1) + last_note)] = 0;
+         }
+         _ctx.nb_notes = 1;
+      }
+      _ctx.notes[note] = _ctx.nb_notes;
+      _ctx.last_notes[((-1) + _ctx.nb_notes)] = (1 + note);
+   }
+   return isNew;
 }
 
 void synthSamplerVocalCluster_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
@@ -290,16 +295,17 @@ void synthSamplerVocalCluster_Sampler_setNote(synthSamplerVocalCluster_Sampler__
    synthSamplerVocalCluster_Sampler_updateStep(_ctx);
 }
 
-void synthSamplerVocalCluster_Sampler_noteOn(synthSamplerVocalCluster_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel){
+uint8_t synthSamplerVocalCluster_Sampler_noteOn(synthSamplerVocalCluster_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel){
    note = int_clip(note,0,127);
-   if(synthSamplerVocalCluster_Notes_noteOn(_ctx.playingnotes,note,velocity,channel)){
-      synthSamplerVocalCluster_Sampler_setNote(_ctx,note);
-      synthSamplerVocalCluster_Sampler_setLevel(_ctx,synthSamplerVocalCluster_Util_velocityToLevel(velocity));
-      _ctx.gate = true;
-      _ctx.posBase = 0;
-      _ctx.pos = 0x0 /* 0.000000 */;
-      _ctx.state = 1;
-   }
+   uint8_t isNew;
+   isNew = synthSamplerVocalCluster_Notes_noteOn(_ctx.playingnotes,note,velocity,channel);
+   synthSamplerVocalCluster_Sampler_setNote(_ctx,note);
+   synthSamplerVocalCluster_Sampler_setLevel(_ctx,synthSamplerVocalCluster_Util_velocityToLevel(velocity));
+   _ctx.gate = true;
+   _ctx.posBase = 0;
+   _ctx.pos = 0x0 /* 0.000000 */;
+   _ctx.state = 1;
+   return isNew;
 }
 
 void synthSamplerVocalCluster_Sampler_noteOff(synthSamplerVocalCluster_Sampler__ctx_type_0 &_ctx, int note, int channel){
@@ -542,8 +548,17 @@ void synthSamplerVocalCluster_Voice_noteOff(synthSamplerVocalCluster_Voice__ctx_
 void synthSamplerVocalCluster_Voice_noteOn(synthSamplerVocalCluster_Voice__ctx_type_0 &_ctx, int note, int velocity, int channel){
    note = int_clip(note,0,127);
    velocity = int_clip(velocity,0,127);
-   if(_ctx.notes[note] <= 0){
-      int v;
+   int v;
+   v = _ctx.notes[note];
+   if(v > 0){
+      if(bool_not((synthSamplerVocalCluster_Notes_noteOff(_ctx.voicesactive,((-1) + v),0) && synthSamplerVocalCluster_Notes_noteOn(_ctx.voicesinactive,((-1) + v),127,0) && synthSamplerVocalCluster_Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && synthSamplerVocalCluster_Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)))){
+         _ctx.notes[note] = 0;
+         _ctx.voices[((-1) + v)] = 0;
+         v = 0;
+      }
+   }
+   else
+   {
       v = synthSamplerVocalCluster_Notes_firstNote(_ctx.voicesinactive);
       if((v <= 0) || (v > _ctx.number_voices)){
          int active_v;
@@ -554,27 +569,34 @@ void synthSamplerVocalCluster_Voice_noteOn(synthSamplerVocalCluster_Voice__ctx_t
       }
       v = synthSamplerVocalCluster_Notes_firstNote(_ctx.voicesinactive);
       if((v > 0) && (v <= _ctx.number_voices)){
-         if(synthSamplerVocalCluster_Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && synthSamplerVocalCluster_Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)){
-            if(synthSamplerVocalCluster_Poly_shouldLeftOvers(_ctx.poly)){
-               _ctx.leftovers = (_ctx.leftovers + _ctx.last_values[((-1) + v)]);
-            }
-            else
-            {
-               int diff_velocity;
-               diff_velocity = (_ctx.last_velocities[((-1) + v)] + (- velocity));
-               fix16_t diff_level;
-               diff_level = 0x0 /* 0.000000 */;
-               if(diff_velocity > 0){
-                  diff_level = fix_mul(0x204 /* 0.007874 */,int_to_fix(diff_velocity));
-               }
-               _ctx.leftovers = (_ctx.leftovers + fix_mul(diff_level,_ctx.last_values[((-1) + v)]));
-            }
-            synthSamplerVocalCluster_Poly_sendNoteOn(_ctx.poly,((-1) + v),note,velocity,channel);
-            _ctx.notes[note] = v;
-            _ctx.voices[((-1) + v)] = note;
-            _ctx.last_velocities[((-1) + v)] = velocity;
+         if(bool_not((synthSamplerVocalCluster_Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && synthSamplerVocalCluster_Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)))){
+            v = 0;
          }
       }
+      else
+      {
+         v = 0;
+      }
+   }
+   if(v > 0){
+      if(synthSamplerVocalCluster_Poly_shouldLeftOvers(_ctx.poly)){
+         _ctx.leftovers = (_ctx.leftovers + _ctx.last_values[((-1) + v)]);
+      }
+      else
+      {
+         int diff_velocity;
+         diff_velocity = (_ctx.last_velocities[((-1) + v)] + (- velocity));
+         fix16_t diff_level;
+         diff_level = 0x0 /* 0.000000 */;
+         if(diff_velocity > 0){
+            diff_level = fix_mul(0x204 /* 0.007874 */,int_to_fix(diff_velocity));
+         }
+         _ctx.leftovers = (_ctx.leftovers + fix_mul(diff_level,_ctx.last_values[((-1) + v)]));
+      }
+      synthSamplerVocalCluster_Poly_sendNoteOn(_ctx.poly,((-1) + v),note,velocity,channel);
+      _ctx.notes[note] = v;
+      _ctx.voices[((-1) + v)] = note;
+      _ctx.last_velocities[((-1) + v)] = velocity;
    }
 }
 
@@ -629,8 +651,10 @@ void synthSamplerVocalCluster_Voice_default(synthSamplerVocalCluster_Voice__ctx_
    synthSamplerVocalCluster_Voice_setNbVoices(_ctx,_ctx.number_voices);
    synthSamplerVocalCluster_Notes_default(_ctx.voicesactive);
    synthSamplerVocalCluster_Notes_setPoly(_ctx.voicesactive,false);
+   synthSamplerVocalCluster_Notes_setIgnoreDuplicates(_ctx.voicesactive,true);
    synthSamplerVocalCluster_Notes_default(_ctx.voicesinactive);
    synthSamplerVocalCluster_Notes_setPoly(_ctx.voicesinactive,false);
+   synthSamplerVocalCluster_Notes_setIgnoreDuplicates(_ctx.voicesinactive,true);
    synthSamplerVocalCluster_Voice_setNormalize(_ctx,true);
    synthSamplerVocalCluster_Voice_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
 }

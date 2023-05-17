@@ -149,6 +149,7 @@ typedef struct synthSamplerShootingStar_Notes__ctx_type_0 {
    int notes[128];
    int nb_notes;
    int last_notes[128];
+   uint8_t ignoreDuplicates;
 } synthSamplerShootingStar_Notes__ctx_type_0;
 
 typedef synthSamplerShootingStar_Notes__ctx_type_0 synthSamplerShootingStar_Notes_setPoly_type;
@@ -164,6 +165,17 @@ static_inline void synthSamplerShootingStar_Notes_setPoly(synthSamplerShootingSt
    _ctx.poly = flag;
 };
 
+typedef synthSamplerShootingStar_Notes__ctx_type_0 synthSamplerShootingStar_Notes_setIgnoreDuplicates_type;
+
+static_inline void synthSamplerShootingStar_Notes_setIgnoreDuplicates_init(synthSamplerShootingStar_Notes__ctx_type_0 &_output_){
+   synthSamplerShootingStar_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerShootingStar_Notes_setIgnoreDuplicates(synthSamplerShootingStar_Notes__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.ignoreDuplicates = flag;
+};
+
 typedef synthSamplerShootingStar_Notes__ctx_type_0 synthSamplerShootingStar_Notes_default_type;
 
 static_inline void synthSamplerShootingStar_Notes_default_init(synthSamplerShootingStar_Notes__ctx_type_0 &_output_){
@@ -173,7 +185,8 @@ static_inline void synthSamplerShootingStar_Notes_default_init(synthSamplerShoot
 
 static_inline void synthSamplerShootingStar_Notes_default(synthSamplerShootingStar_Notes__ctx_type_0 &_ctx){
    synthSamplerShootingStar_Notes_setPoly(_ctx,false);
-};
+   synthSamplerShootingStar_Notes_setIgnoreDuplicates(_ctx,false);
+}
 
 typedef synthSamplerShootingStar_Notes__ctx_type_0 synthSamplerShootingStar_Notes_nbNotes_type;
 
@@ -204,15 +217,6 @@ static_inline void synthSamplerShootingStar_Notes_lastNote_init(synthSamplerShoo
 
 int synthSamplerShootingStar_Notes_lastNote(synthSamplerShootingStar_Notes__ctx_type_0 &_ctx);
 
-typedef synthSamplerShootingStar_Notes__ctx_type_0 synthSamplerShootingStar_Notes_noteOn_type;
-
-static_inline void synthSamplerShootingStar_Notes_noteOn_init(synthSamplerShootingStar_Notes__ctx_type_0 &_output_){
-   synthSamplerShootingStar_Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-uint8_t synthSamplerShootingStar_Notes_noteOn(synthSamplerShootingStar_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
-
 typedef synthSamplerShootingStar_Notes__ctx_type_0 synthSamplerShootingStar_Notes_noteOff_type;
 
 static_inline void synthSamplerShootingStar_Notes_noteOff_init(synthSamplerShootingStar_Notes__ctx_type_0 &_output_){
@@ -221,6 +225,15 @@ static_inline void synthSamplerShootingStar_Notes_noteOff_init(synthSamplerShoot
 }
 
 uint8_t synthSamplerShootingStar_Notes_noteOff(synthSamplerShootingStar_Notes__ctx_type_0 &_ctx, int note, int channel);
+
+typedef synthSamplerShootingStar_Notes__ctx_type_0 synthSamplerShootingStar_Notes_noteOn_type;
+
+static_inline void synthSamplerShootingStar_Notes_noteOn_init(synthSamplerShootingStar_Notes__ctx_type_0 &_output_){
+   synthSamplerShootingStar_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+uint8_t synthSamplerShootingStar_Notes_noteOn(synthSamplerShootingStar_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 static_inline void synthSamplerShootingStar_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
@@ -415,7 +428,7 @@ static_inline void synthSamplerShootingStar_Sampler_noteOn_init(synthSamplerShoo
    return ;
 }
 
-void synthSamplerShootingStar_Sampler_noteOn(synthSamplerShootingStar_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
+uint8_t synthSamplerShootingStar_Sampler_noteOn(synthSamplerShootingStar_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 typedef synthSamplerShootingStar_Sampler__ctx_type_0 synthSamplerShootingStar_Sampler_setPoly_type;
 

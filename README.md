@@ -38,13 +38,15 @@ Fixes
 
 Features
 
-- back to toubidou
+- sampler: add back to toubidou
 - velocity: not only linear? save for monophonic?
 - tremolo (e.g. at Voice level)
 - also folding for wavetable?
 - sampler: option for repeating samples, beyond looping
 - sampler, drummer: option to kill on note off?
 - clock: a version which handle time signature and different division for swing
+- gate: accommodate several noteOn (option to send duplicate noteOn ?)
+- synth: in case of monophonic option to retrigger for each note (already change velocity)?
 
 Vult
 

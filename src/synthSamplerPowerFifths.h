@@ -149,6 +149,7 @@ typedef struct synthSamplerPowerFifths_Notes__ctx_type_0 {
    int notes[128];
    int nb_notes;
    int last_notes[128];
+   uint8_t ignoreDuplicates;
 } synthSamplerPowerFifths_Notes__ctx_type_0;
 
 typedef synthSamplerPowerFifths_Notes__ctx_type_0 synthSamplerPowerFifths_Notes_setPoly_type;
@@ -164,6 +165,17 @@ static_inline void synthSamplerPowerFifths_Notes_setPoly(synthSamplerPowerFifths
    _ctx.poly = flag;
 };
 
+typedef synthSamplerPowerFifths_Notes__ctx_type_0 synthSamplerPowerFifths_Notes_setIgnoreDuplicates_type;
+
+static_inline void synthSamplerPowerFifths_Notes_setIgnoreDuplicates_init(synthSamplerPowerFifths_Notes__ctx_type_0 &_output_){
+   synthSamplerPowerFifths_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerPowerFifths_Notes_setIgnoreDuplicates(synthSamplerPowerFifths_Notes__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.ignoreDuplicates = flag;
+};
+
 typedef synthSamplerPowerFifths_Notes__ctx_type_0 synthSamplerPowerFifths_Notes_default_type;
 
 static_inline void synthSamplerPowerFifths_Notes_default_init(synthSamplerPowerFifths_Notes__ctx_type_0 &_output_){
@@ -173,7 +185,8 @@ static_inline void synthSamplerPowerFifths_Notes_default_init(synthSamplerPowerF
 
 static_inline void synthSamplerPowerFifths_Notes_default(synthSamplerPowerFifths_Notes__ctx_type_0 &_ctx){
    synthSamplerPowerFifths_Notes_setPoly(_ctx,false);
-};
+   synthSamplerPowerFifths_Notes_setIgnoreDuplicates(_ctx,false);
+}
 
 typedef synthSamplerPowerFifths_Notes__ctx_type_0 synthSamplerPowerFifths_Notes_nbNotes_type;
 
@@ -204,15 +217,6 @@ static_inline void synthSamplerPowerFifths_Notes_lastNote_init(synthSamplerPower
 
 int synthSamplerPowerFifths_Notes_lastNote(synthSamplerPowerFifths_Notes__ctx_type_0 &_ctx);
 
-typedef synthSamplerPowerFifths_Notes__ctx_type_0 synthSamplerPowerFifths_Notes_noteOn_type;
-
-static_inline void synthSamplerPowerFifths_Notes_noteOn_init(synthSamplerPowerFifths_Notes__ctx_type_0 &_output_){
-   synthSamplerPowerFifths_Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-uint8_t synthSamplerPowerFifths_Notes_noteOn(synthSamplerPowerFifths_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
-
 typedef synthSamplerPowerFifths_Notes__ctx_type_0 synthSamplerPowerFifths_Notes_noteOff_type;
 
 static_inline void synthSamplerPowerFifths_Notes_noteOff_init(synthSamplerPowerFifths_Notes__ctx_type_0 &_output_){
@@ -221,6 +225,15 @@ static_inline void synthSamplerPowerFifths_Notes_noteOff_init(synthSamplerPowerF
 }
 
 uint8_t synthSamplerPowerFifths_Notes_noteOff(synthSamplerPowerFifths_Notes__ctx_type_0 &_ctx, int note, int channel);
+
+typedef synthSamplerPowerFifths_Notes__ctx_type_0 synthSamplerPowerFifths_Notes_noteOn_type;
+
+static_inline void synthSamplerPowerFifths_Notes_noteOn_init(synthSamplerPowerFifths_Notes__ctx_type_0 &_output_){
+   synthSamplerPowerFifths_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+uint8_t synthSamplerPowerFifths_Notes_noteOn(synthSamplerPowerFifths_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 static_inline void synthSamplerPowerFifths_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
@@ -415,7 +428,7 @@ static_inline void synthSamplerPowerFifths_Sampler_noteOn_init(synthSamplerPower
    return ;
 }
 
-void synthSamplerPowerFifths_Sampler_noteOn(synthSamplerPowerFifths_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
+uint8_t synthSamplerPowerFifths_Sampler_noteOn(synthSamplerPowerFifths_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 typedef synthSamplerPowerFifths_Sampler__ctx_type_0 synthSamplerPowerFifths_Sampler_setPoly_type;
 

@@ -11,6 +11,12 @@ fun setPoly(flag: bool) {
    mem poly : bool = flag;
 }
 
+// should we ignore noteOn of already playing notes? (if set to true: old behavior)
+and setIgnoreDuplicates(flag: bool) {
+   mem ignoreDuplicates;
+   ignoreDuplicates = flag;
+}
+
 and default() @[init] {
     // how many notes are currently held
     mem nb_notes: int;
@@ -21,8 +27,9 @@ and default() @[init] {
     // for the sake of simplicity, notes will be 1 to 128 here (so we can keep track of note 0 at little cost)
     mem last_notes: array(int, 128);
 
-    // menephonic by default
+    // explicitely monophonic by default, allow retrigger
     setPoly(false);
+    setIgnoreDuplicates(false);
 }
 
 and nbNotes() {
@@ -49,36 +56,6 @@ and lastNote() {
       last_played = last_notes[nb_notes-1];
    }
    return last_played;
-}
-
-// beginning of a note -- will effectively ignore duplicated noteOn for same note
-// return true if note indeed turned on, false otherwise
-and noteOn(note:int, velocity:int, channel:int): bool {
-   // only 128 midi notes
-   note = clip(note, 0, 127);
-   // add note to list if new (does not point to last_notes)
-   if (notes[note] <= 0) {
-      // monophonic (default), save held notes
-      if (not(poly)) {
-         nb_notes = nb_notes + 1;
-         // failsafe
-         if (nb_notes > 128) {
-            nb_notes = 128;
-         }
-      }
-      // polyphonic: forget current note, if any, replace
-      else {
-         val last_note = lastNote();
-         if (last_note > 0) {
-            notes[last_note-1] = 0;
-	 }
-         nb_notes = 1;
-      }
-      notes[note] = nb_notes;
-      last_notes[nb_notes-1] = note + 1;
-      return true;
-   }
-   return false;
 }
 
 // note off whatever the channel, back to frequency of last still active note if any
@@ -121,4 +98,41 @@ and noteOff(note:int, channel:int): bool {
       return true;
    }
    return false;
+}
+
+
+// beginning of a note
+// return true if note is new, false otherwise (meaning note will not be consider with ignoreDuplicates)
+// TODO: code instead, if note there, if note new, if note currently playing
+and noteOn(note:int, velocity:int, channel:int): bool {
+   // only 128 midi notes
+   note = clip(note, 0, 127);
+   val isNew : bool = notes[note] <= 0;
+   if (not(ignoreDuplicates) || isNew) {
+      // monophonic (default), save held notes, update state to bring it forth if already active
+      if (not(poly)) {
+         // already playing, turn off so we can bring it forth
+         if (not(isNew)) {
+            _ = noteOff(note, channel);
+         }
+         // now going forward
+         nb_notes = nb_notes + 1;
+         // failsafe
+         if (nb_notes > 128) {
+            nb_notes = 128;
+         }
+      }
+      // polyphonic: forget current note, if any, replace (...by the same one if not new, could improve maybe here)
+      else {
+         val last_note = lastNote();
+         if (last_note > 0) {
+            notes[last_note-1] = 0;
+         }
+         nb_notes = 1;
+      }
+      // add note to list anyhow
+      notes[note] = nb_notes;
+      last_notes[nb_notes-1] = note + 1;
+   }
+   return isNew;
 }

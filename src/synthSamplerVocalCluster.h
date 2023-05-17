@@ -149,6 +149,7 @@ typedef struct synthSamplerVocalCluster_Notes__ctx_type_0 {
    int notes[128];
    int nb_notes;
    int last_notes[128];
+   uint8_t ignoreDuplicates;
 } synthSamplerVocalCluster_Notes__ctx_type_0;
 
 typedef synthSamplerVocalCluster_Notes__ctx_type_0 synthSamplerVocalCluster_Notes_setPoly_type;
@@ -164,6 +165,17 @@ static_inline void synthSamplerVocalCluster_Notes_setPoly(synthSamplerVocalClust
    _ctx.poly = flag;
 };
 
+typedef synthSamplerVocalCluster_Notes__ctx_type_0 synthSamplerVocalCluster_Notes_setIgnoreDuplicates_type;
+
+static_inline void synthSamplerVocalCluster_Notes_setIgnoreDuplicates_init(synthSamplerVocalCluster_Notes__ctx_type_0 &_output_){
+   synthSamplerVocalCluster_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerVocalCluster_Notes_setIgnoreDuplicates(synthSamplerVocalCluster_Notes__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.ignoreDuplicates = flag;
+};
+
 typedef synthSamplerVocalCluster_Notes__ctx_type_0 synthSamplerVocalCluster_Notes_default_type;
 
 static_inline void synthSamplerVocalCluster_Notes_default_init(synthSamplerVocalCluster_Notes__ctx_type_0 &_output_){
@@ -173,7 +185,8 @@ static_inline void synthSamplerVocalCluster_Notes_default_init(synthSamplerVocal
 
 static_inline void synthSamplerVocalCluster_Notes_default(synthSamplerVocalCluster_Notes__ctx_type_0 &_ctx){
    synthSamplerVocalCluster_Notes_setPoly(_ctx,false);
-};
+   synthSamplerVocalCluster_Notes_setIgnoreDuplicates(_ctx,false);
+}
 
 typedef synthSamplerVocalCluster_Notes__ctx_type_0 synthSamplerVocalCluster_Notes_nbNotes_type;
 
@@ -204,15 +217,6 @@ static_inline void synthSamplerVocalCluster_Notes_lastNote_init(synthSamplerVoca
 
 int synthSamplerVocalCluster_Notes_lastNote(synthSamplerVocalCluster_Notes__ctx_type_0 &_ctx);
 
-typedef synthSamplerVocalCluster_Notes__ctx_type_0 synthSamplerVocalCluster_Notes_noteOn_type;
-
-static_inline void synthSamplerVocalCluster_Notes_noteOn_init(synthSamplerVocalCluster_Notes__ctx_type_0 &_output_){
-   synthSamplerVocalCluster_Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-uint8_t synthSamplerVocalCluster_Notes_noteOn(synthSamplerVocalCluster_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
-
 typedef synthSamplerVocalCluster_Notes__ctx_type_0 synthSamplerVocalCluster_Notes_noteOff_type;
 
 static_inline void synthSamplerVocalCluster_Notes_noteOff_init(synthSamplerVocalCluster_Notes__ctx_type_0 &_output_){
@@ -221,6 +225,15 @@ static_inline void synthSamplerVocalCluster_Notes_noteOff_init(synthSamplerVocal
 }
 
 uint8_t synthSamplerVocalCluster_Notes_noteOff(synthSamplerVocalCluster_Notes__ctx_type_0 &_ctx, int note, int channel);
+
+typedef synthSamplerVocalCluster_Notes__ctx_type_0 synthSamplerVocalCluster_Notes_noteOn_type;
+
+static_inline void synthSamplerVocalCluster_Notes_noteOn_init(synthSamplerVocalCluster_Notes__ctx_type_0 &_output_){
+   synthSamplerVocalCluster_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+uint8_t synthSamplerVocalCluster_Notes_noteOn(synthSamplerVocalCluster_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 static_inline void synthSamplerVocalCluster_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
@@ -415,7 +428,7 @@ static_inline void synthSamplerVocalCluster_Sampler_noteOn_init(synthSamplerVoca
    return ;
 }
 
-void synthSamplerVocalCluster_Sampler_noteOn(synthSamplerVocalCluster_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
+uint8_t synthSamplerVocalCluster_Sampler_noteOn(synthSamplerVocalCluster_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 typedef synthSamplerVocalCluster_Sampler__ctx_type_0 synthSamplerVocalCluster_Sampler_setPoly_type;
 

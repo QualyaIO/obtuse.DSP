@@ -149,6 +149,7 @@ typedef struct synthSamplerCello_Notes__ctx_type_0 {
    int notes[128];
    int nb_notes;
    int last_notes[128];
+   uint8_t ignoreDuplicates;
 } synthSamplerCello_Notes__ctx_type_0;
 
 typedef synthSamplerCello_Notes__ctx_type_0 synthSamplerCello_Notes_setPoly_type;
@@ -164,6 +165,17 @@ static_inline void synthSamplerCello_Notes_setPoly(synthSamplerCello_Notes__ctx_
    _ctx.poly = flag;
 };
 
+typedef synthSamplerCello_Notes__ctx_type_0 synthSamplerCello_Notes_setIgnoreDuplicates_type;
+
+static_inline void synthSamplerCello_Notes_setIgnoreDuplicates_init(synthSamplerCello_Notes__ctx_type_0 &_output_){
+   synthSamplerCello_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerCello_Notes_setIgnoreDuplicates(synthSamplerCello_Notes__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.ignoreDuplicates = flag;
+};
+
 typedef synthSamplerCello_Notes__ctx_type_0 synthSamplerCello_Notes_default_type;
 
 static_inline void synthSamplerCello_Notes_default_init(synthSamplerCello_Notes__ctx_type_0 &_output_){
@@ -173,7 +185,8 @@ static_inline void synthSamplerCello_Notes_default_init(synthSamplerCello_Notes_
 
 static_inline void synthSamplerCello_Notes_default(synthSamplerCello_Notes__ctx_type_0 &_ctx){
    synthSamplerCello_Notes_setPoly(_ctx,false);
-};
+   synthSamplerCello_Notes_setIgnoreDuplicates(_ctx,false);
+}
 
 typedef synthSamplerCello_Notes__ctx_type_0 synthSamplerCello_Notes_nbNotes_type;
 
@@ -204,15 +217,6 @@ static_inline void synthSamplerCello_Notes_lastNote_init(synthSamplerCello_Notes
 
 int synthSamplerCello_Notes_lastNote(synthSamplerCello_Notes__ctx_type_0 &_ctx);
 
-typedef synthSamplerCello_Notes__ctx_type_0 synthSamplerCello_Notes_noteOn_type;
-
-static_inline void synthSamplerCello_Notes_noteOn_init(synthSamplerCello_Notes__ctx_type_0 &_output_){
-   synthSamplerCello_Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-uint8_t synthSamplerCello_Notes_noteOn(synthSamplerCello_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
-
 typedef synthSamplerCello_Notes__ctx_type_0 synthSamplerCello_Notes_noteOff_type;
 
 static_inline void synthSamplerCello_Notes_noteOff_init(synthSamplerCello_Notes__ctx_type_0 &_output_){
@@ -221,6 +225,15 @@ static_inline void synthSamplerCello_Notes_noteOff_init(synthSamplerCello_Notes_
 }
 
 uint8_t synthSamplerCello_Notes_noteOff(synthSamplerCello_Notes__ctx_type_0 &_ctx, int note, int channel);
+
+typedef synthSamplerCello_Notes__ctx_type_0 synthSamplerCello_Notes_noteOn_type;
+
+static_inline void synthSamplerCello_Notes_noteOn_init(synthSamplerCello_Notes__ctx_type_0 &_output_){
+   synthSamplerCello_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+uint8_t synthSamplerCello_Notes_noteOn(synthSamplerCello_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 static_inline void synthSamplerCello_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
@@ -415,7 +428,7 @@ static_inline void synthSamplerCello_Sampler_noteOn_init(synthSamplerCello_Sampl
    return ;
 }
 
-void synthSamplerCello_Sampler_noteOn(synthSamplerCello_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
+uint8_t synthSamplerCello_Sampler_noteOn(synthSamplerCello_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 typedef synthSamplerCello_Sampler__ctx_type_0 synthSamplerCello_Sampler_setPoly_type;
 

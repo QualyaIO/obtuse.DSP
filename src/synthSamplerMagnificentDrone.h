@@ -149,6 +149,7 @@ typedef struct synthSamplerMagnificentDrone_Notes__ctx_type_0 {
    int notes[128];
    int nb_notes;
    int last_notes[128];
+   uint8_t ignoreDuplicates;
 } synthSamplerMagnificentDrone_Notes__ctx_type_0;
 
 typedef synthSamplerMagnificentDrone_Notes__ctx_type_0 synthSamplerMagnificentDrone_Notes_setPoly_type;
@@ -164,6 +165,17 @@ static_inline void synthSamplerMagnificentDrone_Notes_setPoly(synthSamplerMagnif
    _ctx.poly = flag;
 };
 
+typedef synthSamplerMagnificentDrone_Notes__ctx_type_0 synthSamplerMagnificentDrone_Notes_setIgnoreDuplicates_type;
+
+static_inline void synthSamplerMagnificentDrone_Notes_setIgnoreDuplicates_init(synthSamplerMagnificentDrone_Notes__ctx_type_0 &_output_){
+   synthSamplerMagnificentDrone_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerMagnificentDrone_Notes_setIgnoreDuplicates(synthSamplerMagnificentDrone_Notes__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.ignoreDuplicates = flag;
+};
+
 typedef synthSamplerMagnificentDrone_Notes__ctx_type_0 synthSamplerMagnificentDrone_Notes_default_type;
 
 static_inline void synthSamplerMagnificentDrone_Notes_default_init(synthSamplerMagnificentDrone_Notes__ctx_type_0 &_output_){
@@ -173,7 +185,8 @@ static_inline void synthSamplerMagnificentDrone_Notes_default_init(synthSamplerM
 
 static_inline void synthSamplerMagnificentDrone_Notes_default(synthSamplerMagnificentDrone_Notes__ctx_type_0 &_ctx){
    synthSamplerMagnificentDrone_Notes_setPoly(_ctx,false);
-};
+   synthSamplerMagnificentDrone_Notes_setIgnoreDuplicates(_ctx,false);
+}
 
 typedef synthSamplerMagnificentDrone_Notes__ctx_type_0 synthSamplerMagnificentDrone_Notes_nbNotes_type;
 
@@ -204,15 +217,6 @@ static_inline void synthSamplerMagnificentDrone_Notes_lastNote_init(synthSampler
 
 int synthSamplerMagnificentDrone_Notes_lastNote(synthSamplerMagnificentDrone_Notes__ctx_type_0 &_ctx);
 
-typedef synthSamplerMagnificentDrone_Notes__ctx_type_0 synthSamplerMagnificentDrone_Notes_noteOn_type;
-
-static_inline void synthSamplerMagnificentDrone_Notes_noteOn_init(synthSamplerMagnificentDrone_Notes__ctx_type_0 &_output_){
-   synthSamplerMagnificentDrone_Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-uint8_t synthSamplerMagnificentDrone_Notes_noteOn(synthSamplerMagnificentDrone_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
-
 typedef synthSamplerMagnificentDrone_Notes__ctx_type_0 synthSamplerMagnificentDrone_Notes_noteOff_type;
 
 static_inline void synthSamplerMagnificentDrone_Notes_noteOff_init(synthSamplerMagnificentDrone_Notes__ctx_type_0 &_output_){
@@ -221,6 +225,15 @@ static_inline void synthSamplerMagnificentDrone_Notes_noteOff_init(synthSamplerM
 }
 
 uint8_t synthSamplerMagnificentDrone_Notes_noteOff(synthSamplerMagnificentDrone_Notes__ctx_type_0 &_ctx, int note, int channel);
+
+typedef synthSamplerMagnificentDrone_Notes__ctx_type_0 synthSamplerMagnificentDrone_Notes_noteOn_type;
+
+static_inline void synthSamplerMagnificentDrone_Notes_noteOn_init(synthSamplerMagnificentDrone_Notes__ctx_type_0 &_output_){
+   synthSamplerMagnificentDrone_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+uint8_t synthSamplerMagnificentDrone_Notes_noteOn(synthSamplerMagnificentDrone_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 static_inline void synthSamplerMagnificentDrone_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
@@ -415,7 +428,7 @@ static_inline void synthSamplerMagnificentDrone_Sampler_noteOn_init(synthSampler
    return ;
 }
 
-void synthSamplerMagnificentDrone_Sampler_noteOn(synthSamplerMagnificentDrone_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
+uint8_t synthSamplerMagnificentDrone_Sampler_noteOn(synthSamplerMagnificentDrone_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 typedef synthSamplerMagnificentDrone_Sampler__ctx_type_0 synthSamplerMagnificentDrone_Sampler_setPoly_type;
 

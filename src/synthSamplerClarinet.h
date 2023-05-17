@@ -149,6 +149,7 @@ typedef struct synthSamplerClarinet_Notes__ctx_type_0 {
    int notes[128];
    int nb_notes;
    int last_notes[128];
+   uint8_t ignoreDuplicates;
 } synthSamplerClarinet_Notes__ctx_type_0;
 
 typedef synthSamplerClarinet_Notes__ctx_type_0 synthSamplerClarinet_Notes_setPoly_type;
@@ -164,6 +165,17 @@ static_inline void synthSamplerClarinet_Notes_setPoly(synthSamplerClarinet_Notes
    _ctx.poly = flag;
 };
 
+typedef synthSamplerClarinet_Notes__ctx_type_0 synthSamplerClarinet_Notes_setIgnoreDuplicates_type;
+
+static_inline void synthSamplerClarinet_Notes_setIgnoreDuplicates_init(synthSamplerClarinet_Notes__ctx_type_0 &_output_){
+   synthSamplerClarinet_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerClarinet_Notes_setIgnoreDuplicates(synthSamplerClarinet_Notes__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.ignoreDuplicates = flag;
+};
+
 typedef synthSamplerClarinet_Notes__ctx_type_0 synthSamplerClarinet_Notes_default_type;
 
 static_inline void synthSamplerClarinet_Notes_default_init(synthSamplerClarinet_Notes__ctx_type_0 &_output_){
@@ -173,7 +185,8 @@ static_inline void synthSamplerClarinet_Notes_default_init(synthSamplerClarinet_
 
 static_inline void synthSamplerClarinet_Notes_default(synthSamplerClarinet_Notes__ctx_type_0 &_ctx){
    synthSamplerClarinet_Notes_setPoly(_ctx,false);
-};
+   synthSamplerClarinet_Notes_setIgnoreDuplicates(_ctx,false);
+}
 
 typedef synthSamplerClarinet_Notes__ctx_type_0 synthSamplerClarinet_Notes_nbNotes_type;
 
@@ -204,15 +217,6 @@ static_inline void synthSamplerClarinet_Notes_lastNote_init(synthSamplerClarinet
 
 int synthSamplerClarinet_Notes_lastNote(synthSamplerClarinet_Notes__ctx_type_0 &_ctx);
 
-typedef synthSamplerClarinet_Notes__ctx_type_0 synthSamplerClarinet_Notes_noteOn_type;
-
-static_inline void synthSamplerClarinet_Notes_noteOn_init(synthSamplerClarinet_Notes__ctx_type_0 &_output_){
-   synthSamplerClarinet_Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-uint8_t synthSamplerClarinet_Notes_noteOn(synthSamplerClarinet_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
-
 typedef synthSamplerClarinet_Notes__ctx_type_0 synthSamplerClarinet_Notes_noteOff_type;
 
 static_inline void synthSamplerClarinet_Notes_noteOff_init(synthSamplerClarinet_Notes__ctx_type_0 &_output_){
@@ -221,6 +225,15 @@ static_inline void synthSamplerClarinet_Notes_noteOff_init(synthSamplerClarinet_
 }
 
 uint8_t synthSamplerClarinet_Notes_noteOff(synthSamplerClarinet_Notes__ctx_type_0 &_ctx, int note, int channel);
+
+typedef synthSamplerClarinet_Notes__ctx_type_0 synthSamplerClarinet_Notes_noteOn_type;
+
+static_inline void synthSamplerClarinet_Notes_noteOn_init(synthSamplerClarinet_Notes__ctx_type_0 &_output_){
+   synthSamplerClarinet_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+uint8_t synthSamplerClarinet_Notes_noteOn(synthSamplerClarinet_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 static_inline void synthSamplerClarinet_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
@@ -415,7 +428,7 @@ static_inline void synthSamplerClarinet_Sampler_noteOn_init(synthSamplerClarinet
    return ;
 }
 
-void synthSamplerClarinet_Sampler_noteOn(synthSamplerClarinet_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
+uint8_t synthSamplerClarinet_Sampler_noteOn(synthSamplerClarinet_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 typedef synthSamplerClarinet_Sampler__ctx_type_0 synthSamplerClarinet_Sampler_setPoly_type;
 

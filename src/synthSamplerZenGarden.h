@@ -149,6 +149,7 @@ typedef struct synthSamplerZenGarden_Notes__ctx_type_0 {
    int notes[128];
    int nb_notes;
    int last_notes[128];
+   uint8_t ignoreDuplicates;
 } synthSamplerZenGarden_Notes__ctx_type_0;
 
 typedef synthSamplerZenGarden_Notes__ctx_type_0 synthSamplerZenGarden_Notes_setPoly_type;
@@ -164,6 +165,17 @@ static_inline void synthSamplerZenGarden_Notes_setPoly(synthSamplerZenGarden_Not
    _ctx.poly = flag;
 };
 
+typedef synthSamplerZenGarden_Notes__ctx_type_0 synthSamplerZenGarden_Notes_setIgnoreDuplicates_type;
+
+static_inline void synthSamplerZenGarden_Notes_setIgnoreDuplicates_init(synthSamplerZenGarden_Notes__ctx_type_0 &_output_){
+   synthSamplerZenGarden_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerZenGarden_Notes_setIgnoreDuplicates(synthSamplerZenGarden_Notes__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.ignoreDuplicates = flag;
+};
+
 typedef synthSamplerZenGarden_Notes__ctx_type_0 synthSamplerZenGarden_Notes_default_type;
 
 static_inline void synthSamplerZenGarden_Notes_default_init(synthSamplerZenGarden_Notes__ctx_type_0 &_output_){
@@ -173,7 +185,8 @@ static_inline void synthSamplerZenGarden_Notes_default_init(synthSamplerZenGarde
 
 static_inline void synthSamplerZenGarden_Notes_default(synthSamplerZenGarden_Notes__ctx_type_0 &_ctx){
    synthSamplerZenGarden_Notes_setPoly(_ctx,false);
-};
+   synthSamplerZenGarden_Notes_setIgnoreDuplicates(_ctx,false);
+}
 
 typedef synthSamplerZenGarden_Notes__ctx_type_0 synthSamplerZenGarden_Notes_nbNotes_type;
 
@@ -204,15 +217,6 @@ static_inline void synthSamplerZenGarden_Notes_lastNote_init(synthSamplerZenGard
 
 int synthSamplerZenGarden_Notes_lastNote(synthSamplerZenGarden_Notes__ctx_type_0 &_ctx);
 
-typedef synthSamplerZenGarden_Notes__ctx_type_0 synthSamplerZenGarden_Notes_noteOn_type;
-
-static_inline void synthSamplerZenGarden_Notes_noteOn_init(synthSamplerZenGarden_Notes__ctx_type_0 &_output_){
-   synthSamplerZenGarden_Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-uint8_t synthSamplerZenGarden_Notes_noteOn(synthSamplerZenGarden_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
-
 typedef synthSamplerZenGarden_Notes__ctx_type_0 synthSamplerZenGarden_Notes_noteOff_type;
 
 static_inline void synthSamplerZenGarden_Notes_noteOff_init(synthSamplerZenGarden_Notes__ctx_type_0 &_output_){
@@ -221,6 +225,15 @@ static_inline void synthSamplerZenGarden_Notes_noteOff_init(synthSamplerZenGarde
 }
 
 uint8_t synthSamplerZenGarden_Notes_noteOff(synthSamplerZenGarden_Notes__ctx_type_0 &_ctx, int note, int channel);
+
+typedef synthSamplerZenGarden_Notes__ctx_type_0 synthSamplerZenGarden_Notes_noteOn_type;
+
+static_inline void synthSamplerZenGarden_Notes_noteOn_init(synthSamplerZenGarden_Notes__ctx_type_0 &_output_){
+   synthSamplerZenGarden_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+uint8_t synthSamplerZenGarden_Notes_noteOn(synthSamplerZenGarden_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 static_inline void synthSamplerZenGarden_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
@@ -415,7 +428,7 @@ static_inline void synthSamplerZenGarden_Sampler_noteOn_init(synthSamplerZenGard
    return ;
 }
 
-void synthSamplerZenGarden_Sampler_noteOn(synthSamplerZenGarden_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
+uint8_t synthSamplerZenGarden_Sampler_noteOn(synthSamplerZenGarden_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 typedef synthSamplerZenGarden_Sampler__ctx_type_0 synthSamplerZenGarden_Sampler_setPoly_type;
 

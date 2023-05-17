@@ -8,6 +8,7 @@ void synthSamplerMysticVibes_Notes__ctx_type_0_init(synthSamplerMysticVibes_Note
    int_init_array(128,0,_ctx.notes);
    _ctx.nb_notes = 0;
    int_init_array(128,0,_ctx.last_notes);
+   _ctx.ignoreDuplicates = false;
    synthSamplerMysticVibes_Notes_default(_ctx);
    
    return ;
@@ -29,31 +30,6 @@ int synthSamplerMysticVibes_Notes_lastNote(synthSamplerMysticVibes_Notes__ctx_ty
       last_played = _ctx.last_notes[((-1) + _ctx.nb_notes)];
    }
    return last_played;
-}
-
-uint8_t synthSamplerMysticVibes_Notes_noteOn(synthSamplerMysticVibes_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel){
-   note = int_clip(note,0,127);
-   if(_ctx.notes[note] <= 0){
-      if(bool_not(_ctx.poly)){
-         _ctx.nb_notes = (1 + _ctx.nb_notes);
-         if(_ctx.nb_notes > 128){
-            _ctx.nb_notes = 128;
-         }
-      }
-      else
-      {
-         int last_note;
-         last_note = synthSamplerMysticVibes_Notes_lastNote(_ctx);
-         if(last_note > 0){
-            _ctx.notes[((-1) + last_note)] = 0;
-         }
-         _ctx.nb_notes = 1;
-      }
-      _ctx.notes[note] = _ctx.nb_notes;
-      _ctx.last_notes[((-1) + _ctx.nb_notes)] = (1 + note);
-      return true;
-   }
-   return false;
 }
 
 uint8_t synthSamplerMysticVibes_Notes_noteOff(synthSamplerMysticVibes_Notes__ctx_type_0 &_ctx, int note, int channel){
@@ -89,6 +65,35 @@ uint8_t synthSamplerMysticVibes_Notes_noteOff(synthSamplerMysticVibes_Notes__ctx
       return true;
    }
    return false;
+}
+
+uint8_t synthSamplerMysticVibes_Notes_noteOn(synthSamplerMysticVibes_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel){
+   note = int_clip(note,0,127);
+   uint8_t isNew;
+   isNew = (_ctx.notes[note] <= 0);
+   if(bool_not(_ctx.ignoreDuplicates) || isNew){
+      if(bool_not(_ctx.poly)){
+         if(bool_not(isNew)){
+            synthSamplerMysticVibes_Notes_noteOff(_ctx,note,channel);
+         }
+         _ctx.nb_notes = (1 + _ctx.nb_notes);
+         if(_ctx.nb_notes > 128){
+            _ctx.nb_notes = 128;
+         }
+      }
+      else
+      {
+         int last_note;
+         last_note = synthSamplerMysticVibes_Notes_lastNote(_ctx);
+         if(last_note > 0){
+            _ctx.notes[((-1) + last_note)] = 0;
+         }
+         _ctx.nb_notes = 1;
+      }
+      _ctx.notes[note] = _ctx.nb_notes;
+      _ctx.last_notes[((-1) + _ctx.nb_notes)] = (1 + note);
+   }
+   return isNew;
 }
 
 void synthSamplerMysticVibes_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
@@ -290,16 +295,17 @@ void synthSamplerMysticVibes_Sampler_setNote(synthSamplerMysticVibes_Sampler__ct
    synthSamplerMysticVibes_Sampler_updateStep(_ctx);
 }
 
-void synthSamplerMysticVibes_Sampler_noteOn(synthSamplerMysticVibes_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel){
+uint8_t synthSamplerMysticVibes_Sampler_noteOn(synthSamplerMysticVibes_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel){
    note = int_clip(note,0,127);
-   if(synthSamplerMysticVibes_Notes_noteOn(_ctx.playingnotes,note,velocity,channel)){
-      synthSamplerMysticVibes_Sampler_setNote(_ctx,note);
-      synthSamplerMysticVibes_Sampler_setLevel(_ctx,synthSamplerMysticVibes_Util_velocityToLevel(velocity));
-      _ctx.gate = true;
-      _ctx.posBase = 0;
-      _ctx.pos = 0x0 /* 0.000000 */;
-      _ctx.state = 1;
-   }
+   uint8_t isNew;
+   isNew = synthSamplerMysticVibes_Notes_noteOn(_ctx.playingnotes,note,velocity,channel);
+   synthSamplerMysticVibes_Sampler_setNote(_ctx,note);
+   synthSamplerMysticVibes_Sampler_setLevel(_ctx,synthSamplerMysticVibes_Util_velocityToLevel(velocity));
+   _ctx.gate = true;
+   _ctx.posBase = 0;
+   _ctx.pos = 0x0 /* 0.000000 */;
+   _ctx.state = 1;
+   return isNew;
 }
 
 void synthSamplerMysticVibes_Sampler_noteOff(synthSamplerMysticVibes_Sampler__ctx_type_0 &_ctx, int note, int channel){
@@ -542,8 +548,17 @@ void synthSamplerMysticVibes_Voice_noteOff(synthSamplerMysticVibes_Voice__ctx_ty
 void synthSamplerMysticVibes_Voice_noteOn(synthSamplerMysticVibes_Voice__ctx_type_0 &_ctx, int note, int velocity, int channel){
    note = int_clip(note,0,127);
    velocity = int_clip(velocity,0,127);
-   if(_ctx.notes[note] <= 0){
-      int v;
+   int v;
+   v = _ctx.notes[note];
+   if(v > 0){
+      if(bool_not((synthSamplerMysticVibes_Notes_noteOff(_ctx.voicesactive,((-1) + v),0) && synthSamplerMysticVibes_Notes_noteOn(_ctx.voicesinactive,((-1) + v),127,0) && synthSamplerMysticVibes_Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && synthSamplerMysticVibes_Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)))){
+         _ctx.notes[note] = 0;
+         _ctx.voices[((-1) + v)] = 0;
+         v = 0;
+      }
+   }
+   else
+   {
       v = synthSamplerMysticVibes_Notes_firstNote(_ctx.voicesinactive);
       if((v <= 0) || (v > _ctx.number_voices)){
          int active_v;
@@ -554,27 +569,34 @@ void synthSamplerMysticVibes_Voice_noteOn(synthSamplerMysticVibes_Voice__ctx_typ
       }
       v = synthSamplerMysticVibes_Notes_firstNote(_ctx.voicesinactive);
       if((v > 0) && (v <= _ctx.number_voices)){
-         if(synthSamplerMysticVibes_Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && synthSamplerMysticVibes_Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)){
-            if(synthSamplerMysticVibes_Poly_shouldLeftOvers(_ctx.poly)){
-               _ctx.leftovers = (_ctx.leftovers + _ctx.last_values[((-1) + v)]);
-            }
-            else
-            {
-               int diff_velocity;
-               diff_velocity = (_ctx.last_velocities[((-1) + v)] + (- velocity));
-               fix16_t diff_level;
-               diff_level = 0x0 /* 0.000000 */;
-               if(diff_velocity > 0){
-                  diff_level = fix_mul(0x204 /* 0.007874 */,int_to_fix(diff_velocity));
-               }
-               _ctx.leftovers = (_ctx.leftovers + fix_mul(diff_level,_ctx.last_values[((-1) + v)]));
-            }
-            synthSamplerMysticVibes_Poly_sendNoteOn(_ctx.poly,((-1) + v),note,velocity,channel);
-            _ctx.notes[note] = v;
-            _ctx.voices[((-1) + v)] = note;
-            _ctx.last_velocities[((-1) + v)] = velocity;
+         if(bool_not((synthSamplerMysticVibes_Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && synthSamplerMysticVibes_Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)))){
+            v = 0;
          }
       }
+      else
+      {
+         v = 0;
+      }
+   }
+   if(v > 0){
+      if(synthSamplerMysticVibes_Poly_shouldLeftOvers(_ctx.poly)){
+         _ctx.leftovers = (_ctx.leftovers + _ctx.last_values[((-1) + v)]);
+      }
+      else
+      {
+         int diff_velocity;
+         diff_velocity = (_ctx.last_velocities[((-1) + v)] + (- velocity));
+         fix16_t diff_level;
+         diff_level = 0x0 /* 0.000000 */;
+         if(diff_velocity > 0){
+            diff_level = fix_mul(0x204 /* 0.007874 */,int_to_fix(diff_velocity));
+         }
+         _ctx.leftovers = (_ctx.leftovers + fix_mul(diff_level,_ctx.last_values[((-1) + v)]));
+      }
+      synthSamplerMysticVibes_Poly_sendNoteOn(_ctx.poly,((-1) + v),note,velocity,channel);
+      _ctx.notes[note] = v;
+      _ctx.voices[((-1) + v)] = note;
+      _ctx.last_velocities[((-1) + v)] = velocity;
    }
 }
 
@@ -629,8 +651,10 @@ void synthSamplerMysticVibes_Voice_default(synthSamplerMysticVibes_Voice__ctx_ty
    synthSamplerMysticVibes_Voice_setNbVoices(_ctx,_ctx.number_voices);
    synthSamplerMysticVibes_Notes_default(_ctx.voicesactive);
    synthSamplerMysticVibes_Notes_setPoly(_ctx.voicesactive,false);
+   synthSamplerMysticVibes_Notes_setIgnoreDuplicates(_ctx.voicesactive,true);
    synthSamplerMysticVibes_Notes_default(_ctx.voicesinactive);
    synthSamplerMysticVibes_Notes_setPoly(_ctx.voicesinactive,false);
+   synthSamplerMysticVibes_Notes_setIgnoreDuplicates(_ctx.voicesinactive,true);
    synthSamplerMysticVibes_Voice_setNormalize(_ctx,true);
    synthSamplerMysticVibes_Voice_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
 }

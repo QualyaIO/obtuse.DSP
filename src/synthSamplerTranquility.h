@@ -149,6 +149,7 @@ typedef struct synthSamplerTranquility_Notes__ctx_type_0 {
    int notes[128];
    int nb_notes;
    int last_notes[128];
+   uint8_t ignoreDuplicates;
 } synthSamplerTranquility_Notes__ctx_type_0;
 
 typedef synthSamplerTranquility_Notes__ctx_type_0 synthSamplerTranquility_Notes_setPoly_type;
@@ -164,6 +165,17 @@ static_inline void synthSamplerTranquility_Notes_setPoly(synthSamplerTranquility
    _ctx.poly = flag;
 };
 
+typedef synthSamplerTranquility_Notes__ctx_type_0 synthSamplerTranquility_Notes_setIgnoreDuplicates_type;
+
+static_inline void synthSamplerTranquility_Notes_setIgnoreDuplicates_init(synthSamplerTranquility_Notes__ctx_type_0 &_output_){
+   synthSamplerTranquility_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerTranquility_Notes_setIgnoreDuplicates(synthSamplerTranquility_Notes__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.ignoreDuplicates = flag;
+};
+
 typedef synthSamplerTranquility_Notes__ctx_type_0 synthSamplerTranquility_Notes_default_type;
 
 static_inline void synthSamplerTranquility_Notes_default_init(synthSamplerTranquility_Notes__ctx_type_0 &_output_){
@@ -173,7 +185,8 @@ static_inline void synthSamplerTranquility_Notes_default_init(synthSamplerTranqu
 
 static_inline void synthSamplerTranquility_Notes_default(synthSamplerTranquility_Notes__ctx_type_0 &_ctx){
    synthSamplerTranquility_Notes_setPoly(_ctx,false);
-};
+   synthSamplerTranquility_Notes_setIgnoreDuplicates(_ctx,false);
+}
 
 typedef synthSamplerTranquility_Notes__ctx_type_0 synthSamplerTranquility_Notes_nbNotes_type;
 
@@ -204,15 +217,6 @@ static_inline void synthSamplerTranquility_Notes_lastNote_init(synthSamplerTranq
 
 int synthSamplerTranquility_Notes_lastNote(synthSamplerTranquility_Notes__ctx_type_0 &_ctx);
 
-typedef synthSamplerTranquility_Notes__ctx_type_0 synthSamplerTranquility_Notes_noteOn_type;
-
-static_inline void synthSamplerTranquility_Notes_noteOn_init(synthSamplerTranquility_Notes__ctx_type_0 &_output_){
-   synthSamplerTranquility_Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-uint8_t synthSamplerTranquility_Notes_noteOn(synthSamplerTranquility_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
-
 typedef synthSamplerTranquility_Notes__ctx_type_0 synthSamplerTranquility_Notes_noteOff_type;
 
 static_inline void synthSamplerTranquility_Notes_noteOff_init(synthSamplerTranquility_Notes__ctx_type_0 &_output_){
@@ -221,6 +225,15 @@ static_inline void synthSamplerTranquility_Notes_noteOff_init(synthSamplerTranqu
 }
 
 uint8_t synthSamplerTranquility_Notes_noteOff(synthSamplerTranquility_Notes__ctx_type_0 &_ctx, int note, int channel);
+
+typedef synthSamplerTranquility_Notes__ctx_type_0 synthSamplerTranquility_Notes_noteOn_type;
+
+static_inline void synthSamplerTranquility_Notes_noteOn_init(synthSamplerTranquility_Notes__ctx_type_0 &_output_){
+   synthSamplerTranquility_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+uint8_t synthSamplerTranquility_Notes_noteOn(synthSamplerTranquility_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 static_inline void synthSamplerTranquility_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
@@ -415,7 +428,7 @@ static_inline void synthSamplerTranquility_Sampler_noteOn_init(synthSamplerTranq
    return ;
 }
 
-void synthSamplerTranquility_Sampler_noteOn(synthSamplerTranquility_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
+uint8_t synthSamplerTranquility_Sampler_noteOn(synthSamplerTranquility_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 typedef synthSamplerTranquility_Sampler__ctx_type_0 synthSamplerTranquility_Sampler_setPoly_type;
 

@@ -271,22 +271,21 @@ and setLevel(newLevel: real) {
     level = newLevel;
 }
 
-// beginning of a note -- will effectively ignore duplicated noteOn for same note
-// we don't check velocity, yet
-and noteOn(note:int, velocity:int, channel:int){
+// beginning of a note
+// return true if note is new, false otherwise
+and noteOn(note:int, velocity:int, channel:int): bool {
    // only 128 midi notes
    note = clip(note, 0, 127);
-   // only acts if action taken into account
-   if (playingnotes:Notes.noteOn(note, velocity, channel)) {
-       // set frequency... should we reset phase somehow? artifacts upon first tests
-       _ = setNote(note);
-       _ = setLevel(Util.velocityToLevel(velocity));
-       // start playing note
-       gate = true;
-       posBase = 0;
-       pos = 0.0;
-       state = 1;
-   }
+   val isNew = playingnotes:Notes.noteOn(note, velocity, channel);
+   // set frequency... should we reset phase somehow? artifacts upon first tests
+   _ = setNote(note);
+   _ = setLevel(Util.velocityToLevel(velocity));
+   // start playing note
+   gate = true;
+   posBase = 0;
+   pos = 0.0;
+   state = 1;
+   return isNew;
 }
 
 // set polpyphonic (true flag) or monophonic (false flag)

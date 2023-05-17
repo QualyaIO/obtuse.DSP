@@ -149,6 +149,7 @@ typedef struct synthSamplerKoto_Notes__ctx_type_0 {
    int notes[128];
    int nb_notes;
    int last_notes[128];
+   uint8_t ignoreDuplicates;
 } synthSamplerKoto_Notes__ctx_type_0;
 
 typedef synthSamplerKoto_Notes__ctx_type_0 synthSamplerKoto_Notes_setPoly_type;
@@ -164,6 +165,17 @@ static_inline void synthSamplerKoto_Notes_setPoly(synthSamplerKoto_Notes__ctx_ty
    _ctx.poly = flag;
 };
 
+typedef synthSamplerKoto_Notes__ctx_type_0 synthSamplerKoto_Notes_setIgnoreDuplicates_type;
+
+static_inline void synthSamplerKoto_Notes_setIgnoreDuplicates_init(synthSamplerKoto_Notes__ctx_type_0 &_output_){
+   synthSamplerKoto_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerKoto_Notes_setIgnoreDuplicates(synthSamplerKoto_Notes__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.ignoreDuplicates = flag;
+};
+
 typedef synthSamplerKoto_Notes__ctx_type_0 synthSamplerKoto_Notes_default_type;
 
 static_inline void synthSamplerKoto_Notes_default_init(synthSamplerKoto_Notes__ctx_type_0 &_output_){
@@ -173,7 +185,8 @@ static_inline void synthSamplerKoto_Notes_default_init(synthSamplerKoto_Notes__c
 
 static_inline void synthSamplerKoto_Notes_default(synthSamplerKoto_Notes__ctx_type_0 &_ctx){
    synthSamplerKoto_Notes_setPoly(_ctx,false);
-};
+   synthSamplerKoto_Notes_setIgnoreDuplicates(_ctx,false);
+}
 
 typedef synthSamplerKoto_Notes__ctx_type_0 synthSamplerKoto_Notes_nbNotes_type;
 
@@ -204,15 +217,6 @@ static_inline void synthSamplerKoto_Notes_lastNote_init(synthSamplerKoto_Notes__
 
 int synthSamplerKoto_Notes_lastNote(synthSamplerKoto_Notes__ctx_type_0 &_ctx);
 
-typedef synthSamplerKoto_Notes__ctx_type_0 synthSamplerKoto_Notes_noteOn_type;
-
-static_inline void synthSamplerKoto_Notes_noteOn_init(synthSamplerKoto_Notes__ctx_type_0 &_output_){
-   synthSamplerKoto_Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-uint8_t synthSamplerKoto_Notes_noteOn(synthSamplerKoto_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
-
 typedef synthSamplerKoto_Notes__ctx_type_0 synthSamplerKoto_Notes_noteOff_type;
 
 static_inline void synthSamplerKoto_Notes_noteOff_init(synthSamplerKoto_Notes__ctx_type_0 &_output_){
@@ -221,6 +225,15 @@ static_inline void synthSamplerKoto_Notes_noteOff_init(synthSamplerKoto_Notes__c
 }
 
 uint8_t synthSamplerKoto_Notes_noteOff(synthSamplerKoto_Notes__ctx_type_0 &_ctx, int note, int channel);
+
+typedef synthSamplerKoto_Notes__ctx_type_0 synthSamplerKoto_Notes_noteOn_type;
+
+static_inline void synthSamplerKoto_Notes_noteOn_init(synthSamplerKoto_Notes__ctx_type_0 &_output_){
+   synthSamplerKoto_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+uint8_t synthSamplerKoto_Notes_noteOn(synthSamplerKoto_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 static_inline void synthSamplerKoto_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
@@ -415,7 +428,7 @@ static_inline void synthSamplerKoto_Sampler_noteOn_init(synthSamplerKoto_Sampler
    return ;
 }
 
-void synthSamplerKoto_Sampler_noteOn(synthSamplerKoto_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
+uint8_t synthSamplerKoto_Sampler_noteOn(synthSamplerKoto_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 typedef synthSamplerKoto_Sampler__ctx_type_0 synthSamplerKoto_Sampler_setPoly_type;
 

@@ -269,27 +269,35 @@ and setFrequency(freq: real) {
 
 // set polpyphonic (true flag) or monophonic (false flag)
 // monophonic: will get back to former notes, if any, upon note off
-// polyphonic: does try to get back to held notes frequencies
+// polyphonic: does not try to get back to held notes frequencies
 and setPoly(flag: bool) {
    _ = playingnotes:Notes.setPoly(flag);
 }
 
 // midi-like interface
 
-// beginning of a note -- will effectively ignore duplicated noteOn for same note
-// we don't check velocity, yet
+// beginning of a note, retrigger if save as active note
+// return true if was not playing this note, false otherwise
 and noteOn(note:int, velocity:int, channel:int){
    // only 128 midi notes
    note = clip(note, 0, 127);
-   // only acts if action taken into account
-   if (playingnotes:Notes.noteOn(note, velocity, channel)) {
-       // set frequency... should we reset phase somehow? artifacts upon first tests
-       _ = setFrequency(Util.noteToFrequency(note));
-       _ = setLevel(Util.velocityToLevel(velocity));
-       // gate, no mater what
-       gate = true;
+   // a bit of a hack, retrieve current note, adjust for index
+   val prevNote = playingnotes:Notes.lastNote() - 1;
+   // check if the new note is new
+   val isNew = playingnotes:Notes.noteOn(note, velocity, channel);
+   // set frequency... should we reset phase somehow? artifacts upon first tests
+   _ = setFrequency(Util.noteToFrequency(note));
+   _ = setLevel(Util.velocityToLevel(velocity));
+   // gate, no mater what
+   gate = true;
+   // retrigger if we play the same note
+   if (note == prevNote && not(isNew)) {
+     _ = carrieradsr:ADSR.retrig();
+     _ = modulatoradsr:ADSR.retrig();
    }
+   return isNew;
 }
+
 // note off whatever the channel, back to frequency of last still active note if any
 and noteOff(note:int, channel:int) {
    // only 128 midi notes

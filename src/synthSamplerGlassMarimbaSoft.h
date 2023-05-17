@@ -149,6 +149,7 @@ typedef struct synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 {
    int notes[128];
    int nb_notes;
    int last_notes[128];
+   uint8_t ignoreDuplicates;
 } synthSamplerGlassMarimbaSoft_Notes__ctx_type_0;
 
 typedef synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 synthSamplerGlassMarimbaSoft_Notes_setPoly_type;
@@ -164,6 +165,17 @@ static_inline void synthSamplerGlassMarimbaSoft_Notes_setPoly(synthSamplerGlassM
    _ctx.poly = flag;
 };
 
+typedef synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 synthSamplerGlassMarimbaSoft_Notes_setIgnoreDuplicates_type;
+
+static_inline void synthSamplerGlassMarimbaSoft_Notes_setIgnoreDuplicates_init(synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 &_output_){
+   synthSamplerGlassMarimbaSoft_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerGlassMarimbaSoft_Notes_setIgnoreDuplicates(synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.ignoreDuplicates = flag;
+};
+
 typedef synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 synthSamplerGlassMarimbaSoft_Notes_default_type;
 
 static_inline void synthSamplerGlassMarimbaSoft_Notes_default_init(synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 &_output_){
@@ -173,7 +185,8 @@ static_inline void synthSamplerGlassMarimbaSoft_Notes_default_init(synthSamplerG
 
 static_inline void synthSamplerGlassMarimbaSoft_Notes_default(synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 &_ctx){
    synthSamplerGlassMarimbaSoft_Notes_setPoly(_ctx,false);
-};
+   synthSamplerGlassMarimbaSoft_Notes_setIgnoreDuplicates(_ctx,false);
+}
 
 typedef synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 synthSamplerGlassMarimbaSoft_Notes_nbNotes_type;
 
@@ -204,15 +217,6 @@ static_inline void synthSamplerGlassMarimbaSoft_Notes_lastNote_init(synthSampler
 
 int synthSamplerGlassMarimbaSoft_Notes_lastNote(synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 &_ctx);
 
-typedef synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 synthSamplerGlassMarimbaSoft_Notes_noteOn_type;
-
-static_inline void synthSamplerGlassMarimbaSoft_Notes_noteOn_init(synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 &_output_){
-   synthSamplerGlassMarimbaSoft_Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-uint8_t synthSamplerGlassMarimbaSoft_Notes_noteOn(synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
-
 typedef synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 synthSamplerGlassMarimbaSoft_Notes_noteOff_type;
 
 static_inline void synthSamplerGlassMarimbaSoft_Notes_noteOff_init(synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 &_output_){
@@ -221,6 +225,15 @@ static_inline void synthSamplerGlassMarimbaSoft_Notes_noteOff_init(synthSamplerG
 }
 
 uint8_t synthSamplerGlassMarimbaSoft_Notes_noteOff(synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 &_ctx, int note, int channel);
+
+typedef synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 synthSamplerGlassMarimbaSoft_Notes_noteOn_type;
+
+static_inline void synthSamplerGlassMarimbaSoft_Notes_noteOn_init(synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 &_output_){
+   synthSamplerGlassMarimbaSoft_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+uint8_t synthSamplerGlassMarimbaSoft_Notes_noteOn(synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 static_inline void synthSamplerGlassMarimbaSoft_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
@@ -415,7 +428,7 @@ static_inline void synthSamplerGlassMarimbaSoft_Sampler_noteOn_init(synthSampler
    return ;
 }
 
-void synthSamplerGlassMarimbaSoft_Sampler_noteOn(synthSamplerGlassMarimbaSoft_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
+uint8_t synthSamplerGlassMarimbaSoft_Sampler_noteOn(synthSamplerGlassMarimbaSoft_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 typedef synthSamplerGlassMarimbaSoft_Sampler__ctx_type_0 synthSamplerGlassMarimbaSoft_Sampler_setPoly_type;
 

@@ -149,6 +149,7 @@ typedef struct synthSamplerPulsingPatterns_Notes__ctx_type_0 {
    int notes[128];
    int nb_notes;
    int last_notes[128];
+   uint8_t ignoreDuplicates;
 } synthSamplerPulsingPatterns_Notes__ctx_type_0;
 
 typedef synthSamplerPulsingPatterns_Notes__ctx_type_0 synthSamplerPulsingPatterns_Notes_setPoly_type;
@@ -164,6 +165,17 @@ static_inline void synthSamplerPulsingPatterns_Notes_setPoly(synthSamplerPulsing
    _ctx.poly = flag;
 };
 
+typedef synthSamplerPulsingPatterns_Notes__ctx_type_0 synthSamplerPulsingPatterns_Notes_setIgnoreDuplicates_type;
+
+static_inline void synthSamplerPulsingPatterns_Notes_setIgnoreDuplicates_init(synthSamplerPulsingPatterns_Notes__ctx_type_0 &_output_){
+   synthSamplerPulsingPatterns_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerPulsingPatterns_Notes_setIgnoreDuplicates(synthSamplerPulsingPatterns_Notes__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.ignoreDuplicates = flag;
+};
+
 typedef synthSamplerPulsingPatterns_Notes__ctx_type_0 synthSamplerPulsingPatterns_Notes_default_type;
 
 static_inline void synthSamplerPulsingPatterns_Notes_default_init(synthSamplerPulsingPatterns_Notes__ctx_type_0 &_output_){
@@ -173,7 +185,8 @@ static_inline void synthSamplerPulsingPatterns_Notes_default_init(synthSamplerPu
 
 static_inline void synthSamplerPulsingPatterns_Notes_default(synthSamplerPulsingPatterns_Notes__ctx_type_0 &_ctx){
    synthSamplerPulsingPatterns_Notes_setPoly(_ctx,false);
-};
+   synthSamplerPulsingPatterns_Notes_setIgnoreDuplicates(_ctx,false);
+}
 
 typedef synthSamplerPulsingPatterns_Notes__ctx_type_0 synthSamplerPulsingPatterns_Notes_nbNotes_type;
 
@@ -204,15 +217,6 @@ static_inline void synthSamplerPulsingPatterns_Notes_lastNote_init(synthSamplerP
 
 int synthSamplerPulsingPatterns_Notes_lastNote(synthSamplerPulsingPatterns_Notes__ctx_type_0 &_ctx);
 
-typedef synthSamplerPulsingPatterns_Notes__ctx_type_0 synthSamplerPulsingPatterns_Notes_noteOn_type;
-
-static_inline void synthSamplerPulsingPatterns_Notes_noteOn_init(synthSamplerPulsingPatterns_Notes__ctx_type_0 &_output_){
-   synthSamplerPulsingPatterns_Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-uint8_t synthSamplerPulsingPatterns_Notes_noteOn(synthSamplerPulsingPatterns_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
-
 typedef synthSamplerPulsingPatterns_Notes__ctx_type_0 synthSamplerPulsingPatterns_Notes_noteOff_type;
 
 static_inline void synthSamplerPulsingPatterns_Notes_noteOff_init(synthSamplerPulsingPatterns_Notes__ctx_type_0 &_output_){
@@ -221,6 +225,15 @@ static_inline void synthSamplerPulsingPatterns_Notes_noteOff_init(synthSamplerPu
 }
 
 uint8_t synthSamplerPulsingPatterns_Notes_noteOff(synthSamplerPulsingPatterns_Notes__ctx_type_0 &_ctx, int note, int channel);
+
+typedef synthSamplerPulsingPatterns_Notes__ctx_type_0 synthSamplerPulsingPatterns_Notes_noteOn_type;
+
+static_inline void synthSamplerPulsingPatterns_Notes_noteOn_init(synthSamplerPulsingPatterns_Notes__ctx_type_0 &_output_){
+   synthSamplerPulsingPatterns_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+uint8_t synthSamplerPulsingPatterns_Notes_noteOn(synthSamplerPulsingPatterns_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 static_inline void synthSamplerPulsingPatterns_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
@@ -415,7 +428,7 @@ static_inline void synthSamplerPulsingPatterns_Sampler_noteOn_init(synthSamplerP
    return ;
 }
 
-void synthSamplerPulsingPatterns_Sampler_noteOn(synthSamplerPulsingPatterns_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
+uint8_t synthSamplerPulsingPatterns_Sampler_noteOn(synthSamplerPulsingPatterns_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 typedef synthSamplerPulsingPatterns_Sampler__ctx_type_0 synthSamplerPulsingPatterns_Sampler_setPoly_type;
 

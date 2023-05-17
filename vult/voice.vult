@@ -1,8 +1,9 @@
 
-// wrapper to create voice from a poly synth
-// Very conservative concerning the volume, will each voice will have a fraction of the max amplitude.
+// Wrapper to create voice from a poly synth
+// Very conservative concerning the volume, will each voice will have a fraction of the max amplitude with normalize flag
+// Duplicate note-on event will retrigger same voice
+// Try to minimize (poorly) clicks/pops when voices are stolen.
 // Note: does not take midi channel into account at this level
-// try to minimize (poorly) clicks when voices are stolen
 // TODO: back to monophonic if number of voices is 1
 
 // retrieve sample from all voices, mix
@@ -173,7 +174,7 @@ and noteOff(note:int, channel:int) {
    }
 }
 
-// transmit noteOn to new voice (oldest inactive). If none, will turn off and steal oldest active. update inner states active/inactive voice
+// transmit noteOn to new voice (oldest inactive). If none, will turn off and steal oldest active. update inner states active/inactive voice. If the note is already playing: keep same voice.
 // note: pitch as MIDI code
 // velocity: 0..127
 // channnel: 1..16
@@ -182,11 +183,28 @@ and noteOn(note:int, velocity:int, channel:int){
    // only 128 midi notes
    note = clip(note, 0, 127);
    velocity = clip(velocity, 0, 127);
-   // ignore note if already with a voice
-   if (notes[note] <= 0) {
+   // current voice for this note
+   val v = notes[note];
+   // if the note already has a voice, bring it forth
+   if (v > 0) {
+      // disable / enable voice to update state, counting on lazy evaluation to check if it is successful
+      if (not(
+              voicesactive:Notes.noteOff(v - 1, 0) &&
+              voicesinactive:Notes.noteOn(v - 1, 127, 0) &&
+              voicesinactive:Notes.noteOff(v - 1, 0) &&
+              voicesactive:Notes.noteOn(v - 1, 127, 0)
+              )) {
+         // something went wrong, disable voice
+         notes[note] = 0;
+         voices[v-1] = 0;
+         v = 0;
+      }
+   }
+   // will try another voice
+   else  {
       // at least one free voice, take the oldest
       // todo: check both active and inactive status?
-      val v = voicesinactive:Notes.firstNote();
+      v = voicesinactive:Notes.firstNote();
       // no active voice, we will steal one (double check with actual number of voice)
       if (v <= 0 || v > number_voices) {
          val active_v = voicesactive:Notes.firstNote();
@@ -199,29 +217,38 @@ and noteOn(note:int, velocity:int, channel:int){
       // now we should have at least one inactive voice
       v = voicesinactive:Notes.firstNote();
       if (v > 0 && v <= number_voices) {
-         // voice removed successfully from inactive ones and added to active ones (arbitrary channel 0 and velocity 127)
-         if (voicesinactive:Notes.noteOff(v - 1, 0) && voicesactive:Notes.noteOn(v - 1, 127, 0)) {
-            // retrieve last value of this voice to mitigate pops. If synth discourage this option (e.g. FM with simpler OSC waveform) then only take into account difference in levels if new note is at lower velocity
-            if (poly:Poly.shouldLeftOvers()) {
-               leftovers = leftovers + last_values[v-1];
-            } else {
-               val diff_velocity = last_velocities[v-1] - velocity;
-               val diff_level = 0.0; 
-               // only enable leftovers if new velocity is lower
-               if (diff_velocity > 0) {
-                  // velocity should be capped at 127
-                  diff_level = real(diff_velocity) / 127.0;
-               }
-               leftovers = leftovers + last_values[v-1] * diff_level;
-            }
-	    // forward info
-	    _ = poly:Poly.sendNoteOn(v - 1, note, velocity, channel);
-            // update arrays
-            notes[note] = v;
-            voices[v-1] = note;
-            last_velocities[v-1] = velocity;
+         // check if voice is removed successfully from inactive ones and added to active ones (arbitrary channel 0 and velocity 127)
+         if (not(voicesinactive:Notes.noteOff(v - 1, 0) && voicesactive:Notes.noteOn(v - 1, 127, 0))) {
+            v = 0;
          }
       }
+      else {
+         // could reach here if we failed to steal
+         v = 0;
+      }
+   }
+
+   // we either retrigger, get a new voice or steal a voice, apply changes
+   if (v > 0) {
+      // retrieve last value of this voice to mitigate pops. If synth discourage this option (e.g. FM with simpler OSC waveform) then only take into account difference in levels if new note is at lower velocity
+      if (poly:Poly.shouldLeftOvers()) {
+         leftovers = leftovers + last_values[v-1];
+      } else {
+         val diff_velocity = last_velocities[v-1] - velocity;
+         val diff_level = 0.0; 
+         // only enable leftovers if new velocity is lower
+         if (diff_velocity > 0) {
+            // velocity should be capped at 127
+            diff_level = real(diff_velocity) / 127.0;
+         }
+         leftovers = leftovers + last_values[v-1] * diff_level;
+      }
+      // forward info
+      _ = poly:Poly.sendNoteOn(v - 1, note, velocity, channel);
+      // update arrays
+      notes[note] = v;
+      voices[v-1] = note;
+      last_velocities[v-1] = velocity;
    }
 }
 
@@ -399,9 +426,11 @@ and default() @[init] {
    // monophonic algo used to keep track of active voices...
    _ = voicesactive:Notes.default();
    _ = voicesactive:Notes.setPoly(false);
+   _ = voicesactive:Notes.setIgnoreDuplicates(true);
    // and same for disabled voices
    _ = voicesinactive:Notes.default();
    _ = voicesinactive:Notes.setPoly(false);
+   _ = voicesinactive:Notes.setIgnoreDuplicates(true);
 
    _ = setNormalize(true);
    _ = setSamplerate(44.1);

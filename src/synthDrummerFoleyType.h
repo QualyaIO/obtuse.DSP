@@ -242,7 +242,7 @@ static_inline void synthDrummerFoleyType_Drummer_noteOn_init(synthDrummerFoleyTy
    return ;
 }
 
-void synthDrummerFoleyType_Drummer_noteOn(synthDrummerFoleyType_Drummer__ctx_type_0 &_ctx, int note, int velocity, int channel);
+uint8_t synthDrummerFoleyType_Drummer_noteOn(synthDrummerFoleyType_Drummer__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 typedef synthDrummerFoleyType_Drummer__ctx_type_0 synthDrummerFoleyType_Drummer_noteOff_type;
 
@@ -649,6 +649,7 @@ typedef struct synthDrummerFoleyType_Notes__ctx_type_0 {
    int notes[128];
    int nb_notes;
    int last_notes[128];
+   uint8_t ignoreDuplicates;
 } synthDrummerFoleyType_Notes__ctx_type_0;
 
 typedef synthDrummerFoleyType_Notes__ctx_type_0 synthDrummerFoleyType_Notes_setPoly_type;
@@ -664,6 +665,17 @@ static_inline void synthDrummerFoleyType_Notes_setPoly(synthDrummerFoleyType_Not
    _ctx.poly = flag;
 };
 
+typedef synthDrummerFoleyType_Notes__ctx_type_0 synthDrummerFoleyType_Notes_setIgnoreDuplicates_type;
+
+static_inline void synthDrummerFoleyType_Notes_setIgnoreDuplicates_init(synthDrummerFoleyType_Notes__ctx_type_0 &_output_){
+   synthDrummerFoleyType_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummerFoleyType_Notes_setIgnoreDuplicates(synthDrummerFoleyType_Notes__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.ignoreDuplicates = flag;
+};
+
 typedef synthDrummerFoleyType_Notes__ctx_type_0 synthDrummerFoleyType_Notes_default_type;
 
 static_inline void synthDrummerFoleyType_Notes_default_init(synthDrummerFoleyType_Notes__ctx_type_0 &_output_){
@@ -673,7 +685,8 @@ static_inline void synthDrummerFoleyType_Notes_default_init(synthDrummerFoleyTyp
 
 static_inline void synthDrummerFoleyType_Notes_default(synthDrummerFoleyType_Notes__ctx_type_0 &_ctx){
    synthDrummerFoleyType_Notes_setPoly(_ctx,false);
-};
+   synthDrummerFoleyType_Notes_setIgnoreDuplicates(_ctx,false);
+}
 
 typedef synthDrummerFoleyType_Notes__ctx_type_0 synthDrummerFoleyType_Notes_nbNotes_type;
 
@@ -704,15 +717,6 @@ static_inline void synthDrummerFoleyType_Notes_lastNote_init(synthDrummerFoleyTy
 
 int synthDrummerFoleyType_Notes_lastNote(synthDrummerFoleyType_Notes__ctx_type_0 &_ctx);
 
-typedef synthDrummerFoleyType_Notes__ctx_type_0 synthDrummerFoleyType_Notes_noteOn_type;
-
-static_inline void synthDrummerFoleyType_Notes_noteOn_init(synthDrummerFoleyType_Notes__ctx_type_0 &_output_){
-   synthDrummerFoleyType_Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-uint8_t synthDrummerFoleyType_Notes_noteOn(synthDrummerFoleyType_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
-
 typedef synthDrummerFoleyType_Notes__ctx_type_0 synthDrummerFoleyType_Notes_noteOff_type;
 
 static_inline void synthDrummerFoleyType_Notes_noteOff_init(synthDrummerFoleyType_Notes__ctx_type_0 &_output_){
@@ -721,6 +725,15 @@ static_inline void synthDrummerFoleyType_Notes_noteOff_init(synthDrummerFoleyTyp
 }
 
 uint8_t synthDrummerFoleyType_Notes_noteOff(synthDrummerFoleyType_Notes__ctx_type_0 &_ctx, int note, int channel);
+
+typedef synthDrummerFoleyType_Notes__ctx_type_0 synthDrummerFoleyType_Notes_noteOn_type;
+
+static_inline void synthDrummerFoleyType_Notes_noteOn_init(synthDrummerFoleyType_Notes__ctx_type_0 &_output_){
+   synthDrummerFoleyType_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+uint8_t synthDrummerFoleyType_Notes_noteOn(synthDrummerFoleyType_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 typedef struct synthDrummerFoleyType_Voice__ctx_type_0 {
    synthDrummerFoleyType_Notes__ctx_type_0 voicesinactive;
