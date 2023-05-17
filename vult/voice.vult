@@ -306,6 +306,12 @@ and setSamplerate(newFs:real) {
 
 /* getter/setter passed down to synth, if supported */
 
+// information about current sustain (keep gate until released)
+// Note: do call setSustain(off) at some point to release notes!
+and synthSetSustain(flag: bool) {
+  _ =  poly:Poly.synthSetSustain(flag);
+}
+
 // Sampler.setLoop()
 and synthSetLoop(flag: bool) {
   _ =  poly:Poly.synthSetLoop(flag);

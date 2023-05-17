@@ -241,6 +241,8 @@ static_inline void synthSamplerPiano_Buffer_buffer(fix16_t (&oBuff)[256]){
 void synthSamplerPiano_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerPiano_Sampler__ctx_type_0 {
+   uint8_t sustaining;
+   uint8_t sustain;
    fix16_t step;
    int state;
    int size;
@@ -421,6 +423,15 @@ static_inline void synthSamplerPiano_Sampler_setLevel(synthSamplerPiano_Sampler_
    _ctx.level = newLevel;
 };
 
+typedef synthSamplerPiano_Sampler__ctx_type_0 synthSamplerPiano_Sampler_setSustain_type;
+
+static_inline void synthSamplerPiano_Sampler_setSustain_init(synthSamplerPiano_Sampler__ctx_type_0 &_output_){
+   synthSamplerPiano_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthSamplerPiano_Sampler_setSustain(synthSamplerPiano_Sampler__ctx_type_0 &_ctx, uint8_t flag);
+
 typedef synthSamplerPiano_Sampler__ctx_type_0 synthSamplerPiano_Sampler_noteOn_type;
 
 static_inline void synthSamplerPiano_Sampler_noteOn_init(synthSamplerPiano_Sampler__ctx_type_0 &_output_){
@@ -589,6 +600,20 @@ static_inline void synthSamplerPiano_Poly_setSamplerate(synthSamplerPiano_Poly__
    synthSamplerPiano_Sampler_setSamplerate(_ctx.voice1,fs);
    synthSamplerPiano_Sampler_setSamplerate(_ctx.voice2,fs);
    synthSamplerPiano_Sampler_setSamplerate(_ctx.voice3,fs);
+}
+
+typedef synthSamplerPiano_Poly__ctx_type_0 synthSamplerPiano_Poly_synthSetSustain_type;
+
+static_inline void synthSamplerPiano_Poly_synthSetSustain_init(synthSamplerPiano_Poly__ctx_type_0 &_output_){
+   synthSamplerPiano_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerPiano_Poly_synthSetSustain(synthSamplerPiano_Poly__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerPiano_Sampler_setSustain(_ctx.voice0,flag);
+   synthSamplerPiano_Sampler_setSustain(_ctx.voice1,flag);
+   synthSamplerPiano_Sampler_setSustain(_ctx.voice2,flag);
+   synthSamplerPiano_Sampler_setSustain(_ctx.voice3,flag);
 }
 
 typedef synthSamplerPiano_Poly__ctx_type_0 synthSamplerPiano_Poly_synthSetLoop_type;
@@ -948,6 +973,17 @@ static_inline void synthSamplerPiano_Voice_setSamplerate_init(synthSamplerPiano_
 }
 
 void synthSamplerPiano_Voice_setSamplerate(synthSamplerPiano_Voice__ctx_type_0 &_ctx, fix16_t newFs);
+
+typedef synthSamplerPiano_Voice__ctx_type_0 synthSamplerPiano_Voice_synthSetSustain_type;
+
+static_inline void synthSamplerPiano_Voice_synthSetSustain_init(synthSamplerPiano_Voice__ctx_type_0 &_output_){
+   synthSamplerPiano_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerPiano_Voice_synthSetSustain(synthSamplerPiano_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerPiano_Poly_synthSetSustain(_ctx.poly,flag);
+};
 
 typedef synthSamplerPiano_Voice__ctx_type_0 synthSamplerPiano_Voice_synthSetLoop_type;
 

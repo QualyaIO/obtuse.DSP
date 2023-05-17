@@ -241,6 +241,8 @@ static_inline void synthSamplerShootingStar_Buffer_buffer(fix16_t (&oBuff)[256])
 void synthSamplerShootingStar_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerShootingStar_Sampler__ctx_type_0 {
+   uint8_t sustaining;
+   uint8_t sustain;
    fix16_t step;
    int state;
    int size;
@@ -421,6 +423,15 @@ static_inline void synthSamplerShootingStar_Sampler_setLevel(synthSamplerShootin
    _ctx.level = newLevel;
 };
 
+typedef synthSamplerShootingStar_Sampler__ctx_type_0 synthSamplerShootingStar_Sampler_setSustain_type;
+
+static_inline void synthSamplerShootingStar_Sampler_setSustain_init(synthSamplerShootingStar_Sampler__ctx_type_0 &_output_){
+   synthSamplerShootingStar_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthSamplerShootingStar_Sampler_setSustain(synthSamplerShootingStar_Sampler__ctx_type_0 &_ctx, uint8_t flag);
+
 typedef synthSamplerShootingStar_Sampler__ctx_type_0 synthSamplerShootingStar_Sampler_noteOn_type;
 
 static_inline void synthSamplerShootingStar_Sampler_noteOn_init(synthSamplerShootingStar_Sampler__ctx_type_0 &_output_){
@@ -589,6 +600,20 @@ static_inline void synthSamplerShootingStar_Poly_setSamplerate(synthSamplerShoot
    synthSamplerShootingStar_Sampler_setSamplerate(_ctx.voice1,fs);
    synthSamplerShootingStar_Sampler_setSamplerate(_ctx.voice2,fs);
    synthSamplerShootingStar_Sampler_setSamplerate(_ctx.voice3,fs);
+}
+
+typedef synthSamplerShootingStar_Poly__ctx_type_0 synthSamplerShootingStar_Poly_synthSetSustain_type;
+
+static_inline void synthSamplerShootingStar_Poly_synthSetSustain_init(synthSamplerShootingStar_Poly__ctx_type_0 &_output_){
+   synthSamplerShootingStar_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerShootingStar_Poly_synthSetSustain(synthSamplerShootingStar_Poly__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerShootingStar_Sampler_setSustain(_ctx.voice0,flag);
+   synthSamplerShootingStar_Sampler_setSustain(_ctx.voice1,flag);
+   synthSamplerShootingStar_Sampler_setSustain(_ctx.voice2,flag);
+   synthSamplerShootingStar_Sampler_setSustain(_ctx.voice3,flag);
 }
 
 typedef synthSamplerShootingStar_Poly__ctx_type_0 synthSamplerShootingStar_Poly_synthSetLoop_type;
@@ -948,6 +973,17 @@ static_inline void synthSamplerShootingStar_Voice_setSamplerate_init(synthSample
 }
 
 void synthSamplerShootingStar_Voice_setSamplerate(synthSamplerShootingStar_Voice__ctx_type_0 &_ctx, fix16_t newFs);
+
+typedef synthSamplerShootingStar_Voice__ctx_type_0 synthSamplerShootingStar_Voice_synthSetSustain_type;
+
+static_inline void synthSamplerShootingStar_Voice_synthSetSustain_init(synthSamplerShootingStar_Voice__ctx_type_0 &_output_){
+   synthSamplerShootingStar_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerShootingStar_Voice_synthSetSustain(synthSamplerShootingStar_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerShootingStar_Poly_synthSetSustain(_ctx.poly,flag);
+};
 
 typedef synthSamplerShootingStar_Voice__ctx_type_0 synthSamplerShootingStar_Voice_synthSetLoop_type;
 

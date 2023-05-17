@@ -235,6 +235,16 @@ static_inline void synthDrummer_Drummer_setLevel(synthDrummer_Drummer__ctx_type_
    _ctx.level = newLevel;
 };
 
+typedef synthDrummer_Drummer__ctx_type_0 synthDrummer_Drummer_setSustain_type;
+
+static_inline void synthDrummer_Drummer_setSustain_init(synthDrummer_Drummer__ctx_type_0 &_output_){
+   synthDrummer_Drummer__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Drummer_setSustain(synthDrummer_Drummer__ctx_type_0 &_ctx, uint8_t flag){
+}
+
 typedef synthDrummer_Drummer__ctx_type_0 synthDrummer_Drummer_noteOn_type;
 
 static_inline void synthDrummer_Drummer_noteOn_init(synthDrummer_Drummer__ctx_type_0 &_output_){
@@ -393,6 +403,20 @@ static_inline void synthDrummer_Poly_setSamplerate(synthDrummer_Poly__ctx_type_0
    synthDrummer_Drummer_setSamplerate(_ctx.voice1,fs);
    synthDrummer_Drummer_setSamplerate(_ctx.voice2,fs);
    synthDrummer_Drummer_setSamplerate(_ctx.voice3,fs);
+}
+
+typedef synthDrummer_Poly__ctx_type_0 synthDrummer_Poly_synthSetSustain_type;
+
+static_inline void synthDrummer_Poly_synthSetSustain_init(synthDrummer_Poly__ctx_type_0 &_output_){
+   synthDrummer_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Poly_synthSetSustain(synthDrummer_Poly__ctx_type_0 &_ctx, uint8_t flag){
+   synthDrummer_Drummer_setSustain(_ctx.voice0,flag);
+   synthDrummer_Drummer_setSustain(_ctx.voice1,flag);
+   synthDrummer_Drummer_setSustain(_ctx.voice2,flag);
+   synthDrummer_Drummer_setSustain(_ctx.voice3,flag);
 }
 
 typedef synthDrummer_Poly__ctx_type_0 synthDrummer_Poly_synthSetLoop_type;
@@ -831,6 +855,17 @@ static_inline void synthDrummer_Voice_setSamplerate_init(synthDrummer_Voice__ctx
 }
 
 void synthDrummer_Voice_setSamplerate(synthDrummer_Voice__ctx_type_0 &_ctx, fix16_t newFs);
+
+typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_synthSetSustain_type;
+
+static_inline void synthDrummer_Voice_synthSetSustain_init(synthDrummer_Voice__ctx_type_0 &_output_){
+   synthDrummer_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Voice_synthSetSustain(synthDrummer_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   synthDrummer_Poly_synthSetSustain(_ctx.poly,flag);
+};
 
 typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_synthSetLoop_type;
 

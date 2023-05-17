@@ -241,6 +241,8 @@ static_inline void synthSamplerCosmos_Buffer_buffer(fix16_t (&oBuff)[256]){
 void synthSamplerCosmos_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerCosmos_Sampler__ctx_type_0 {
+   uint8_t sustaining;
+   uint8_t sustain;
    fix16_t step;
    int state;
    int size;
@@ -421,6 +423,15 @@ static_inline void synthSamplerCosmos_Sampler_setLevel(synthSamplerCosmos_Sample
    _ctx.level = newLevel;
 };
 
+typedef synthSamplerCosmos_Sampler__ctx_type_0 synthSamplerCosmos_Sampler_setSustain_type;
+
+static_inline void synthSamplerCosmos_Sampler_setSustain_init(synthSamplerCosmos_Sampler__ctx_type_0 &_output_){
+   synthSamplerCosmos_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthSamplerCosmos_Sampler_setSustain(synthSamplerCosmos_Sampler__ctx_type_0 &_ctx, uint8_t flag);
+
 typedef synthSamplerCosmos_Sampler__ctx_type_0 synthSamplerCosmos_Sampler_noteOn_type;
 
 static_inline void synthSamplerCosmos_Sampler_noteOn_init(synthSamplerCosmos_Sampler__ctx_type_0 &_output_){
@@ -589,6 +600,20 @@ static_inline void synthSamplerCosmos_Poly_setSamplerate(synthSamplerCosmos_Poly
    synthSamplerCosmos_Sampler_setSamplerate(_ctx.voice1,fs);
    synthSamplerCosmos_Sampler_setSamplerate(_ctx.voice2,fs);
    synthSamplerCosmos_Sampler_setSamplerate(_ctx.voice3,fs);
+}
+
+typedef synthSamplerCosmos_Poly__ctx_type_0 synthSamplerCosmos_Poly_synthSetSustain_type;
+
+static_inline void synthSamplerCosmos_Poly_synthSetSustain_init(synthSamplerCosmos_Poly__ctx_type_0 &_output_){
+   synthSamplerCosmos_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerCosmos_Poly_synthSetSustain(synthSamplerCosmos_Poly__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerCosmos_Sampler_setSustain(_ctx.voice0,flag);
+   synthSamplerCosmos_Sampler_setSustain(_ctx.voice1,flag);
+   synthSamplerCosmos_Sampler_setSustain(_ctx.voice2,flag);
+   synthSamplerCosmos_Sampler_setSustain(_ctx.voice3,flag);
 }
 
 typedef synthSamplerCosmos_Poly__ctx_type_0 synthSamplerCosmos_Poly_synthSetLoop_type;
@@ -948,6 +973,17 @@ static_inline void synthSamplerCosmos_Voice_setSamplerate_init(synthSamplerCosmo
 }
 
 void synthSamplerCosmos_Voice_setSamplerate(synthSamplerCosmos_Voice__ctx_type_0 &_ctx, fix16_t newFs);
+
+typedef synthSamplerCosmos_Voice__ctx_type_0 synthSamplerCosmos_Voice_synthSetSustain_type;
+
+static_inline void synthSamplerCosmos_Voice_synthSetSustain_init(synthSamplerCosmos_Voice__ctx_type_0 &_output_){
+   synthSamplerCosmos_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerCosmos_Voice_synthSetSustain(synthSamplerCosmos_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerCosmos_Poly_synthSetSustain(_ctx.poly,flag);
+};
 
 typedef synthSamplerCosmos_Voice__ctx_type_0 synthSamplerCosmos_Voice_synthSetLoop_type;
 

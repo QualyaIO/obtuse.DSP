@@ -84,6 +84,15 @@ and setSamplerate(fs:real) {
 
 /* getter/setter passed down to synth, if supported */
 
+// information about current sustain (keep gate until released)
+// Note: do call setSustain(off) at some point to release notes!
+and synthSetSustain(flag: bool) {
+  _ = voice0:FM.setSustain(flag);
+  _ = voice1:FM.setSustain(flag);
+  _ = voice2:FM.setSustain(flag);
+  _ = voice3:FM.setSustain(flag);
+}
+
 // Sampler.setLoop()
 and synthSetLoop(flag: bool) {
 }

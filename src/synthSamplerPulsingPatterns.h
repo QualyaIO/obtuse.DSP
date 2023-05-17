@@ -241,6 +241,8 @@ static_inline void synthSamplerPulsingPatterns_Buffer_buffer(fix16_t (&oBuff)[25
 void synthSamplerPulsingPatterns_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerPulsingPatterns_Sampler__ctx_type_0 {
+   uint8_t sustaining;
+   uint8_t sustain;
    fix16_t step;
    int state;
    int size;
@@ -421,6 +423,15 @@ static_inline void synthSamplerPulsingPatterns_Sampler_setLevel(synthSamplerPuls
    _ctx.level = newLevel;
 };
 
+typedef synthSamplerPulsingPatterns_Sampler__ctx_type_0 synthSamplerPulsingPatterns_Sampler_setSustain_type;
+
+static_inline void synthSamplerPulsingPatterns_Sampler_setSustain_init(synthSamplerPulsingPatterns_Sampler__ctx_type_0 &_output_){
+   synthSamplerPulsingPatterns_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthSamplerPulsingPatterns_Sampler_setSustain(synthSamplerPulsingPatterns_Sampler__ctx_type_0 &_ctx, uint8_t flag);
+
 typedef synthSamplerPulsingPatterns_Sampler__ctx_type_0 synthSamplerPulsingPatterns_Sampler_noteOn_type;
 
 static_inline void synthSamplerPulsingPatterns_Sampler_noteOn_init(synthSamplerPulsingPatterns_Sampler__ctx_type_0 &_output_){
@@ -589,6 +600,20 @@ static_inline void synthSamplerPulsingPatterns_Poly_setSamplerate(synthSamplerPu
    synthSamplerPulsingPatterns_Sampler_setSamplerate(_ctx.voice1,fs);
    synthSamplerPulsingPatterns_Sampler_setSamplerate(_ctx.voice2,fs);
    synthSamplerPulsingPatterns_Sampler_setSamplerate(_ctx.voice3,fs);
+}
+
+typedef synthSamplerPulsingPatterns_Poly__ctx_type_0 synthSamplerPulsingPatterns_Poly_synthSetSustain_type;
+
+static_inline void synthSamplerPulsingPatterns_Poly_synthSetSustain_init(synthSamplerPulsingPatterns_Poly__ctx_type_0 &_output_){
+   synthSamplerPulsingPatterns_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerPulsingPatterns_Poly_synthSetSustain(synthSamplerPulsingPatterns_Poly__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerPulsingPatterns_Sampler_setSustain(_ctx.voice0,flag);
+   synthSamplerPulsingPatterns_Sampler_setSustain(_ctx.voice1,flag);
+   synthSamplerPulsingPatterns_Sampler_setSustain(_ctx.voice2,flag);
+   synthSamplerPulsingPatterns_Sampler_setSustain(_ctx.voice3,flag);
 }
 
 typedef synthSamplerPulsingPatterns_Poly__ctx_type_0 synthSamplerPulsingPatterns_Poly_synthSetLoop_type;
@@ -948,6 +973,17 @@ static_inline void synthSamplerPulsingPatterns_Voice_setSamplerate_init(synthSam
 }
 
 void synthSamplerPulsingPatterns_Voice_setSamplerate(synthSamplerPulsingPatterns_Voice__ctx_type_0 &_ctx, fix16_t newFs);
+
+typedef synthSamplerPulsingPatterns_Voice__ctx_type_0 synthSamplerPulsingPatterns_Voice_synthSetSustain_type;
+
+static_inline void synthSamplerPulsingPatterns_Voice_synthSetSustain_init(synthSamplerPulsingPatterns_Voice__ctx_type_0 &_output_){
+   synthSamplerPulsingPatterns_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerPulsingPatterns_Voice_synthSetSustain(synthSamplerPulsingPatterns_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerPulsingPatterns_Poly_synthSetSustain(_ctx.poly,flag);
+};
 
 typedef synthSamplerPulsingPatterns_Voice__ctx_type_0 synthSamplerPulsingPatterns_Voice_synthSetLoop_type;
 

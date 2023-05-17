@@ -241,6 +241,8 @@ static_inline void synthSamplerClarinet_Buffer_buffer(fix16_t (&oBuff)[256]){
 void synthSamplerClarinet_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerClarinet_Sampler__ctx_type_0 {
+   uint8_t sustaining;
+   uint8_t sustain;
    fix16_t step;
    int state;
    int size;
@@ -421,6 +423,15 @@ static_inline void synthSamplerClarinet_Sampler_setLevel(synthSamplerClarinet_Sa
    _ctx.level = newLevel;
 };
 
+typedef synthSamplerClarinet_Sampler__ctx_type_0 synthSamplerClarinet_Sampler_setSustain_type;
+
+static_inline void synthSamplerClarinet_Sampler_setSustain_init(synthSamplerClarinet_Sampler__ctx_type_0 &_output_){
+   synthSamplerClarinet_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthSamplerClarinet_Sampler_setSustain(synthSamplerClarinet_Sampler__ctx_type_0 &_ctx, uint8_t flag);
+
 typedef synthSamplerClarinet_Sampler__ctx_type_0 synthSamplerClarinet_Sampler_noteOn_type;
 
 static_inline void synthSamplerClarinet_Sampler_noteOn_init(synthSamplerClarinet_Sampler__ctx_type_0 &_output_){
@@ -589,6 +600,20 @@ static_inline void synthSamplerClarinet_Poly_setSamplerate(synthSamplerClarinet_
    synthSamplerClarinet_Sampler_setSamplerate(_ctx.voice1,fs);
    synthSamplerClarinet_Sampler_setSamplerate(_ctx.voice2,fs);
    synthSamplerClarinet_Sampler_setSamplerate(_ctx.voice3,fs);
+}
+
+typedef synthSamplerClarinet_Poly__ctx_type_0 synthSamplerClarinet_Poly_synthSetSustain_type;
+
+static_inline void synthSamplerClarinet_Poly_synthSetSustain_init(synthSamplerClarinet_Poly__ctx_type_0 &_output_){
+   synthSamplerClarinet_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerClarinet_Poly_synthSetSustain(synthSamplerClarinet_Poly__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerClarinet_Sampler_setSustain(_ctx.voice0,flag);
+   synthSamplerClarinet_Sampler_setSustain(_ctx.voice1,flag);
+   synthSamplerClarinet_Sampler_setSustain(_ctx.voice2,flag);
+   synthSamplerClarinet_Sampler_setSustain(_ctx.voice3,flag);
 }
 
 typedef synthSamplerClarinet_Poly__ctx_type_0 synthSamplerClarinet_Poly_synthSetLoop_type;
@@ -948,6 +973,17 @@ static_inline void synthSamplerClarinet_Voice_setSamplerate_init(synthSamplerCla
 }
 
 void synthSamplerClarinet_Voice_setSamplerate(synthSamplerClarinet_Voice__ctx_type_0 &_ctx, fix16_t newFs);
+
+typedef synthSamplerClarinet_Voice__ctx_type_0 synthSamplerClarinet_Voice_synthSetSustain_type;
+
+static_inline void synthSamplerClarinet_Voice_synthSetSustain_init(synthSamplerClarinet_Voice__ctx_type_0 &_output_){
+   synthSamplerClarinet_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerClarinet_Voice_synthSetSustain(synthSamplerClarinet_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerClarinet_Poly_synthSetSustain(_ctx.poly,flag);
+};
 
 typedef synthSamplerClarinet_Voice__ctx_type_0 synthSamplerClarinet_Voice_synthSetLoop_type;
 

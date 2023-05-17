@@ -47,6 +47,7 @@ Features
 - clock: a version which handle time signature and different division for swing
 - gate: accommodate several noteOn (option to send duplicate noteOn ?)
 - synth: in case of monophonic option to retrigger for each note (already change velocity)?
+- synth: implement sostenuto pedal?
 
 Vult
 

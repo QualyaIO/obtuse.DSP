@@ -107,6 +107,8 @@ void synthSamplerShootingStar_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
 
 void synthSamplerShootingStar_Sampler__ctx_type_0_init(synthSamplerShootingStar_Sampler__ctx_type_0 &_output_){
    synthSamplerShootingStar_Sampler__ctx_type_0 &_ctx = _output_;
+   _ctx.sustaining = false;
+   _ctx.sustain = false;
    _ctx.step = 0x0 /* 0.000000 */;
    _ctx.state = 0;
    _ctx.size = 0;
@@ -149,7 +151,7 @@ fix16_t synthSamplerShootingStar_Sampler_process(synthSamplerShootingStar_Sample
       }
       else
       {
-         if((_ctx.state == 1) && _ctx.gate && _ctx.loopy && _ctx.crossfade && (idx >= (_ctx.loopE + (- (256 / 2)))) && (idx <= (_ctx.loopE + (256 / 2)))){
+         if((_ctx.state == 1) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && _ctx.crossfade && (idx >= (_ctx.loopE + (- (256 / 2)))) && (idx <= (_ctx.loopE + (256 / 2)))){
             _ctx.state = 2;
             idx = (idx + (- _ctx.loopE) + (256 / 2));
             _ctx.posBase = idx;
@@ -157,7 +159,7 @@ fix16_t synthSamplerShootingStar_Sampler_process(synthSamplerShootingStar_Sample
          }
          else
          {
-            if((_ctx.state == 1) && _ctx.gate && _ctx.loopy && (idx >= _ctx.loopE)){
+            if((_ctx.state == 1) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && (idx >= _ctx.loopE)){
                idx = (_ctx.loopS + idx + (- _ctx.loopE));
                _ctx.posBase = idx;
                _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
@@ -167,7 +169,7 @@ fix16_t synthSamplerShootingStar_Sampler_process(synthSamplerShootingStar_Sample
             idx = (_ctx.loopS + idx + (- (256 / 2)));
             _ctx.posBase = idx;
             _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
-            if(_ctx.gate){
+            if(_ctx.gate || _ctx.sustaining){
                _ctx.state = 1;
             }
             else
@@ -212,7 +214,7 @@ void synthSamplerShootingStar_Sampler_process_bufferTo(synthSamplerShootingStar_
          }
          else
          {
-            if((_ctx.state == 1) && _ctx.gate && _ctx.loopy && _ctx.crossfade && (idx >= (_ctx.loopE + (- (256 / 2)))) && (idx <= (_ctx.loopE + (256 / 2)))){
+            if((_ctx.state == 1) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && _ctx.crossfade && (idx >= (_ctx.loopE + (- (256 / 2)))) && (idx <= (_ctx.loopE + (256 / 2)))){
                _ctx.state = 2;
                idx = (idx + (- _ctx.loopE) + (256 / 2));
                _ctx.posBase = idx;
@@ -220,7 +222,7 @@ void synthSamplerShootingStar_Sampler_process_bufferTo(synthSamplerShootingStar_
             }
             else
             {
-               if((_ctx.state == 1) && _ctx.gate && _ctx.loopy && (idx >= _ctx.loopE)){
+               if((_ctx.state == 1) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && (idx >= _ctx.loopE)){
                   idx = (_ctx.loopS + idx + (- _ctx.loopE));
                   _ctx.posBase = idx;
                   _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
@@ -230,7 +232,7 @@ void synthSamplerShootingStar_Sampler_process_bufferTo(synthSamplerShootingStar_
                idx = (_ctx.loopS + idx + (- (256 / 2)));
                _ctx.posBase = idx;
                _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
-               if(_ctx.gate){
+               if(_ctx.gate || _ctx.sustaining){
                   _ctx.state = 1;
                }
                else
@@ -295,6 +297,16 @@ void synthSamplerShootingStar_Sampler_setNote(synthSamplerShootingStar_Sampler__
    synthSamplerShootingStar_Sampler_updateStep(_ctx);
 }
 
+void synthSamplerShootingStar_Sampler_setSustain(synthSamplerShootingStar_Sampler__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.sustain = flag;
+   if(_ctx.gate && _ctx.sustain){
+      _ctx.sustaining = true;
+   }
+   if(bool_not(_ctx.sustain)){
+      _ctx.sustaining = false;
+   }
+}
+
 uint8_t synthSamplerShootingStar_Sampler_noteOn(synthSamplerShootingStar_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel){
    note = int_clip(note,0,127);
    uint8_t isNew;
@@ -302,6 +314,9 @@ uint8_t synthSamplerShootingStar_Sampler_noteOn(synthSamplerShootingStar_Sampler
    synthSamplerShootingStar_Sampler_setNote(_ctx,note);
    synthSamplerShootingStar_Sampler_setLevel(_ctx,synthSamplerShootingStar_Util_velocityToLevel(velocity));
    _ctx.gate = true;
+   if(_ctx.sustain){
+      _ctx.sustaining = true;
+   }
    _ctx.posBase = 0;
    _ctx.pos = 0x0 /* 0.000000 */;
    _ctx.state = 1;

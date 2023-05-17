@@ -241,6 +241,8 @@ static_inline void synthSamplerPowerFifths_Buffer_buffer(fix16_t (&oBuff)[256]){
 void synthSamplerPowerFifths_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerPowerFifths_Sampler__ctx_type_0 {
+   uint8_t sustaining;
+   uint8_t sustain;
    fix16_t step;
    int state;
    int size;
@@ -421,6 +423,15 @@ static_inline void synthSamplerPowerFifths_Sampler_setLevel(synthSamplerPowerFif
    _ctx.level = newLevel;
 };
 
+typedef synthSamplerPowerFifths_Sampler__ctx_type_0 synthSamplerPowerFifths_Sampler_setSustain_type;
+
+static_inline void synthSamplerPowerFifths_Sampler_setSustain_init(synthSamplerPowerFifths_Sampler__ctx_type_0 &_output_){
+   synthSamplerPowerFifths_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthSamplerPowerFifths_Sampler_setSustain(synthSamplerPowerFifths_Sampler__ctx_type_0 &_ctx, uint8_t flag);
+
 typedef synthSamplerPowerFifths_Sampler__ctx_type_0 synthSamplerPowerFifths_Sampler_noteOn_type;
 
 static_inline void synthSamplerPowerFifths_Sampler_noteOn_init(synthSamplerPowerFifths_Sampler__ctx_type_0 &_output_){
@@ -589,6 +600,20 @@ static_inline void synthSamplerPowerFifths_Poly_setSamplerate(synthSamplerPowerF
    synthSamplerPowerFifths_Sampler_setSamplerate(_ctx.voice1,fs);
    synthSamplerPowerFifths_Sampler_setSamplerate(_ctx.voice2,fs);
    synthSamplerPowerFifths_Sampler_setSamplerate(_ctx.voice3,fs);
+}
+
+typedef synthSamplerPowerFifths_Poly__ctx_type_0 synthSamplerPowerFifths_Poly_synthSetSustain_type;
+
+static_inline void synthSamplerPowerFifths_Poly_synthSetSustain_init(synthSamplerPowerFifths_Poly__ctx_type_0 &_output_){
+   synthSamplerPowerFifths_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerPowerFifths_Poly_synthSetSustain(synthSamplerPowerFifths_Poly__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerPowerFifths_Sampler_setSustain(_ctx.voice0,flag);
+   synthSamplerPowerFifths_Sampler_setSustain(_ctx.voice1,flag);
+   synthSamplerPowerFifths_Sampler_setSustain(_ctx.voice2,flag);
+   synthSamplerPowerFifths_Sampler_setSustain(_ctx.voice3,flag);
 }
 
 typedef synthSamplerPowerFifths_Poly__ctx_type_0 synthSamplerPowerFifths_Poly_synthSetLoop_type;
@@ -948,6 +973,17 @@ static_inline void synthSamplerPowerFifths_Voice_setSamplerate_init(synthSampler
 }
 
 void synthSamplerPowerFifths_Voice_setSamplerate(synthSamplerPowerFifths_Voice__ctx_type_0 &_ctx, fix16_t newFs);
+
+typedef synthSamplerPowerFifths_Voice__ctx_type_0 synthSamplerPowerFifths_Voice_synthSetSustain_type;
+
+static_inline void synthSamplerPowerFifths_Voice_synthSetSustain_init(synthSamplerPowerFifths_Voice__ctx_type_0 &_output_){
+   synthSamplerPowerFifths_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerPowerFifths_Voice_synthSetSustain(synthSamplerPowerFifths_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerPowerFifths_Poly_synthSetSustain(_ctx.poly,flag);
+};
 
 typedef synthSamplerPowerFifths_Voice__ctx_type_0 synthSamplerPowerFifths_Voice_synthSetLoop_type;
 

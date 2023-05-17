@@ -1,5 +1,5 @@
 
-// polyvoice Sampler. To be used with Voice
+// polyvoice Drummer. To be used with Voice
 
 
 // retrieve sample from a specific voice
@@ -81,6 +81,15 @@ and setSamplerate(fs:real) {
 }
 
 /* getter/setter passed down to synth, if supported */
+
+// information about current sustain (keep gate until released)
+// For Drummer there is no gate nor noteOff at the moment, will not have any effect
+and synthSetSustain(flag: bool) {
+  _ = voice0:Drummer.setSustain(flag);
+  _ = voice1:Drummer.setSustain(flag);
+  _ = voice2:Drummer.setSustain(flag);
+  _ = voice3:Drummer.setSustain(flag);
+}
 
 // Sampler.setLoop()
 and synthSetLoop(flag: bool) {

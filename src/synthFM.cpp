@@ -562,6 +562,8 @@ void synthFM_ADSR_config(synthFM_ADSR__ctx_type_5 &_ctx, fix16_t newA, fix16_t n
 
 void synthFM_FM__ctx_type_0_init(synthFM_FM__ctx_type_0 &_output_){
    synthFM_FM__ctx_type_0 &_ctx = _output_;
+   _ctx.sustaining = false;
+   _ctx.sustain = false;
    synthFM_Notes__ctx_type_0_init(_ctx.playingnotes);
    _ctx.n = 0;
    synthFM_ADSR__ctx_type_5_init(_ctx.modulatoradsr);
@@ -605,8 +607,8 @@ fix16_t synthFM_FM_process(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetable_mod
    fix16_t carrier_val;
    carrier_val = 0x0 /* 0.000000 */;
    if(update_env){
-      _ctx.carrier_env = fix_mul(_ctx.level,synthFM_ADSR_process(_ctx.carrieradsr,_ctx.gate));
-      _ctx.modulator_env = synthFM_ADSR_process(_ctx.modulatoradsr,_ctx.gate);
+      _ctx.carrier_env = fix_mul(_ctx.level,synthFM_ADSR_process(_ctx.carrieradsr,(_ctx.gate || _ctx.sustaining)));
+      _ctx.modulator_env = synthFM_ADSR_process(_ctx.modulatoradsr,(_ctx.gate || _ctx.sustaining));
    }
    if(_ctx.carrier_env > 0x0 /* 0.000000 */){
       if(_ctx.modulator_target_level){
@@ -677,8 +679,8 @@ void synthFM_FM_process_bufferTo(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetab
       int nb_env;
       nb_env = ((_ctx.n + nb) / _ctx.env_decimation_factor);
       if(nb_env > 0){
-         env_carrier_idle = synthFM_ADSR_process_bufferTo(_ctx.carrieradsr,_ctx.gate,nb_env,_ctx.buffer_carrier_env_short);
-         env_modulator_idle = synthFM_ADSR_process_bufferTo(_ctx.modulatoradsr,_ctx.gate,nb_env,_ctx.buffer_modulator_env_short);
+         env_carrier_idle = synthFM_ADSR_process_bufferTo(_ctx.carrieradsr,(_ctx.gate || _ctx.sustaining),nb_env,_ctx.buffer_carrier_env_short);
+         env_modulator_idle = synthFM_ADSR_process_bufferTo(_ctx.modulatoradsr,(_ctx.gate || _ctx.sustaining),nb_env,_ctx.buffer_modulator_env_short);
          int i;
          i = 0;
          int i_env;
@@ -698,8 +700,8 @@ void synthFM_FM_process_bufferTo(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetab
    }
    else
    {
-      env_carrier_idle = synthFM_ADSR_process_bufferTo(_ctx.carrieradsr,_ctx.gate,nb,_ctx.buffer_carrier_env);
-      env_modulator_idle = synthFM_ADSR_process_bufferTo(_ctx.modulatoradsr,_ctx.gate,nb,_ctx.buffer_modulator_env);
+      env_carrier_idle = synthFM_ADSR_process_bufferTo(_ctx.carrieradsr,(_ctx.gate || _ctx.sustaining),nb,_ctx.buffer_carrier_env);
+      env_modulator_idle = synthFM_ADSR_process_bufferTo(_ctx.modulatoradsr,(_ctx.gate || _ctx.sustaining),nb,_ctx.buffer_modulator_env);
    }
    if(env_carrier_idle){
       synthFM_OSC_resetPhase(_ctx.carrier);
@@ -755,6 +757,16 @@ void synthFM_FM_setSamplerate(synthFM_FM__ctx_type_0 &_ctx, fix16_t newFs){
    synthFM_ADSR_setSamplerate(_ctx.modulatoradsr,ADSR_fs);
 }
 
+void synthFM_FM_setSustain(synthFM_FM__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.sustain = flag;
+   if(_ctx.gate && _ctx.sustain){
+      _ctx.sustaining = true;
+   }
+   if(bool_not(_ctx.sustain)){
+      _ctx.sustaining = false;
+   }
+}
+
 uint8_t synthFM_FM_noteOn(synthFM_FM__ctx_type_0 &_ctx, int note, int velocity, int channel){
    note = int_clip(note,0,127);
    int prevNote;
@@ -764,6 +776,9 @@ uint8_t synthFM_FM_noteOn(synthFM_FM__ctx_type_0 &_ctx, int note, int velocity, 
    synthFM_FM_setFrequency(_ctx,synthFM_Util_noteToFrequency(note));
    synthFM_FM_setLevel(_ctx,synthFM_Util_velocityToLevel(velocity));
    _ctx.gate = true;
+   if(_ctx.sustain){
+      _ctx.sustaining = true;
+   }
    if((note == prevNote) && bool_not(isNew)){
       synthFM_ADSR_retrig(_ctx.carrieradsr);
       synthFM_ADSR_retrig(_ctx.modulatoradsr);

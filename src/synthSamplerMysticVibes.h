@@ -241,6 +241,8 @@ static_inline void synthSamplerMysticVibes_Buffer_buffer(fix16_t (&oBuff)[256]){
 void synthSamplerMysticVibes_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerMysticVibes_Sampler__ctx_type_0 {
+   uint8_t sustaining;
+   uint8_t sustain;
    fix16_t step;
    int state;
    int size;
@@ -421,6 +423,15 @@ static_inline void synthSamplerMysticVibes_Sampler_setLevel(synthSamplerMysticVi
    _ctx.level = newLevel;
 };
 
+typedef synthSamplerMysticVibes_Sampler__ctx_type_0 synthSamplerMysticVibes_Sampler_setSustain_type;
+
+static_inline void synthSamplerMysticVibes_Sampler_setSustain_init(synthSamplerMysticVibes_Sampler__ctx_type_0 &_output_){
+   synthSamplerMysticVibes_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthSamplerMysticVibes_Sampler_setSustain(synthSamplerMysticVibes_Sampler__ctx_type_0 &_ctx, uint8_t flag);
+
 typedef synthSamplerMysticVibes_Sampler__ctx_type_0 synthSamplerMysticVibes_Sampler_noteOn_type;
 
 static_inline void synthSamplerMysticVibes_Sampler_noteOn_init(synthSamplerMysticVibes_Sampler__ctx_type_0 &_output_){
@@ -589,6 +600,20 @@ static_inline void synthSamplerMysticVibes_Poly_setSamplerate(synthSamplerMystic
    synthSamplerMysticVibes_Sampler_setSamplerate(_ctx.voice1,fs);
    synthSamplerMysticVibes_Sampler_setSamplerate(_ctx.voice2,fs);
    synthSamplerMysticVibes_Sampler_setSamplerate(_ctx.voice3,fs);
+}
+
+typedef synthSamplerMysticVibes_Poly__ctx_type_0 synthSamplerMysticVibes_Poly_synthSetSustain_type;
+
+static_inline void synthSamplerMysticVibes_Poly_synthSetSustain_init(synthSamplerMysticVibes_Poly__ctx_type_0 &_output_){
+   synthSamplerMysticVibes_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerMysticVibes_Poly_synthSetSustain(synthSamplerMysticVibes_Poly__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerMysticVibes_Sampler_setSustain(_ctx.voice0,flag);
+   synthSamplerMysticVibes_Sampler_setSustain(_ctx.voice1,flag);
+   synthSamplerMysticVibes_Sampler_setSustain(_ctx.voice2,flag);
+   synthSamplerMysticVibes_Sampler_setSustain(_ctx.voice3,flag);
 }
 
 typedef synthSamplerMysticVibes_Poly__ctx_type_0 synthSamplerMysticVibes_Poly_synthSetLoop_type;
@@ -948,6 +973,17 @@ static_inline void synthSamplerMysticVibes_Voice_setSamplerate_init(synthSampler
 }
 
 void synthSamplerMysticVibes_Voice_setSamplerate(synthSamplerMysticVibes_Voice__ctx_type_0 &_ctx, fix16_t newFs);
+
+typedef synthSamplerMysticVibes_Voice__ctx_type_0 synthSamplerMysticVibes_Voice_synthSetSustain_type;
+
+static_inline void synthSamplerMysticVibes_Voice_synthSetSustain_init(synthSamplerMysticVibes_Voice__ctx_type_0 &_output_){
+   synthSamplerMysticVibes_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerMysticVibes_Voice_synthSetSustain(synthSamplerMysticVibes_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerMysticVibes_Poly_synthSetSustain(_ctx.poly,flag);
+};
 
 typedef synthSamplerMysticVibes_Voice__ctx_type_0 synthSamplerMysticVibes_Voice_synthSetLoop_type;
 

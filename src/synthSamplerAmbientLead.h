@@ -241,6 +241,8 @@ static_inline void synthSamplerAmbientLead_Buffer_buffer(fix16_t (&oBuff)[256]){
 void synthSamplerAmbientLead_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerAmbientLead_Sampler__ctx_type_0 {
+   uint8_t sustaining;
+   uint8_t sustain;
    fix16_t step;
    int state;
    int size;
@@ -421,6 +423,15 @@ static_inline void synthSamplerAmbientLead_Sampler_setLevel(synthSamplerAmbientL
    _ctx.level = newLevel;
 };
 
+typedef synthSamplerAmbientLead_Sampler__ctx_type_0 synthSamplerAmbientLead_Sampler_setSustain_type;
+
+static_inline void synthSamplerAmbientLead_Sampler_setSustain_init(synthSamplerAmbientLead_Sampler__ctx_type_0 &_output_){
+   synthSamplerAmbientLead_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthSamplerAmbientLead_Sampler_setSustain(synthSamplerAmbientLead_Sampler__ctx_type_0 &_ctx, uint8_t flag);
+
 typedef synthSamplerAmbientLead_Sampler__ctx_type_0 synthSamplerAmbientLead_Sampler_noteOn_type;
 
 static_inline void synthSamplerAmbientLead_Sampler_noteOn_init(synthSamplerAmbientLead_Sampler__ctx_type_0 &_output_){
@@ -589,6 +600,20 @@ static_inline void synthSamplerAmbientLead_Poly_setSamplerate(synthSamplerAmbien
    synthSamplerAmbientLead_Sampler_setSamplerate(_ctx.voice1,fs);
    synthSamplerAmbientLead_Sampler_setSamplerate(_ctx.voice2,fs);
    synthSamplerAmbientLead_Sampler_setSamplerate(_ctx.voice3,fs);
+}
+
+typedef synthSamplerAmbientLead_Poly__ctx_type_0 synthSamplerAmbientLead_Poly_synthSetSustain_type;
+
+static_inline void synthSamplerAmbientLead_Poly_synthSetSustain_init(synthSamplerAmbientLead_Poly__ctx_type_0 &_output_){
+   synthSamplerAmbientLead_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerAmbientLead_Poly_synthSetSustain(synthSamplerAmbientLead_Poly__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerAmbientLead_Sampler_setSustain(_ctx.voice0,flag);
+   synthSamplerAmbientLead_Sampler_setSustain(_ctx.voice1,flag);
+   synthSamplerAmbientLead_Sampler_setSustain(_ctx.voice2,flag);
+   synthSamplerAmbientLead_Sampler_setSustain(_ctx.voice3,flag);
 }
 
 typedef synthSamplerAmbientLead_Poly__ctx_type_0 synthSamplerAmbientLead_Poly_synthSetLoop_type;
@@ -948,6 +973,17 @@ static_inline void synthSamplerAmbientLead_Voice_setSamplerate_init(synthSampler
 }
 
 void synthSamplerAmbientLead_Voice_setSamplerate(synthSamplerAmbientLead_Voice__ctx_type_0 &_ctx, fix16_t newFs);
+
+typedef synthSamplerAmbientLead_Voice__ctx_type_0 synthSamplerAmbientLead_Voice_synthSetSustain_type;
+
+static_inline void synthSamplerAmbientLead_Voice_synthSetSustain_init(synthSamplerAmbientLead_Voice__ctx_type_0 &_output_){
+   synthSamplerAmbientLead_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerAmbientLead_Voice_synthSetSustain(synthSamplerAmbientLead_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerAmbientLead_Poly_synthSetSustain(_ctx.poly,flag);
+};
 
 typedef synthSamplerAmbientLead_Voice__ctx_type_0 synthSamplerAmbientLead_Voice_synthSetLoop_type;
 

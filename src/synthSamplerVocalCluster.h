@@ -241,6 +241,8 @@ static_inline void synthSamplerVocalCluster_Buffer_buffer(fix16_t (&oBuff)[256])
 void synthSamplerVocalCluster_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerVocalCluster_Sampler__ctx_type_0 {
+   uint8_t sustaining;
+   uint8_t sustain;
    fix16_t step;
    int state;
    int size;
@@ -421,6 +423,15 @@ static_inline void synthSamplerVocalCluster_Sampler_setLevel(synthSamplerVocalCl
    _ctx.level = newLevel;
 };
 
+typedef synthSamplerVocalCluster_Sampler__ctx_type_0 synthSamplerVocalCluster_Sampler_setSustain_type;
+
+static_inline void synthSamplerVocalCluster_Sampler_setSustain_init(synthSamplerVocalCluster_Sampler__ctx_type_0 &_output_){
+   synthSamplerVocalCluster_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthSamplerVocalCluster_Sampler_setSustain(synthSamplerVocalCluster_Sampler__ctx_type_0 &_ctx, uint8_t flag);
+
 typedef synthSamplerVocalCluster_Sampler__ctx_type_0 synthSamplerVocalCluster_Sampler_noteOn_type;
 
 static_inline void synthSamplerVocalCluster_Sampler_noteOn_init(synthSamplerVocalCluster_Sampler__ctx_type_0 &_output_){
@@ -589,6 +600,20 @@ static_inline void synthSamplerVocalCluster_Poly_setSamplerate(synthSamplerVocal
    synthSamplerVocalCluster_Sampler_setSamplerate(_ctx.voice1,fs);
    synthSamplerVocalCluster_Sampler_setSamplerate(_ctx.voice2,fs);
    synthSamplerVocalCluster_Sampler_setSamplerate(_ctx.voice3,fs);
+}
+
+typedef synthSamplerVocalCluster_Poly__ctx_type_0 synthSamplerVocalCluster_Poly_synthSetSustain_type;
+
+static_inline void synthSamplerVocalCluster_Poly_synthSetSustain_init(synthSamplerVocalCluster_Poly__ctx_type_0 &_output_){
+   synthSamplerVocalCluster_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerVocalCluster_Poly_synthSetSustain(synthSamplerVocalCluster_Poly__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerVocalCluster_Sampler_setSustain(_ctx.voice0,flag);
+   synthSamplerVocalCluster_Sampler_setSustain(_ctx.voice1,flag);
+   synthSamplerVocalCluster_Sampler_setSustain(_ctx.voice2,flag);
+   synthSamplerVocalCluster_Sampler_setSustain(_ctx.voice3,flag);
 }
 
 typedef synthSamplerVocalCluster_Poly__ctx_type_0 synthSamplerVocalCluster_Poly_synthSetLoop_type;
@@ -948,6 +973,17 @@ static_inline void synthSamplerVocalCluster_Voice_setSamplerate_init(synthSample
 }
 
 void synthSamplerVocalCluster_Voice_setSamplerate(synthSamplerVocalCluster_Voice__ctx_type_0 &_ctx, fix16_t newFs);
+
+typedef synthSamplerVocalCluster_Voice__ctx_type_0 synthSamplerVocalCluster_Voice_synthSetSustain_type;
+
+static_inline void synthSamplerVocalCluster_Voice_synthSetSustain_init(synthSamplerVocalCluster_Voice__ctx_type_0 &_output_){
+   synthSamplerVocalCluster_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerVocalCluster_Voice_synthSetSustain(synthSamplerVocalCluster_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerVocalCluster_Poly_synthSetSustain(_ctx.poly,flag);
+};
 
 typedef synthSamplerVocalCluster_Voice__ctx_type_0 synthSamplerVocalCluster_Voice_synthSetLoop_type;
 

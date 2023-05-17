@@ -715,6 +715,8 @@ static_inline void synthFM_ADSR_dummy(synthFM_ADSR__ctx_type_6 &_ctx){
 }
 
 typedef struct synthFM_FM__ctx_type_0 {
+   uint8_t sustaining;
+   uint8_t sustain;
    synthFM_Notes__ctx_type_0 playingnotes;
    int n;
    synthFM_ADSR__ctx_type_5 modulatoradsr;
@@ -890,6 +892,15 @@ static_inline void synthFM_FM_setPoly_init(synthFM_FM__ctx_type_0 &_output_){
 static_inline void synthFM_FM_setPoly(synthFM_FM__ctx_type_0 &_ctx, uint8_t flag){
    synthFM_Notes_setPoly(_ctx.playingnotes,flag);
 };
+
+typedef synthFM_FM__ctx_type_0 synthFM_FM_setSustain_type;
+
+static_inline void synthFM_FM_setSustain_init(synthFM_FM__ctx_type_0 &_output_){
+   synthFM_FM__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthFM_FM_setSustain(synthFM_FM__ctx_type_0 &_ctx, uint8_t flag);
 
 typedef synthFM_FM__ctx_type_0 synthFM_FM_noteOn_type;
 
@@ -1078,6 +1089,20 @@ static_inline void synthFM_Poly_setSamplerate(synthFM_Poly__ctx_type_0 &_ctx, fi
    synthFM_FM_setSamplerate(_ctx.voice1,fs);
    synthFM_FM_setSamplerate(_ctx.voice2,fs);
    synthFM_FM_setSamplerate(_ctx.voice3,fs);
+}
+
+typedef synthFM_Poly__ctx_type_0 synthFM_Poly_synthSetSustain_type;
+
+static_inline void synthFM_Poly_synthSetSustain_init(synthFM_Poly__ctx_type_0 &_output_){
+   synthFM_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthFM_Poly_synthSetSustain(synthFM_Poly__ctx_type_0 &_ctx, uint8_t flag){
+   synthFM_FM_setSustain(_ctx.voice0,flag);
+   synthFM_FM_setSustain(_ctx.voice1,flag);
+   synthFM_FM_setSustain(_ctx.voice2,flag);
+   synthFM_FM_setSustain(_ctx.voice3,flag);
 }
 
 typedef synthFM_Poly__ctx_type_0 synthFM_Poly_synthSetLoop_type;
@@ -1475,6 +1500,17 @@ static_inline void synthFM_Voice_setSamplerate_init(synthFM_Voice__ctx_type_0 &_
 }
 
 void synthFM_Voice_setSamplerate(synthFM_Voice__ctx_type_0 &_ctx, fix16_t newFs);
+
+typedef synthFM_Voice__ctx_type_0 synthFM_Voice_synthSetSustain_type;
+
+static_inline void synthFM_Voice_synthSetSustain_init(synthFM_Voice__ctx_type_0 &_output_){
+   synthFM_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthFM_Voice_synthSetSustain(synthFM_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   synthFM_Poly_synthSetSustain(_ctx.poly,flag);
+};
 
 typedef synthFM_Voice__ctx_type_0 synthFM_Voice_synthSetLoop_type;
 

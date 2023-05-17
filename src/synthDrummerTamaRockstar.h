@@ -235,6 +235,16 @@ static_inline void synthDrummerTamaRockstar_Drummer_setLevel(synthDrummerTamaRoc
    _ctx.level = newLevel;
 };
 
+typedef synthDrummerTamaRockstar_Drummer__ctx_type_0 synthDrummerTamaRockstar_Drummer_setSustain_type;
+
+static_inline void synthDrummerTamaRockstar_Drummer_setSustain_init(synthDrummerTamaRockstar_Drummer__ctx_type_0 &_output_){
+   synthDrummerTamaRockstar_Drummer__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummerTamaRockstar_Drummer_setSustain(synthDrummerTamaRockstar_Drummer__ctx_type_0 &_ctx, uint8_t flag){
+}
+
 typedef synthDrummerTamaRockstar_Drummer__ctx_type_0 synthDrummerTamaRockstar_Drummer_noteOn_type;
 
 static_inline void synthDrummerTamaRockstar_Drummer_noteOn_init(synthDrummerTamaRockstar_Drummer__ctx_type_0 &_output_){
@@ -393,6 +403,20 @@ static_inline void synthDrummerTamaRockstar_Poly_setSamplerate(synthDrummerTamaR
    synthDrummerTamaRockstar_Drummer_setSamplerate(_ctx.voice1,fs);
    synthDrummerTamaRockstar_Drummer_setSamplerate(_ctx.voice2,fs);
    synthDrummerTamaRockstar_Drummer_setSamplerate(_ctx.voice3,fs);
+}
+
+typedef synthDrummerTamaRockstar_Poly__ctx_type_0 synthDrummerTamaRockstar_Poly_synthSetSustain_type;
+
+static_inline void synthDrummerTamaRockstar_Poly_synthSetSustain_init(synthDrummerTamaRockstar_Poly__ctx_type_0 &_output_){
+   synthDrummerTamaRockstar_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummerTamaRockstar_Poly_synthSetSustain(synthDrummerTamaRockstar_Poly__ctx_type_0 &_ctx, uint8_t flag){
+   synthDrummerTamaRockstar_Drummer_setSustain(_ctx.voice0,flag);
+   synthDrummerTamaRockstar_Drummer_setSustain(_ctx.voice1,flag);
+   synthDrummerTamaRockstar_Drummer_setSustain(_ctx.voice2,flag);
+   synthDrummerTamaRockstar_Drummer_setSustain(_ctx.voice3,flag);
 }
 
 typedef synthDrummerTamaRockstar_Poly__ctx_type_0 synthDrummerTamaRockstar_Poly_synthSetLoop_type;
@@ -831,6 +855,17 @@ static_inline void synthDrummerTamaRockstar_Voice_setSamplerate_init(synthDrumme
 }
 
 void synthDrummerTamaRockstar_Voice_setSamplerate(synthDrummerTamaRockstar_Voice__ctx_type_0 &_ctx, fix16_t newFs);
+
+typedef synthDrummerTamaRockstar_Voice__ctx_type_0 synthDrummerTamaRockstar_Voice_synthSetSustain_type;
+
+static_inline void synthDrummerTamaRockstar_Voice_synthSetSustain_init(synthDrummerTamaRockstar_Voice__ctx_type_0 &_output_){
+   synthDrummerTamaRockstar_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummerTamaRockstar_Voice_synthSetSustain(synthDrummerTamaRockstar_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   synthDrummerTamaRockstar_Poly_synthSetSustain(_ctx.poly,flag);
+};
 
 typedef synthDrummerTamaRockstar_Voice__ctx_type_0 synthDrummerTamaRockstar_Voice_synthSetLoop_type;
 

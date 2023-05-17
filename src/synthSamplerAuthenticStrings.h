@@ -241,6 +241,8 @@ static_inline void synthSamplerAuthenticStrings_Buffer_buffer(fix16_t (&oBuff)[2
 void synthSamplerAuthenticStrings_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerAuthenticStrings_Sampler__ctx_type_0 {
+   uint8_t sustaining;
+   uint8_t sustain;
    fix16_t step;
    int state;
    int size;
@@ -421,6 +423,15 @@ static_inline void synthSamplerAuthenticStrings_Sampler_setLevel(synthSamplerAut
    _ctx.level = newLevel;
 };
 
+typedef synthSamplerAuthenticStrings_Sampler__ctx_type_0 synthSamplerAuthenticStrings_Sampler_setSustain_type;
+
+static_inline void synthSamplerAuthenticStrings_Sampler_setSustain_init(synthSamplerAuthenticStrings_Sampler__ctx_type_0 &_output_){
+   synthSamplerAuthenticStrings_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthSamplerAuthenticStrings_Sampler_setSustain(synthSamplerAuthenticStrings_Sampler__ctx_type_0 &_ctx, uint8_t flag);
+
 typedef synthSamplerAuthenticStrings_Sampler__ctx_type_0 synthSamplerAuthenticStrings_Sampler_noteOn_type;
 
 static_inline void synthSamplerAuthenticStrings_Sampler_noteOn_init(synthSamplerAuthenticStrings_Sampler__ctx_type_0 &_output_){
@@ -589,6 +600,20 @@ static_inline void synthSamplerAuthenticStrings_Poly_setSamplerate(synthSamplerA
    synthSamplerAuthenticStrings_Sampler_setSamplerate(_ctx.voice1,fs);
    synthSamplerAuthenticStrings_Sampler_setSamplerate(_ctx.voice2,fs);
    synthSamplerAuthenticStrings_Sampler_setSamplerate(_ctx.voice3,fs);
+}
+
+typedef synthSamplerAuthenticStrings_Poly__ctx_type_0 synthSamplerAuthenticStrings_Poly_synthSetSustain_type;
+
+static_inline void synthSamplerAuthenticStrings_Poly_synthSetSustain_init(synthSamplerAuthenticStrings_Poly__ctx_type_0 &_output_){
+   synthSamplerAuthenticStrings_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerAuthenticStrings_Poly_synthSetSustain(synthSamplerAuthenticStrings_Poly__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerAuthenticStrings_Sampler_setSustain(_ctx.voice0,flag);
+   synthSamplerAuthenticStrings_Sampler_setSustain(_ctx.voice1,flag);
+   synthSamplerAuthenticStrings_Sampler_setSustain(_ctx.voice2,flag);
+   synthSamplerAuthenticStrings_Sampler_setSustain(_ctx.voice3,flag);
 }
 
 typedef synthSamplerAuthenticStrings_Poly__ctx_type_0 synthSamplerAuthenticStrings_Poly_synthSetLoop_type;
@@ -948,6 +973,17 @@ static_inline void synthSamplerAuthenticStrings_Voice_setSamplerate_init(synthSa
 }
 
 void synthSamplerAuthenticStrings_Voice_setSamplerate(synthSamplerAuthenticStrings_Voice__ctx_type_0 &_ctx, fix16_t newFs);
+
+typedef synthSamplerAuthenticStrings_Voice__ctx_type_0 synthSamplerAuthenticStrings_Voice_synthSetSustain_type;
+
+static_inline void synthSamplerAuthenticStrings_Voice_synthSetSustain_init(synthSamplerAuthenticStrings_Voice__ctx_type_0 &_output_){
+   synthSamplerAuthenticStrings_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerAuthenticStrings_Voice_synthSetSustain(synthSamplerAuthenticStrings_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerAuthenticStrings_Poly_synthSetSustain(_ctx.poly,flag);
+};
 
 typedef synthSamplerAuthenticStrings_Voice__ctx_type_0 synthSamplerAuthenticStrings_Voice_synthSetLoop_type;
 

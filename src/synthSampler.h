@@ -241,6 +241,8 @@ static_inline void synthSampler_Buffer_buffer(fix16_t (&oBuff)[256]){
 void synthSampler_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSampler_Sampler__ctx_type_0 {
+   uint8_t sustaining;
+   uint8_t sustain;
    fix16_t step;
    int state;
    int size;
@@ -421,6 +423,15 @@ static_inline void synthSampler_Sampler_setLevel(synthSampler_Sampler__ctx_type_
    _ctx.level = newLevel;
 };
 
+typedef synthSampler_Sampler__ctx_type_0 synthSampler_Sampler_setSustain_type;
+
+static_inline void synthSampler_Sampler_setSustain_init(synthSampler_Sampler__ctx_type_0 &_output_){
+   synthSampler_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthSampler_Sampler_setSustain(synthSampler_Sampler__ctx_type_0 &_ctx, uint8_t flag);
+
 typedef synthSampler_Sampler__ctx_type_0 synthSampler_Sampler_noteOn_type;
 
 static_inline void synthSampler_Sampler_noteOn_init(synthSampler_Sampler__ctx_type_0 &_output_){
@@ -589,6 +600,20 @@ static_inline void synthSampler_Poly_setSamplerate(synthSampler_Poly__ctx_type_0
    synthSampler_Sampler_setSamplerate(_ctx.voice1,fs);
    synthSampler_Sampler_setSamplerate(_ctx.voice2,fs);
    synthSampler_Sampler_setSamplerate(_ctx.voice3,fs);
+}
+
+typedef synthSampler_Poly__ctx_type_0 synthSampler_Poly_synthSetSustain_type;
+
+static_inline void synthSampler_Poly_synthSetSustain_init(synthSampler_Poly__ctx_type_0 &_output_){
+   synthSampler_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSampler_Poly_synthSetSustain(synthSampler_Poly__ctx_type_0 &_ctx, uint8_t flag){
+   synthSampler_Sampler_setSustain(_ctx.voice0,flag);
+   synthSampler_Sampler_setSustain(_ctx.voice1,flag);
+   synthSampler_Sampler_setSustain(_ctx.voice2,flag);
+   synthSampler_Sampler_setSustain(_ctx.voice3,flag);
 }
 
 typedef synthSampler_Poly__ctx_type_0 synthSampler_Poly_synthSetLoop_type;
@@ -948,6 +973,17 @@ static_inline void synthSampler_Voice_setSamplerate_init(synthSampler_Voice__ctx
 }
 
 void synthSampler_Voice_setSamplerate(synthSampler_Voice__ctx_type_0 &_ctx, fix16_t newFs);
+
+typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_synthSetSustain_type;
+
+static_inline void synthSampler_Voice_synthSetSustain_init(synthSampler_Voice__ctx_type_0 &_output_){
+   synthSampler_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSampler_Voice_synthSetSustain(synthSampler_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   synthSampler_Poly_synthSetSustain(_ctx.poly,flag);
+};
 
 typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_synthSetLoop_type;
 

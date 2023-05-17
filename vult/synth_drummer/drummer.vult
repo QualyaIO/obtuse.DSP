@@ -154,6 +154,10 @@ and setLevel(newLevel: real) {
     level = newLevel;
 }
 
+// No effect of sustain at the moment since there is no gate nor noteOff
+and setSustain(flag: bool) {
+}
+
 // beginning of a note
 // return true if was not playing, false otherwise
 and noteOn(note:int, velocity:int, channel:int): bool {

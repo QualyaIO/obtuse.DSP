@@ -22,6 +22,10 @@ fun process() {
   mem state: int;
   // note held or not
   mem gate: bool;
+  // sustain pedal held or not
+  mem sustain: bool;
+  // there is actually something to sustain
+  mem sustaining: bool;
   // we are velocity sensitive
   mem level: real;
 
@@ -45,7 +49,7 @@ fun process() {
     else {
       // first, updating states
       // looping entering cross fade, centered around end loop
-      if (state == 1 && gate && loopy && crossfade && idx >= loopE - size(buffer_cross) / 2 && idx <= loopE + size(buffer_cross) / 2) {
+      if (state == 1 && (gate || sustaining) && loopy && crossfade && idx >= loopE - size(buffer_cross) / 2 && idx <= loopE + size(buffer_cross) / 2) {
         state = 2;
         // index aligned to position in buffer
         idx = idx - loopE + size(buffer_cross) / 2;
@@ -53,7 +57,7 @@ fun process() {
         pos = pos % 1.0;
       }
       // looping without cross fade
-      else if (state == 1 && gate && loopy && idx >= loopE) {
+      else if (state == 1 && (gate || sustaining) && loopy && idx >= loopE) {
         // reset index and position to left
         idx = loopS + idx - loopE;
         posBase = idx;
@@ -66,7 +70,7 @@ fun process() {
         posBase = idx;
         pos = pos % 1.0;
         // will go to end of signal if gate is off
-        if (gate) {
+        if (gate || sustaining) {
           state = 1;
         } else {
           state = 3;
@@ -114,7 +118,7 @@ and process_bufferTo(nb: int, oBuffer) {
       else {
         // first, updating states
         // looping entering cross fade, centered around end loop
-        if (state == 1 && gate && loopy && crossfade && idx >= loopE - size(buffer_cross) / 2 && idx <= loopE + size(buffer_cross) / 2) {
+        if (state == 1 && (gate || sustaining) && loopy && crossfade && idx >= loopE - size(buffer_cross) / 2 && idx <= loopE + size(buffer_cross) / 2) {
         state = 2;
           // index aligned to position in buffer
           idx = idx - loopE + size(buffer_cross) / 2;
@@ -122,7 +126,7 @@ and process_bufferTo(nb: int, oBuffer) {
           pos = pos % 1.0;
         }
         // looping without cross fade
-        else if (state == 1 && gate && loopy && idx >= loopE) {
+        else if (state == 1 && (gate || sustaining) && loopy && idx >= loopE) {
           // reset index and position to left
           idx = loopS + idx - loopE;
           posBase = idx;
@@ -135,7 +139,7 @@ and process_bufferTo(nb: int, oBuffer) {
           posBase = idx;
           pos = pos % 1.0;
           // will go to end of signal if gate is off
-          if (gate) {
+          if (gate || sustaining) {
             state = 1;
           } else {
             state = 3;
@@ -162,7 +166,6 @@ and process_buffer(nb: int) {
   mem buffer_o;
   _ = process_bufferTo(nb, buffer_o);
 }
-
 
 // called internally when Samplerate or note is altered
 and updateStep() {
@@ -271,6 +274,20 @@ and setLevel(newLevel: real) {
     level = newLevel;
 }
 
+// Hold gate even after note-off
+// Note: do call setSustain(off) at some point to release notes!
+and setSustain(flag: bool) {
+  sustain = flag;
+  // activate sustain if there is already a gate
+  if (gate && sustain) {
+    sustaining = true;
+  }
+  // disable upon release
+  if (not(sustain)) {
+    sustaining = false;
+  }
+}
+
 // beginning of a note
 // return true if note is new, false otherwise
 and noteOn(note:int, velocity:int, channel:int): bool {
@@ -282,6 +299,10 @@ and noteOn(note:int, velocity:int, channel:int): bool {
    _ = setLevel(Util.velocityToLevel(velocity));
    // start playing note
    gate = true;
+   // update status with sustain pedal
+   if (sustain) {
+     sustaining = true;
+   }
    posBase = 0;
    pos = 0.0;
    state = 1;

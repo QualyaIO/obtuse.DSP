@@ -241,6 +241,8 @@ static_inline void synthSamplerKoto_Buffer_buffer(fix16_t (&oBuff)[256]){
 void synthSamplerKoto_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerKoto_Sampler__ctx_type_0 {
+   uint8_t sustaining;
+   uint8_t sustain;
    fix16_t step;
    int state;
    int size;
@@ -421,6 +423,15 @@ static_inline void synthSamplerKoto_Sampler_setLevel(synthSamplerKoto_Sampler__c
    _ctx.level = newLevel;
 };
 
+typedef synthSamplerKoto_Sampler__ctx_type_0 synthSamplerKoto_Sampler_setSustain_type;
+
+static_inline void synthSamplerKoto_Sampler_setSustain_init(synthSamplerKoto_Sampler__ctx_type_0 &_output_){
+   synthSamplerKoto_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthSamplerKoto_Sampler_setSustain(synthSamplerKoto_Sampler__ctx_type_0 &_ctx, uint8_t flag);
+
 typedef synthSamplerKoto_Sampler__ctx_type_0 synthSamplerKoto_Sampler_noteOn_type;
 
 static_inline void synthSamplerKoto_Sampler_noteOn_init(synthSamplerKoto_Sampler__ctx_type_0 &_output_){
@@ -589,6 +600,20 @@ static_inline void synthSamplerKoto_Poly_setSamplerate(synthSamplerKoto_Poly__ct
    synthSamplerKoto_Sampler_setSamplerate(_ctx.voice1,fs);
    synthSamplerKoto_Sampler_setSamplerate(_ctx.voice2,fs);
    synthSamplerKoto_Sampler_setSamplerate(_ctx.voice3,fs);
+}
+
+typedef synthSamplerKoto_Poly__ctx_type_0 synthSamplerKoto_Poly_synthSetSustain_type;
+
+static_inline void synthSamplerKoto_Poly_synthSetSustain_init(synthSamplerKoto_Poly__ctx_type_0 &_output_){
+   synthSamplerKoto_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerKoto_Poly_synthSetSustain(synthSamplerKoto_Poly__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerKoto_Sampler_setSustain(_ctx.voice0,flag);
+   synthSamplerKoto_Sampler_setSustain(_ctx.voice1,flag);
+   synthSamplerKoto_Sampler_setSustain(_ctx.voice2,flag);
+   synthSamplerKoto_Sampler_setSustain(_ctx.voice3,flag);
 }
 
 typedef synthSamplerKoto_Poly__ctx_type_0 synthSamplerKoto_Poly_synthSetLoop_type;
@@ -948,6 +973,17 @@ static_inline void synthSamplerKoto_Voice_setSamplerate_init(synthSamplerKoto_Vo
 }
 
 void synthSamplerKoto_Voice_setSamplerate(synthSamplerKoto_Voice__ctx_type_0 &_ctx, fix16_t newFs);
+
+typedef synthSamplerKoto_Voice__ctx_type_0 synthSamplerKoto_Voice_synthSetSustain_type;
+
+static_inline void synthSamplerKoto_Voice_synthSetSustain_init(synthSamplerKoto_Voice__ctx_type_0 &_output_){
+   synthSamplerKoto_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerKoto_Voice_synthSetSustain(synthSamplerKoto_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerKoto_Poly_synthSetSustain(_ctx.poly,flag);
+};
 
 typedef synthSamplerKoto_Voice__ctx_type_0 synthSamplerKoto_Voice_synthSetLoop_type;
 

@@ -241,6 +241,8 @@ static_inline void synthSamplerTranquility_Buffer_buffer(fix16_t (&oBuff)[256]){
 void synthSamplerTranquility_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerTranquility_Sampler__ctx_type_0 {
+   uint8_t sustaining;
+   uint8_t sustain;
    fix16_t step;
    int state;
    int size;
@@ -421,6 +423,15 @@ static_inline void synthSamplerTranquility_Sampler_setLevel(synthSamplerTranquil
    _ctx.level = newLevel;
 };
 
+typedef synthSamplerTranquility_Sampler__ctx_type_0 synthSamplerTranquility_Sampler_setSustain_type;
+
+static_inline void synthSamplerTranquility_Sampler_setSustain_init(synthSamplerTranquility_Sampler__ctx_type_0 &_output_){
+   synthSamplerTranquility_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthSamplerTranquility_Sampler_setSustain(synthSamplerTranquility_Sampler__ctx_type_0 &_ctx, uint8_t flag);
+
 typedef synthSamplerTranquility_Sampler__ctx_type_0 synthSamplerTranquility_Sampler_noteOn_type;
 
 static_inline void synthSamplerTranquility_Sampler_noteOn_init(synthSamplerTranquility_Sampler__ctx_type_0 &_output_){
@@ -589,6 +600,20 @@ static_inline void synthSamplerTranquility_Poly_setSamplerate(synthSamplerTranqu
    synthSamplerTranquility_Sampler_setSamplerate(_ctx.voice1,fs);
    synthSamplerTranquility_Sampler_setSamplerate(_ctx.voice2,fs);
    synthSamplerTranquility_Sampler_setSamplerate(_ctx.voice3,fs);
+}
+
+typedef synthSamplerTranquility_Poly__ctx_type_0 synthSamplerTranquility_Poly_synthSetSustain_type;
+
+static_inline void synthSamplerTranquility_Poly_synthSetSustain_init(synthSamplerTranquility_Poly__ctx_type_0 &_output_){
+   synthSamplerTranquility_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerTranquility_Poly_synthSetSustain(synthSamplerTranquility_Poly__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerTranquility_Sampler_setSustain(_ctx.voice0,flag);
+   synthSamplerTranquility_Sampler_setSustain(_ctx.voice1,flag);
+   synthSamplerTranquility_Sampler_setSustain(_ctx.voice2,flag);
+   synthSamplerTranquility_Sampler_setSustain(_ctx.voice3,flag);
 }
 
 typedef synthSamplerTranquility_Poly__ctx_type_0 synthSamplerTranquility_Poly_synthSetLoop_type;
@@ -948,6 +973,17 @@ static_inline void synthSamplerTranquility_Voice_setSamplerate_init(synthSampler
 }
 
 void synthSamplerTranquility_Voice_setSamplerate(synthSamplerTranquility_Voice__ctx_type_0 &_ctx, fix16_t newFs);
+
+typedef synthSamplerTranquility_Voice__ctx_type_0 synthSamplerTranquility_Voice_synthSetSustain_type;
+
+static_inline void synthSamplerTranquility_Voice_synthSetSustain_init(synthSamplerTranquility_Voice__ctx_type_0 &_output_){
+   synthSamplerTranquility_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerTranquility_Voice_synthSetSustain(synthSamplerTranquility_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerTranquility_Poly_synthSetSustain(_ctx.poly,flag);
+};
 
 typedef synthSamplerTranquility_Voice__ctx_type_0 synthSamplerTranquility_Voice_synthSetLoop_type;
 

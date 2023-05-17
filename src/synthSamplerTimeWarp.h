@@ -241,6 +241,8 @@ static_inline void synthSamplerTimeWarp_Buffer_buffer(fix16_t (&oBuff)[256]){
 void synthSamplerTimeWarp_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerTimeWarp_Sampler__ctx_type_0 {
+   uint8_t sustaining;
+   uint8_t sustain;
    fix16_t step;
    int state;
    int size;
@@ -421,6 +423,15 @@ static_inline void synthSamplerTimeWarp_Sampler_setLevel(synthSamplerTimeWarp_Sa
    _ctx.level = newLevel;
 };
 
+typedef synthSamplerTimeWarp_Sampler__ctx_type_0 synthSamplerTimeWarp_Sampler_setSustain_type;
+
+static_inline void synthSamplerTimeWarp_Sampler_setSustain_init(synthSamplerTimeWarp_Sampler__ctx_type_0 &_output_){
+   synthSamplerTimeWarp_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthSamplerTimeWarp_Sampler_setSustain(synthSamplerTimeWarp_Sampler__ctx_type_0 &_ctx, uint8_t flag);
+
 typedef synthSamplerTimeWarp_Sampler__ctx_type_0 synthSamplerTimeWarp_Sampler_noteOn_type;
 
 static_inline void synthSamplerTimeWarp_Sampler_noteOn_init(synthSamplerTimeWarp_Sampler__ctx_type_0 &_output_){
@@ -589,6 +600,20 @@ static_inline void synthSamplerTimeWarp_Poly_setSamplerate(synthSamplerTimeWarp_
    synthSamplerTimeWarp_Sampler_setSamplerate(_ctx.voice1,fs);
    synthSamplerTimeWarp_Sampler_setSamplerate(_ctx.voice2,fs);
    synthSamplerTimeWarp_Sampler_setSamplerate(_ctx.voice3,fs);
+}
+
+typedef synthSamplerTimeWarp_Poly__ctx_type_0 synthSamplerTimeWarp_Poly_synthSetSustain_type;
+
+static_inline void synthSamplerTimeWarp_Poly_synthSetSustain_init(synthSamplerTimeWarp_Poly__ctx_type_0 &_output_){
+   synthSamplerTimeWarp_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerTimeWarp_Poly_synthSetSustain(synthSamplerTimeWarp_Poly__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerTimeWarp_Sampler_setSustain(_ctx.voice0,flag);
+   synthSamplerTimeWarp_Sampler_setSustain(_ctx.voice1,flag);
+   synthSamplerTimeWarp_Sampler_setSustain(_ctx.voice2,flag);
+   synthSamplerTimeWarp_Sampler_setSustain(_ctx.voice3,flag);
 }
 
 typedef synthSamplerTimeWarp_Poly__ctx_type_0 synthSamplerTimeWarp_Poly_synthSetLoop_type;
@@ -948,6 +973,17 @@ static_inline void synthSamplerTimeWarp_Voice_setSamplerate_init(synthSamplerTim
 }
 
 void synthSamplerTimeWarp_Voice_setSamplerate(synthSamplerTimeWarp_Voice__ctx_type_0 &_ctx, fix16_t newFs);
+
+typedef synthSamplerTimeWarp_Voice__ctx_type_0 synthSamplerTimeWarp_Voice_synthSetSustain_type;
+
+static_inline void synthSamplerTimeWarp_Voice_synthSetSustain_init(synthSamplerTimeWarp_Voice__ctx_type_0 &_output_){
+   synthSamplerTimeWarp_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerTimeWarp_Voice_synthSetSustain(synthSamplerTimeWarp_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerTimeWarp_Poly_synthSetSustain(_ctx.poly,flag);
+};
 
 typedef synthSamplerTimeWarp_Voice__ctx_type_0 synthSamplerTimeWarp_Voice_synthSetLoop_type;
 
