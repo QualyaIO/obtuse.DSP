@@ -149,7 +149,7 @@ typedef struct synthSamplerDreamVoice_Notes__ctx_type_0 {
    int notes[128];
    int nb_notes;
    int last_notes[128];
-   uint8_t ignoreDuplicates;
+   uint8_t allowDuplicates;
 } synthSamplerDreamVoice_Notes__ctx_type_0;
 
 typedef synthSamplerDreamVoice_Notes__ctx_type_0 synthSamplerDreamVoice_Notes_setPoly_type;
@@ -165,15 +165,15 @@ static_inline void synthSamplerDreamVoice_Notes_setPoly(synthSamplerDreamVoice_N
    _ctx.poly = flag;
 };
 
-typedef synthSamplerDreamVoice_Notes__ctx_type_0 synthSamplerDreamVoice_Notes_setIgnoreDuplicates_type;
+typedef synthSamplerDreamVoice_Notes__ctx_type_0 synthSamplerDreamVoice_Notes_setAllowDuplicates_type;
 
-static_inline void synthSamplerDreamVoice_Notes_setIgnoreDuplicates_init(synthSamplerDreamVoice_Notes__ctx_type_0 &_output_){
+static_inline void synthSamplerDreamVoice_Notes_setAllowDuplicates_init(synthSamplerDreamVoice_Notes__ctx_type_0 &_output_){
    synthSamplerDreamVoice_Notes__ctx_type_0_init(_output_);
    return ;
 }
 
-static_inline void synthSamplerDreamVoice_Notes_setIgnoreDuplicates(synthSamplerDreamVoice_Notes__ctx_type_0 &_ctx, uint8_t flag){
-   _ctx.ignoreDuplicates = flag;
+static_inline void synthSamplerDreamVoice_Notes_setAllowDuplicates(synthSamplerDreamVoice_Notes__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.allowDuplicates = flag;
 };
 
 typedef synthSamplerDreamVoice_Notes__ctx_type_0 synthSamplerDreamVoice_Notes_default_type;
@@ -185,7 +185,7 @@ static_inline void synthSamplerDreamVoice_Notes_default_init(synthSamplerDreamVo
 
 static_inline void synthSamplerDreamVoice_Notes_default(synthSamplerDreamVoice_Notes__ctx_type_0 &_ctx){
    synthSamplerDreamVoice_Notes_setPoly(_ctx,false);
-   synthSamplerDreamVoice_Notes_setIgnoreDuplicates(_ctx,false);
+   synthSamplerDreamVoice_Notes_setAllowDuplicates(_ctx,false);
 }
 
 typedef synthSamplerDreamVoice_Notes__ctx_type_0 synthSamplerDreamVoice_Notes_nbNotes_type;
@@ -857,6 +857,7 @@ typedef struct synthSamplerDreamVoice_Voice__ctx_type_0 {
    synthSamplerDreamVoice_Notes__ctx_type_0 voicesactive;
    fix16_t voices_ratio;
    int voices[4];
+   synthSamplerDreamVoice_Notes__ctx_type_0 voiceinsactive;
    synthSamplerDreamVoice_Poly__ctx_type_0 poly;
    int number_voices;
    int notes[128];

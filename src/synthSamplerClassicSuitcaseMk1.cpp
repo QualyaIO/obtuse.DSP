@@ -8,7 +8,7 @@ void synthSamplerClassicSuitcaseMk1_Notes__ctx_type_0_init(synthSamplerClassicSu
    int_init_array(128,0,_ctx.notes);
    _ctx.nb_notes = 0;
    int_init_array(128,0,_ctx.last_notes);
-   _ctx.ignoreDuplicates = false;
+   _ctx.allowDuplicates = false;
    synthSamplerClassicSuitcaseMk1_Notes_default(_ctx);
    
    return ;
@@ -71,7 +71,7 @@ uint8_t synthSamplerClassicSuitcaseMk1_Notes_noteOn(synthSamplerClassicSuitcaseM
    note = int_clip(note,0,127);
    uint8_t isNew;
    isNew = (_ctx.notes[note] <= 0);
-   if(bool_not(_ctx.ignoreDuplicates) || isNew){
+   if(_ctx.allowDuplicates || isNew){
       if(bool_not(_ctx.poly)){
          if(bool_not(isNew)){
             synthSamplerClassicSuitcaseMk1_Notes_noteOff(_ctx,note,channel);
@@ -347,6 +347,7 @@ void synthSamplerClassicSuitcaseMk1_Sampler_default(synthSamplerClassicSuitcaseM
    synthSamplerClassicSuitcaseMk1_Sampler_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    synthSamplerClassicSuitcaseMk1_Sampler_setNote(_ctx,69);
    synthSamplerClassicSuitcaseMk1_Notes_default(_ctx.playingnotes);
+   synthSamplerClassicSuitcaseMk1_Notes_setAllowDuplicates(_ctx.playingnotes,true);
    synthSamplerClassicSuitcaseMk1_Sampler_setPoly(_ctx,false);
 }
 
@@ -399,6 +400,7 @@ void synthSamplerClassicSuitcaseMk1_Voice__ctx_type_0_init(synthSamplerClassicSu
    synthSamplerClassicSuitcaseMk1_Notes__ctx_type_0_init(_ctx.voicesactive);
    _ctx.voices_ratio = 0x0 /* 0.000000 */;
    int_init_array(4,0,_ctx.voices);
+   synthSamplerClassicSuitcaseMk1_Notes__ctx_type_0_init(_ctx.voiceinsactive);
    synthSamplerClassicSuitcaseMk1_Poly__ctx_type_0_init(_ctx.poly);
    _ctx.number_voices = 0;
    int_init_array(128,0,_ctx.notes);
@@ -651,10 +653,10 @@ void synthSamplerClassicSuitcaseMk1_Voice_default(synthSamplerClassicSuitcaseMk1
    synthSamplerClassicSuitcaseMk1_Voice_setNbVoices(_ctx,_ctx.number_voices);
    synthSamplerClassicSuitcaseMk1_Notes_default(_ctx.voicesactive);
    synthSamplerClassicSuitcaseMk1_Notes_setPoly(_ctx.voicesactive,false);
-   synthSamplerClassicSuitcaseMk1_Notes_setIgnoreDuplicates(_ctx.voicesactive,true);
+   synthSamplerClassicSuitcaseMk1_Notes_setAllowDuplicates(_ctx.voicesactive,false);
    synthSamplerClassicSuitcaseMk1_Notes_default(_ctx.voicesinactive);
    synthSamplerClassicSuitcaseMk1_Notes_setPoly(_ctx.voicesinactive,false);
-   synthSamplerClassicSuitcaseMk1_Notes_setIgnoreDuplicates(_ctx.voicesinactive,true);
+   synthSamplerClassicSuitcaseMk1_Notes_setAllowDuplicates(_ctx.voiceinsactive,false);
    synthSamplerClassicSuitcaseMk1_Voice_setNormalize(_ctx,true);
    synthSamplerClassicSuitcaseMk1_Voice_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
 }

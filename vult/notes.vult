@@ -11,10 +11,10 @@ fun setPoly(flag: bool) {
    mem poly : bool = flag;
 }
 
-// should we ignore noteOn of already playing notes? (if set to true: old behavior)
-and setIgnoreDuplicates(flag: bool) {
-   mem ignoreDuplicates;
-   ignoreDuplicates = flag;
+// should allow noteOn of already playing notes?
+and setAllowDuplicates(flag: bool) {
+   mem allowDuplicates;
+   allowDuplicates = flag;
 }
 
 and default() @[init] {
@@ -27,9 +27,9 @@ and default() @[init] {
     // for the sake of simplicity, notes will be 1 to 128 here (so we can keep track of note 0 at little cost)
     mem last_notes: array(int, 128);
 
-    // explicitely monophonic by default, allow retrigger
+    // explicitely monophonic by default, disable retrigger
     setPoly(false);
-    setIgnoreDuplicates(false);
+    setAllowDuplicates(false);
 }
 
 and nbNotes() {
@@ -102,13 +102,13 @@ and noteOff(note:int, channel:int): bool {
 
 
 // beginning of a note
-// return true if note is new, false otherwise (meaning note will not be consider with ignoreDuplicates)
-// TODO: code instead, if note there, if note new, if note currently playing
+// return true if note is new, false otherwise (meaning note will not be consider with unless allowDuplicates)
+// TODO: return a code instead, if note there, if note new, if note currently playing
 and noteOn(note:int, velocity:int, channel:int): bool {
    // only 128 midi notes
    note = clip(note, 0, 127);
    val isNew : bool = notes[note] <= 0;
-   if (not(ignoreDuplicates) || isNew) {
+   if (allowDuplicates || isNew) {
       // monophonic (default), save held notes, update state to bring it forth if already active
       if (not(poly)) {
          // already playing, turn off so we can bring it forth

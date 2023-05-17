@@ -236,7 +236,7 @@ void synthFM_Notes__ctx_type_0_init(synthFM_Notes__ctx_type_0 &_output_){
    int_init_array(128,0,_ctx.notes);
    _ctx.nb_notes = 0;
    int_init_array(128,0,_ctx.last_notes);
-   _ctx.ignoreDuplicates = false;
+   _ctx.allowDuplicates = false;
    synthFM_Notes_default(_ctx);
    
    return ;
@@ -299,7 +299,7 @@ uint8_t synthFM_Notes_noteOn(synthFM_Notes__ctx_type_0 &_ctx, int note, int velo
    note = int_clip(note,0,127);
    uint8_t isNew;
    isNew = (_ctx.notes[note] <= 0);
-   if(bool_not(_ctx.ignoreDuplicates) || isNew){
+   if(_ctx.allowDuplicates || isNew){
       if(bool_not(_ctx.poly)){
          if(bool_not(isNew)){
             synthFM_Notes_noteOff(_ctx,note,channel);
@@ -809,6 +809,7 @@ void synthFM_FM_default(synthFM_FM__ctx_type_0 &_ctx){
    synthFM_FM_setLevel(_ctx,0x10000 /* 1.000000 */);
    synthFM_FM_setFrequency(_ctx,0x70a3 /* 0.440000 */);
    synthFM_Notes_default(_ctx.playingnotes);
+   synthFM_Notes_setAllowDuplicates(_ctx.playingnotes,true);
    synthFM_FM_setPoly(_ctx,false);
 }
 
@@ -875,6 +876,7 @@ void synthFM_Voice__ctx_type_0_init(synthFM_Voice__ctx_type_0 &_output_){
    synthFM_Notes__ctx_type_0_init(_ctx.voicesactive);
    _ctx.voices_ratio = 0x0 /* 0.000000 */;
    int_init_array(4,0,_ctx.voices);
+   synthFM_Notes__ctx_type_0_init(_ctx.voiceinsactive);
    synthFM_Poly__ctx_type_0_init(_ctx.poly);
    _ctx.number_voices = 0;
    int_init_array(128,0,_ctx.notes);
@@ -1127,10 +1129,10 @@ void synthFM_Voice_default(synthFM_Voice__ctx_type_0 &_ctx){
    synthFM_Voice_setNbVoices(_ctx,_ctx.number_voices);
    synthFM_Notes_default(_ctx.voicesactive);
    synthFM_Notes_setPoly(_ctx.voicesactive,false);
-   synthFM_Notes_setIgnoreDuplicates(_ctx.voicesactive,true);
+   synthFM_Notes_setAllowDuplicates(_ctx.voicesactive,false);
    synthFM_Notes_default(_ctx.voicesinactive);
    synthFM_Notes_setPoly(_ctx.voicesinactive,false);
-   synthFM_Notes_setIgnoreDuplicates(_ctx.voicesinactive,true);
+   synthFM_Notes_setAllowDuplicates(_ctx.voiceinsactive,false);
    synthFM_Voice_setNormalize(_ctx,true);
    synthFM_Voice_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
 }

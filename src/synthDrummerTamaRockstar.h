@@ -649,7 +649,7 @@ typedef struct synthDrummerTamaRockstar_Notes__ctx_type_0 {
    int notes[128];
    int nb_notes;
    int last_notes[128];
-   uint8_t ignoreDuplicates;
+   uint8_t allowDuplicates;
 } synthDrummerTamaRockstar_Notes__ctx_type_0;
 
 typedef synthDrummerTamaRockstar_Notes__ctx_type_0 synthDrummerTamaRockstar_Notes_setPoly_type;
@@ -665,15 +665,15 @@ static_inline void synthDrummerTamaRockstar_Notes_setPoly(synthDrummerTamaRockst
    _ctx.poly = flag;
 };
 
-typedef synthDrummerTamaRockstar_Notes__ctx_type_0 synthDrummerTamaRockstar_Notes_setIgnoreDuplicates_type;
+typedef synthDrummerTamaRockstar_Notes__ctx_type_0 synthDrummerTamaRockstar_Notes_setAllowDuplicates_type;
 
-static_inline void synthDrummerTamaRockstar_Notes_setIgnoreDuplicates_init(synthDrummerTamaRockstar_Notes__ctx_type_0 &_output_){
+static_inline void synthDrummerTamaRockstar_Notes_setAllowDuplicates_init(synthDrummerTamaRockstar_Notes__ctx_type_0 &_output_){
    synthDrummerTamaRockstar_Notes__ctx_type_0_init(_output_);
    return ;
 }
 
-static_inline void synthDrummerTamaRockstar_Notes_setIgnoreDuplicates(synthDrummerTamaRockstar_Notes__ctx_type_0 &_ctx, uint8_t flag){
-   _ctx.ignoreDuplicates = flag;
+static_inline void synthDrummerTamaRockstar_Notes_setAllowDuplicates(synthDrummerTamaRockstar_Notes__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.allowDuplicates = flag;
 };
 
 typedef synthDrummerTamaRockstar_Notes__ctx_type_0 synthDrummerTamaRockstar_Notes_default_type;
@@ -685,7 +685,7 @@ static_inline void synthDrummerTamaRockstar_Notes_default_init(synthDrummerTamaR
 
 static_inline void synthDrummerTamaRockstar_Notes_default(synthDrummerTamaRockstar_Notes__ctx_type_0 &_ctx){
    synthDrummerTamaRockstar_Notes_setPoly(_ctx,false);
-   synthDrummerTamaRockstar_Notes_setIgnoreDuplicates(_ctx,false);
+   synthDrummerTamaRockstar_Notes_setAllowDuplicates(_ctx,false);
 }
 
 typedef synthDrummerTamaRockstar_Notes__ctx_type_0 synthDrummerTamaRockstar_Notes_nbNotes_type;
@@ -740,6 +740,7 @@ typedef struct synthDrummerTamaRockstar_Voice__ctx_type_0 {
    synthDrummerTamaRockstar_Notes__ctx_type_0 voicesactive;
    fix16_t voices_ratio;
    int voices[4];
+   synthDrummerTamaRockstar_Notes__ctx_type_0 voiceinsactive;
    synthDrummerTamaRockstar_Poly__ctx_type_0 poly;
    int number_voices;
    int notes[128];

@@ -649,7 +649,7 @@ typedef struct synthDrummerBbox_Notes__ctx_type_0 {
    int notes[128];
    int nb_notes;
    int last_notes[128];
-   uint8_t ignoreDuplicates;
+   uint8_t allowDuplicates;
 } synthDrummerBbox_Notes__ctx_type_0;
 
 typedef synthDrummerBbox_Notes__ctx_type_0 synthDrummerBbox_Notes_setPoly_type;
@@ -665,15 +665,15 @@ static_inline void synthDrummerBbox_Notes_setPoly(synthDrummerBbox_Notes__ctx_ty
    _ctx.poly = flag;
 };
 
-typedef synthDrummerBbox_Notes__ctx_type_0 synthDrummerBbox_Notes_setIgnoreDuplicates_type;
+typedef synthDrummerBbox_Notes__ctx_type_0 synthDrummerBbox_Notes_setAllowDuplicates_type;
 
-static_inline void synthDrummerBbox_Notes_setIgnoreDuplicates_init(synthDrummerBbox_Notes__ctx_type_0 &_output_){
+static_inline void synthDrummerBbox_Notes_setAllowDuplicates_init(synthDrummerBbox_Notes__ctx_type_0 &_output_){
    synthDrummerBbox_Notes__ctx_type_0_init(_output_);
    return ;
 }
 
-static_inline void synthDrummerBbox_Notes_setIgnoreDuplicates(synthDrummerBbox_Notes__ctx_type_0 &_ctx, uint8_t flag){
-   _ctx.ignoreDuplicates = flag;
+static_inline void synthDrummerBbox_Notes_setAllowDuplicates(synthDrummerBbox_Notes__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.allowDuplicates = flag;
 };
 
 typedef synthDrummerBbox_Notes__ctx_type_0 synthDrummerBbox_Notes_default_type;
@@ -685,7 +685,7 @@ static_inline void synthDrummerBbox_Notes_default_init(synthDrummerBbox_Notes__c
 
 static_inline void synthDrummerBbox_Notes_default(synthDrummerBbox_Notes__ctx_type_0 &_ctx){
    synthDrummerBbox_Notes_setPoly(_ctx,false);
-   synthDrummerBbox_Notes_setIgnoreDuplicates(_ctx,false);
+   synthDrummerBbox_Notes_setAllowDuplicates(_ctx,false);
 }
 
 typedef synthDrummerBbox_Notes__ctx_type_0 synthDrummerBbox_Notes_nbNotes_type;
@@ -740,6 +740,7 @@ typedef struct synthDrummerBbox_Voice__ctx_type_0 {
    synthDrummerBbox_Notes__ctx_type_0 voicesactive;
    fix16_t voices_ratio;
    int voices[4];
+   synthDrummerBbox_Notes__ctx_type_0 voiceinsactive;
    synthDrummerBbox_Poly__ctx_type_0 poly;
    int number_voices;
    int notes[128];

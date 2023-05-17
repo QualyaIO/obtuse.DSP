@@ -149,7 +149,7 @@ typedef struct synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 {
    int notes[128];
    int nb_notes;
    int last_notes[128];
-   uint8_t ignoreDuplicates;
+   uint8_t allowDuplicates;
 } synthSamplerGlassMarimbaSoft_Notes__ctx_type_0;
 
 typedef synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 synthSamplerGlassMarimbaSoft_Notes_setPoly_type;
@@ -165,15 +165,15 @@ static_inline void synthSamplerGlassMarimbaSoft_Notes_setPoly(synthSamplerGlassM
    _ctx.poly = flag;
 };
 
-typedef synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 synthSamplerGlassMarimbaSoft_Notes_setIgnoreDuplicates_type;
+typedef synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 synthSamplerGlassMarimbaSoft_Notes_setAllowDuplicates_type;
 
-static_inline void synthSamplerGlassMarimbaSoft_Notes_setIgnoreDuplicates_init(synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 &_output_){
+static_inline void synthSamplerGlassMarimbaSoft_Notes_setAllowDuplicates_init(synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 &_output_){
    synthSamplerGlassMarimbaSoft_Notes__ctx_type_0_init(_output_);
    return ;
 }
 
-static_inline void synthSamplerGlassMarimbaSoft_Notes_setIgnoreDuplicates(synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 &_ctx, uint8_t flag){
-   _ctx.ignoreDuplicates = flag;
+static_inline void synthSamplerGlassMarimbaSoft_Notes_setAllowDuplicates(synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.allowDuplicates = flag;
 };
 
 typedef synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 synthSamplerGlassMarimbaSoft_Notes_default_type;
@@ -185,7 +185,7 @@ static_inline void synthSamplerGlassMarimbaSoft_Notes_default_init(synthSamplerG
 
 static_inline void synthSamplerGlassMarimbaSoft_Notes_default(synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 &_ctx){
    synthSamplerGlassMarimbaSoft_Notes_setPoly(_ctx,false);
-   synthSamplerGlassMarimbaSoft_Notes_setIgnoreDuplicates(_ctx,false);
+   synthSamplerGlassMarimbaSoft_Notes_setAllowDuplicates(_ctx,false);
 }
 
 typedef synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 synthSamplerGlassMarimbaSoft_Notes_nbNotes_type;
@@ -857,6 +857,7 @@ typedef struct synthSamplerGlassMarimbaSoft_Voice__ctx_type_0 {
    synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 voicesactive;
    fix16_t voices_ratio;
    int voices[4];
+   synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 voiceinsactive;
    synthSamplerGlassMarimbaSoft_Poly__ctx_type_0 poly;
    int number_voices;
    int notes[128];

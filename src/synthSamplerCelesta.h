@@ -149,7 +149,7 @@ typedef struct synthSamplerCelesta_Notes__ctx_type_0 {
    int notes[128];
    int nb_notes;
    int last_notes[128];
-   uint8_t ignoreDuplicates;
+   uint8_t allowDuplicates;
 } synthSamplerCelesta_Notes__ctx_type_0;
 
 typedef synthSamplerCelesta_Notes__ctx_type_0 synthSamplerCelesta_Notes_setPoly_type;
@@ -165,15 +165,15 @@ static_inline void synthSamplerCelesta_Notes_setPoly(synthSamplerCelesta_Notes__
    _ctx.poly = flag;
 };
 
-typedef synthSamplerCelesta_Notes__ctx_type_0 synthSamplerCelesta_Notes_setIgnoreDuplicates_type;
+typedef synthSamplerCelesta_Notes__ctx_type_0 synthSamplerCelesta_Notes_setAllowDuplicates_type;
 
-static_inline void synthSamplerCelesta_Notes_setIgnoreDuplicates_init(synthSamplerCelesta_Notes__ctx_type_0 &_output_){
+static_inline void synthSamplerCelesta_Notes_setAllowDuplicates_init(synthSamplerCelesta_Notes__ctx_type_0 &_output_){
    synthSamplerCelesta_Notes__ctx_type_0_init(_output_);
    return ;
 }
 
-static_inline void synthSamplerCelesta_Notes_setIgnoreDuplicates(synthSamplerCelesta_Notes__ctx_type_0 &_ctx, uint8_t flag){
-   _ctx.ignoreDuplicates = flag;
+static_inline void synthSamplerCelesta_Notes_setAllowDuplicates(synthSamplerCelesta_Notes__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.allowDuplicates = flag;
 };
 
 typedef synthSamplerCelesta_Notes__ctx_type_0 synthSamplerCelesta_Notes_default_type;
@@ -185,7 +185,7 @@ static_inline void synthSamplerCelesta_Notes_default_init(synthSamplerCelesta_No
 
 static_inline void synthSamplerCelesta_Notes_default(synthSamplerCelesta_Notes__ctx_type_0 &_ctx){
    synthSamplerCelesta_Notes_setPoly(_ctx,false);
-   synthSamplerCelesta_Notes_setIgnoreDuplicates(_ctx,false);
+   synthSamplerCelesta_Notes_setAllowDuplicates(_ctx,false);
 }
 
 typedef synthSamplerCelesta_Notes__ctx_type_0 synthSamplerCelesta_Notes_nbNotes_type;
@@ -857,6 +857,7 @@ typedef struct synthSamplerCelesta_Voice__ctx_type_0 {
    synthSamplerCelesta_Notes__ctx_type_0 voicesactive;
    fix16_t voices_ratio;
    int voices[4];
+   synthSamplerCelesta_Notes__ctx_type_0 voiceinsactive;
    synthSamplerCelesta_Poly__ctx_type_0 poly;
    int number_voices;
    int notes[128];

@@ -344,8 +344,9 @@ and default() @[init] {
   // default frequency (in kHz)
   _ = setNote(69);
 
-  // monophonic by default
+  // monophonic by default, we allow retrigger
   _ = playingnotes:Notes.default();
+  _ = playingnotes:Notes.setAllowDuplicates(true);
   _ = setPoly(false);
 }
 

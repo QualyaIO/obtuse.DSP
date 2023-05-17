@@ -8,7 +8,7 @@ void synthSamplerMysticVibes_Notes__ctx_type_0_init(synthSamplerMysticVibes_Note
    int_init_array(128,0,_ctx.notes);
    _ctx.nb_notes = 0;
    int_init_array(128,0,_ctx.last_notes);
-   _ctx.ignoreDuplicates = false;
+   _ctx.allowDuplicates = false;
    synthSamplerMysticVibes_Notes_default(_ctx);
    
    return ;
@@ -71,7 +71,7 @@ uint8_t synthSamplerMysticVibes_Notes_noteOn(synthSamplerMysticVibes_Notes__ctx_
    note = int_clip(note,0,127);
    uint8_t isNew;
    isNew = (_ctx.notes[note] <= 0);
-   if(bool_not(_ctx.ignoreDuplicates) || isNew){
+   if(_ctx.allowDuplicates || isNew){
       if(bool_not(_ctx.poly)){
          if(bool_not(isNew)){
             synthSamplerMysticVibes_Notes_noteOff(_ctx,note,channel);
@@ -347,6 +347,7 @@ void synthSamplerMysticVibes_Sampler_default(synthSamplerMysticVibes_Sampler__ct
    synthSamplerMysticVibes_Sampler_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    synthSamplerMysticVibes_Sampler_setNote(_ctx,69);
    synthSamplerMysticVibes_Notes_default(_ctx.playingnotes);
+   synthSamplerMysticVibes_Notes_setAllowDuplicates(_ctx.playingnotes,true);
    synthSamplerMysticVibes_Sampler_setPoly(_ctx,false);
 }
 
@@ -399,6 +400,7 @@ void synthSamplerMysticVibes_Voice__ctx_type_0_init(synthSamplerMysticVibes_Voic
    synthSamplerMysticVibes_Notes__ctx_type_0_init(_ctx.voicesactive);
    _ctx.voices_ratio = 0x0 /* 0.000000 */;
    int_init_array(4,0,_ctx.voices);
+   synthSamplerMysticVibes_Notes__ctx_type_0_init(_ctx.voiceinsactive);
    synthSamplerMysticVibes_Poly__ctx_type_0_init(_ctx.poly);
    _ctx.number_voices = 0;
    int_init_array(128,0,_ctx.notes);
@@ -651,10 +653,10 @@ void synthSamplerMysticVibes_Voice_default(synthSamplerMysticVibes_Voice__ctx_ty
    synthSamplerMysticVibes_Voice_setNbVoices(_ctx,_ctx.number_voices);
    synthSamplerMysticVibes_Notes_default(_ctx.voicesactive);
    synthSamplerMysticVibes_Notes_setPoly(_ctx.voicesactive,false);
-   synthSamplerMysticVibes_Notes_setIgnoreDuplicates(_ctx.voicesactive,true);
+   synthSamplerMysticVibes_Notes_setAllowDuplicates(_ctx.voicesactive,false);
    synthSamplerMysticVibes_Notes_default(_ctx.voicesinactive);
    synthSamplerMysticVibes_Notes_setPoly(_ctx.voicesinactive,false);
-   synthSamplerMysticVibes_Notes_setIgnoreDuplicates(_ctx.voicesinactive,true);
+   synthSamplerMysticVibes_Notes_setAllowDuplicates(_ctx.voiceinsactive,false);
    synthSamplerMysticVibes_Voice_setNormalize(_ctx,true);
    synthSamplerMysticVibes_Voice_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
 }

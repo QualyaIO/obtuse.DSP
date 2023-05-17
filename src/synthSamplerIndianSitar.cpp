@@ -8,7 +8,7 @@ void synthSamplerIndianSitar_Notes__ctx_type_0_init(synthSamplerIndianSitar_Note
    int_init_array(128,0,_ctx.notes);
    _ctx.nb_notes = 0;
    int_init_array(128,0,_ctx.last_notes);
-   _ctx.ignoreDuplicates = false;
+   _ctx.allowDuplicates = false;
    synthSamplerIndianSitar_Notes_default(_ctx);
    
    return ;
@@ -71,7 +71,7 @@ uint8_t synthSamplerIndianSitar_Notes_noteOn(synthSamplerIndianSitar_Notes__ctx_
    note = int_clip(note,0,127);
    uint8_t isNew;
    isNew = (_ctx.notes[note] <= 0);
-   if(bool_not(_ctx.ignoreDuplicates) || isNew){
+   if(_ctx.allowDuplicates || isNew){
       if(bool_not(_ctx.poly)){
          if(bool_not(isNew)){
             synthSamplerIndianSitar_Notes_noteOff(_ctx,note,channel);
@@ -347,6 +347,7 @@ void synthSamplerIndianSitar_Sampler_default(synthSamplerIndianSitar_Sampler__ct
    synthSamplerIndianSitar_Sampler_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    synthSamplerIndianSitar_Sampler_setNote(_ctx,69);
    synthSamplerIndianSitar_Notes_default(_ctx.playingnotes);
+   synthSamplerIndianSitar_Notes_setAllowDuplicates(_ctx.playingnotes,true);
    synthSamplerIndianSitar_Sampler_setPoly(_ctx,false);
 }
 
@@ -399,6 +400,7 @@ void synthSamplerIndianSitar_Voice__ctx_type_0_init(synthSamplerIndianSitar_Voic
    synthSamplerIndianSitar_Notes__ctx_type_0_init(_ctx.voicesactive);
    _ctx.voices_ratio = 0x0 /* 0.000000 */;
    int_init_array(4,0,_ctx.voices);
+   synthSamplerIndianSitar_Notes__ctx_type_0_init(_ctx.voiceinsactive);
    synthSamplerIndianSitar_Poly__ctx_type_0_init(_ctx.poly);
    _ctx.number_voices = 0;
    int_init_array(128,0,_ctx.notes);
@@ -651,10 +653,10 @@ void synthSamplerIndianSitar_Voice_default(synthSamplerIndianSitar_Voice__ctx_ty
    synthSamplerIndianSitar_Voice_setNbVoices(_ctx,_ctx.number_voices);
    synthSamplerIndianSitar_Notes_default(_ctx.voicesactive);
    synthSamplerIndianSitar_Notes_setPoly(_ctx.voicesactive,false);
-   synthSamplerIndianSitar_Notes_setIgnoreDuplicates(_ctx.voicesactive,true);
+   synthSamplerIndianSitar_Notes_setAllowDuplicates(_ctx.voicesactive,false);
    synthSamplerIndianSitar_Notes_default(_ctx.voicesinactive);
    synthSamplerIndianSitar_Notes_setPoly(_ctx.voicesinactive,false);
-   synthSamplerIndianSitar_Notes_setIgnoreDuplicates(_ctx.voicesinactive,true);
+   synthSamplerIndianSitar_Notes_setAllowDuplicates(_ctx.voiceinsactive,false);
    synthSamplerIndianSitar_Voice_setNormalize(_ctx,true);
    synthSamplerIndianSitar_Voice_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
 }

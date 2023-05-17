@@ -426,11 +426,11 @@ and default() @[init] {
    // monophonic algo used to keep track of active voices...
    _ = voicesactive:Notes.default();
    _ = voicesactive:Notes.setPoly(false);
-   _ = voicesactive:Notes.setIgnoreDuplicates(true);
+   _ = voicesactive:Notes.setAllowDuplicates(false);
    // and same for disabled voices
    _ = voicesinactive:Notes.default();
    _ = voicesinactive:Notes.setPoly(false);
-   _ = voicesinactive:Notes.setIgnoreDuplicates(true);
+   _ = voiceinsactive:Notes.setAllowDuplicates(false);
 
    _ = setNormalize(true);
    _ = setSamplerate(44.1);

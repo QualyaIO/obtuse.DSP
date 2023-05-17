@@ -272,7 +272,7 @@ void synthDrummer_Notes__ctx_type_0_init(synthDrummer_Notes__ctx_type_0 &_output
    int_init_array(128,0,_ctx.notes);
    _ctx.nb_notes = 0;
    int_init_array(128,0,_ctx.last_notes);
-   _ctx.ignoreDuplicates = false;
+   _ctx.allowDuplicates = false;
    synthDrummer_Notes_default(_ctx);
    
    return ;
@@ -335,7 +335,7 @@ uint8_t synthDrummer_Notes_noteOn(synthDrummer_Notes__ctx_type_0 &_ctx, int note
    note = int_clip(note,0,127);
    uint8_t isNew;
    isNew = (_ctx.notes[note] <= 0);
-   if(bool_not(_ctx.ignoreDuplicates) || isNew){
+   if(_ctx.allowDuplicates || isNew){
       if(bool_not(_ctx.poly)){
          if(bool_not(isNew)){
             synthDrummer_Notes_noteOff(_ctx,note,channel);
@@ -366,6 +366,7 @@ void synthDrummer_Voice__ctx_type_0_init(synthDrummer_Voice__ctx_type_0 &_output
    synthDrummer_Notes__ctx_type_0_init(_ctx.voicesactive);
    _ctx.voices_ratio = 0x0 /* 0.000000 */;
    int_init_array(4,0,_ctx.voices);
+   synthDrummer_Notes__ctx_type_0_init(_ctx.voiceinsactive);
    synthDrummer_Poly__ctx_type_0_init(_ctx.poly);
    _ctx.number_voices = 0;
    int_init_array(128,0,_ctx.notes);
@@ -618,10 +619,10 @@ void synthDrummer_Voice_default(synthDrummer_Voice__ctx_type_0 &_ctx){
    synthDrummer_Voice_setNbVoices(_ctx,_ctx.number_voices);
    synthDrummer_Notes_default(_ctx.voicesactive);
    synthDrummer_Notes_setPoly(_ctx.voicesactive,false);
-   synthDrummer_Notes_setIgnoreDuplicates(_ctx.voicesactive,true);
+   synthDrummer_Notes_setAllowDuplicates(_ctx.voicesactive,false);
    synthDrummer_Notes_default(_ctx.voicesinactive);
    synthDrummer_Notes_setPoly(_ctx.voicesinactive,false);
-   synthDrummer_Notes_setIgnoreDuplicates(_ctx.voicesinactive,true);
+   synthDrummer_Notes_setAllowDuplicates(_ctx.voiceinsactive,false);
    synthDrummer_Voice_setNormalize(_ctx,true);
    synthDrummer_Voice_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
 }

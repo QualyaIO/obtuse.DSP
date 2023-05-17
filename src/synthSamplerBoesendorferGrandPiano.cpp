@@ -8,7 +8,7 @@ void synthSamplerBoesendorferGrandPiano_Notes__ctx_type_0_init(synthSamplerBoese
    int_init_array(128,0,_ctx.notes);
    _ctx.nb_notes = 0;
    int_init_array(128,0,_ctx.last_notes);
-   _ctx.ignoreDuplicates = false;
+   _ctx.allowDuplicates = false;
    synthSamplerBoesendorferGrandPiano_Notes_default(_ctx);
    
    return ;
@@ -71,7 +71,7 @@ uint8_t synthSamplerBoesendorferGrandPiano_Notes_noteOn(synthSamplerBoesendorfer
    note = int_clip(note,0,127);
    uint8_t isNew;
    isNew = (_ctx.notes[note] <= 0);
-   if(bool_not(_ctx.ignoreDuplicates) || isNew){
+   if(_ctx.allowDuplicates || isNew){
       if(bool_not(_ctx.poly)){
          if(bool_not(isNew)){
             synthSamplerBoesendorferGrandPiano_Notes_noteOff(_ctx,note,channel);
@@ -347,6 +347,7 @@ void synthSamplerBoesendorferGrandPiano_Sampler_default(synthSamplerBoesendorfer
    synthSamplerBoesendorferGrandPiano_Sampler_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    synthSamplerBoesendorferGrandPiano_Sampler_setNote(_ctx,69);
    synthSamplerBoesendorferGrandPiano_Notes_default(_ctx.playingnotes);
+   synthSamplerBoesendorferGrandPiano_Notes_setAllowDuplicates(_ctx.playingnotes,true);
    synthSamplerBoesendorferGrandPiano_Sampler_setPoly(_ctx,false);
 }
 
@@ -399,6 +400,7 @@ void synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0_init(synthSamplerBoese
    synthSamplerBoesendorferGrandPiano_Notes__ctx_type_0_init(_ctx.voicesactive);
    _ctx.voices_ratio = 0x0 /* 0.000000 */;
    int_init_array(4,0,_ctx.voices);
+   synthSamplerBoesendorferGrandPiano_Notes__ctx_type_0_init(_ctx.voiceinsactive);
    synthSamplerBoesendorferGrandPiano_Poly__ctx_type_0_init(_ctx.poly);
    _ctx.number_voices = 0;
    int_init_array(128,0,_ctx.notes);
@@ -651,10 +653,10 @@ void synthSamplerBoesendorferGrandPiano_Voice_default(synthSamplerBoesendorferGr
    synthSamplerBoesendorferGrandPiano_Voice_setNbVoices(_ctx,_ctx.number_voices);
    synthSamplerBoesendorferGrandPiano_Notes_default(_ctx.voicesactive);
    synthSamplerBoesendorferGrandPiano_Notes_setPoly(_ctx.voicesactive,false);
-   synthSamplerBoesendorferGrandPiano_Notes_setIgnoreDuplicates(_ctx.voicesactive,true);
+   synthSamplerBoesendorferGrandPiano_Notes_setAllowDuplicates(_ctx.voicesactive,false);
    synthSamplerBoesendorferGrandPiano_Notes_default(_ctx.voicesinactive);
    synthSamplerBoesendorferGrandPiano_Notes_setPoly(_ctx.voicesinactive,false);
-   synthSamplerBoesendorferGrandPiano_Notes_setIgnoreDuplicates(_ctx.voicesinactive,true);
+   synthSamplerBoesendorferGrandPiano_Notes_setAllowDuplicates(_ctx.voiceinsactive,false);
    synthSamplerBoesendorferGrandPiano_Voice_setNormalize(_ctx,true);
    synthSamplerBoesendorferGrandPiano_Voice_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
 }

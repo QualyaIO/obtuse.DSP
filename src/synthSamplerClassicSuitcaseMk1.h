@@ -149,7 +149,7 @@ typedef struct synthSamplerClassicSuitcaseMk1_Notes__ctx_type_0 {
    int notes[128];
    int nb_notes;
    int last_notes[128];
-   uint8_t ignoreDuplicates;
+   uint8_t allowDuplicates;
 } synthSamplerClassicSuitcaseMk1_Notes__ctx_type_0;
 
 typedef synthSamplerClassicSuitcaseMk1_Notes__ctx_type_0 synthSamplerClassicSuitcaseMk1_Notes_setPoly_type;
@@ -165,15 +165,15 @@ static_inline void synthSamplerClassicSuitcaseMk1_Notes_setPoly(synthSamplerClas
    _ctx.poly = flag;
 };
 
-typedef synthSamplerClassicSuitcaseMk1_Notes__ctx_type_0 synthSamplerClassicSuitcaseMk1_Notes_setIgnoreDuplicates_type;
+typedef synthSamplerClassicSuitcaseMk1_Notes__ctx_type_0 synthSamplerClassicSuitcaseMk1_Notes_setAllowDuplicates_type;
 
-static_inline void synthSamplerClassicSuitcaseMk1_Notes_setIgnoreDuplicates_init(synthSamplerClassicSuitcaseMk1_Notes__ctx_type_0 &_output_){
+static_inline void synthSamplerClassicSuitcaseMk1_Notes_setAllowDuplicates_init(synthSamplerClassicSuitcaseMk1_Notes__ctx_type_0 &_output_){
    synthSamplerClassicSuitcaseMk1_Notes__ctx_type_0_init(_output_);
    return ;
 }
 
-static_inline void synthSamplerClassicSuitcaseMk1_Notes_setIgnoreDuplicates(synthSamplerClassicSuitcaseMk1_Notes__ctx_type_0 &_ctx, uint8_t flag){
-   _ctx.ignoreDuplicates = flag;
+static_inline void synthSamplerClassicSuitcaseMk1_Notes_setAllowDuplicates(synthSamplerClassicSuitcaseMk1_Notes__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.allowDuplicates = flag;
 };
 
 typedef synthSamplerClassicSuitcaseMk1_Notes__ctx_type_0 synthSamplerClassicSuitcaseMk1_Notes_default_type;
@@ -185,7 +185,7 @@ static_inline void synthSamplerClassicSuitcaseMk1_Notes_default_init(synthSample
 
 static_inline void synthSamplerClassicSuitcaseMk1_Notes_default(synthSamplerClassicSuitcaseMk1_Notes__ctx_type_0 &_ctx){
    synthSamplerClassicSuitcaseMk1_Notes_setPoly(_ctx,false);
-   synthSamplerClassicSuitcaseMk1_Notes_setIgnoreDuplicates(_ctx,false);
+   synthSamplerClassicSuitcaseMk1_Notes_setAllowDuplicates(_ctx,false);
 }
 
 typedef synthSamplerClassicSuitcaseMk1_Notes__ctx_type_0 synthSamplerClassicSuitcaseMk1_Notes_nbNotes_type;
@@ -857,6 +857,7 @@ typedef struct synthSamplerClassicSuitcaseMk1_Voice__ctx_type_0 {
    synthSamplerClassicSuitcaseMk1_Notes__ctx_type_0 voicesactive;
    fix16_t voices_ratio;
    int voices[4];
+   synthSamplerClassicSuitcaseMk1_Notes__ctx_type_0 voiceinsactive;
    synthSamplerClassicSuitcaseMk1_Poly__ctx_type_0 poly;
    int number_voices;
    int notes[128];

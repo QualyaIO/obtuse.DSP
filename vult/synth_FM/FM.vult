@@ -361,8 +361,9 @@ and default() @[init] {
     // sarting with LA
     _ = setFrequency(0.440);
 
-    // monophonic by default
+    // monophonic by default, we allow retrigger
     _ = playingnotes:Notes.default();
+    _ = playingnotes:Notes.setAllowDuplicates(true);
     _ = setPoly(false);
 }
 

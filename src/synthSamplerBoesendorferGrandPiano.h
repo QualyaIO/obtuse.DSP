@@ -149,7 +149,7 @@ typedef struct synthSamplerBoesendorferGrandPiano_Notes__ctx_type_0 {
    int notes[128];
    int nb_notes;
    int last_notes[128];
-   uint8_t ignoreDuplicates;
+   uint8_t allowDuplicates;
 } synthSamplerBoesendorferGrandPiano_Notes__ctx_type_0;
 
 typedef synthSamplerBoesendorferGrandPiano_Notes__ctx_type_0 synthSamplerBoesendorferGrandPiano_Notes_setPoly_type;
@@ -165,15 +165,15 @@ static_inline void synthSamplerBoesendorferGrandPiano_Notes_setPoly(synthSampler
    _ctx.poly = flag;
 };
 
-typedef synthSamplerBoesendorferGrandPiano_Notes__ctx_type_0 synthSamplerBoesendorferGrandPiano_Notes_setIgnoreDuplicates_type;
+typedef synthSamplerBoesendorferGrandPiano_Notes__ctx_type_0 synthSamplerBoesendorferGrandPiano_Notes_setAllowDuplicates_type;
 
-static_inline void synthSamplerBoesendorferGrandPiano_Notes_setIgnoreDuplicates_init(synthSamplerBoesendorferGrandPiano_Notes__ctx_type_0 &_output_){
+static_inline void synthSamplerBoesendorferGrandPiano_Notes_setAllowDuplicates_init(synthSamplerBoesendorferGrandPiano_Notes__ctx_type_0 &_output_){
    synthSamplerBoesendorferGrandPiano_Notes__ctx_type_0_init(_output_);
    return ;
 }
 
-static_inline void synthSamplerBoesendorferGrandPiano_Notes_setIgnoreDuplicates(synthSamplerBoesendorferGrandPiano_Notes__ctx_type_0 &_ctx, uint8_t flag){
-   _ctx.ignoreDuplicates = flag;
+static_inline void synthSamplerBoesendorferGrandPiano_Notes_setAllowDuplicates(synthSamplerBoesendorferGrandPiano_Notes__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.allowDuplicates = flag;
 };
 
 typedef synthSamplerBoesendorferGrandPiano_Notes__ctx_type_0 synthSamplerBoesendorferGrandPiano_Notes_default_type;
@@ -185,7 +185,7 @@ static_inline void synthSamplerBoesendorferGrandPiano_Notes_default_init(synthSa
 
 static_inline void synthSamplerBoesendorferGrandPiano_Notes_default(synthSamplerBoesendorferGrandPiano_Notes__ctx_type_0 &_ctx){
    synthSamplerBoesendorferGrandPiano_Notes_setPoly(_ctx,false);
-   synthSamplerBoesendorferGrandPiano_Notes_setIgnoreDuplicates(_ctx,false);
+   synthSamplerBoesendorferGrandPiano_Notes_setAllowDuplicates(_ctx,false);
 }
 
 typedef synthSamplerBoesendorferGrandPiano_Notes__ctx_type_0 synthSamplerBoesendorferGrandPiano_Notes_nbNotes_type;
@@ -857,6 +857,7 @@ typedef struct synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0 {
    synthSamplerBoesendorferGrandPiano_Notes__ctx_type_0 voicesactive;
    fix16_t voices_ratio;
    int voices[4];
+   synthSamplerBoesendorferGrandPiano_Notes__ctx_type_0 voiceinsactive;
    synthSamplerBoesendorferGrandPiano_Poly__ctx_type_0 poly;
    int number_voices;
    int notes[128];

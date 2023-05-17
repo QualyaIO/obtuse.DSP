@@ -8,7 +8,7 @@ void synthSamplerKoto_Notes__ctx_type_0_init(synthSamplerKoto_Notes__ctx_type_0 
    int_init_array(128,0,_ctx.notes);
    _ctx.nb_notes = 0;
    int_init_array(128,0,_ctx.last_notes);
-   _ctx.ignoreDuplicates = false;
+   _ctx.allowDuplicates = false;
    synthSamplerKoto_Notes_default(_ctx);
    
    return ;
@@ -71,7 +71,7 @@ uint8_t synthSamplerKoto_Notes_noteOn(synthSamplerKoto_Notes__ctx_type_0 &_ctx, 
    note = int_clip(note,0,127);
    uint8_t isNew;
    isNew = (_ctx.notes[note] <= 0);
-   if(bool_not(_ctx.ignoreDuplicates) || isNew){
+   if(_ctx.allowDuplicates || isNew){
       if(bool_not(_ctx.poly)){
          if(bool_not(isNew)){
             synthSamplerKoto_Notes_noteOff(_ctx,note,channel);
@@ -347,6 +347,7 @@ void synthSamplerKoto_Sampler_default(synthSamplerKoto_Sampler__ctx_type_0 &_ctx
    synthSamplerKoto_Sampler_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    synthSamplerKoto_Sampler_setNote(_ctx,69);
    synthSamplerKoto_Notes_default(_ctx.playingnotes);
+   synthSamplerKoto_Notes_setAllowDuplicates(_ctx.playingnotes,true);
    synthSamplerKoto_Sampler_setPoly(_ctx,false);
 }
 
@@ -399,6 +400,7 @@ void synthSamplerKoto_Voice__ctx_type_0_init(synthSamplerKoto_Voice__ctx_type_0 
    synthSamplerKoto_Notes__ctx_type_0_init(_ctx.voicesactive);
    _ctx.voices_ratio = 0x0 /* 0.000000 */;
    int_init_array(4,0,_ctx.voices);
+   synthSamplerKoto_Notes__ctx_type_0_init(_ctx.voiceinsactive);
    synthSamplerKoto_Poly__ctx_type_0_init(_ctx.poly);
    _ctx.number_voices = 0;
    int_init_array(128,0,_ctx.notes);
@@ -651,10 +653,10 @@ void synthSamplerKoto_Voice_default(synthSamplerKoto_Voice__ctx_type_0 &_ctx){
    synthSamplerKoto_Voice_setNbVoices(_ctx,_ctx.number_voices);
    synthSamplerKoto_Notes_default(_ctx.voicesactive);
    synthSamplerKoto_Notes_setPoly(_ctx.voicesactive,false);
-   synthSamplerKoto_Notes_setIgnoreDuplicates(_ctx.voicesactive,true);
+   synthSamplerKoto_Notes_setAllowDuplicates(_ctx.voicesactive,false);
    synthSamplerKoto_Notes_default(_ctx.voicesinactive);
    synthSamplerKoto_Notes_setPoly(_ctx.voicesinactive,false);
-   synthSamplerKoto_Notes_setIgnoreDuplicates(_ctx.voicesinactive,true);
+   synthSamplerKoto_Notes_setAllowDuplicates(_ctx.voiceinsactive,false);
    synthSamplerKoto_Voice_setNormalize(_ctx,true);
    synthSamplerKoto_Voice_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
 }

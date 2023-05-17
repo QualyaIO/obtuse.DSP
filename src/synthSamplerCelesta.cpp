@@ -8,7 +8,7 @@ void synthSamplerCelesta_Notes__ctx_type_0_init(synthSamplerCelesta_Notes__ctx_t
    int_init_array(128,0,_ctx.notes);
    _ctx.nb_notes = 0;
    int_init_array(128,0,_ctx.last_notes);
-   _ctx.ignoreDuplicates = false;
+   _ctx.allowDuplicates = false;
    synthSamplerCelesta_Notes_default(_ctx);
    
    return ;
@@ -71,7 +71,7 @@ uint8_t synthSamplerCelesta_Notes_noteOn(synthSamplerCelesta_Notes__ctx_type_0 &
    note = int_clip(note,0,127);
    uint8_t isNew;
    isNew = (_ctx.notes[note] <= 0);
-   if(bool_not(_ctx.ignoreDuplicates) || isNew){
+   if(_ctx.allowDuplicates || isNew){
       if(bool_not(_ctx.poly)){
          if(bool_not(isNew)){
             synthSamplerCelesta_Notes_noteOff(_ctx,note,channel);
@@ -347,6 +347,7 @@ void synthSamplerCelesta_Sampler_default(synthSamplerCelesta_Sampler__ctx_type_0
    synthSamplerCelesta_Sampler_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    synthSamplerCelesta_Sampler_setNote(_ctx,69);
    synthSamplerCelesta_Notes_default(_ctx.playingnotes);
+   synthSamplerCelesta_Notes_setAllowDuplicates(_ctx.playingnotes,true);
    synthSamplerCelesta_Sampler_setPoly(_ctx,false);
 }
 
@@ -399,6 +400,7 @@ void synthSamplerCelesta_Voice__ctx_type_0_init(synthSamplerCelesta_Voice__ctx_t
    synthSamplerCelesta_Notes__ctx_type_0_init(_ctx.voicesactive);
    _ctx.voices_ratio = 0x0 /* 0.000000 */;
    int_init_array(4,0,_ctx.voices);
+   synthSamplerCelesta_Notes__ctx_type_0_init(_ctx.voiceinsactive);
    synthSamplerCelesta_Poly__ctx_type_0_init(_ctx.poly);
    _ctx.number_voices = 0;
    int_init_array(128,0,_ctx.notes);
@@ -651,10 +653,10 @@ void synthSamplerCelesta_Voice_default(synthSamplerCelesta_Voice__ctx_type_0 &_c
    synthSamplerCelesta_Voice_setNbVoices(_ctx,_ctx.number_voices);
    synthSamplerCelesta_Notes_default(_ctx.voicesactive);
    synthSamplerCelesta_Notes_setPoly(_ctx.voicesactive,false);
-   synthSamplerCelesta_Notes_setIgnoreDuplicates(_ctx.voicesactive,true);
+   synthSamplerCelesta_Notes_setAllowDuplicates(_ctx.voicesactive,false);
    synthSamplerCelesta_Notes_default(_ctx.voicesinactive);
    synthSamplerCelesta_Notes_setPoly(_ctx.voicesinactive,false);
-   synthSamplerCelesta_Notes_setIgnoreDuplicates(_ctx.voicesinactive,true);
+   synthSamplerCelesta_Notes_setAllowDuplicates(_ctx.voiceinsactive,false);
    synthSamplerCelesta_Voice_setNormalize(_ctx,true);
    synthSamplerCelesta_Voice_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
 }

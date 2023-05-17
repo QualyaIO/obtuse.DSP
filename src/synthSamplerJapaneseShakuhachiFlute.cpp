@@ -8,7 +8,7 @@ void synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0_init(synthSamplerJapa
    int_init_array(128,0,_ctx.notes);
    _ctx.nb_notes = 0;
    int_init_array(128,0,_ctx.last_notes);
-   _ctx.ignoreDuplicates = false;
+   _ctx.allowDuplicates = false;
    synthSamplerJapaneseShakuhachiFlute_Notes_default(_ctx);
    
    return ;
@@ -71,7 +71,7 @@ uint8_t synthSamplerJapaneseShakuhachiFlute_Notes_noteOn(synthSamplerJapaneseSha
    note = int_clip(note,0,127);
    uint8_t isNew;
    isNew = (_ctx.notes[note] <= 0);
-   if(bool_not(_ctx.ignoreDuplicates) || isNew){
+   if(_ctx.allowDuplicates || isNew){
       if(bool_not(_ctx.poly)){
          if(bool_not(isNew)){
             synthSamplerJapaneseShakuhachiFlute_Notes_noteOff(_ctx,note,channel);
@@ -347,6 +347,7 @@ void synthSamplerJapaneseShakuhachiFlute_Sampler_default(synthSamplerJapaneseSha
    synthSamplerJapaneseShakuhachiFlute_Sampler_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    synthSamplerJapaneseShakuhachiFlute_Sampler_setNote(_ctx,69);
    synthSamplerJapaneseShakuhachiFlute_Notes_default(_ctx.playingnotes);
+   synthSamplerJapaneseShakuhachiFlute_Notes_setAllowDuplicates(_ctx.playingnotes,true);
    synthSamplerJapaneseShakuhachiFlute_Sampler_setPoly(_ctx,false);
 }
 
@@ -399,6 +400,7 @@ void synthSamplerJapaneseShakuhachiFlute_Voice__ctx_type_0_init(synthSamplerJapa
    synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0_init(_ctx.voicesactive);
    _ctx.voices_ratio = 0x0 /* 0.000000 */;
    int_init_array(4,0,_ctx.voices);
+   synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0_init(_ctx.voiceinsactive);
    synthSamplerJapaneseShakuhachiFlute_Poly__ctx_type_0_init(_ctx.poly);
    _ctx.number_voices = 0;
    int_init_array(128,0,_ctx.notes);
@@ -651,10 +653,10 @@ void synthSamplerJapaneseShakuhachiFlute_Voice_default(synthSamplerJapaneseShaku
    synthSamplerJapaneseShakuhachiFlute_Voice_setNbVoices(_ctx,_ctx.number_voices);
    synthSamplerJapaneseShakuhachiFlute_Notes_default(_ctx.voicesactive);
    synthSamplerJapaneseShakuhachiFlute_Notes_setPoly(_ctx.voicesactive,false);
-   synthSamplerJapaneseShakuhachiFlute_Notes_setIgnoreDuplicates(_ctx.voicesactive,true);
+   synthSamplerJapaneseShakuhachiFlute_Notes_setAllowDuplicates(_ctx.voicesactive,false);
    synthSamplerJapaneseShakuhachiFlute_Notes_default(_ctx.voicesinactive);
    synthSamplerJapaneseShakuhachiFlute_Notes_setPoly(_ctx.voicesinactive,false);
-   synthSamplerJapaneseShakuhachiFlute_Notes_setIgnoreDuplicates(_ctx.voicesinactive,true);
+   synthSamplerJapaneseShakuhachiFlute_Notes_setAllowDuplicates(_ctx.voiceinsactive,false);
    synthSamplerJapaneseShakuhachiFlute_Voice_setNormalize(_ctx,true);
    synthSamplerJapaneseShakuhachiFlute_Voice_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
 }

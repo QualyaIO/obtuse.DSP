@@ -8,7 +8,7 @@ void synthSamplerShootingStar_Notes__ctx_type_0_init(synthSamplerShootingStar_No
    int_init_array(128,0,_ctx.notes);
    _ctx.nb_notes = 0;
    int_init_array(128,0,_ctx.last_notes);
-   _ctx.ignoreDuplicates = false;
+   _ctx.allowDuplicates = false;
    synthSamplerShootingStar_Notes_default(_ctx);
    
    return ;
@@ -71,7 +71,7 @@ uint8_t synthSamplerShootingStar_Notes_noteOn(synthSamplerShootingStar_Notes__ct
    note = int_clip(note,0,127);
    uint8_t isNew;
    isNew = (_ctx.notes[note] <= 0);
-   if(bool_not(_ctx.ignoreDuplicates) || isNew){
+   if(_ctx.allowDuplicates || isNew){
       if(bool_not(_ctx.poly)){
          if(bool_not(isNew)){
             synthSamplerShootingStar_Notes_noteOff(_ctx,note,channel);
@@ -347,6 +347,7 @@ void synthSamplerShootingStar_Sampler_default(synthSamplerShootingStar_Sampler__
    synthSamplerShootingStar_Sampler_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    synthSamplerShootingStar_Sampler_setNote(_ctx,69);
    synthSamplerShootingStar_Notes_default(_ctx.playingnotes);
+   synthSamplerShootingStar_Notes_setAllowDuplicates(_ctx.playingnotes,true);
    synthSamplerShootingStar_Sampler_setPoly(_ctx,false);
 }
 
@@ -399,6 +400,7 @@ void synthSamplerShootingStar_Voice__ctx_type_0_init(synthSamplerShootingStar_Vo
    synthSamplerShootingStar_Notes__ctx_type_0_init(_ctx.voicesactive);
    _ctx.voices_ratio = 0x0 /* 0.000000 */;
    int_init_array(4,0,_ctx.voices);
+   synthSamplerShootingStar_Notes__ctx_type_0_init(_ctx.voiceinsactive);
    synthSamplerShootingStar_Poly__ctx_type_0_init(_ctx.poly);
    _ctx.number_voices = 0;
    int_init_array(128,0,_ctx.notes);
@@ -651,10 +653,10 @@ void synthSamplerShootingStar_Voice_default(synthSamplerShootingStar_Voice__ctx_
    synthSamplerShootingStar_Voice_setNbVoices(_ctx,_ctx.number_voices);
    synthSamplerShootingStar_Notes_default(_ctx.voicesactive);
    synthSamplerShootingStar_Notes_setPoly(_ctx.voicesactive,false);
-   synthSamplerShootingStar_Notes_setIgnoreDuplicates(_ctx.voicesactive,true);
+   synthSamplerShootingStar_Notes_setAllowDuplicates(_ctx.voicesactive,false);
    synthSamplerShootingStar_Notes_default(_ctx.voicesinactive);
    synthSamplerShootingStar_Notes_setPoly(_ctx.voicesinactive,false);
-   synthSamplerShootingStar_Notes_setIgnoreDuplicates(_ctx.voicesinactive,true);
+   synthSamplerShootingStar_Notes_setAllowDuplicates(_ctx.voiceinsactive,false);
    synthSamplerShootingStar_Voice_setNormalize(_ctx,true);
    synthSamplerShootingStar_Voice_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
 }

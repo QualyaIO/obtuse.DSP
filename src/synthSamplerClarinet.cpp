@@ -8,7 +8,7 @@ void synthSamplerClarinet_Notes__ctx_type_0_init(synthSamplerClarinet_Notes__ctx
    int_init_array(128,0,_ctx.notes);
    _ctx.nb_notes = 0;
    int_init_array(128,0,_ctx.last_notes);
-   _ctx.ignoreDuplicates = false;
+   _ctx.allowDuplicates = false;
    synthSamplerClarinet_Notes_default(_ctx);
    
    return ;
@@ -71,7 +71,7 @@ uint8_t synthSamplerClarinet_Notes_noteOn(synthSamplerClarinet_Notes__ctx_type_0
    note = int_clip(note,0,127);
    uint8_t isNew;
    isNew = (_ctx.notes[note] <= 0);
-   if(bool_not(_ctx.ignoreDuplicates) || isNew){
+   if(_ctx.allowDuplicates || isNew){
       if(bool_not(_ctx.poly)){
          if(bool_not(isNew)){
             synthSamplerClarinet_Notes_noteOff(_ctx,note,channel);
@@ -347,6 +347,7 @@ void synthSamplerClarinet_Sampler_default(synthSamplerClarinet_Sampler__ctx_type
    synthSamplerClarinet_Sampler_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    synthSamplerClarinet_Sampler_setNote(_ctx,69);
    synthSamplerClarinet_Notes_default(_ctx.playingnotes);
+   synthSamplerClarinet_Notes_setAllowDuplicates(_ctx.playingnotes,true);
    synthSamplerClarinet_Sampler_setPoly(_ctx,false);
 }
 
@@ -399,6 +400,7 @@ void synthSamplerClarinet_Voice__ctx_type_0_init(synthSamplerClarinet_Voice__ctx
    synthSamplerClarinet_Notes__ctx_type_0_init(_ctx.voicesactive);
    _ctx.voices_ratio = 0x0 /* 0.000000 */;
    int_init_array(4,0,_ctx.voices);
+   synthSamplerClarinet_Notes__ctx_type_0_init(_ctx.voiceinsactive);
    synthSamplerClarinet_Poly__ctx_type_0_init(_ctx.poly);
    _ctx.number_voices = 0;
    int_init_array(128,0,_ctx.notes);
@@ -651,10 +653,10 @@ void synthSamplerClarinet_Voice_default(synthSamplerClarinet_Voice__ctx_type_0 &
    synthSamplerClarinet_Voice_setNbVoices(_ctx,_ctx.number_voices);
    synthSamplerClarinet_Notes_default(_ctx.voicesactive);
    synthSamplerClarinet_Notes_setPoly(_ctx.voicesactive,false);
-   synthSamplerClarinet_Notes_setIgnoreDuplicates(_ctx.voicesactive,true);
+   synthSamplerClarinet_Notes_setAllowDuplicates(_ctx.voicesactive,false);
    synthSamplerClarinet_Notes_default(_ctx.voicesinactive);
    synthSamplerClarinet_Notes_setPoly(_ctx.voicesinactive,false);
-   synthSamplerClarinet_Notes_setIgnoreDuplicates(_ctx.voicesinactive,true);
+   synthSamplerClarinet_Notes_setAllowDuplicates(_ctx.voiceinsactive,false);
    synthSamplerClarinet_Voice_setNormalize(_ctx,true);
    synthSamplerClarinet_Voice_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
 }

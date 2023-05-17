@@ -8,7 +8,7 @@ void synthSamplerVocalCluster_Notes__ctx_type_0_init(synthSamplerVocalCluster_No
    int_init_array(128,0,_ctx.notes);
    _ctx.nb_notes = 0;
    int_init_array(128,0,_ctx.last_notes);
-   _ctx.ignoreDuplicates = false;
+   _ctx.allowDuplicates = false;
    synthSamplerVocalCluster_Notes_default(_ctx);
    
    return ;
@@ -71,7 +71,7 @@ uint8_t synthSamplerVocalCluster_Notes_noteOn(synthSamplerVocalCluster_Notes__ct
    note = int_clip(note,0,127);
    uint8_t isNew;
    isNew = (_ctx.notes[note] <= 0);
-   if(bool_not(_ctx.ignoreDuplicates) || isNew){
+   if(_ctx.allowDuplicates || isNew){
       if(bool_not(_ctx.poly)){
          if(bool_not(isNew)){
             synthSamplerVocalCluster_Notes_noteOff(_ctx,note,channel);
@@ -347,6 +347,7 @@ void synthSamplerVocalCluster_Sampler_default(synthSamplerVocalCluster_Sampler__
    synthSamplerVocalCluster_Sampler_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    synthSamplerVocalCluster_Sampler_setNote(_ctx,69);
    synthSamplerVocalCluster_Notes_default(_ctx.playingnotes);
+   synthSamplerVocalCluster_Notes_setAllowDuplicates(_ctx.playingnotes,true);
    synthSamplerVocalCluster_Sampler_setPoly(_ctx,false);
 }
 
@@ -399,6 +400,7 @@ void synthSamplerVocalCluster_Voice__ctx_type_0_init(synthSamplerVocalCluster_Vo
    synthSamplerVocalCluster_Notes__ctx_type_0_init(_ctx.voicesactive);
    _ctx.voices_ratio = 0x0 /* 0.000000 */;
    int_init_array(4,0,_ctx.voices);
+   synthSamplerVocalCluster_Notes__ctx_type_0_init(_ctx.voiceinsactive);
    synthSamplerVocalCluster_Poly__ctx_type_0_init(_ctx.poly);
    _ctx.number_voices = 0;
    int_init_array(128,0,_ctx.notes);
@@ -651,10 +653,10 @@ void synthSamplerVocalCluster_Voice_default(synthSamplerVocalCluster_Voice__ctx_
    synthSamplerVocalCluster_Voice_setNbVoices(_ctx,_ctx.number_voices);
    synthSamplerVocalCluster_Notes_default(_ctx.voicesactive);
    synthSamplerVocalCluster_Notes_setPoly(_ctx.voicesactive,false);
-   synthSamplerVocalCluster_Notes_setIgnoreDuplicates(_ctx.voicesactive,true);
+   synthSamplerVocalCluster_Notes_setAllowDuplicates(_ctx.voicesactive,false);
    synthSamplerVocalCluster_Notes_default(_ctx.voicesinactive);
    synthSamplerVocalCluster_Notes_setPoly(_ctx.voicesinactive,false);
-   synthSamplerVocalCluster_Notes_setIgnoreDuplicates(_ctx.voicesinactive,true);
+   synthSamplerVocalCluster_Notes_setAllowDuplicates(_ctx.voiceinsactive,false);
    synthSamplerVocalCluster_Voice_setNormalize(_ctx,true);
    synthSamplerVocalCluster_Voice_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
 }

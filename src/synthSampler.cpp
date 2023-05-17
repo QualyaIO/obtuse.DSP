@@ -8,7 +8,7 @@ void synthSampler_Notes__ctx_type_0_init(synthSampler_Notes__ctx_type_0 &_output
    int_init_array(128,0,_ctx.notes);
    _ctx.nb_notes = 0;
    int_init_array(128,0,_ctx.last_notes);
-   _ctx.ignoreDuplicates = false;
+   _ctx.allowDuplicates = false;
    synthSampler_Notes_default(_ctx);
    
    return ;
@@ -71,7 +71,7 @@ uint8_t synthSampler_Notes_noteOn(synthSampler_Notes__ctx_type_0 &_ctx, int note
    note = int_clip(note,0,127);
    uint8_t isNew;
    isNew = (_ctx.notes[note] <= 0);
-   if(bool_not(_ctx.ignoreDuplicates) || isNew){
+   if(_ctx.allowDuplicates || isNew){
       if(bool_not(_ctx.poly)){
          if(bool_not(isNew)){
             synthSampler_Notes_noteOff(_ctx,note,channel);
@@ -347,6 +347,7 @@ void synthSampler_Sampler_default(synthSampler_Sampler__ctx_type_0 &_ctx){
    synthSampler_Sampler_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    synthSampler_Sampler_setNote(_ctx,69);
    synthSampler_Notes_default(_ctx.playingnotes);
+   synthSampler_Notes_setAllowDuplicates(_ctx.playingnotes,true);
    synthSampler_Sampler_setPoly(_ctx,false);
 }
 
@@ -399,6 +400,7 @@ void synthSampler_Voice__ctx_type_0_init(synthSampler_Voice__ctx_type_0 &_output
    synthSampler_Notes__ctx_type_0_init(_ctx.voicesactive);
    _ctx.voices_ratio = 0x0 /* 0.000000 */;
    int_init_array(4,0,_ctx.voices);
+   synthSampler_Notes__ctx_type_0_init(_ctx.voiceinsactive);
    synthSampler_Poly__ctx_type_0_init(_ctx.poly);
    _ctx.number_voices = 0;
    int_init_array(128,0,_ctx.notes);
@@ -651,10 +653,10 @@ void synthSampler_Voice_default(synthSampler_Voice__ctx_type_0 &_ctx){
    synthSampler_Voice_setNbVoices(_ctx,_ctx.number_voices);
    synthSampler_Notes_default(_ctx.voicesactive);
    synthSampler_Notes_setPoly(_ctx.voicesactive,false);
-   synthSampler_Notes_setIgnoreDuplicates(_ctx.voicesactive,true);
+   synthSampler_Notes_setAllowDuplicates(_ctx.voicesactive,false);
    synthSampler_Notes_default(_ctx.voicesinactive);
    synthSampler_Notes_setPoly(_ctx.voicesinactive,false);
-   synthSampler_Notes_setIgnoreDuplicates(_ctx.voicesinactive,true);
+   synthSampler_Notes_setAllowDuplicates(_ctx.voiceinsactive,false);
    synthSampler_Voice_setNormalize(_ctx,true);
    synthSampler_Voice_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
 }

@@ -272,7 +272,7 @@ void synthDrummerFoleyType_Notes__ctx_type_0_init(synthDrummerFoleyType_Notes__c
    int_init_array(128,0,_ctx.notes);
    _ctx.nb_notes = 0;
    int_init_array(128,0,_ctx.last_notes);
-   _ctx.ignoreDuplicates = false;
+   _ctx.allowDuplicates = false;
    synthDrummerFoleyType_Notes_default(_ctx);
    
    return ;
@@ -335,7 +335,7 @@ uint8_t synthDrummerFoleyType_Notes_noteOn(synthDrummerFoleyType_Notes__ctx_type
    note = int_clip(note,0,127);
    uint8_t isNew;
    isNew = (_ctx.notes[note] <= 0);
-   if(bool_not(_ctx.ignoreDuplicates) || isNew){
+   if(_ctx.allowDuplicates || isNew){
       if(bool_not(_ctx.poly)){
          if(bool_not(isNew)){
             synthDrummerFoleyType_Notes_noteOff(_ctx,note,channel);
@@ -366,6 +366,7 @@ void synthDrummerFoleyType_Voice__ctx_type_0_init(synthDrummerFoleyType_Voice__c
    synthDrummerFoleyType_Notes__ctx_type_0_init(_ctx.voicesactive);
    _ctx.voices_ratio = 0x0 /* 0.000000 */;
    int_init_array(4,0,_ctx.voices);
+   synthDrummerFoleyType_Notes__ctx_type_0_init(_ctx.voiceinsactive);
    synthDrummerFoleyType_Poly__ctx_type_0_init(_ctx.poly);
    _ctx.number_voices = 0;
    int_init_array(128,0,_ctx.notes);
@@ -618,10 +619,10 @@ void synthDrummerFoleyType_Voice_default(synthDrummerFoleyType_Voice__ctx_type_0
    synthDrummerFoleyType_Voice_setNbVoices(_ctx,_ctx.number_voices);
    synthDrummerFoleyType_Notes_default(_ctx.voicesactive);
    synthDrummerFoleyType_Notes_setPoly(_ctx.voicesactive,false);
-   synthDrummerFoleyType_Notes_setIgnoreDuplicates(_ctx.voicesactive,true);
+   synthDrummerFoleyType_Notes_setAllowDuplicates(_ctx.voicesactive,false);
    synthDrummerFoleyType_Notes_default(_ctx.voicesinactive);
    synthDrummerFoleyType_Notes_setPoly(_ctx.voicesinactive,false);
-   synthDrummerFoleyType_Notes_setIgnoreDuplicates(_ctx.voicesinactive,true);
+   synthDrummerFoleyType_Notes_setAllowDuplicates(_ctx.voiceinsactive,false);
    synthDrummerFoleyType_Voice_setNormalize(_ctx,true);
    synthDrummerFoleyType_Voice_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
 }
