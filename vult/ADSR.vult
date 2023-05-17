@@ -154,10 +154,11 @@ and process_bufferTo(bgate:bool, nb:int, oBuffer): bool {
    while (i < nb) {
 
       // new gate, goto attack
-      if(Util.edge(bgate)) {
+     if(Util.edge(bgate) || retrigger) {
          state = 1;
          target = a_target * scale;
          step = a_step;
+	 retrigger = false;
       }
 
       // idle, really nothing to do 

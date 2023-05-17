@@ -484,10 +484,11 @@ uint8_t synthFM_ADSR_process_bufferTo(synthFM_ADSR__ctx_type_5 &_ctx, uint8_t bg
    int i;
    i = 0;
    while(i < nb){
-      if(synthFM_Util_edge(_ctx._inst1851,bgate)){
+      if(synthFM_Util_edge(_ctx._inst1851,bgate) || _ctx.retrigger){
          _ctx.state = 1;
          _ctx.target = fix_mul(_ctx.a_target,scale);
          _ctx.step = _ctx.a_step;
+         _ctx.retrigger = false;
       }
       if(_ctx.state == 0){
          _ctx.out = 0x0 /* 0.000000 */;
