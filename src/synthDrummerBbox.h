@@ -689,6 +689,17 @@ static_inline void synthDrummerBbox_Notes_setPoly(synthDrummerBbox_Notes__ctx_ty
    _ctx.poly = flag;
 };
 
+typedef synthDrummerBbox_Notes__ctx_type_0 synthDrummerBbox_Notes_getPoly_type;
+
+static_inline void synthDrummerBbox_Notes_getPoly_init(synthDrummerBbox_Notes__ctx_type_0 &_output_){
+   synthDrummerBbox_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthDrummerBbox_Notes_getPoly(synthDrummerBbox_Notes__ctx_type_0 &_ctx){
+   return _ctx.poly;
+};
+
 typedef synthDrummerBbox_Notes__ctx_type_0 synthDrummerBbox_Notes_setAllowDuplicates_type;
 
 static_inline void synthDrummerBbox_Notes_setAllowDuplicates_init(synthDrummerBbox_Notes__ctx_type_0 &_output_){

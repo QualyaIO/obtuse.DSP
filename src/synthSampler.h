@@ -165,6 +165,17 @@ static_inline void synthSampler_Notes_setPoly(synthSampler_Notes__ctx_type_0 &_c
    _ctx.poly = flag;
 };
 
+typedef synthSampler_Notes__ctx_type_0 synthSampler_Notes_getPoly_type;
+
+static_inline void synthSampler_Notes_getPoly_init(synthSampler_Notes__ctx_type_0 &_output_){
+   synthSampler_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSampler_Notes_getPoly(synthSampler_Notes__ctx_type_0 &_ctx){
+   return _ctx.poly;
+};
+
 typedef synthSampler_Notes__ctx_type_0 synthSampler_Notes_setAllowDuplicates_type;
 
 static_inline void synthSampler_Notes_setAllowDuplicates_init(synthSampler_Notes__ctx_type_0 &_output_){

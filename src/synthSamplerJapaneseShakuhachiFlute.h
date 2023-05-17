@@ -165,6 +165,17 @@ static_inline void synthSamplerJapaneseShakuhachiFlute_Notes_setPoly(synthSample
    _ctx.poly = flag;
 };
 
+typedef synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 synthSamplerJapaneseShakuhachiFlute_Notes_getPoly_type;
+
+static_inline void synthSamplerJapaneseShakuhachiFlute_Notes_getPoly_init(synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 &_output_){
+   synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSamplerJapaneseShakuhachiFlute_Notes_getPoly(synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 &_ctx){
+   return _ctx.poly;
+};
+
 typedef synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 synthSamplerJapaneseShakuhachiFlute_Notes_setAllowDuplicates_type;
 
 static_inline void synthSamplerJapaneseShakuhachiFlute_Notes_setAllowDuplicates_init(synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 &_output_){

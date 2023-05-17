@@ -165,6 +165,17 @@ static_inline void synthSamplerMysticVibes_Notes_setPoly(synthSamplerMysticVibes
    _ctx.poly = flag;
 };
 
+typedef synthSamplerMysticVibes_Notes__ctx_type_0 synthSamplerMysticVibes_Notes_getPoly_type;
+
+static_inline void synthSamplerMysticVibes_Notes_getPoly_init(synthSamplerMysticVibes_Notes__ctx_type_0 &_output_){
+   synthSamplerMysticVibes_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSamplerMysticVibes_Notes_getPoly(synthSamplerMysticVibes_Notes__ctx_type_0 &_ctx){
+   return _ctx.poly;
+};
+
 typedef synthSamplerMysticVibes_Notes__ctx_type_0 synthSamplerMysticVibes_Notes_setAllowDuplicates_type;
 
 static_inline void synthSamplerMysticVibes_Notes_setAllowDuplicates_init(synthSamplerMysticVibes_Notes__ctx_type_0 &_output_){

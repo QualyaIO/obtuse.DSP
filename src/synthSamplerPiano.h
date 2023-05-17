@@ -165,6 +165,17 @@ static_inline void synthSamplerPiano_Notes_setPoly(synthSamplerPiano_Notes__ctx_
    _ctx.poly = flag;
 };
 
+typedef synthSamplerPiano_Notes__ctx_type_0 synthSamplerPiano_Notes_getPoly_type;
+
+static_inline void synthSamplerPiano_Notes_getPoly_init(synthSamplerPiano_Notes__ctx_type_0 &_output_){
+   synthSamplerPiano_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSamplerPiano_Notes_getPoly(synthSamplerPiano_Notes__ctx_type_0 &_ctx){
+   return _ctx.poly;
+};
+
 typedef synthSamplerPiano_Notes__ctx_type_0 synthSamplerPiano_Notes_setAllowDuplicates_type;
 
 static_inline void synthSamplerPiano_Notes_setAllowDuplicates_init(synthSamplerPiano_Notes__ctx_type_0 &_output_){

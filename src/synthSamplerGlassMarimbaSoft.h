@@ -165,6 +165,17 @@ static_inline void synthSamplerGlassMarimbaSoft_Notes_setPoly(synthSamplerGlassM
    _ctx.poly = flag;
 };
 
+typedef synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 synthSamplerGlassMarimbaSoft_Notes_getPoly_type;
+
+static_inline void synthSamplerGlassMarimbaSoft_Notes_getPoly_init(synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 &_output_){
+   synthSamplerGlassMarimbaSoft_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSamplerGlassMarimbaSoft_Notes_getPoly(synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 &_ctx){
+   return _ctx.poly;
+};
+
 typedef synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 synthSamplerGlassMarimbaSoft_Notes_setAllowDuplicates_type;
 
 static_inline void synthSamplerGlassMarimbaSoft_Notes_setAllowDuplicates_init(synthSamplerGlassMarimbaSoft_Notes__ctx_type_0 &_output_){

@@ -165,6 +165,17 @@ static_inline void synthSamplerVocalCluster_Notes_setPoly(synthSamplerVocalClust
    _ctx.poly = flag;
 };
 
+typedef synthSamplerVocalCluster_Notes__ctx_type_0 synthSamplerVocalCluster_Notes_getPoly_type;
+
+static_inline void synthSamplerVocalCluster_Notes_getPoly_init(synthSamplerVocalCluster_Notes__ctx_type_0 &_output_){
+   synthSamplerVocalCluster_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSamplerVocalCluster_Notes_getPoly(synthSamplerVocalCluster_Notes__ctx_type_0 &_ctx){
+   return _ctx.poly;
+};
+
 typedef synthSamplerVocalCluster_Notes__ctx_type_0 synthSamplerVocalCluster_Notes_setAllowDuplicates_type;
 
 static_inline void synthSamplerVocalCluster_Notes_setAllowDuplicates_init(synthSamplerVocalCluster_Notes__ctx_type_0 &_output_){

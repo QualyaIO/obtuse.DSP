@@ -165,6 +165,17 @@ static_inline void synthSamplerCello_Notes_setPoly(synthSamplerCello_Notes__ctx_
    _ctx.poly = flag;
 };
 
+typedef synthSamplerCello_Notes__ctx_type_0 synthSamplerCello_Notes_getPoly_type;
+
+static_inline void synthSamplerCello_Notes_getPoly_init(synthSamplerCello_Notes__ctx_type_0 &_output_){
+   synthSamplerCello_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSamplerCello_Notes_getPoly(synthSamplerCello_Notes__ctx_type_0 &_ctx){
+   return _ctx.poly;
+};
+
 typedef synthSamplerCello_Notes__ctx_type_0 synthSamplerCello_Notes_setAllowDuplicates_type;
 
 static_inline void synthSamplerCello_Notes_setAllowDuplicates_init(synthSamplerCello_Notes__ctx_type_0 &_output_){

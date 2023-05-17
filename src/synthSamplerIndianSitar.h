@@ -165,6 +165,17 @@ static_inline void synthSamplerIndianSitar_Notes_setPoly(synthSamplerIndianSitar
    _ctx.poly = flag;
 };
 
+typedef synthSamplerIndianSitar_Notes__ctx_type_0 synthSamplerIndianSitar_Notes_getPoly_type;
+
+static_inline void synthSamplerIndianSitar_Notes_getPoly_init(synthSamplerIndianSitar_Notes__ctx_type_0 &_output_){
+   synthSamplerIndianSitar_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSamplerIndianSitar_Notes_getPoly(synthSamplerIndianSitar_Notes__ctx_type_0 &_ctx){
+   return _ctx.poly;
+};
+
 typedef synthSamplerIndianSitar_Notes__ctx_type_0 synthSamplerIndianSitar_Notes_setAllowDuplicates_type;
 
 static_inline void synthSamplerIndianSitar_Notes_setAllowDuplicates_init(synthSamplerIndianSitar_Notes__ctx_type_0 &_output_){

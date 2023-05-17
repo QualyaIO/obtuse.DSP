@@ -165,6 +165,17 @@ static_inline void synthSamplerDreamVoice_Notes_setPoly(synthSamplerDreamVoice_N
    _ctx.poly = flag;
 };
 
+typedef synthSamplerDreamVoice_Notes__ctx_type_0 synthSamplerDreamVoice_Notes_getPoly_type;
+
+static_inline void synthSamplerDreamVoice_Notes_getPoly_init(synthSamplerDreamVoice_Notes__ctx_type_0 &_output_){
+   synthSamplerDreamVoice_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSamplerDreamVoice_Notes_getPoly(synthSamplerDreamVoice_Notes__ctx_type_0 &_ctx){
+   return _ctx.poly;
+};
+
 typedef synthSamplerDreamVoice_Notes__ctx_type_0 synthSamplerDreamVoice_Notes_setAllowDuplicates_type;
 
 static_inline void synthSamplerDreamVoice_Notes_setAllowDuplicates_init(synthSamplerDreamVoice_Notes__ctx_type_0 &_output_){

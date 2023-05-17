@@ -165,6 +165,17 @@ static_inline void synthSamplerPowerFifths_Notes_setPoly(synthSamplerPowerFifths
    _ctx.poly = flag;
 };
 
+typedef synthSamplerPowerFifths_Notes__ctx_type_0 synthSamplerPowerFifths_Notes_getPoly_type;
+
+static_inline void synthSamplerPowerFifths_Notes_getPoly_init(synthSamplerPowerFifths_Notes__ctx_type_0 &_output_){
+   synthSamplerPowerFifths_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSamplerPowerFifths_Notes_getPoly(synthSamplerPowerFifths_Notes__ctx_type_0 &_ctx){
+   return _ctx.poly;
+};
+
 typedef synthSamplerPowerFifths_Notes__ctx_type_0 synthSamplerPowerFifths_Notes_setAllowDuplicates_type;
 
 static_inline void synthSamplerPowerFifths_Notes_setAllowDuplicates_init(synthSamplerPowerFifths_Notes__ctx_type_0 &_output_){

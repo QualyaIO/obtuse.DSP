@@ -165,6 +165,17 @@ static_inline void synthSamplerPulsingPatterns_Notes_setPoly(synthSamplerPulsing
    _ctx.poly = flag;
 };
 
+typedef synthSamplerPulsingPatterns_Notes__ctx_type_0 synthSamplerPulsingPatterns_Notes_getPoly_type;
+
+static_inline void synthSamplerPulsingPatterns_Notes_getPoly_init(synthSamplerPulsingPatterns_Notes__ctx_type_0 &_output_){
+   synthSamplerPulsingPatterns_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSamplerPulsingPatterns_Notes_getPoly(synthSamplerPulsingPatterns_Notes__ctx_type_0 &_ctx){
+   return _ctx.poly;
+};
+
 typedef synthSamplerPulsingPatterns_Notes__ctx_type_0 synthSamplerPulsingPatterns_Notes_setAllowDuplicates_type;
 
 static_inline void synthSamplerPulsingPatterns_Notes_setAllowDuplicates_init(synthSamplerPulsingPatterns_Notes__ctx_type_0 &_output_){

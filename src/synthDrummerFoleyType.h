@@ -689,6 +689,17 @@ static_inline void synthDrummerFoleyType_Notes_setPoly(synthDrummerFoleyType_Not
    _ctx.poly = flag;
 };
 
+typedef synthDrummerFoleyType_Notes__ctx_type_0 synthDrummerFoleyType_Notes_getPoly_type;
+
+static_inline void synthDrummerFoleyType_Notes_getPoly_init(synthDrummerFoleyType_Notes__ctx_type_0 &_output_){
+   synthDrummerFoleyType_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthDrummerFoleyType_Notes_getPoly(synthDrummerFoleyType_Notes__ctx_type_0 &_ctx){
+   return _ctx.poly;
+};
+
 typedef synthDrummerFoleyType_Notes__ctx_type_0 synthDrummerFoleyType_Notes_setAllowDuplicates_type;
 
 static_inline void synthDrummerFoleyType_Notes_setAllowDuplicates_init(synthDrummerFoleyType_Notes__ctx_type_0 &_output_){

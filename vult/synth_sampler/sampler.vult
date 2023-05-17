@@ -322,12 +322,12 @@ and noteOff(note:int, channel:int) {
    note = clip(note, 0, 127);
    // only acts if action taken into account
    if (playingnotes:Notes.noteOff(note, channel)) {
-      // still gate on-going if there are note held, and switch to last
+      // still gate on-going if there are note held, and switch to last (should happen only for monophony)
       if (playingnotes:Notes.nbNotes() > 0){
          val last_played = playingnotes:Notes.lastNote();
 	 // check we do have a note -- and that it's in range
          if (last_played > 0 && last_played <= 128) {
-	   // FIXME: retrigger note as well (set pos 0)??
+	   // Note: does not retrigger, consistent with FM monophony
 	   _ = setNote(last_played - 1);
          }
       } else {

@@ -165,6 +165,17 @@ static_inline void synthSamplerZenGarden_Notes_setPoly(synthSamplerZenGarden_Not
    _ctx.poly = flag;
 };
 
+typedef synthSamplerZenGarden_Notes__ctx_type_0 synthSamplerZenGarden_Notes_getPoly_type;
+
+static_inline void synthSamplerZenGarden_Notes_getPoly_init(synthSamplerZenGarden_Notes__ctx_type_0 &_output_){
+   synthSamplerZenGarden_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSamplerZenGarden_Notes_getPoly(synthSamplerZenGarden_Notes__ctx_type_0 &_ctx){
+   return _ctx.poly;
+};
+
 typedef synthSamplerZenGarden_Notes__ctx_type_0 synthSamplerZenGarden_Notes_setAllowDuplicates_type;
 
 static_inline void synthSamplerZenGarden_Notes_setAllowDuplicates_init(synthSamplerZenGarden_Notes__ctx_type_0 &_output_){

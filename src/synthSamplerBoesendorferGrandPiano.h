@@ -165,6 +165,17 @@ static_inline void synthSamplerBoesendorferGrandPiano_Notes_setPoly(synthSampler
    _ctx.poly = flag;
 };
 
+typedef synthSamplerBoesendorferGrandPiano_Notes__ctx_type_0 synthSamplerBoesendorferGrandPiano_Notes_getPoly_type;
+
+static_inline void synthSamplerBoesendorferGrandPiano_Notes_getPoly_init(synthSamplerBoesendorferGrandPiano_Notes__ctx_type_0 &_output_){
+   synthSamplerBoesendorferGrandPiano_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSamplerBoesendorferGrandPiano_Notes_getPoly(synthSamplerBoesendorferGrandPiano_Notes__ctx_type_0 &_ctx){
+   return _ctx.poly;
+};
+
 typedef synthSamplerBoesendorferGrandPiano_Notes__ctx_type_0 synthSamplerBoesendorferGrandPiano_Notes_setAllowDuplicates_type;
 
 static_inline void synthSamplerBoesendorferGrandPiano_Notes_setAllowDuplicates_init(synthSamplerBoesendorferGrandPiano_Notes__ctx_type_0 &_output_){

@@ -165,6 +165,17 @@ static_inline void synthSamplerCelesta_Notes_setPoly(synthSamplerCelesta_Notes__
    _ctx.poly = flag;
 };
 
+typedef synthSamplerCelesta_Notes__ctx_type_0 synthSamplerCelesta_Notes_getPoly_type;
+
+static_inline void synthSamplerCelesta_Notes_getPoly_init(synthSamplerCelesta_Notes__ctx_type_0 &_output_){
+   synthSamplerCelesta_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSamplerCelesta_Notes_getPoly(synthSamplerCelesta_Notes__ctx_type_0 &_ctx){
+   return _ctx.poly;
+};
+
 typedef synthSamplerCelesta_Notes__ctx_type_0 synthSamplerCelesta_Notes_setAllowDuplicates_type;
 
 static_inline void synthSamplerCelesta_Notes_setAllowDuplicates_init(synthSamplerCelesta_Notes__ctx_type_0 &_output_){

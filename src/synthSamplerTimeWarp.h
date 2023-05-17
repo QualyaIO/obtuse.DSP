@@ -165,6 +165,17 @@ static_inline void synthSamplerTimeWarp_Notes_setPoly(synthSamplerTimeWarp_Notes
    _ctx.poly = flag;
 };
 
+typedef synthSamplerTimeWarp_Notes__ctx_type_0 synthSamplerTimeWarp_Notes_getPoly_type;
+
+static_inline void synthSamplerTimeWarp_Notes_getPoly_init(synthSamplerTimeWarp_Notes__ctx_type_0 &_output_){
+   synthSamplerTimeWarp_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSamplerTimeWarp_Notes_getPoly(synthSamplerTimeWarp_Notes__ctx_type_0 &_ctx){
+   return _ctx.poly;
+};
+
 typedef synthSamplerTimeWarp_Notes__ctx_type_0 synthSamplerTimeWarp_Notes_setAllowDuplicates_type;
 
 static_inline void synthSamplerTimeWarp_Notes_setAllowDuplicates_init(synthSamplerTimeWarp_Notes__ctx_type_0 &_output_){

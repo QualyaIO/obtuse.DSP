@@ -165,6 +165,17 @@ static_inline void synthSamplerClassicSuitcaseMk1_Notes_setPoly(synthSamplerClas
    _ctx.poly = flag;
 };
 
+typedef synthSamplerClassicSuitcaseMk1_Notes__ctx_type_0 synthSamplerClassicSuitcaseMk1_Notes_getPoly_type;
+
+static_inline void synthSamplerClassicSuitcaseMk1_Notes_getPoly_init(synthSamplerClassicSuitcaseMk1_Notes__ctx_type_0 &_output_){
+   synthSamplerClassicSuitcaseMk1_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSamplerClassicSuitcaseMk1_Notes_getPoly(synthSamplerClassicSuitcaseMk1_Notes__ctx_type_0 &_ctx){
+   return _ctx.poly;
+};
+
 typedef synthSamplerClassicSuitcaseMk1_Notes__ctx_type_0 synthSamplerClassicSuitcaseMk1_Notes_setAllowDuplicates_type;
 
 static_inline void synthSamplerClassicSuitcaseMk1_Notes_setAllowDuplicates_init(synthSamplerClassicSuitcaseMk1_Notes__ctx_type_0 &_output_){

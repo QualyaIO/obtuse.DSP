@@ -365,6 +365,17 @@ static_inline void synthFM_Notes_setPoly(synthFM_Notes__ctx_type_0 &_ctx, uint8_
    _ctx.poly = flag;
 };
 
+typedef synthFM_Notes__ctx_type_0 synthFM_Notes_getPoly_type;
+
+static_inline void synthFM_Notes_getPoly_init(synthFM_Notes__ctx_type_0 &_output_){
+   synthFM_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthFM_Notes_getPoly(synthFM_Notes__ctx_type_0 &_ctx){
+   return _ctx.poly;
+};
+
 typedef synthFM_Notes__ctx_type_0 synthFM_Notes_setAllowDuplicates_type;
 
 static_inline void synthFM_Notes_setAllowDuplicates_init(synthFM_Notes__ctx_type_0 &_output_){

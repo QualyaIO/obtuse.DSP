@@ -689,6 +689,17 @@ static_inline void synthDrummerTamaRockstar_Notes_setPoly(synthDrummerTamaRockst
    _ctx.poly = flag;
 };
 
+typedef synthDrummerTamaRockstar_Notes__ctx_type_0 synthDrummerTamaRockstar_Notes_getPoly_type;
+
+static_inline void synthDrummerTamaRockstar_Notes_getPoly_init(synthDrummerTamaRockstar_Notes__ctx_type_0 &_output_){
+   synthDrummerTamaRockstar_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthDrummerTamaRockstar_Notes_getPoly(synthDrummerTamaRockstar_Notes__ctx_type_0 &_ctx){
+   return _ctx.poly;
+};
+
 typedef synthDrummerTamaRockstar_Notes__ctx_type_0 synthDrummerTamaRockstar_Notes_setAllowDuplicates_type;
 
 static_inline void synthDrummerTamaRockstar_Notes_setAllowDuplicates_init(synthDrummerTamaRockstar_Notes__ctx_type_0 &_output_){

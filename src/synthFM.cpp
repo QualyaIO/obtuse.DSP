@@ -770,8 +770,6 @@ void synthFM_FM_setSustain(synthFM_FM__ctx_type_0 &_ctx, uint8_t flag){
 
 uint8_t synthFM_FM_noteOn(synthFM_FM__ctx_type_0 &_ctx, int note, int velocity, int channel){
    note = int_clip(note,0,127);
-   int prevNote;
-   prevNote = ((-1) + synthFM_Notes_lastNote(_ctx.playingnotes));
    uint8_t isNew;
    isNew = synthFM_Notes_noteOn(_ctx.playingnotes,note,velocity,channel);
    synthFM_FM_setFrequency(_ctx,synthFM_Util_noteToFrequency(note));
@@ -780,7 +778,7 @@ uint8_t synthFM_FM_noteOn(synthFM_FM__ctx_type_0 &_ctx, int note, int velocity, 
    if(_ctx.sustain){
       _ctx.sustaining = true;
    }
-   if((note == prevNote) && bool_not(isNew)){
+   if(synthFM_Notes_getPoly(_ctx.playingnotes)){
       synthFM_ADSR_retrig(_ctx.carrieradsr);
       synthFM_ADSR_retrig(_ctx.modulatoradsr);
    }

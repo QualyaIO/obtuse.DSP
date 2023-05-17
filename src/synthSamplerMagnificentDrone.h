@@ -165,6 +165,17 @@ static_inline void synthSamplerMagnificentDrone_Notes_setPoly(synthSamplerMagnif
    _ctx.poly = flag;
 };
 
+typedef synthSamplerMagnificentDrone_Notes__ctx_type_0 synthSamplerMagnificentDrone_Notes_getPoly_type;
+
+static_inline void synthSamplerMagnificentDrone_Notes_getPoly_init(synthSamplerMagnificentDrone_Notes__ctx_type_0 &_output_){
+   synthSamplerMagnificentDrone_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSamplerMagnificentDrone_Notes_getPoly(synthSamplerMagnificentDrone_Notes__ctx_type_0 &_ctx){
+   return _ctx.poly;
+};
+
 typedef synthSamplerMagnificentDrone_Notes__ctx_type_0 synthSamplerMagnificentDrone_Notes_setAllowDuplicates_type;
 
 static_inline void synthSamplerMagnificentDrone_Notes_setAllowDuplicates_init(synthSamplerMagnificentDrone_Notes__ctx_type_0 &_output_){

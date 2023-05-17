@@ -165,6 +165,17 @@ static_inline void synthSamplerClarinet_Notes_setPoly(synthSamplerClarinet_Notes
    _ctx.poly = flag;
 };
 
+typedef synthSamplerClarinet_Notes__ctx_type_0 synthSamplerClarinet_Notes_getPoly_type;
+
+static_inline void synthSamplerClarinet_Notes_getPoly_init(synthSamplerClarinet_Notes__ctx_type_0 &_output_){
+   synthSamplerClarinet_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSamplerClarinet_Notes_getPoly(synthSamplerClarinet_Notes__ctx_type_0 &_ctx){
+   return _ctx.poly;
+};
+
 typedef synthSamplerClarinet_Notes__ctx_type_0 synthSamplerClarinet_Notes_setAllowDuplicates_type;
 
 static_inline void synthSamplerClarinet_Notes_setAllowDuplicates_init(synthSamplerClarinet_Notes__ctx_type_0 &_output_){

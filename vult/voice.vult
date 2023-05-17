@@ -3,6 +3,7 @@
 // Very conservative concerning the volume, will each voice will have a fraction of the max amplitude with normalize flag
 // Duplicate note-on event will retrigger same voice
 // Try to minimize (poorly) clicks/pops when voices are stolen.
+// When max voices is reached (which can happen fast with sustain), still oldest playing voice. Stealing in priority voice playing same note could sound better, but makes less sense for music (could skip newer notes)
 // Note: does not take midi channel into account at this level
 // TODO: back to monophonic if number of voices is 1
 

@@ -11,6 +11,10 @@ fun setPoly(flag: bool) {
    mem poly : bool = flag;
 }
 
+and getPoly(): bool {
+   return poly;
+}
+
 // should allow noteOn of already playing notes?
 and setAllowDuplicates(flag: bool) {
    mem allowDuplicates;

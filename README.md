@@ -35,6 +35,7 @@ Fixes
 - SVF: not compute while disabled while avoiding noise upon start
 - combFB (and those using): output not guaranteed to be kept within -1..1
 - gate: velocity and channel not kept
+- sampler: smoother transition upon retrigger
 
 Features
 
