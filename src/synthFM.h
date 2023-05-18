@@ -1421,6 +1421,7 @@ typedef struct synthFM_Voice__ctx_type_0 {
    fix16_t voices_ratio;
    int voices[4];
    synthFM_Notes__ctx_type_0 voiceinsactive;
+   uint8_t reuse;
    synthFM_Poly__ctx_type_0 poly;
    int number_voices;
    int notes[128];
@@ -1464,6 +1465,17 @@ static_inline void synthFM_Voice_process_bufferTo_alt_init(synthFM_Voice__ctx_ty
 }
 
 void synthFM_Voice_process_bufferTo_alt(synthFM_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
+
+typedef synthFM_Voice__ctx_type_0 synthFM_Voice_setReuse_type;
+
+static_inline void synthFM_Voice_setReuse_init(synthFM_Voice__ctx_type_0 &_output_){
+   synthFM_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthFM_Voice_setReuse(synthFM_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.reuse = flag;
+};
 
 typedef synthFM_Voice__ctx_type_0 synthFM_Voice_noteOff_type;
 

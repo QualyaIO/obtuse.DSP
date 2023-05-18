@@ -416,6 +416,7 @@ void synthSamplerShootingStar_Voice__ctx_type_0_init(synthSamplerShootingStar_Vo
    _ctx.voices_ratio = 0x0 /* 0.000000 */;
    int_init_array(4,0,_ctx.voices);
    synthSamplerShootingStar_Notes__ctx_type_0_init(_ctx.voiceinsactive);
+   _ctx.reuse = false;
    synthSamplerShootingStar_Poly__ctx_type_0_init(_ctx.poly);
    _ctx.number_voices = 0;
    int_init_array(128,0,_ctx.notes);
@@ -553,8 +554,8 @@ void synthSamplerShootingStar_Voice_noteOff(synthSamplerShootingStar_Voice__ctx_
    if((v > 0) && (v <= 4)){
       if(synthSamplerShootingStar_Notes_noteOff(_ctx.voicesactive,((-1) + v),0)){
          synthSamplerShootingStar_Poly_sendNoteOff(_ctx.poly,((-1) + v),note,channel);
-         _ctx.notes[note] = 0;
-         _ctx.voices[((-1) + v)] = 0;
+         _ctx.notes[note] = (- v);
+         _ctx.voices[((-1) + v)] = (- (1 + note));
          if(v <= _ctx.number_voices){
             synthSamplerShootingStar_Notes_noteOn(_ctx.voicesinactive,((-1) + v),127,0);
          }
@@ -567,7 +568,7 @@ void synthSamplerShootingStar_Voice_noteOn(synthSamplerShootingStar_Voice__ctx_t
    velocity = int_clip(velocity,0,127);
    int v;
    v = _ctx.notes[note];
-   if(v > 0){
+   if((v > 0) && (v <= _ctx.number_voices)){
       if(bool_not((synthSamplerShootingStar_Notes_noteOff(_ctx.voicesactive,((-1) + v),0) && synthSamplerShootingStar_Notes_noteOn(_ctx.voicesinactive,((-1) + v),127,0) && synthSamplerShootingStar_Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && synthSamplerShootingStar_Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)))){
          _ctx.notes[note] = 0;
          _ctx.voices[((-1) + v)] = 0;
@@ -576,23 +577,34 @@ void synthSamplerShootingStar_Voice_noteOn(synthSamplerShootingStar_Voice__ctx_t
    }
    else
    {
-      v = synthSamplerShootingStar_Notes_firstNote(_ctx.voicesinactive);
-      if((v <= 0) || (v > _ctx.number_voices)){
-         int active_v;
-         active_v = synthSamplerShootingStar_Notes_firstNote(_ctx.voicesactive);
-         if(active_v > 0){
-            synthSamplerShootingStar_Voice_noteOff(_ctx,_ctx.voices[((-1) + active_v)],0);
-         }
-      }
-      v = synthSamplerShootingStar_Notes_firstNote(_ctx.voicesinactive);
-      if((v > 0) && (v <= _ctx.number_voices)){
+      if(_ctx.reuse && (v < 0) && ((- v) <= _ctx.number_voices) && (_ctx.voices[((-1) + (- v))] == (- (1 + note))) && (_ctx.notes[note] == v)){
+         v = (- v);
          if(bool_not((synthSamplerShootingStar_Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && synthSamplerShootingStar_Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)))){
+            _ctx.notes[note] = 0;
+            _ctx.voices[((-1) + v)] = 0;
             v = 0;
          }
       }
       else
       {
-         v = 0;
+         v = synthSamplerShootingStar_Notes_firstNote(_ctx.voicesinactive);
+         if((v <= 0) || (v > _ctx.number_voices)){
+            int active_v;
+            active_v = synthSamplerShootingStar_Notes_firstNote(_ctx.voicesactive);
+            if(active_v > 0){
+               synthSamplerShootingStar_Voice_noteOff(_ctx,_ctx.voices[((-1) + active_v)],0);
+            }
+         }
+         v = synthSamplerShootingStar_Notes_firstNote(_ctx.voicesinactive);
+         if((v > 0) && (v <= _ctx.number_voices)){
+            if(bool_not((synthSamplerShootingStar_Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && synthSamplerShootingStar_Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)))){
+               v = 0;
+            }
+         }
+         else
+         {
+            v = 0;
+         }
       }
    }
    if(v > 0){
@@ -674,6 +686,7 @@ void synthSamplerShootingStar_Voice_default(synthSamplerShootingStar_Voice__ctx_
    synthSamplerShootingStar_Notes_setAllowDuplicates(_ctx.voiceinsactive,false);
    synthSamplerShootingStar_Voice_setNormalize(_ctx,true);
    synthSamplerShootingStar_Voice_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
+   synthSamplerShootingStar_Voice_setReuse(_ctx,false);
 }
 
 void synthSamplerShootingStar_Voice__ctx_type_1_init(synthSamplerShootingStar_Voice__ctx_type_1 &_output_){

@@ -894,6 +894,7 @@ typedef struct synthSamplerShootingStar_Voice__ctx_type_0 {
    fix16_t voices_ratio;
    int voices[4];
    synthSamplerShootingStar_Notes__ctx_type_0 voiceinsactive;
+   uint8_t reuse;
    synthSamplerShootingStar_Poly__ctx_type_0 poly;
    int number_voices;
    int notes[128];
@@ -937,6 +938,17 @@ static_inline void synthSamplerShootingStar_Voice_process_bufferTo_alt_init(synt
 }
 
 void synthSamplerShootingStar_Voice_process_bufferTo_alt(synthSamplerShootingStar_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
+
+typedef synthSamplerShootingStar_Voice__ctx_type_0 synthSamplerShootingStar_Voice_setReuse_type;
+
+static_inline void synthSamplerShootingStar_Voice_setReuse_init(synthSamplerShootingStar_Voice__ctx_type_0 &_output_){
+   synthSamplerShootingStar_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerShootingStar_Voice_setReuse(synthSamplerShootingStar_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.reuse = flag;
+};
 
 typedef synthSamplerShootingStar_Voice__ctx_type_0 synthSamplerShootingStar_Voice_noteOff_type;
 

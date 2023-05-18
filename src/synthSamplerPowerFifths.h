@@ -894,6 +894,7 @@ typedef struct synthSamplerPowerFifths_Voice__ctx_type_0 {
    fix16_t voices_ratio;
    int voices[4];
    synthSamplerPowerFifths_Notes__ctx_type_0 voiceinsactive;
+   uint8_t reuse;
    synthSamplerPowerFifths_Poly__ctx_type_0 poly;
    int number_voices;
    int notes[128];
@@ -937,6 +938,17 @@ static_inline void synthSamplerPowerFifths_Voice_process_bufferTo_alt_init(synth
 }
 
 void synthSamplerPowerFifths_Voice_process_bufferTo_alt(synthSamplerPowerFifths_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
+
+typedef synthSamplerPowerFifths_Voice__ctx_type_0 synthSamplerPowerFifths_Voice_setReuse_type;
+
+static_inline void synthSamplerPowerFifths_Voice_setReuse_init(synthSamplerPowerFifths_Voice__ctx_type_0 &_output_){
+   synthSamplerPowerFifths_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerPowerFifths_Voice_setReuse(synthSamplerPowerFifths_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.reuse = flag;
+};
 
 typedef synthSamplerPowerFifths_Voice__ctx_type_0 synthSamplerPowerFifths_Voice_noteOff_type;
 

@@ -2,6 +2,7 @@
 // Wrapper to create voice from a poly synth
 // Very conservative concerning the volume, will each voice will have a fraction of the max amplitude with normalize flag
 // Duplicate note-on event will retrigger same voice
+// If "reuse" is set, priority for the last inactive voice, if any, which played the same note. Such behavior will make less of a difference for example during sustain, but it will prevent layeyring multiple times the same notes (which could be useful for drums).
 // Try to minimize (poorly) clicks/pops when voices are stolen.
 // When max voices is reached (which can happen fast with sustain), still oldest playing voice. Stealing in priority voice playing same note could sound better, but makes less sense for music (could skip newer notes)
 // Note: does not take midi channel into account at this level
@@ -10,6 +11,7 @@
 // retrieve sample from all voices, mix
 fun process() {
    // If voices are currently playng on not -- and max number of voices
+   // holds the note currently playing, or as negative number the previous note playing + 1
    mem voices;
    // how many voices we support at the moment?
    mem number_voices;
@@ -20,7 +22,7 @@ fun process() {
    mem leftovers_decay: real;
    // to speedup, corresponding ratio per voice
    mem voices_ratio;
-   // what voice (if any) number are associated to
+   // what voice (if any) number are associated to (voice + 1), negative for last voice played, 0 if never used
    mem notes;
    // normalize: output maxed to -1 / 1 no matter the number of voices
    mem normalize;
@@ -151,6 +153,12 @@ and process_bufferTo_alt(nb: int, oBuffer) {
    }
 }
 
+// Upon new notes, should we reuse in priority the last voice which played the note, if it was not used in-between? By default pick oldest inactive voice, no matter what, e.g. rotating.
+// Does not affect the behavior when all voices are taken, e.g. steal oldest voice, rotating.
+and setReuse(flag: bool) {
+   mem reuse = flag;
+}
+
 // transmit noteOff to corresponding voice, update inner states active/inactive voice
 and noteOff(note:int, channel:int) {
    // only 128 midi notes (and max voice)
@@ -164,9 +172,9 @@ and noteOff(note:int, channel:int) {
       if (voicesactive:Notes.noteOff(v - 1, 0)) {
           // disable voice
           _ = poly:Poly.sendNoteOff(v - 1, note, channel);
-          // update arrays
-          notes[note] = 0;
-	  voices[v-1] = 0;
+          // update arrays, stating last note and voice
+          notes[note] = -v;
+	  voices[v-1] = -(note+1);
 	  // add voice to inactive (127 velocity, just because)
           if (v <= number_voices) {
              _ = voicesinactive:Notes.noteOn(v - 1, 127, 0);
@@ -186,8 +194,8 @@ and noteOn(note:int, velocity:int, channel:int){
    velocity = clip(velocity, 0, 127);
    // current voice for this note
    val v = notes[note];
-   // if the note already has a voice, bring it forth
-   if (v > 0) {
+   // if the note already has a valid voice
+   if (v > 0 && v <= number_voices) {
       // disable / enable voice to update state, counting on lazy evaluation to check if it is successful
       if (not(
               voicesactive:Notes.noteOff(v - 1, 0) &&
@@ -195,7 +203,22 @@ and noteOn(note:int, velocity:int, channel:int){
               voicesinactive:Notes.noteOff(v - 1, 0) &&
               voicesactive:Notes.noteOn(v - 1, 127, 0)
               )) {
-         // something went wrong, disable voice
+         // something went wrong, disable (and reset) voice
+         notes[note] = 0;
+         voices[v-1] = 0;
+         v = 0;
+      }
+   }
+   // if option set, note not active but was lastly played in an unused voice -- possibly still in release state --, bring it forth
+   else if (reuse && v < 0 && -v <= number_voices && voices[-v-1] == - (note + 1) && notes[note] == v) {
+      // we will target our inactive voice
+      v = -v;
+      // re-enable voice to update state
+      if (not(
+              voicesinactive:Notes.noteOff(v - 1, 0) &&
+              voicesactive:Notes.noteOn(v - 1, 127, 0)
+              )) {
+         // something went wrong, disable (and reset) voice
          notes[note] = 0;
          voices[v-1] = 0;
          v = 0;
@@ -229,7 +252,7 @@ and noteOn(note:int, velocity:int, channel:int){
       }
    }
 
-   // we either retrigger, get a new voice or steal a voice, apply changes
+   // we either retrigger, re-activated an old vice (typo too good to correct), get a new voice or steal a voice, apply changes
    if (v > 0) {
       // retrieve last value of this voice to mitigate pops. If synth discourage this option (e.g. FM with simpler OSC waveform) then only take into account difference in levels if new note is at lower velocity
       if (poly:Poly.shouldLeftOvers()) {
@@ -441,6 +464,9 @@ and default() @[init] {
 
    _ = setNormalize(true);
    _ = setSamplerate(44.1);
+
+   // default to rotating inactive voices
+   _ = setReuse(false);
 }
 
 // to let vult find above the good buffer size

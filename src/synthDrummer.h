@@ -776,6 +776,7 @@ typedef struct synthDrummer_Voice__ctx_type_0 {
    fix16_t voices_ratio;
    int voices[4];
    synthDrummer_Notes__ctx_type_0 voiceinsactive;
+   uint8_t reuse;
    synthDrummer_Poly__ctx_type_0 poly;
    int number_voices;
    int notes[128];
@@ -819,6 +820,17 @@ static_inline void synthDrummer_Voice_process_bufferTo_alt_init(synthDrummer_Voi
 }
 
 void synthDrummer_Voice_process_bufferTo_alt(synthDrummer_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
+
+typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_setReuse_type;
+
+static_inline void synthDrummer_Voice_setReuse_init(synthDrummer_Voice__ctx_type_0 &_output_){
+   synthDrummer_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummer_Voice_setReuse(synthDrummer_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.reuse = flag;
+};
 
 typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_noteOff_type;
 

@@ -894,6 +894,7 @@ typedef struct synthSamplerAuthenticStrings_Voice__ctx_type_0 {
    fix16_t voices_ratio;
    int voices[4];
    synthSamplerAuthenticStrings_Notes__ctx_type_0 voiceinsactive;
+   uint8_t reuse;
    synthSamplerAuthenticStrings_Poly__ctx_type_0 poly;
    int number_voices;
    int notes[128];
@@ -937,6 +938,17 @@ static_inline void synthSamplerAuthenticStrings_Voice_process_bufferTo_alt_init(
 }
 
 void synthSamplerAuthenticStrings_Voice_process_bufferTo_alt(synthSamplerAuthenticStrings_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
+
+typedef synthSamplerAuthenticStrings_Voice__ctx_type_0 synthSamplerAuthenticStrings_Voice_setReuse_type;
+
+static_inline void synthSamplerAuthenticStrings_Voice_setReuse_init(synthSamplerAuthenticStrings_Voice__ctx_type_0 &_output_){
+   synthSamplerAuthenticStrings_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerAuthenticStrings_Voice_setReuse(synthSamplerAuthenticStrings_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.reuse = flag;
+};
 
 typedef synthSamplerAuthenticStrings_Voice__ctx_type_0 synthSamplerAuthenticStrings_Voice_noteOff_type;
 

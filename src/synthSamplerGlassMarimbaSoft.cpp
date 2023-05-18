@@ -416,6 +416,7 @@ void synthSamplerGlassMarimbaSoft_Voice__ctx_type_0_init(synthSamplerGlassMarimb
    _ctx.voices_ratio = 0x0 /* 0.000000 */;
    int_init_array(4,0,_ctx.voices);
    synthSamplerGlassMarimbaSoft_Notes__ctx_type_0_init(_ctx.voiceinsactive);
+   _ctx.reuse = false;
    synthSamplerGlassMarimbaSoft_Poly__ctx_type_0_init(_ctx.poly);
    _ctx.number_voices = 0;
    int_init_array(128,0,_ctx.notes);
@@ -553,8 +554,8 @@ void synthSamplerGlassMarimbaSoft_Voice_noteOff(synthSamplerGlassMarimbaSoft_Voi
    if((v > 0) && (v <= 4)){
       if(synthSamplerGlassMarimbaSoft_Notes_noteOff(_ctx.voicesactive,((-1) + v),0)){
          synthSamplerGlassMarimbaSoft_Poly_sendNoteOff(_ctx.poly,((-1) + v),note,channel);
-         _ctx.notes[note] = 0;
-         _ctx.voices[((-1) + v)] = 0;
+         _ctx.notes[note] = (- v);
+         _ctx.voices[((-1) + v)] = (- (1 + note));
          if(v <= _ctx.number_voices){
             synthSamplerGlassMarimbaSoft_Notes_noteOn(_ctx.voicesinactive,((-1) + v),127,0);
          }
@@ -567,7 +568,7 @@ void synthSamplerGlassMarimbaSoft_Voice_noteOn(synthSamplerGlassMarimbaSoft_Voic
    velocity = int_clip(velocity,0,127);
    int v;
    v = _ctx.notes[note];
-   if(v > 0){
+   if((v > 0) && (v <= _ctx.number_voices)){
       if(bool_not((synthSamplerGlassMarimbaSoft_Notes_noteOff(_ctx.voicesactive,((-1) + v),0) && synthSamplerGlassMarimbaSoft_Notes_noteOn(_ctx.voicesinactive,((-1) + v),127,0) && synthSamplerGlassMarimbaSoft_Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && synthSamplerGlassMarimbaSoft_Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)))){
          _ctx.notes[note] = 0;
          _ctx.voices[((-1) + v)] = 0;
@@ -576,23 +577,34 @@ void synthSamplerGlassMarimbaSoft_Voice_noteOn(synthSamplerGlassMarimbaSoft_Voic
    }
    else
    {
-      v = synthSamplerGlassMarimbaSoft_Notes_firstNote(_ctx.voicesinactive);
-      if((v <= 0) || (v > _ctx.number_voices)){
-         int active_v;
-         active_v = synthSamplerGlassMarimbaSoft_Notes_firstNote(_ctx.voicesactive);
-         if(active_v > 0){
-            synthSamplerGlassMarimbaSoft_Voice_noteOff(_ctx,_ctx.voices[((-1) + active_v)],0);
-         }
-      }
-      v = synthSamplerGlassMarimbaSoft_Notes_firstNote(_ctx.voicesinactive);
-      if((v > 0) && (v <= _ctx.number_voices)){
+      if(_ctx.reuse && (v < 0) && ((- v) <= _ctx.number_voices) && (_ctx.voices[((-1) + (- v))] == (- (1 + note))) && (_ctx.notes[note] == v)){
+         v = (- v);
          if(bool_not((synthSamplerGlassMarimbaSoft_Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && synthSamplerGlassMarimbaSoft_Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)))){
+            _ctx.notes[note] = 0;
+            _ctx.voices[((-1) + v)] = 0;
             v = 0;
          }
       }
       else
       {
-         v = 0;
+         v = synthSamplerGlassMarimbaSoft_Notes_firstNote(_ctx.voicesinactive);
+         if((v <= 0) || (v > _ctx.number_voices)){
+            int active_v;
+            active_v = synthSamplerGlassMarimbaSoft_Notes_firstNote(_ctx.voicesactive);
+            if(active_v > 0){
+               synthSamplerGlassMarimbaSoft_Voice_noteOff(_ctx,_ctx.voices[((-1) + active_v)],0);
+            }
+         }
+         v = synthSamplerGlassMarimbaSoft_Notes_firstNote(_ctx.voicesinactive);
+         if((v > 0) && (v <= _ctx.number_voices)){
+            if(bool_not((synthSamplerGlassMarimbaSoft_Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && synthSamplerGlassMarimbaSoft_Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)))){
+               v = 0;
+            }
+         }
+         else
+         {
+            v = 0;
+         }
       }
    }
    if(v > 0){
@@ -674,6 +686,7 @@ void synthSamplerGlassMarimbaSoft_Voice_default(synthSamplerGlassMarimbaSoft_Voi
    synthSamplerGlassMarimbaSoft_Notes_setAllowDuplicates(_ctx.voiceinsactive,false);
    synthSamplerGlassMarimbaSoft_Voice_setNormalize(_ctx,true);
    synthSamplerGlassMarimbaSoft_Voice_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
+   synthSamplerGlassMarimbaSoft_Voice_setReuse(_ctx,false);
 }
 
 void synthSamplerGlassMarimbaSoft_Voice__ctx_type_1_init(synthSamplerGlassMarimbaSoft_Voice__ctx_type_1 &_output_){

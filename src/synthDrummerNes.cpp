@@ -367,6 +367,7 @@ void synthDrummerNes_Voice__ctx_type_0_init(synthDrummerNes_Voice__ctx_type_0 &_
    _ctx.voices_ratio = 0x0 /* 0.000000 */;
    int_init_array(4,0,_ctx.voices);
    synthDrummerNes_Notes__ctx_type_0_init(_ctx.voiceinsactive);
+   _ctx.reuse = false;
    synthDrummerNes_Poly__ctx_type_0_init(_ctx.poly);
    _ctx.number_voices = 0;
    int_init_array(128,0,_ctx.notes);
@@ -504,8 +505,8 @@ void synthDrummerNes_Voice_noteOff(synthDrummerNes_Voice__ctx_type_0 &_ctx, int 
    if((v > 0) && (v <= 4)){
       if(synthDrummerNes_Notes_noteOff(_ctx.voicesactive,((-1) + v),0)){
          synthDrummerNes_Poly_sendNoteOff(_ctx.poly,((-1) + v),note,channel);
-         _ctx.notes[note] = 0;
-         _ctx.voices[((-1) + v)] = 0;
+         _ctx.notes[note] = (- v);
+         _ctx.voices[((-1) + v)] = (- (1 + note));
          if(v <= _ctx.number_voices){
             synthDrummerNes_Notes_noteOn(_ctx.voicesinactive,((-1) + v),127,0);
          }
@@ -518,7 +519,7 @@ void synthDrummerNes_Voice_noteOn(synthDrummerNes_Voice__ctx_type_0 &_ctx, int n
    velocity = int_clip(velocity,0,127);
    int v;
    v = _ctx.notes[note];
-   if(v > 0){
+   if((v > 0) && (v <= _ctx.number_voices)){
       if(bool_not((synthDrummerNes_Notes_noteOff(_ctx.voicesactive,((-1) + v),0) && synthDrummerNes_Notes_noteOn(_ctx.voicesinactive,((-1) + v),127,0) && synthDrummerNes_Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && synthDrummerNes_Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)))){
          _ctx.notes[note] = 0;
          _ctx.voices[((-1) + v)] = 0;
@@ -527,23 +528,34 @@ void synthDrummerNes_Voice_noteOn(synthDrummerNes_Voice__ctx_type_0 &_ctx, int n
    }
    else
    {
-      v = synthDrummerNes_Notes_firstNote(_ctx.voicesinactive);
-      if((v <= 0) || (v > _ctx.number_voices)){
-         int active_v;
-         active_v = synthDrummerNes_Notes_firstNote(_ctx.voicesactive);
-         if(active_v > 0){
-            synthDrummerNes_Voice_noteOff(_ctx,_ctx.voices[((-1) + active_v)],0);
-         }
-      }
-      v = synthDrummerNes_Notes_firstNote(_ctx.voicesinactive);
-      if((v > 0) && (v <= _ctx.number_voices)){
+      if(_ctx.reuse && (v < 0) && ((- v) <= _ctx.number_voices) && (_ctx.voices[((-1) + (- v))] == (- (1 + note))) && (_ctx.notes[note] == v)){
+         v = (- v);
          if(bool_not((synthDrummerNes_Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && synthDrummerNes_Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)))){
+            _ctx.notes[note] = 0;
+            _ctx.voices[((-1) + v)] = 0;
             v = 0;
          }
       }
       else
       {
-         v = 0;
+         v = synthDrummerNes_Notes_firstNote(_ctx.voicesinactive);
+         if((v <= 0) || (v > _ctx.number_voices)){
+            int active_v;
+            active_v = synthDrummerNes_Notes_firstNote(_ctx.voicesactive);
+            if(active_v > 0){
+               synthDrummerNes_Voice_noteOff(_ctx,_ctx.voices[((-1) + active_v)],0);
+            }
+         }
+         v = synthDrummerNes_Notes_firstNote(_ctx.voicesinactive);
+         if((v > 0) && (v <= _ctx.number_voices)){
+            if(bool_not((synthDrummerNes_Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && synthDrummerNes_Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)))){
+               v = 0;
+            }
+         }
+         else
+         {
+            v = 0;
+         }
       }
    }
    if(v > 0){
@@ -625,6 +637,7 @@ void synthDrummerNes_Voice_default(synthDrummerNes_Voice__ctx_type_0 &_ctx){
    synthDrummerNes_Notes_setAllowDuplicates(_ctx.voiceinsactive,false);
    synthDrummerNes_Voice_setNormalize(_ctx,true);
    synthDrummerNes_Voice_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
+   synthDrummerNes_Voice_setReuse(_ctx,false);
 }
 
 void synthDrummerNes_Voice__ctx_type_1_init(synthDrummerNes_Voice__ctx_type_1 &_output_){
