@@ -611,17 +611,6 @@ void synthSamplerCosmos_Voice_noteOn(synthSamplerCosmos_Voice__ctx_type_0 &_ctx,
       if(synthSamplerCosmos_Poly_shouldLeftOvers(_ctx.poly)){
          _ctx.leftovers = (_ctx.leftovers + _ctx.last_values[((-1) + v)]);
       }
-      else
-      {
-         int diff_velocity;
-         diff_velocity = (_ctx.last_velocities[((-1) + v)] + (- velocity));
-         fix16_t diff_level;
-         diff_level = 0x0 /* 0.000000 */;
-         if(diff_velocity > 0){
-            diff_level = fix_mul(0x204 /* 0.007874 */,int_to_fix(diff_velocity));
-         }
-         _ctx.leftovers = (_ctx.leftovers + fix_mul(diff_level,_ctx.last_values[((-1) + v)]));
-      }
       synthSamplerCosmos_Poly_sendNoteOn(_ctx.poly,((-1) + v),note,velocity,channel);
       _ctx.notes[note] = v;
       _ctx.voices[((-1) + v)] = note;

@@ -563,6 +563,7 @@ void synthFM_ADSR_config(synthFM_ADSR__ctx_type_5 &_ctx, fix16_t newA, fix16_t n
 
 void synthFM_FM__ctx_type_0_init(synthFM_FM__ctx_type_0 &_output_){
    synthFM_FM__ctx_type_0 &_ctx = _output_;
+   _ctx.target_level = 0x0 /* 0.000000 */;
    _ctx.sustaining = false;
    _ctx.sustain = false;
    synthFM_Notes__ctx_type_0_init(_ctx.playingnotes);
@@ -578,6 +579,8 @@ void synthFM_FM__ctx_type_0_init(synthFM_FM__ctx_type_0 &_output_){
    _ctx.modulator_env = 0x0 /* 0.000000 */;
    _ctx.modulatorRatio = 0x0 /* 0.000000 */;
    synthFM_OSC__ctx_type_0_init(_ctx.modulator);
+   _ctx.level_step_ref = 0x0 /* 0.000000 */;
+   _ctx.level_step = 0x0 /* 0.000000 */;
    _ctx.level = 0x0 /* 0.000000 */;
    _ctx.gate = false;
    _ctx.fs = 0x0 /* 0.000000 */;
@@ -608,6 +611,12 @@ fix16_t synthFM_FM_process(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetable_mod
    fix16_t carrier_val;
    carrier_val = 0x0 /* 0.000000 */;
    if(update_env){
+      if(_ctx.level != _ctx.target_level){
+         _ctx.level = (_ctx.level + _ctx.level_step);
+         if(((_ctx.level_step > 0x0 /* 0.000000 */) && (_ctx.level > _ctx.target_level)) || ((_ctx.level_step < 0x0 /* 0.000000 */) && (_ctx.level < _ctx.target_level))){
+            _ctx.level = _ctx.target_level;
+         }
+      }
       _ctx.carrier_env = fix_mul(_ctx.level,synthFM_ADSR_process(_ctx.carrieradsr,(_ctx.gate || _ctx.sustaining)));
       _ctx.modulator_env = synthFM_ADSR_process(_ctx.modulatoradsr,(_ctx.gate || _ctx.sustaining));
    }
@@ -689,6 +698,12 @@ void synthFM_FM_process_bufferTo(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetab
          while(i < nb){
             _ctx.n = ((1 + _ctx.n) % _ctx.env_decimation_factor);
             if(_ctx.n == 0){
+               if(_ctx.level != _ctx.target_level){
+                  _ctx.level = (_ctx.level + _ctx.level_step);
+                  if(((_ctx.level_step > 0x0 /* 0.000000 */) && (_ctx.level > _ctx.target_level)) || ((_ctx.level_step < 0x0 /* 0.000000 */) && (_ctx.level < _ctx.target_level))){
+                     _ctx.level = _ctx.target_level;
+                  }
+               }
                _ctx.modulator_env = _ctx.buffer_modulator_env_short[i_env];
                _ctx.carrier_env = fix_mul(_ctx.level,_ctx.buffer_carrier_env_short[i_env]);
                i_env = (1 + i_env);
@@ -756,6 +771,21 @@ void synthFM_FM_setSamplerate(synthFM_FM__ctx_type_0 &_ctx, fix16_t newFs){
    }
    synthFM_ADSR_setSamplerate(_ctx.carrieradsr,ADSR_fs);
    synthFM_ADSR_setSamplerate(_ctx.modulatoradsr,ADSR_fs);
+   synthFM_FM__updateLevelStep(_ctx);
+}
+
+void synthFM_FM_setLevel(synthFM_FM__ctx_type_0 &_ctx, fix16_t newLevel){
+   _ctx.target_level = fix_clip(newLevel,0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
+   if(_ctx.target_level < _ctx.level){
+      _ctx.level_step = (- _ctx.level_step_ref);
+   }
+   else
+   {
+      _ctx.level_step = _ctx.level_step_ref;
+   }
+   if(fix_abs((_ctx.target_level + (- _ctx.level))) <= _ctx.level_step_ref){
+      _ctx.level = _ctx.target_level;
+   }
 }
 
 void synthFM_FM_setSustain(synthFM_FM__ctx_type_0 &_ctx, uint8_t flag){
@@ -808,7 +838,7 @@ void synthFM_FM_default(synthFM_FM__ctx_type_0 &_ctx){
    synthFM_Buffer_buffer(_ctx.buffer_modulator_env_short);
    synthFM_Buffer_buffer(_ctx.buffer_carrier_env);
    synthFM_Buffer_buffer(_ctx.buffer_modulator_env);
-   _ctx.env_decimation_factor = 3;
+   synthFM_FM_setEnvDecimationFactor(_ctx,3);
    synthFM_OSC_default(_ctx.carrier);
    synthFM_OSC_default(_ctx.modulator);
    synthFM_ADSR_default(_ctx.carrieradsr);
@@ -1085,17 +1115,6 @@ void synthFM_Voice_noteOn(synthFM_Voice__ctx_type_0 &_ctx, int note, int velocit
    if(v > 0){
       if(synthFM_Poly_shouldLeftOvers(_ctx.poly)){
          _ctx.leftovers = (_ctx.leftovers + _ctx.last_values[((-1) + v)]);
-      }
-      else
-      {
-         int diff_velocity;
-         diff_velocity = (_ctx.last_velocities[((-1) + v)] + (- velocity));
-         fix16_t diff_level;
-         diff_level = 0x0 /* 0.000000 */;
-         if(diff_velocity > 0){
-            diff_level = fix_mul(0x204 /* 0.007874 */,int_to_fix(diff_velocity));
-         }
-         _ctx.leftovers = (_ctx.leftovers + fix_mul(diff_level,_ctx.last_values[((-1) + v)]));
       }
       synthFM_Poly_sendNoteOn(_ctx.poly,((-1) + v),note,velocity,channel);
       _ctx.notes[note] = v;

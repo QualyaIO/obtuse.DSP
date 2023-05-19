@@ -28,8 +28,12 @@ fun process(wavetable_modulator, wavetable_carrier) {
     mem modulator_env;
     // if we should modulate sound level instead of phase
     mem modulator_target_level: bool;
-    // level of the synth, applied to envelop
-    mem level;
+    // level of the synth, applied to envelop, current one and the one to target
+    mem level: real;
+    mem target_level: real;
+    // step to apply between levels, ref and actual
+    mem level_step_ref: real;
+    mem level_step: real;
     // number of iteration of this loop, for decimation
     mem n;
 
@@ -50,6 +54,17 @@ fun process(wavetable_modulator, wavetable_carrier) {
     val carrier_val = 0.0;
     // retrieve envelopes -- both, to make sure that modulator gets updated
     if (update_env) {
+       // smooth level change
+       if (level <> target_level) {
+	 level = level + level_step;
+	 // reached target
+	 if (
+	     (level_step > 0.0 && level > target_level) ||
+	     (level_step < 0.0 && level < target_level)
+	     ) {
+	   level = target_level;
+	 }
+       }
        carrier_env = carrieradsr:ADSR.process(gate || sustaining) * level;
        modulator_env = modulatoradsr:ADSR.process(gate || sustaining);
     }
@@ -148,9 +163,21 @@ and process_bufferTo(wavetable_modulator, wavetable_carrier, nb: int, oBuffer) {
             // advance and update envelope
             n = (n + 1) % env_decimation_factor;
             if (n == 0) {
-               modulator_env = buffer_modulator_env_short[i_env];
-               carrier_env = buffer_carrier_env_short[i_env] * level;
-               i_env = i_env + 1;
+	      // smooth level change
+	      if (level <> target_level) {
+		level = level + level_step;
+		// reached target
+		if (
+		    (level_step > 0.0 && level > target_level) ||
+		    (level_step < 0.0 && level < target_level)
+		    ) {
+		  level = target_level;
+		}
+	      }
+	      // update envelopes
+	      modulator_env = buffer_modulator_env_short[i_env];
+	      carrier_env = buffer_carrier_env_short[i_env] * level;
+	      i_env = i_env + 1;
             }
             buffer_modulator_env[i] = modulator_env;
             buffer_carrier_env[i] = carrier_env;
@@ -201,6 +228,21 @@ and process_bufferTo(wavetable_modulator, wavetable_carrier, nb: int, oBuffer) {
       _ = carrier:OSC.process_bufferTo(wavetable_carrier, nb, buffer_carrier_env, buffer_modulator, buffer_modulator_env,  modulator_level, modulator_target_level, oBuffer);
     }
 }
+// to be called internally, for smoothing changes in levels
+and _updateLevelStep() {
+  // expects to go from 0 to 1 between levels in 5ms to avoid clicks
+  level_step_ref = 1.0/(fs * 5.0);
+  // might probably overflow at high factor...
+  if (env_decimation_factor > 0) {
+    level_step_ref = level_step_ref * real(env_decimation_factor);
+  }
+}
+// tradeoff between perfs (high decimation) and having smooth ADSR (no decimation)
+// number should be a divisor of sample rate. Clip to max 1000, already well big enough (probably artifacts going beyond 5)
+and setEnvDecimationFactor(newFactor: int) {
+  env_decimation_factor = clip(newFactor, 0, 1000);
+  _ = _updateLevelStep();
+}
 and setSamplerate(newFs:real) {
    if (newFs > 0.0) {
       fs = newFs;
@@ -215,6 +257,22 @@ and setSamplerate(newFs:real) {
     }
     _ = carrieradsr:ADSR.setSamplerate(ADSR_fs);
     _ = modulatoradsr:ADSR.setSamplerate(ADSR_fs);
+
+    _ = _updateLevelStep();
+}
+// set level of the output [0..1] (applied on the envelop)
+// interpolate between levels
+and setLevel(newLevel: real) {
+  target_level = clip(newLevel, 0.0, 1.0);
+  if (target_level < level) {
+    level_step = -level_step_ref;
+  } else {
+    level_step = level_step_ref;
+  }
+  // difference too tiny, just jump to level
+  if (abs(target_level - level) <= level_step_ref) {
+    level = target_level;
+  }
 }
 // ratio for each operator. Keep in mind the max effective frequency, below samplingrate/2!
 // negative values: used a fixed frequency (in kHz) instead of a ratio (in which case the effect will be immediate)
@@ -257,10 +315,7 @@ and setModulatorFeedback(feedback: real) {
   modulator_max_phase = real(modulator:OSC.getSize()) * 2.0;
   modulator_phase_range = modulator_max_phase * feedback;
 }
-// set level of the output [0..1] (applied on the envelop)
-and setLevel(newLevel: real) {
-    level = newLevel;
-}
+
 // should be 0..nquist, in kHz
 and setFrequency(freq: real) {
     if (carrierRatio >= 0.0) {
@@ -356,7 +411,7 @@ and default() @[init] {
     Buffer.buffer(buffer_modulator_env);
 
     // should be a divisor of sample rate
-    env_decimation_factor = 3;
+    _ = setEnvDecimationFactor(3);
 
     // init used items
     // FIXME: not sure why if @init is set
