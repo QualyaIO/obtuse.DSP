@@ -4,7 +4,38 @@
 
 // TODO: kill on noteOff
 
-fun process() {
+
+// called internally when Samplerate or note is altered
+fun updateStep() {
+  // how much we jump each step
+  mem step: real;
+  // base for computing step
+  mem noteRatio: real;
+  mem fsRatio: real;
+  // both for efficiency and because we don't want any result to be outside [1/32767 .. 32767] to avoid fixed float limits we compute step in two... steps
+  step = noteRatio*fsRatio;
+}
+
+// note to be played. Here only handle equal temperament
+and setNote(note: int) {
+  // note of the sample
+  mem sampleNote;
+  // use ratio of note rather than freq to be more precise, +1 octave (12 semitones) doubles speed, -1 octave halves it
+  val log_two = log10(2.0)/log10(exp(1.0)); // so that vultc replace with result of log(2)
+  val semitones = real(note-sampleNote)/12.0;
+  noteRatio = exp(log_two * semitones);
+  _ = updateStep();
+}
+
+// set level of the output [0..1] (applied on the envelop)
+and setLevel(newLevel: real) {
+  // we are velocity sensitive
+  mem level: real;
+  level = newLevel;
+}
+
+
+and process() {
   // absolutely needs init to set that
   mem size: int;
   // if we should loop on note held, if so start and end position in samples.
@@ -16,8 +47,6 @@ fun process() {
   // using integer "base position" float position to overcome limitation of fixed point
   mem posBase: int;
   mem pos: real;
-  // how much we jump each step
-  mem step: real;
   // at the moment 0: not playing, 1: playing (eventually looping), 2: cross-fading, 3: stopping
   mem state: int;
   // note held or not
@@ -26,8 +55,14 @@ fun process() {
   mem sustain: bool;
   // there is actually something to sustain
   mem sustaining: bool;
-  // we are velocity sensitive
-  mem level: real;
+  // should we terminate quickly the note? Used to avoid pops upon stealing voice
+  mem quickKill: bool;
+  // coeff to apply for quick kill
+  mem qkLevel: real;
+  // linear decrease of level for quick kill
+  mem qkStep: real;
+  // in case of quick kill, the velocity of the note to play
+  mem nextVelocity: int;
 
   val value = 0.0;
 
@@ -82,6 +117,23 @@ fun process() {
         value = (buffer_cross[idx] + (pos % 1.0) * (buffer_cross[idx+1] - buffer_cross[idx])) * level;
       } else {
         value = (SampleWrapper.getSample(idx) + (pos % 1.0) * (SampleWrapper.getSample(idx+1) - SampleWrapper.getSample(idx))) * level;
+      }
+
+      // adjust level for emergency release
+      if (quickKill) {
+        qkLevel = qkLevel - qkStep;
+        // reached the end, either killed or we finished to play the note before the kill, time to go to next note
+        if (qkLevel <= 0.0 || state <= 0) {
+          qkLevel = 0.0;
+          quickKill = false;
+          // we might have missed a note while quick killing, just read the last one to date
+          _ = setNote(playingnotes:Notes.lastNote());
+          _ = setLevel(Util.velocityToLevel(nextVelocity));
+        }
+        else {
+          // fade it
+          value = value * qkLevel;
+        }
       }
     }
   }
@@ -152,6 +204,23 @@ and process_bufferTo(nb: int, oBuffer) {
         } else {
           oBuffer[i] = (SampleWrapper.getSample(idx) + (pos % 1.0) * (SampleWrapper.getSample(idx+1) - SampleWrapper.getSample(idx))) * level;
         }
+
+        // adjust level for emergency release
+        if (quickKill) {
+          qkLevel = qkLevel - qkStep;
+          // reached the end, either killed or we finished to play the note before the kill, time to go to next note
+          if (qkLevel <= 0.0 || state <= 0) {
+            qkLevel = 0.0;
+            quickKill = false;
+            // we might have missed a note while quick killing, just read the last one to date
+            _ = setNote(playingnotes:Notes.lastNote());
+            _ = setLevel(Util.velocityToLevel(nextVelocity));
+          }
+          else {
+            // fade it
+            oBuffer[i] = oBuffer[i] * qkLevel;
+          }
+        }
       }
     } else {
       oBuffer[i] = 0.0;
@@ -167,21 +236,10 @@ and process_buffer(nb: int) {
   _ = process_bufferTo(nb, buffer_o);
 }
 
-// called internally when Samplerate or note is altered
-and updateStep() {
-  // base for computing step
-  mem noteRatio: real;
-  mem fsRatio: real;
-  // both for efficiency and because we don't want any result to be outside [1/32767 .. 32767] to avoid fixed float limits we compute step in two... steps
-  step = noteRatio*fsRatio;
-}
-
 // seter for parameters. expect values of desired frequency and current sampling rate in kHz to avoid fixed float limits ([1/32767 ..32767]... probably)
 and setSamplerate(newFs:real) {
   // sample rate of the recording
   mem sampleFs;
-  // note of the sample
-  mem sampleNote;
   // audio sampling rate
   mem fs: real;
    if (newFs > 0.0) {
@@ -190,6 +248,8 @@ and setSamplerate(newFs:real) {
       fsRatio = sampleFs/fs;
    }
    _ = updateStep();
+  // during quick kill, expects to go from 0 to 1 between levels in 5ms to avoid clicks
+  qkLevel = 1.0/(fs * 5.0);
 }
 
 // rudimentary cross-fade
@@ -260,20 +320,6 @@ and getSampleSize() {
   return size;
 }
 
-// note to be played. Here only handle equal temperament
-and setNote(note: int) {
-  // use ratio of note rather than freq to be more precise, +1 octave (12 semitones) doubles speed, -1 octave halves it
-  val log_two = log10(2.0)/log10(exp(1.0)); // so that vultc replace with result of log(2)
-  val semitones = real(note-sampleNote)/12.0;
-  noteRatio = exp(log_two * semitones);
-  _ = updateStep();
-}
-
-// set level of the output [0..1] (applied on the envelop)
-and setLevel(newLevel: real) {
-    level = newLevel;
-}
-
 // Hold gate even after note-off
 // Note: do call setSustain(off) at some point to release notes!
 and setSustain(flag: bool) {
@@ -294,18 +340,31 @@ and noteOn(note:int, velocity:int, channel:int): bool {
    // only 128 midi notes
    note = clip(note, 0, 127);
    val isNew = playingnotes:Notes.noteOn(note, velocity, channel);
-   // set frequency... should we reset phase somehow? artifacts upon first tests
-   _ = setNote(note);
-   _ = setLevel(Util.velocityToLevel(velocity));
    // start playing note
    gate = true;
    // update status with sustain pedal
    if (sustain) {
      sustaining = true;
    }
-   posBase = 0;
-   pos = 0.0;
-   state = 1;
+
+   // not currently playing, go ahead
+   if (state <= 0) {
+     posBase = 0;
+     pos = 0.0;
+     state = 1;
+     // set frequency... should we reset phase somehow? artifacts upon first tests
+     _ = setNote(note);
+     _ = setLevel(Util.velocityToLevel(velocity));
+   }
+   // will wait for quick kill for next
+   else {
+     nextVelocity = velocity;
+     // only start if there is no ongoing kill
+     if (not(quickKill)) {
+       qkLevel = 1.0;
+       quickKill = true;
+     }
+   }
    return isNew;
 }
 

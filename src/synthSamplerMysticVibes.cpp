@@ -114,10 +114,14 @@ void synthSamplerMysticVibes_Sampler__ctx_type_0_init(synthSamplerMysticVibes_Sa
    _ctx.size = 0;
    _ctx.sampleNote = 0;
    _ctx.sampleFs = 0x0 /* 0.000000 */;
+   _ctx.quickKill = false;
+   _ctx.qkStep = 0x0 /* 0.000000 */;
+   _ctx.qkLevel = 0x0 /* 0.000000 */;
    _ctx.posBase = 0;
    _ctx.pos = 0x0 /* 0.000000 */;
    synthSamplerMysticVibes_Notes__ctx_type_0_init(_ctx.playingnotes);
    _ctx.noteRatio = 0x0 /* 0.000000 */;
+   _ctx.nextVelocity = 0;
    _ctx.loopy = false;
    _ctx.loopS = 0;
    _ctx.loopE = 0;
@@ -131,6 +135,15 @@ void synthSamplerMysticVibes_Sampler__ctx_type_0_init(synthSamplerMysticVibes_Sa
    synthSamplerMysticVibes_Sampler_default(_ctx);
    
    return ;
+}
+
+void synthSamplerMysticVibes_Sampler_setNote(synthSamplerMysticVibes_Sampler__ctx_type_0 &_ctx, int note){
+   fix16_t log_two;
+   log_two = 0xb172 /* 0.693147 */;
+   fix16_t semitones;
+   semitones = fix_mul(0x1555 /* 0.083333 */,int_to_fix((note + (- _ctx.sampleNote))));
+   _ctx.noteRatio = fix_exp(fix_mul(log_two,semitones));
+   synthSamplerMysticVibes_Sampler_updateStep(_ctx);
 }
 
 fix16_t synthSamplerMysticVibes_Sampler_process(synthSamplerMysticVibes_Sampler__ctx_type_0 &_ctx){
@@ -183,6 +196,19 @@ fix16_t synthSamplerMysticVibes_Sampler_process(synthSamplerMysticVibes_Sampler_
          else
          {
             value = fix_mul(_ctx.level,(synthSamplerMysticVibes_SampleWrapper_getSample(idx) + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(synthSamplerMysticVibes_SampleWrapper_getSample((1 + idx)) + (- synthSamplerMysticVibes_SampleWrapper_getSample(idx))))));
+         }
+         if(_ctx.quickKill){
+            _ctx.qkLevel = (_ctx.qkLevel + (- _ctx.qkStep));
+            if((_ctx.qkLevel <= 0x0 /* 0.000000 */) || (_ctx.state <= 0)){
+               _ctx.qkLevel = 0x0 /* 0.000000 */;
+               _ctx.quickKill = false;
+               synthSamplerMysticVibes_Sampler_setNote(_ctx,synthSamplerMysticVibes_Notes_lastNote(_ctx.playingnotes));
+               synthSamplerMysticVibes_Sampler_setLevel(_ctx,synthSamplerMysticVibes_Util_velocityToLevel(_ctx.nextVelocity));
+            }
+            else
+            {
+               value = fix_mul(_ctx.qkLevel,value);
+            }
          }
       }
    }
@@ -247,6 +273,19 @@ void synthSamplerMysticVibes_Sampler_process_bufferTo(synthSamplerMysticVibes_Sa
             {
                oBuffer[i] = fix_mul(_ctx.level,(synthSamplerMysticVibes_SampleWrapper_getSample(idx) + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(synthSamplerMysticVibes_SampleWrapper_getSample((1 + idx)) + (- synthSamplerMysticVibes_SampleWrapper_getSample(idx))))));
             }
+            if(_ctx.quickKill){
+               _ctx.qkLevel = (_ctx.qkLevel + (- _ctx.qkStep));
+               if((_ctx.qkLevel <= 0x0 /* 0.000000 */) || (_ctx.state <= 0)){
+                  _ctx.qkLevel = 0x0 /* 0.000000 */;
+                  _ctx.quickKill = false;
+                  synthSamplerMysticVibes_Sampler_setNote(_ctx,synthSamplerMysticVibes_Notes_lastNote(_ctx.playingnotes));
+                  synthSamplerMysticVibes_Sampler_setLevel(_ctx,synthSamplerMysticVibes_Util_velocityToLevel(_ctx.nextVelocity));
+               }
+               else
+               {
+                  oBuffer[i] = fix_mul(_ctx.qkLevel,oBuffer[i]);
+               }
+            }
          }
       }
       else
@@ -263,6 +302,7 @@ void synthSamplerMysticVibes_Sampler_setSamplerate(synthSamplerMysticVibes_Sampl
       _ctx.fsRatio = fix_div(_ctx.sampleFs,_ctx.fs);
    }
    synthSamplerMysticVibes_Sampler_updateStep(_ctx);
+   _ctx.qkLevel = fix_div(0x10000 /* 1.000000 */,fix_mul(0x50000 /* 5.000000 */,_ctx.fs));
 }
 
 void synthSamplerMysticVibes_Sampler_updateCrossFade(synthSamplerMysticVibes_Sampler__ctx_type_0 &_ctx){
@@ -288,15 +328,6 @@ void synthSamplerMysticVibes_Sampler_updateCrossFade(synthSamplerMysticVibes_Sam
    }
 }
 
-void synthSamplerMysticVibes_Sampler_setNote(synthSamplerMysticVibes_Sampler__ctx_type_0 &_ctx, int note){
-   fix16_t log_two;
-   log_two = 0xb172 /* 0.693147 */;
-   fix16_t semitones;
-   semitones = fix_mul(0x1555 /* 0.083333 */,int_to_fix((note + (- _ctx.sampleNote))));
-   _ctx.noteRatio = fix_exp(fix_mul(log_two,semitones));
-   synthSamplerMysticVibes_Sampler_updateStep(_ctx);
-}
-
 void synthSamplerMysticVibes_Sampler_setSustain(synthSamplerMysticVibes_Sampler__ctx_type_0 &_ctx, uint8_t flag){
    _ctx.sustain = flag;
    if(_ctx.gate && _ctx.sustain){
@@ -311,15 +342,25 @@ uint8_t synthSamplerMysticVibes_Sampler_noteOn(synthSamplerMysticVibes_Sampler__
    note = int_clip(note,0,127);
    uint8_t isNew;
    isNew = synthSamplerMysticVibes_Notes_noteOn(_ctx.playingnotes,note,velocity,channel);
-   synthSamplerMysticVibes_Sampler_setNote(_ctx,note);
-   synthSamplerMysticVibes_Sampler_setLevel(_ctx,synthSamplerMysticVibes_Util_velocityToLevel(velocity));
    _ctx.gate = true;
    if(_ctx.sustain){
       _ctx.sustaining = true;
    }
-   _ctx.posBase = 0;
-   _ctx.pos = 0x0 /* 0.000000 */;
-   _ctx.state = 1;
+   if(_ctx.state <= 0){
+      _ctx.posBase = 0;
+      _ctx.pos = 0x0 /* 0.000000 */;
+      _ctx.state = 1;
+      synthSamplerMysticVibes_Sampler_setNote(_ctx,note);
+      synthSamplerMysticVibes_Sampler_setLevel(_ctx,synthSamplerMysticVibes_Util_velocityToLevel(velocity));
+   }
+   else
+   {
+      _ctx.nextVelocity = velocity;
+      if(bool_not(_ctx.quickKill)){
+         _ctx.qkLevel = 0x10000 /* 1.000000 */;
+         _ctx.quickKill = true;
+      }
+   }
    return isNew;
 }
 
@@ -398,7 +439,7 @@ fix16_t synthSamplerMysticVibes_Poly_getSample(synthSamplerMysticVibes_Poly__ctx
 }
 
 void synthSamplerMysticVibes_Poly_default(synthSamplerMysticVibes_Poly__ctx_type_0 &_ctx){
-   _ctx.should_leftovers = true;
+   _ctx.should_leftovers = false;
    synthSamplerMysticVibes_Sampler_default(_ctx.voice0);
    synthSamplerMysticVibes_Sampler_setPoly(_ctx.voice0,true);
    synthSamplerMysticVibes_Sampler_default(_ctx.voice1);

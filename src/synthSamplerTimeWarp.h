@@ -259,10 +259,14 @@ typedef struct synthSamplerTimeWarp_Sampler__ctx_type_0 {
    int size;
    int sampleNote;
    fix16_t sampleFs;
+   uint8_t quickKill;
+   fix16_t qkStep;
+   fix16_t qkLevel;
    int posBase;
    fix16_t pos;
    synthSamplerTimeWarp_Notes__ctx_type_0 playingnotes;
    fix16_t noteRatio;
+   int nextVelocity;
    uint8_t loopy;
    int loopS;
    int loopE;
@@ -275,9 +279,40 @@ typedef struct synthSamplerTimeWarp_Sampler__ctx_type_0 {
    fix16_t buffer_cross[256];
 } synthSamplerTimeWarp_Sampler__ctx_type_0;
 
-typedef synthSamplerTimeWarp_Sampler__ctx_type_0 synthSamplerTimeWarp_Sampler_process_type;
+typedef synthSamplerTimeWarp_Sampler__ctx_type_0 synthSamplerTimeWarp_Sampler_updateStep_type;
 
 void synthSamplerTimeWarp_Sampler__ctx_type_0_init(synthSamplerTimeWarp_Sampler__ctx_type_0 &_output_);
+
+static_inline void synthSamplerTimeWarp_Sampler_updateStep_init(synthSamplerTimeWarp_Sampler__ctx_type_0 &_output_){
+   synthSamplerTimeWarp_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerTimeWarp_Sampler_updateStep(synthSamplerTimeWarp_Sampler__ctx_type_0 &_ctx){
+   _ctx.step = fix_mul(_ctx.fsRatio,_ctx.noteRatio);
+};
+
+typedef synthSamplerTimeWarp_Sampler__ctx_type_0 synthSamplerTimeWarp_Sampler_setNote_type;
+
+static_inline void synthSamplerTimeWarp_Sampler_setNote_init(synthSamplerTimeWarp_Sampler__ctx_type_0 &_output_){
+   synthSamplerTimeWarp_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthSamplerTimeWarp_Sampler_setNote(synthSamplerTimeWarp_Sampler__ctx_type_0 &_ctx, int note);
+
+typedef synthSamplerTimeWarp_Sampler__ctx_type_0 synthSamplerTimeWarp_Sampler_setLevel_type;
+
+static_inline void synthSamplerTimeWarp_Sampler_setLevel_init(synthSamplerTimeWarp_Sampler__ctx_type_0 &_output_){
+   synthSamplerTimeWarp_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerTimeWarp_Sampler_setLevel(synthSamplerTimeWarp_Sampler__ctx_type_0 &_ctx, fix16_t newLevel){
+   _ctx.level = newLevel;
+};
+
+typedef synthSamplerTimeWarp_Sampler__ctx_type_0 synthSamplerTimeWarp_Sampler_process_type;
 
 static_inline void synthSamplerTimeWarp_Sampler_process_init(synthSamplerTimeWarp_Sampler__ctx_type_0 &_output_){
    synthSamplerTimeWarp_Sampler__ctx_type_0_init(_output_);
@@ -304,17 +339,6 @@ static_inline void synthSamplerTimeWarp_Sampler_process_buffer_init(synthSampler
 
 static_inline void synthSamplerTimeWarp_Sampler_process_buffer(synthSamplerTimeWarp_Sampler__ctx_type_0 &_ctx, int nb){
    synthSamplerTimeWarp_Sampler_process_bufferTo(_ctx,nb,_ctx.buffer_o);
-};
-
-typedef synthSamplerTimeWarp_Sampler__ctx_type_0 synthSamplerTimeWarp_Sampler_updateStep_type;
-
-static_inline void synthSamplerTimeWarp_Sampler_updateStep_init(synthSamplerTimeWarp_Sampler__ctx_type_0 &_output_){
-   synthSamplerTimeWarp_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthSamplerTimeWarp_Sampler_updateStep(synthSamplerTimeWarp_Sampler__ctx_type_0 &_ctx){
-   _ctx.step = fix_mul(_ctx.fsRatio,_ctx.noteRatio);
 };
 
 typedef synthSamplerTimeWarp_Sampler__ctx_type_0 synthSamplerTimeWarp_Sampler_setSamplerate_type;
@@ -412,26 +436,6 @@ static_inline void synthSamplerTimeWarp_Sampler_getSampleSize_init(synthSamplerT
 
 static_inline int synthSamplerTimeWarp_Sampler_getSampleSize(synthSamplerTimeWarp_Sampler__ctx_type_0 &_ctx){
    return _ctx.size;
-};
-
-typedef synthSamplerTimeWarp_Sampler__ctx_type_0 synthSamplerTimeWarp_Sampler_setNote_type;
-
-static_inline void synthSamplerTimeWarp_Sampler_setNote_init(synthSamplerTimeWarp_Sampler__ctx_type_0 &_output_){
-   synthSamplerTimeWarp_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-void synthSamplerTimeWarp_Sampler_setNote(synthSamplerTimeWarp_Sampler__ctx_type_0 &_ctx, int note);
-
-typedef synthSamplerTimeWarp_Sampler__ctx_type_0 synthSamplerTimeWarp_Sampler_setLevel_type;
-
-static_inline void synthSamplerTimeWarp_Sampler_setLevel_init(synthSamplerTimeWarp_Sampler__ctx_type_0 &_output_){
-   synthSamplerTimeWarp_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthSamplerTimeWarp_Sampler_setLevel(synthSamplerTimeWarp_Sampler__ctx_type_0 &_ctx, fix16_t newLevel){
-   _ctx.level = newLevel;
 };
 
 typedef synthSamplerTimeWarp_Sampler__ctx_type_0 synthSamplerTimeWarp_Sampler_setSustain_type;

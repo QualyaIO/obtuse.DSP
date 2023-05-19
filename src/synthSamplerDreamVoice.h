@@ -259,10 +259,14 @@ typedef struct synthSamplerDreamVoice_Sampler__ctx_type_0 {
    int size;
    int sampleNote;
    fix16_t sampleFs;
+   uint8_t quickKill;
+   fix16_t qkStep;
+   fix16_t qkLevel;
    int posBase;
    fix16_t pos;
    synthSamplerDreamVoice_Notes__ctx_type_0 playingnotes;
    fix16_t noteRatio;
+   int nextVelocity;
    uint8_t loopy;
    int loopS;
    int loopE;
@@ -275,9 +279,40 @@ typedef struct synthSamplerDreamVoice_Sampler__ctx_type_0 {
    fix16_t buffer_cross[256];
 } synthSamplerDreamVoice_Sampler__ctx_type_0;
 
-typedef synthSamplerDreamVoice_Sampler__ctx_type_0 synthSamplerDreamVoice_Sampler_process_type;
+typedef synthSamplerDreamVoice_Sampler__ctx_type_0 synthSamplerDreamVoice_Sampler_updateStep_type;
 
 void synthSamplerDreamVoice_Sampler__ctx_type_0_init(synthSamplerDreamVoice_Sampler__ctx_type_0 &_output_);
+
+static_inline void synthSamplerDreamVoice_Sampler_updateStep_init(synthSamplerDreamVoice_Sampler__ctx_type_0 &_output_){
+   synthSamplerDreamVoice_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerDreamVoice_Sampler_updateStep(synthSamplerDreamVoice_Sampler__ctx_type_0 &_ctx){
+   _ctx.step = fix_mul(_ctx.fsRatio,_ctx.noteRatio);
+};
+
+typedef synthSamplerDreamVoice_Sampler__ctx_type_0 synthSamplerDreamVoice_Sampler_setNote_type;
+
+static_inline void synthSamplerDreamVoice_Sampler_setNote_init(synthSamplerDreamVoice_Sampler__ctx_type_0 &_output_){
+   synthSamplerDreamVoice_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthSamplerDreamVoice_Sampler_setNote(synthSamplerDreamVoice_Sampler__ctx_type_0 &_ctx, int note);
+
+typedef synthSamplerDreamVoice_Sampler__ctx_type_0 synthSamplerDreamVoice_Sampler_setLevel_type;
+
+static_inline void synthSamplerDreamVoice_Sampler_setLevel_init(synthSamplerDreamVoice_Sampler__ctx_type_0 &_output_){
+   synthSamplerDreamVoice_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerDreamVoice_Sampler_setLevel(synthSamplerDreamVoice_Sampler__ctx_type_0 &_ctx, fix16_t newLevel){
+   _ctx.level = newLevel;
+};
+
+typedef synthSamplerDreamVoice_Sampler__ctx_type_0 synthSamplerDreamVoice_Sampler_process_type;
 
 static_inline void synthSamplerDreamVoice_Sampler_process_init(synthSamplerDreamVoice_Sampler__ctx_type_0 &_output_){
    synthSamplerDreamVoice_Sampler__ctx_type_0_init(_output_);
@@ -304,17 +339,6 @@ static_inline void synthSamplerDreamVoice_Sampler_process_buffer_init(synthSampl
 
 static_inline void synthSamplerDreamVoice_Sampler_process_buffer(synthSamplerDreamVoice_Sampler__ctx_type_0 &_ctx, int nb){
    synthSamplerDreamVoice_Sampler_process_bufferTo(_ctx,nb,_ctx.buffer_o);
-};
-
-typedef synthSamplerDreamVoice_Sampler__ctx_type_0 synthSamplerDreamVoice_Sampler_updateStep_type;
-
-static_inline void synthSamplerDreamVoice_Sampler_updateStep_init(synthSamplerDreamVoice_Sampler__ctx_type_0 &_output_){
-   synthSamplerDreamVoice_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthSamplerDreamVoice_Sampler_updateStep(synthSamplerDreamVoice_Sampler__ctx_type_0 &_ctx){
-   _ctx.step = fix_mul(_ctx.fsRatio,_ctx.noteRatio);
 };
 
 typedef synthSamplerDreamVoice_Sampler__ctx_type_0 synthSamplerDreamVoice_Sampler_setSamplerate_type;
@@ -412,26 +436,6 @@ static_inline void synthSamplerDreamVoice_Sampler_getSampleSize_init(synthSample
 
 static_inline int synthSamplerDreamVoice_Sampler_getSampleSize(synthSamplerDreamVoice_Sampler__ctx_type_0 &_ctx){
    return _ctx.size;
-};
-
-typedef synthSamplerDreamVoice_Sampler__ctx_type_0 synthSamplerDreamVoice_Sampler_setNote_type;
-
-static_inline void synthSamplerDreamVoice_Sampler_setNote_init(synthSamplerDreamVoice_Sampler__ctx_type_0 &_output_){
-   synthSamplerDreamVoice_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-void synthSamplerDreamVoice_Sampler_setNote(synthSamplerDreamVoice_Sampler__ctx_type_0 &_ctx, int note);
-
-typedef synthSamplerDreamVoice_Sampler__ctx_type_0 synthSamplerDreamVoice_Sampler_setLevel_type;
-
-static_inline void synthSamplerDreamVoice_Sampler_setLevel_init(synthSamplerDreamVoice_Sampler__ctx_type_0 &_output_){
-   synthSamplerDreamVoice_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthSamplerDreamVoice_Sampler_setLevel(synthSamplerDreamVoice_Sampler__ctx_type_0 &_ctx, fix16_t newLevel){
-   _ctx.level = newLevel;
 };
 
 typedef synthSamplerDreamVoice_Sampler__ctx_type_0 synthSamplerDreamVoice_Sampler_setSustain_type;

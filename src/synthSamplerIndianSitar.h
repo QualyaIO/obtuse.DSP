@@ -259,10 +259,14 @@ typedef struct synthSamplerIndianSitar_Sampler__ctx_type_0 {
    int size;
    int sampleNote;
    fix16_t sampleFs;
+   uint8_t quickKill;
+   fix16_t qkStep;
+   fix16_t qkLevel;
    int posBase;
    fix16_t pos;
    synthSamplerIndianSitar_Notes__ctx_type_0 playingnotes;
    fix16_t noteRatio;
+   int nextVelocity;
    uint8_t loopy;
    int loopS;
    int loopE;
@@ -275,9 +279,40 @@ typedef struct synthSamplerIndianSitar_Sampler__ctx_type_0 {
    fix16_t buffer_cross[256];
 } synthSamplerIndianSitar_Sampler__ctx_type_0;
 
-typedef synthSamplerIndianSitar_Sampler__ctx_type_0 synthSamplerIndianSitar_Sampler_process_type;
+typedef synthSamplerIndianSitar_Sampler__ctx_type_0 synthSamplerIndianSitar_Sampler_updateStep_type;
 
 void synthSamplerIndianSitar_Sampler__ctx_type_0_init(synthSamplerIndianSitar_Sampler__ctx_type_0 &_output_);
+
+static_inline void synthSamplerIndianSitar_Sampler_updateStep_init(synthSamplerIndianSitar_Sampler__ctx_type_0 &_output_){
+   synthSamplerIndianSitar_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerIndianSitar_Sampler_updateStep(synthSamplerIndianSitar_Sampler__ctx_type_0 &_ctx){
+   _ctx.step = fix_mul(_ctx.fsRatio,_ctx.noteRatio);
+};
+
+typedef synthSamplerIndianSitar_Sampler__ctx_type_0 synthSamplerIndianSitar_Sampler_setNote_type;
+
+static_inline void synthSamplerIndianSitar_Sampler_setNote_init(synthSamplerIndianSitar_Sampler__ctx_type_0 &_output_){
+   synthSamplerIndianSitar_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthSamplerIndianSitar_Sampler_setNote(synthSamplerIndianSitar_Sampler__ctx_type_0 &_ctx, int note);
+
+typedef synthSamplerIndianSitar_Sampler__ctx_type_0 synthSamplerIndianSitar_Sampler_setLevel_type;
+
+static_inline void synthSamplerIndianSitar_Sampler_setLevel_init(synthSamplerIndianSitar_Sampler__ctx_type_0 &_output_){
+   synthSamplerIndianSitar_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerIndianSitar_Sampler_setLevel(synthSamplerIndianSitar_Sampler__ctx_type_0 &_ctx, fix16_t newLevel){
+   _ctx.level = newLevel;
+};
+
+typedef synthSamplerIndianSitar_Sampler__ctx_type_0 synthSamplerIndianSitar_Sampler_process_type;
 
 static_inline void synthSamplerIndianSitar_Sampler_process_init(synthSamplerIndianSitar_Sampler__ctx_type_0 &_output_){
    synthSamplerIndianSitar_Sampler__ctx_type_0_init(_output_);
@@ -304,17 +339,6 @@ static_inline void synthSamplerIndianSitar_Sampler_process_buffer_init(synthSamp
 
 static_inline void synthSamplerIndianSitar_Sampler_process_buffer(synthSamplerIndianSitar_Sampler__ctx_type_0 &_ctx, int nb){
    synthSamplerIndianSitar_Sampler_process_bufferTo(_ctx,nb,_ctx.buffer_o);
-};
-
-typedef synthSamplerIndianSitar_Sampler__ctx_type_0 synthSamplerIndianSitar_Sampler_updateStep_type;
-
-static_inline void synthSamplerIndianSitar_Sampler_updateStep_init(synthSamplerIndianSitar_Sampler__ctx_type_0 &_output_){
-   synthSamplerIndianSitar_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthSamplerIndianSitar_Sampler_updateStep(synthSamplerIndianSitar_Sampler__ctx_type_0 &_ctx){
-   _ctx.step = fix_mul(_ctx.fsRatio,_ctx.noteRatio);
 };
 
 typedef synthSamplerIndianSitar_Sampler__ctx_type_0 synthSamplerIndianSitar_Sampler_setSamplerate_type;
@@ -412,26 +436,6 @@ static_inline void synthSamplerIndianSitar_Sampler_getSampleSize_init(synthSampl
 
 static_inline int synthSamplerIndianSitar_Sampler_getSampleSize(synthSamplerIndianSitar_Sampler__ctx_type_0 &_ctx){
    return _ctx.size;
-};
-
-typedef synthSamplerIndianSitar_Sampler__ctx_type_0 synthSamplerIndianSitar_Sampler_setNote_type;
-
-static_inline void synthSamplerIndianSitar_Sampler_setNote_init(synthSamplerIndianSitar_Sampler__ctx_type_0 &_output_){
-   synthSamplerIndianSitar_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-void synthSamplerIndianSitar_Sampler_setNote(synthSamplerIndianSitar_Sampler__ctx_type_0 &_ctx, int note);
-
-typedef synthSamplerIndianSitar_Sampler__ctx_type_0 synthSamplerIndianSitar_Sampler_setLevel_type;
-
-static_inline void synthSamplerIndianSitar_Sampler_setLevel_init(synthSamplerIndianSitar_Sampler__ctx_type_0 &_output_){
-   synthSamplerIndianSitar_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthSamplerIndianSitar_Sampler_setLevel(synthSamplerIndianSitar_Sampler__ctx_type_0 &_ctx, fix16_t newLevel){
-   _ctx.level = newLevel;
 };
 
 typedef synthSamplerIndianSitar_Sampler__ctx_type_0 synthSamplerIndianSitar_Sampler_setSustain_type;

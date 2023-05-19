@@ -114,10 +114,14 @@ void synthSamplerAuthenticStrings_Sampler__ctx_type_0_init(synthSamplerAuthentic
    _ctx.size = 0;
    _ctx.sampleNote = 0;
    _ctx.sampleFs = 0x0 /* 0.000000 */;
+   _ctx.quickKill = false;
+   _ctx.qkStep = 0x0 /* 0.000000 */;
+   _ctx.qkLevel = 0x0 /* 0.000000 */;
    _ctx.posBase = 0;
    _ctx.pos = 0x0 /* 0.000000 */;
    synthSamplerAuthenticStrings_Notes__ctx_type_0_init(_ctx.playingnotes);
    _ctx.noteRatio = 0x0 /* 0.000000 */;
+   _ctx.nextVelocity = 0;
    _ctx.loopy = false;
    _ctx.loopS = 0;
    _ctx.loopE = 0;
@@ -131,6 +135,15 @@ void synthSamplerAuthenticStrings_Sampler__ctx_type_0_init(synthSamplerAuthentic
    synthSamplerAuthenticStrings_Sampler_default(_ctx);
    
    return ;
+}
+
+void synthSamplerAuthenticStrings_Sampler_setNote(synthSamplerAuthenticStrings_Sampler__ctx_type_0 &_ctx, int note){
+   fix16_t log_two;
+   log_two = 0xb172 /* 0.693147 */;
+   fix16_t semitones;
+   semitones = fix_mul(0x1555 /* 0.083333 */,int_to_fix((note + (- _ctx.sampleNote))));
+   _ctx.noteRatio = fix_exp(fix_mul(log_two,semitones));
+   synthSamplerAuthenticStrings_Sampler_updateStep(_ctx);
 }
 
 fix16_t synthSamplerAuthenticStrings_Sampler_process(synthSamplerAuthenticStrings_Sampler__ctx_type_0 &_ctx){
@@ -183,6 +196,19 @@ fix16_t synthSamplerAuthenticStrings_Sampler_process(synthSamplerAuthenticString
          else
          {
             value = fix_mul(_ctx.level,(synthSamplerAuthenticStrings_SampleWrapper_getSample(idx) + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(synthSamplerAuthenticStrings_SampleWrapper_getSample((1 + idx)) + (- synthSamplerAuthenticStrings_SampleWrapper_getSample(idx))))));
+         }
+         if(_ctx.quickKill){
+            _ctx.qkLevel = (_ctx.qkLevel + (- _ctx.qkStep));
+            if((_ctx.qkLevel <= 0x0 /* 0.000000 */) || (_ctx.state <= 0)){
+               _ctx.qkLevel = 0x0 /* 0.000000 */;
+               _ctx.quickKill = false;
+               synthSamplerAuthenticStrings_Sampler_setNote(_ctx,synthSamplerAuthenticStrings_Notes_lastNote(_ctx.playingnotes));
+               synthSamplerAuthenticStrings_Sampler_setLevel(_ctx,synthSamplerAuthenticStrings_Util_velocityToLevel(_ctx.nextVelocity));
+            }
+            else
+            {
+               value = fix_mul(_ctx.qkLevel,value);
+            }
          }
       }
    }
@@ -247,6 +273,19 @@ void synthSamplerAuthenticStrings_Sampler_process_bufferTo(synthSamplerAuthentic
             {
                oBuffer[i] = fix_mul(_ctx.level,(synthSamplerAuthenticStrings_SampleWrapper_getSample(idx) + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(synthSamplerAuthenticStrings_SampleWrapper_getSample((1 + idx)) + (- synthSamplerAuthenticStrings_SampleWrapper_getSample(idx))))));
             }
+            if(_ctx.quickKill){
+               _ctx.qkLevel = (_ctx.qkLevel + (- _ctx.qkStep));
+               if((_ctx.qkLevel <= 0x0 /* 0.000000 */) || (_ctx.state <= 0)){
+                  _ctx.qkLevel = 0x0 /* 0.000000 */;
+                  _ctx.quickKill = false;
+                  synthSamplerAuthenticStrings_Sampler_setNote(_ctx,synthSamplerAuthenticStrings_Notes_lastNote(_ctx.playingnotes));
+                  synthSamplerAuthenticStrings_Sampler_setLevel(_ctx,synthSamplerAuthenticStrings_Util_velocityToLevel(_ctx.nextVelocity));
+               }
+               else
+               {
+                  oBuffer[i] = fix_mul(_ctx.qkLevel,oBuffer[i]);
+               }
+            }
          }
       }
       else
@@ -263,6 +302,7 @@ void synthSamplerAuthenticStrings_Sampler_setSamplerate(synthSamplerAuthenticStr
       _ctx.fsRatio = fix_div(_ctx.sampleFs,_ctx.fs);
    }
    synthSamplerAuthenticStrings_Sampler_updateStep(_ctx);
+   _ctx.qkLevel = fix_div(0x10000 /* 1.000000 */,fix_mul(0x50000 /* 5.000000 */,_ctx.fs));
 }
 
 void synthSamplerAuthenticStrings_Sampler_updateCrossFade(synthSamplerAuthenticStrings_Sampler__ctx_type_0 &_ctx){
@@ -288,15 +328,6 @@ void synthSamplerAuthenticStrings_Sampler_updateCrossFade(synthSamplerAuthenticS
    }
 }
 
-void synthSamplerAuthenticStrings_Sampler_setNote(synthSamplerAuthenticStrings_Sampler__ctx_type_0 &_ctx, int note){
-   fix16_t log_two;
-   log_two = 0xb172 /* 0.693147 */;
-   fix16_t semitones;
-   semitones = fix_mul(0x1555 /* 0.083333 */,int_to_fix((note + (- _ctx.sampleNote))));
-   _ctx.noteRatio = fix_exp(fix_mul(log_two,semitones));
-   synthSamplerAuthenticStrings_Sampler_updateStep(_ctx);
-}
-
 void synthSamplerAuthenticStrings_Sampler_setSustain(synthSamplerAuthenticStrings_Sampler__ctx_type_0 &_ctx, uint8_t flag){
    _ctx.sustain = flag;
    if(_ctx.gate && _ctx.sustain){
@@ -311,15 +342,25 @@ uint8_t synthSamplerAuthenticStrings_Sampler_noteOn(synthSamplerAuthenticStrings
    note = int_clip(note,0,127);
    uint8_t isNew;
    isNew = synthSamplerAuthenticStrings_Notes_noteOn(_ctx.playingnotes,note,velocity,channel);
-   synthSamplerAuthenticStrings_Sampler_setNote(_ctx,note);
-   synthSamplerAuthenticStrings_Sampler_setLevel(_ctx,synthSamplerAuthenticStrings_Util_velocityToLevel(velocity));
    _ctx.gate = true;
    if(_ctx.sustain){
       _ctx.sustaining = true;
    }
-   _ctx.posBase = 0;
-   _ctx.pos = 0x0 /* 0.000000 */;
-   _ctx.state = 1;
+   if(_ctx.state <= 0){
+      _ctx.posBase = 0;
+      _ctx.pos = 0x0 /* 0.000000 */;
+      _ctx.state = 1;
+      synthSamplerAuthenticStrings_Sampler_setNote(_ctx,note);
+      synthSamplerAuthenticStrings_Sampler_setLevel(_ctx,synthSamplerAuthenticStrings_Util_velocityToLevel(velocity));
+   }
+   else
+   {
+      _ctx.nextVelocity = velocity;
+      if(bool_not(_ctx.quickKill)){
+         _ctx.qkLevel = 0x10000 /* 1.000000 */;
+         _ctx.quickKill = true;
+      }
+   }
    return isNew;
 }
 
@@ -398,7 +439,7 @@ fix16_t synthSamplerAuthenticStrings_Poly_getSample(synthSamplerAuthenticStrings
 }
 
 void synthSamplerAuthenticStrings_Poly_default(synthSamplerAuthenticStrings_Poly__ctx_type_0 &_ctx){
-   _ctx.should_leftovers = true;
+   _ctx.should_leftovers = false;
    synthSamplerAuthenticStrings_Sampler_default(_ctx.voice0);
    synthSamplerAuthenticStrings_Sampler_setPoly(_ctx.voice0,true);
    synthSamplerAuthenticStrings_Sampler_default(_ctx.voice1);

@@ -259,10 +259,14 @@ typedef struct synthSamplerPulsingPatterns_Sampler__ctx_type_0 {
    int size;
    int sampleNote;
    fix16_t sampleFs;
+   uint8_t quickKill;
+   fix16_t qkStep;
+   fix16_t qkLevel;
    int posBase;
    fix16_t pos;
    synthSamplerPulsingPatterns_Notes__ctx_type_0 playingnotes;
    fix16_t noteRatio;
+   int nextVelocity;
    uint8_t loopy;
    int loopS;
    int loopE;
@@ -275,9 +279,40 @@ typedef struct synthSamplerPulsingPatterns_Sampler__ctx_type_0 {
    fix16_t buffer_cross[256];
 } synthSamplerPulsingPatterns_Sampler__ctx_type_0;
 
-typedef synthSamplerPulsingPatterns_Sampler__ctx_type_0 synthSamplerPulsingPatterns_Sampler_process_type;
+typedef synthSamplerPulsingPatterns_Sampler__ctx_type_0 synthSamplerPulsingPatterns_Sampler_updateStep_type;
 
 void synthSamplerPulsingPatterns_Sampler__ctx_type_0_init(synthSamplerPulsingPatterns_Sampler__ctx_type_0 &_output_);
+
+static_inline void synthSamplerPulsingPatterns_Sampler_updateStep_init(synthSamplerPulsingPatterns_Sampler__ctx_type_0 &_output_){
+   synthSamplerPulsingPatterns_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerPulsingPatterns_Sampler_updateStep(synthSamplerPulsingPatterns_Sampler__ctx_type_0 &_ctx){
+   _ctx.step = fix_mul(_ctx.fsRatio,_ctx.noteRatio);
+};
+
+typedef synthSamplerPulsingPatterns_Sampler__ctx_type_0 synthSamplerPulsingPatterns_Sampler_setNote_type;
+
+static_inline void synthSamplerPulsingPatterns_Sampler_setNote_init(synthSamplerPulsingPatterns_Sampler__ctx_type_0 &_output_){
+   synthSamplerPulsingPatterns_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthSamplerPulsingPatterns_Sampler_setNote(synthSamplerPulsingPatterns_Sampler__ctx_type_0 &_ctx, int note);
+
+typedef synthSamplerPulsingPatterns_Sampler__ctx_type_0 synthSamplerPulsingPatterns_Sampler_setLevel_type;
+
+static_inline void synthSamplerPulsingPatterns_Sampler_setLevel_init(synthSamplerPulsingPatterns_Sampler__ctx_type_0 &_output_){
+   synthSamplerPulsingPatterns_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerPulsingPatterns_Sampler_setLevel(synthSamplerPulsingPatterns_Sampler__ctx_type_0 &_ctx, fix16_t newLevel){
+   _ctx.level = newLevel;
+};
+
+typedef synthSamplerPulsingPatterns_Sampler__ctx_type_0 synthSamplerPulsingPatterns_Sampler_process_type;
 
 static_inline void synthSamplerPulsingPatterns_Sampler_process_init(synthSamplerPulsingPatterns_Sampler__ctx_type_0 &_output_){
    synthSamplerPulsingPatterns_Sampler__ctx_type_0_init(_output_);
@@ -304,17 +339,6 @@ static_inline void synthSamplerPulsingPatterns_Sampler_process_buffer_init(synth
 
 static_inline void synthSamplerPulsingPatterns_Sampler_process_buffer(synthSamplerPulsingPatterns_Sampler__ctx_type_0 &_ctx, int nb){
    synthSamplerPulsingPatterns_Sampler_process_bufferTo(_ctx,nb,_ctx.buffer_o);
-};
-
-typedef synthSamplerPulsingPatterns_Sampler__ctx_type_0 synthSamplerPulsingPatterns_Sampler_updateStep_type;
-
-static_inline void synthSamplerPulsingPatterns_Sampler_updateStep_init(synthSamplerPulsingPatterns_Sampler__ctx_type_0 &_output_){
-   synthSamplerPulsingPatterns_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthSamplerPulsingPatterns_Sampler_updateStep(synthSamplerPulsingPatterns_Sampler__ctx_type_0 &_ctx){
-   _ctx.step = fix_mul(_ctx.fsRatio,_ctx.noteRatio);
 };
 
 typedef synthSamplerPulsingPatterns_Sampler__ctx_type_0 synthSamplerPulsingPatterns_Sampler_setSamplerate_type;
@@ -412,26 +436,6 @@ static_inline void synthSamplerPulsingPatterns_Sampler_getSampleSize_init(synthS
 
 static_inline int synthSamplerPulsingPatterns_Sampler_getSampleSize(synthSamplerPulsingPatterns_Sampler__ctx_type_0 &_ctx){
    return _ctx.size;
-};
-
-typedef synthSamplerPulsingPatterns_Sampler__ctx_type_0 synthSamplerPulsingPatterns_Sampler_setNote_type;
-
-static_inline void synthSamplerPulsingPatterns_Sampler_setNote_init(synthSamplerPulsingPatterns_Sampler__ctx_type_0 &_output_){
-   synthSamplerPulsingPatterns_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-void synthSamplerPulsingPatterns_Sampler_setNote(synthSamplerPulsingPatterns_Sampler__ctx_type_0 &_ctx, int note);
-
-typedef synthSamplerPulsingPatterns_Sampler__ctx_type_0 synthSamplerPulsingPatterns_Sampler_setLevel_type;
-
-static_inline void synthSamplerPulsingPatterns_Sampler_setLevel_init(synthSamplerPulsingPatterns_Sampler__ctx_type_0 &_output_){
-   synthSamplerPulsingPatterns_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthSamplerPulsingPatterns_Sampler_setLevel(synthSamplerPulsingPatterns_Sampler__ctx_type_0 &_ctx, fix16_t newLevel){
-   _ctx.level = newLevel;
 };
 
 typedef synthSamplerPulsingPatterns_Sampler__ctx_type_0 synthSamplerPulsingPatterns_Sampler_setSustain_type;
