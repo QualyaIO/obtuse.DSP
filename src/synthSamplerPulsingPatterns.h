@@ -266,6 +266,7 @@ typedef struct synthSamplerPulsingPatterns_Sampler__ctx_type_0 {
    synthSamplerPulsingPatterns_Notes__ctx_type_0 playingnotes;
    fix16_t noteRatio;
    int nextVelocity;
+   int nextNote;
    uint8_t loopy;
    int loopS;
    int loopE;

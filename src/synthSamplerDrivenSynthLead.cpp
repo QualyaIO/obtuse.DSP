@@ -121,6 +121,7 @@ void synthSamplerDrivenSynthLead_Sampler__ctx_type_0_init(synthSamplerDrivenSynt
    synthSamplerDrivenSynthLead_Notes__ctx_type_0_init(_ctx.playingnotes);
    _ctx.noteRatio = 0x0 /* 0.000000 */;
    _ctx.nextVelocity = 0;
+   _ctx.nextNote = 0;
    _ctx.loopy = false;
    _ctx.loopS = 0;
    _ctx.loopE = 0;
@@ -163,7 +164,7 @@ fix16_t synthSamplerDrivenSynthLead_Sampler_process(synthSamplerDrivenSynthLead_
       }
       else
       {
-         if((_ctx.state == 1) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && _ctx.crossfade && (idx >= (_ctx.loopE + (- (256 / 2)))) && (idx <= (_ctx.loopE + (256 / 2)))){
+         if((_ctx.state == 1) && bool_not(_ctx.quickKill) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && _ctx.crossfade && (idx >= (_ctx.loopE + (- (256 / 2)))) && (idx <= (_ctx.loopE + (256 / 2)))){
             _ctx.state = 2;
             idx = (idx + (- _ctx.loopE) + (256 / 2));
             _ctx.posBase = idx;
@@ -171,7 +172,7 @@ fix16_t synthSamplerDrivenSynthLead_Sampler_process(synthSamplerDrivenSynthLead_
          }
          else
          {
-            if((_ctx.state == 1) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && (idx >= _ctx.loopE)){
+            if((_ctx.state == 1) && bool_not(_ctx.quickKill) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && (idx >= _ctx.loopE)){
                idx = (_ctx.loopS + idx + (- _ctx.loopE));
                _ctx.posBase = idx;
                _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
@@ -202,11 +203,14 @@ fix16_t synthSamplerDrivenSynthLead_Sampler_process(synthSamplerDrivenSynthLead_
          {
             value = fix_mul(_ctx.level,(synthSamplerDrivenSynthLead_SampleWrapper_getSample(idx) + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(synthSamplerDrivenSynthLead_SampleWrapper_getSample((1 + idx)) + (- synthSamplerDrivenSynthLead_SampleWrapper_getSample(idx))))));
          }
-         if(_ctx.quickKill && ((_ctx.level <= 0x0 /* 0.000000 */) || (_ctx.state <= 0))){
-            _ctx.quickKill = false;
-            synthSamplerDrivenSynthLead_Sampler_setNote(_ctx,synthSamplerDrivenSynthLead_Notes_lastNote(_ctx.playingnotes));
-            synthSamplerDrivenSynthLead_Sampler_setLevel(_ctx,synthSamplerDrivenSynthLead_Util_velocityToLevel(_ctx.nextVelocity));
-         }
+      }
+      if(_ctx.quickKill && ((_ctx.level <= 0x0 /* 0.000000 */) || (_ctx.state <= 0))){
+         _ctx.quickKill = false;
+         _ctx.posBase = 0;
+         _ctx.pos = 0x0 /* 0.000000 */;
+         _ctx.state = 1;
+         synthSamplerDrivenSynthLead_Sampler_setNote(_ctx,_ctx.nextNote);
+         synthSamplerDrivenSynthLead_Sampler_setLevel(_ctx,synthSamplerDrivenSynthLead_Util_velocityToLevel(_ctx.nextVelocity));
       }
    }
    return value;
@@ -237,7 +241,7 @@ void synthSamplerDrivenSynthLead_Sampler_process_bufferTo(synthSamplerDrivenSynt
          }
          else
          {
-            if((_ctx.state == 1) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && _ctx.crossfade && (idx >= (_ctx.loopE + (- (256 / 2)))) && (idx <= (_ctx.loopE + (256 / 2)))){
+            if((_ctx.state == 1) && bool_not(_ctx.quickKill) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && _ctx.crossfade && (idx >= (_ctx.loopE + (- (256 / 2)))) && (idx <= (_ctx.loopE + (256 / 2)))){
                _ctx.state = 2;
                idx = (idx + (- _ctx.loopE) + (256 / 2));
                _ctx.posBase = idx;
@@ -245,7 +249,7 @@ void synthSamplerDrivenSynthLead_Sampler_process_bufferTo(synthSamplerDrivenSynt
             }
             else
             {
-               if((_ctx.state == 1) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && (idx >= _ctx.loopE)){
+               if((_ctx.state == 1) && bool_not(_ctx.quickKill) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && (idx >= _ctx.loopE)){
                   idx = (_ctx.loopS + idx + (- _ctx.loopE));
                   _ctx.posBase = idx;
                   _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
@@ -276,11 +280,14 @@ void synthSamplerDrivenSynthLead_Sampler_process_bufferTo(synthSamplerDrivenSynt
             {
                oBuffer[i] = fix_mul(_ctx.level,(synthSamplerDrivenSynthLead_SampleWrapper_getSample(idx) + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(synthSamplerDrivenSynthLead_SampleWrapper_getSample((1 + idx)) + (- synthSamplerDrivenSynthLead_SampleWrapper_getSample(idx))))));
             }
-            if(_ctx.quickKill && ((_ctx.level <= 0x0 /* 0.000000 */) || (_ctx.state <= 0))){
-               _ctx.quickKill = false;
-               synthSamplerDrivenSynthLead_Sampler_setNote(_ctx,synthSamplerDrivenSynthLead_Notes_lastNote(_ctx.playingnotes));
-               synthSamplerDrivenSynthLead_Sampler_setLevel(_ctx,synthSamplerDrivenSynthLead_Util_velocityToLevel(_ctx.nextVelocity));
-            }
+         }
+         if(_ctx.quickKill && ((_ctx.level <= 0x0 /* 0.000000 */) || (_ctx.state <= 0))){
+            _ctx.quickKill = false;
+            _ctx.posBase = 0;
+            _ctx.pos = 0x0 /* 0.000000 */;
+            _ctx.state = 1;
+            synthSamplerDrivenSynthLead_Sampler_setNote(_ctx,_ctx.nextNote);
+            synthSamplerDrivenSynthLead_Sampler_setLevel(_ctx,synthSamplerDrivenSynthLead_Util_velocityToLevel(_ctx.nextVelocity));
          }
       }
       else
@@ -351,6 +358,7 @@ uint8_t synthSamplerDrivenSynthLead_Sampler_noteOn(synthSamplerDrivenSynthLead_S
    else
    {
       _ctx.quickKill = true;
+      _ctx.nextNote = note;
       _ctx.nextVelocity = velocity;
    }
    return isNew;
@@ -363,7 +371,13 @@ void synthSamplerDrivenSynthLead_Sampler_noteOff(synthSamplerDrivenSynthLead_Sam
          int last_played;
          last_played = synthSamplerDrivenSynthLead_Notes_lastNote(_ctx.playingnotes);
          if((last_played > 0) && (last_played <= 128)){
-            synthSamplerDrivenSynthLead_Sampler_setNote(_ctx,((-1) + last_played));
+            if(_ctx.quickKill){
+               _ctx.nextNote = ((-1) + last_played);
+            }
+            else
+            {
+               synthSamplerDrivenSynthLead_Sampler_setNote(_ctx,((-1) + last_played));
+            }
          }
       }
       else

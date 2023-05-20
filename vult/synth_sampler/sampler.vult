@@ -1,9 +1,9 @@
 
 // reading samples. Using linear interpolation to adjust pitch.
 // Option to loop a section upon a held note WARNING: end loop must be at least two samples after start loop, longer than max used step! Rudimentary cross-fade will be used if there is enough sample before loop start and after loop end to fill the buffer (e.g. 128 on each end, check Util.buffer), which effectiveness will depends on the step size. Sidenote: take into account this crossfade when setting loop points, as some samples will "bleed" outside of bounds during cross-fading.
+// Anti-pop upon new note: if a note is playing, it will quickly kill it before going to next. Beware that if yet another note arrives in the meantime, the one(s) in-between will be skipped. I.e. play notes at least 5ms apart
 
-// TODO: kill on noteOff
-
+// TODO: option to (quick) kill on noteOff
 
 // called internally when Samplerate or note is altered
 fun updateStep() {
@@ -59,7 +59,8 @@ and process() {
   mem quickKill: bool;
   // linear decrease of level for quick kill
   mem qkStep: real;
-  // in case of quick kill, the velocity of the note to play
+  // in case of quick kill, the note and velocity to play
+  mem nextNote: int;
   mem nextVelocity: int;
 
   val value = 0.0;
@@ -82,7 +83,8 @@ and process() {
     else {
       // first, updating states
       // looping entering cross fade, centered around end loop
-      if (state == 1 && (gate || sustaining) && loopy && crossfade && idx >= loopE - size(buffer_cross) / 2 && idx <= loopE + size(buffer_cross) / 2) {
+        // Note: we avoid looping upon quick kill as a simple measure to avoid jumps when dealing with gate
+      if (state == 1 && not(quickKill) && (gate || sustaining) && loopy && crossfade && idx >= loopE - size(buffer_cross) / 2 && idx <= loopE + size(buffer_cross) / 2) {
         state = 2;
         // index aligned to position in buffer
         idx = idx - loopE + size(buffer_cross) / 2;
@@ -90,7 +92,7 @@ and process() {
         pos = pos % 1.0;
       }
       // looping without cross fade
-      else if (state == 1 && (gate || sustaining) && loopy && idx >= loopE) {
+      else if (state == 1 && not(quickKill) && (gate || sustaining) && loopy && idx >= loopE) {
         // reset index and position to left
         idx = loopS + idx - loopE;
         posBase = idx;
@@ -124,14 +126,16 @@ and process() {
       } else {
         value = (SampleWrapper.getSample(idx) + (pos % 1.0) * (SampleWrapper.getSample(idx+1) - SampleWrapper.getSample(idx))) * level;
       }
+    }
 
-      // reached the end, either killed or we finished to play the note before the kill, time to go to next note
-      if (quickKill && (level <= 0.0 || state <= 0)) {
-        quickKill = false;
-        // we might have missed a note while quick killing, just read the last one to date
-        _ = setNote(playingnotes:Notes.lastNote());
-        _ = setLevel(Util.velocityToLevel(nextVelocity));
-      }
+    // reached the end, either killed or we finished to play the note before the kill, time to go to next note
+    if (quickKill && (level <= 0.0 || state <= 0)) {
+      quickKill = false;
+      posBase = 0;
+      pos = 0.0;
+      state = 1;
+      _ = setNote(nextNote);
+      _ = setLevel(Util.velocityToLevel(nextVelocity));
     }
   }
 
@@ -148,6 +152,7 @@ and process_bufferTo(nb: int, oBuffer) {
   val idx = 0;
   val i = 0;
   while (i < nb) {
+
     if (state > 0) {
       // advance time, keep range in check here to maximize precision
       pos = pos + step;
@@ -167,7 +172,8 @@ and process_bufferTo(nb: int, oBuffer) {
       else {
         // first, updating states
         // looping entering cross fade, centered around end loop
-        if (state == 1 && (gate || sustaining) && loopy && crossfade && idx >= loopE - size(buffer_cross) / 2 && idx <= loopE + size(buffer_cross) / 2) {
+        // Note: we avoid looping upon quick kill as a simple measure to avoid jumps when dealing with gate
+        if (state == 1 && not(quickKill) && (gate || sustaining) && loopy && crossfade && idx >= loopE - size(buffer_cross) / 2 && idx <= loopE + size(buffer_cross) / 2) {
         state = 2;
           // index aligned to position in buffer
           idx = idx - loopE + size(buffer_cross) / 2;
@@ -175,7 +181,7 @@ and process_bufferTo(nb: int, oBuffer) {
           pos = pos % 1.0;
         }
         // looping without cross fade
-        else if (state == 1 && (gate || sustaining) && loopy && idx >= loopE) {
+        else if (state == 1 && not(quickKill) && (gate || sustaining) && loopy && idx >= loopE) {
           // reset index and position to left
           idx = loopS + idx - loopE;
           posBase = idx;
@@ -209,14 +215,16 @@ and process_bufferTo(nb: int, oBuffer) {
         } else {
           oBuffer[i] = (SampleWrapper.getSample(idx) + (pos % 1.0) * (SampleWrapper.getSample(idx+1) - SampleWrapper.getSample(idx))) * level;
         }
+      }
 
-        // reached the end, either killed or we finished to play the note before the kill, time to go to next note
-        if (quickKill && (level <= 0.0 || state <= 0)) {
-          quickKill = false;
-          // we might have missed a note while quick killing, just read the last one to date
-          _ = setNote(playingnotes:Notes.lastNote());
-          _ = setLevel(Util.velocityToLevel(nextVelocity));
-        }
+      // reached the end, either killed or we finished to play the note before the kill, time to go to next note
+      if (quickKill && (level <= 0.0 || state <= 0)) {
+        quickKill = false;
+        posBase = 0;
+        pos = 0.0;
+        state = 1;
+        _ = setNote(nextNote);
+        _ = setLevel(Util.velocityToLevel(nextVelocity));
       }
     } else {
       oBuffer[i] = 0.0;
@@ -336,6 +344,7 @@ and noteOn(note:int, velocity:int, channel:int): bool {
    // only 128 midi notes
    note = clip(note, 0, 127);
    val isNew = playingnotes:Notes.noteOn(note, velocity, channel);
+
    // start playing note
    gate = true;
    // update status with sustain pedal
@@ -343,7 +352,7 @@ and noteOn(note:int, velocity:int, channel:int): bool {
      sustaining = true;
    }
 
-   // not currently playing, go ahead
+   // not currently playing, go ahead we new note
    if (state <= 0) {
      posBase = 0;
      pos = 0.0;
@@ -355,6 +364,8 @@ and noteOn(note:int, velocity:int, channel:int): bool {
    // will wait for quick kill for next
    else {
      quickKill = true;
+     // do not rely on playingnotes to get last note in this case, because it could be set off before we applied quick kill
+     nextNote = note;
      nextVelocity = velocity;
    }
    return isNew;
@@ -378,8 +389,15 @@ and noteOff(note:int, channel:int) {
          val last_played = playingnotes:Notes.lastNote();
 	 // check we do have a note -- and that it's in range
          if (last_played > 0 && last_played <= 128) {
-	   // Note: does not retrigger, consistent with FM monophony
-	   _ = setNote(last_played - 1);
+           // still trying to kill last note, update the next note to apply on next trigger -- a bit of a hack to keep consistency
+           if (quickKill) {
+             nextNote = last_played - 1;
+           }
+           // the normal use case, goes back to previous tone
+           // Note: does not retrigger, consistent with FM monophony
+           else {
+             _ = setNote(last_played - 1);
+           }
          }
       } else {
  	 // letting note go
