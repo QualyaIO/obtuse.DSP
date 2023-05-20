@@ -261,7 +261,6 @@ typedef struct synthSamplerPiano_Sampler__ctx_type_0 {
    fix16_t sampleFs;
    uint8_t quickKill;
    fix16_t qkStep;
-   fix16_t qkLevel;
    int posBase;
    fix16_t pos;
    synthSamplerPiano_Notes__ctx_type_0 playingnotes;

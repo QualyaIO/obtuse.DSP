@@ -116,7 +116,6 @@ void synthSamplerJapaneseShakuhachiFlute_Sampler__ctx_type_0_init(synthSamplerJa
    _ctx.sampleFs = 0x0 /* 0.000000 */;
    _ctx.quickKill = false;
    _ctx.qkStep = 0x0 /* 0.000000 */;
-   _ctx.qkLevel = 0x0 /* 0.000000 */;
    _ctx.posBase = 0;
    _ctx.pos = 0x0 /* 0.000000 */;
    synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0_init(_ctx.playingnotes);
@@ -190,6 +189,12 @@ fix16_t synthSamplerJapaneseShakuhachiFlute_Sampler_process(synthSamplerJapanese
                _ctx.state = 3;
             }
          }
+         if(_ctx.quickKill){
+            _ctx.level = (_ctx.level + (- _ctx.qkStep));
+            if(_ctx.level < 0x0 /* 0.000000 */){
+               _ctx.level = 0x0 /* 0.000000 */;
+            }
+         }
          if(_ctx.state == 2){
             value = fix_mul(_ctx.level,(_ctx.buffer_cross[idx] + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(_ctx.buffer_cross[(1 + idx)] + (- _ctx.buffer_cross[idx])))));
          }
@@ -197,18 +202,10 @@ fix16_t synthSamplerJapaneseShakuhachiFlute_Sampler_process(synthSamplerJapanese
          {
             value = fix_mul(_ctx.level,(synthSamplerJapaneseShakuhachiFlute_SampleWrapper_getSample(idx) + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(synthSamplerJapaneseShakuhachiFlute_SampleWrapper_getSample((1 + idx)) + (- synthSamplerJapaneseShakuhachiFlute_SampleWrapper_getSample(idx))))));
          }
-         if(_ctx.quickKill){
-            _ctx.qkLevel = (_ctx.qkLevel + (- _ctx.qkStep));
-            if((_ctx.qkLevel <= 0x0 /* 0.000000 */) || (_ctx.state <= 0)){
-               _ctx.qkLevel = 0x0 /* 0.000000 */;
-               _ctx.quickKill = false;
-               synthSamplerJapaneseShakuhachiFlute_Sampler_setNote(_ctx,synthSamplerJapaneseShakuhachiFlute_Notes_lastNote(_ctx.playingnotes));
-               synthSamplerJapaneseShakuhachiFlute_Sampler_setLevel(_ctx,synthSamplerJapaneseShakuhachiFlute_Util_velocityToLevel(_ctx.nextVelocity));
-            }
-            else
-            {
-               value = fix_mul(_ctx.qkLevel,value);
-            }
+         if(_ctx.quickKill && ((_ctx.level <= 0x0 /* 0.000000 */) || (_ctx.state <= 0))){
+            _ctx.quickKill = false;
+            synthSamplerJapaneseShakuhachiFlute_Sampler_setNote(_ctx,synthSamplerJapaneseShakuhachiFlute_Notes_lastNote(_ctx.playingnotes));
+            synthSamplerJapaneseShakuhachiFlute_Sampler_setLevel(_ctx,synthSamplerJapaneseShakuhachiFlute_Util_velocityToLevel(_ctx.nextVelocity));
          }
       }
    }
@@ -266,6 +263,12 @@ void synthSamplerJapaneseShakuhachiFlute_Sampler_process_bufferTo(synthSamplerJa
                   _ctx.state = 3;
                }
             }
+            if(_ctx.quickKill){
+               _ctx.level = (_ctx.level + (- _ctx.qkStep));
+               if(_ctx.level < 0x0 /* 0.000000 */){
+                  _ctx.level = 0x0 /* 0.000000 */;
+               }
+            }
             if(_ctx.state == 2){
                oBuffer[i] = fix_mul(_ctx.level,(_ctx.buffer_cross[idx] + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(_ctx.buffer_cross[(1 + idx)] + (- _ctx.buffer_cross[idx])))));
             }
@@ -273,18 +276,10 @@ void synthSamplerJapaneseShakuhachiFlute_Sampler_process_bufferTo(synthSamplerJa
             {
                oBuffer[i] = fix_mul(_ctx.level,(synthSamplerJapaneseShakuhachiFlute_SampleWrapper_getSample(idx) + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(synthSamplerJapaneseShakuhachiFlute_SampleWrapper_getSample((1 + idx)) + (- synthSamplerJapaneseShakuhachiFlute_SampleWrapper_getSample(idx))))));
             }
-            if(_ctx.quickKill){
-               _ctx.qkLevel = (_ctx.qkLevel + (- _ctx.qkStep));
-               if((_ctx.qkLevel <= 0x0 /* 0.000000 */) || (_ctx.state <= 0)){
-                  _ctx.qkLevel = 0x0 /* 0.000000 */;
-                  _ctx.quickKill = false;
-                  synthSamplerJapaneseShakuhachiFlute_Sampler_setNote(_ctx,synthSamplerJapaneseShakuhachiFlute_Notes_lastNote(_ctx.playingnotes));
-                  synthSamplerJapaneseShakuhachiFlute_Sampler_setLevel(_ctx,synthSamplerJapaneseShakuhachiFlute_Util_velocityToLevel(_ctx.nextVelocity));
-               }
-               else
-               {
-                  oBuffer[i] = fix_mul(_ctx.qkLevel,oBuffer[i]);
-               }
+            if(_ctx.quickKill && ((_ctx.level <= 0x0 /* 0.000000 */) || (_ctx.state <= 0))){
+               _ctx.quickKill = false;
+               synthSamplerJapaneseShakuhachiFlute_Sampler_setNote(_ctx,synthSamplerJapaneseShakuhachiFlute_Notes_lastNote(_ctx.playingnotes));
+               synthSamplerJapaneseShakuhachiFlute_Sampler_setLevel(_ctx,synthSamplerJapaneseShakuhachiFlute_Util_velocityToLevel(_ctx.nextVelocity));
             }
          }
       }
@@ -302,7 +297,7 @@ void synthSamplerJapaneseShakuhachiFlute_Sampler_setSamplerate(synthSamplerJapan
       _ctx.fsRatio = fix_div(_ctx.sampleFs,_ctx.fs);
    }
    synthSamplerJapaneseShakuhachiFlute_Sampler_updateStep(_ctx);
-   _ctx.qkLevel = fix_div(0x10000 /* 1.000000 */,fix_mul(0x50000 /* 5.000000 */,_ctx.fs));
+   _ctx.qkStep = fix_div(0x10000 /* 1.000000 */,fix_mul(0x50000 /* 5.000000 */,_ctx.fs));
 }
 
 void synthSamplerJapaneseShakuhachiFlute_Sampler_updateCrossFade(synthSamplerJapaneseShakuhachiFlute_Sampler__ctx_type_0 &_ctx){
@@ -355,11 +350,8 @@ uint8_t synthSamplerJapaneseShakuhachiFlute_Sampler_noteOn(synthSamplerJapaneseS
    }
    else
    {
+      _ctx.quickKill = true;
       _ctx.nextVelocity = velocity;
-      if(bool_not(_ctx.quickKill)){
-         _ctx.qkLevel = 0x10000 /* 1.000000 */;
-         _ctx.quickKill = true;
-      }
    }
    return isNew;
 }

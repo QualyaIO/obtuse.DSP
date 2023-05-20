@@ -57,8 +57,6 @@ and process() {
   mem sustaining: bool;
   // should we terminate quickly the note? Used to avoid pops upon stealing voice
   mem quickKill: bool;
-  // coeff to apply for quick kill
-  mem qkLevel: real;
   // linear decrease of level for quick kill
   mem qkStep: real;
   // in case of quick kill, the velocity of the note to play
@@ -112,6 +110,14 @@ and process() {
         }
       }
 
+      // adjust level for emergency release
+      if (quickKill) {
+        level = level - qkStep;
+        if (level < 0.0) {
+          level = 0.0;
+        }
+      }
+
       // compute actual values, with linear interpolation between samples
       if (state == 2) {
         value = (buffer_cross[idx] + (pos % 1.0) * (buffer_cross[idx+1] - buffer_cross[idx])) * level;
@@ -119,21 +125,12 @@ and process() {
         value = (SampleWrapper.getSample(idx) + (pos % 1.0) * (SampleWrapper.getSample(idx+1) - SampleWrapper.getSample(idx))) * level;
       }
 
-      // adjust level for emergency release
-      if (quickKill) {
-        qkLevel = qkLevel - qkStep;
-        // reached the end, either killed or we finished to play the note before the kill, time to go to next note
-        if (qkLevel <= 0.0 || state <= 0) {
-          qkLevel = 0.0;
-          quickKill = false;
-          // we might have missed a note while quick killing, just read the last one to date
-          _ = setNote(playingnotes:Notes.lastNote());
-          _ = setLevel(Util.velocityToLevel(nextVelocity));
-        }
-        else {
-          // fade it
-          value = value * qkLevel;
-        }
+      // reached the end, either killed or we finished to play the note before the kill, time to go to next note
+      if (quickKill && (level <= 0.0 || state <= 0)) {
+        quickKill = false;
+        // we might have missed a note while quick killing, just read the last one to date
+        _ = setNote(playingnotes:Notes.lastNote());
+        _ = setLevel(Util.velocityToLevel(nextVelocity));
       }
     }
   }
@@ -198,6 +195,14 @@ and process_bufferTo(nb: int, oBuffer) {
           }
         }
 
+        // adjust level for emergency release
+        if (quickKill) {
+          level = level - qkStep;
+          if (level < 0.0) {
+            level = 0.0;
+          }
+        }
+        
         // compute actual values, with linear interpolation between samples
         if (state == 2) {
           oBuffer[i] = (buffer_cross[idx] + (pos % 1.0) * (buffer_cross[idx+1] - buffer_cross[idx])) * level;
@@ -205,21 +210,12 @@ and process_bufferTo(nb: int, oBuffer) {
           oBuffer[i] = (SampleWrapper.getSample(idx) + (pos % 1.0) * (SampleWrapper.getSample(idx+1) - SampleWrapper.getSample(idx))) * level;
         }
 
-        // adjust level for emergency release
-        if (quickKill) {
-          qkLevel = qkLevel - qkStep;
-          // reached the end, either killed or we finished to play the note before the kill, time to go to next note
-          if (qkLevel <= 0.0 || state <= 0) {
-            qkLevel = 0.0;
-            quickKill = false;
-            // we might have missed a note while quick killing, just read the last one to date
-            _ = setNote(playingnotes:Notes.lastNote());
-            _ = setLevel(Util.velocityToLevel(nextVelocity));
-          }
-          else {
-            // fade it
-            oBuffer[i] = oBuffer[i] * qkLevel;
-          }
+        // reached the end, either killed or we finished to play the note before the kill, time to go to next note
+        if (quickKill && (level <= 0.0 || state <= 0)) {
+          quickKill = false;
+          // we might have missed a note while quick killing, just read the last one to date
+          _ = setNote(playingnotes:Notes.lastNote());
+          _ = setLevel(Util.velocityToLevel(nextVelocity));
         }
       }
     } else {
@@ -249,7 +245,7 @@ and setSamplerate(newFs:real) {
    }
    _ = updateStep();
   // during quick kill, expects to go from 0 to 1 between levels in 5ms to avoid clicks
-  qkLevel = 1.0/(fs * 5.0);
+  qkStep = 1.0/(fs * 5.0);
 }
 
 // rudimentary cross-fade
@@ -358,12 +354,8 @@ and noteOn(note:int, velocity:int, channel:int): bool {
    }
    // will wait for quick kill for next
    else {
+     quickKill = true;
      nextVelocity = velocity;
-     // only start if there is no ongoing kill
-     if (not(quickKill)) {
-       qkLevel = 1.0;
-       quickKill = true;
-     }
    }
    return isNew;
 }
