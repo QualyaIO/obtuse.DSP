@@ -281,7 +281,7 @@ fix16_t synthDrummerNes_Poly_getSample(synthDrummerNes_Poly__ctx_type_0 &_ctx, i
 }
 
 void synthDrummerNes_Poly_default(synthDrummerNes_Poly__ctx_type_0 &_ctx){
-   _ctx.should_leftovers = true;
+   _ctx.should_leftovers = false;
    synthDrummerNes_Drummer_default(_ctx.voice0);
    synthDrummerNes_Drummer_default(_ctx.voice1);
    synthDrummerNes_Drummer_default(_ctx.voice2);

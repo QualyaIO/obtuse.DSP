@@ -281,7 +281,7 @@ fix16_t synthDrummerTamaRockstar_Poly_getSample(synthDrummerTamaRockstar_Poly__c
 }
 
 void synthDrummerTamaRockstar_Poly_default(synthDrummerTamaRockstar_Poly__ctx_type_0 &_ctx){
-   _ctx.should_leftovers = true;
+   _ctx.should_leftovers = false;
    synthDrummerTamaRockstar_Drummer_default(_ctx.voice0);
    synthDrummerTamaRockstar_Drummer_default(_ctx.voice1);
    synthDrummerTamaRockstar_Drummer_default(_ctx.voice2);
