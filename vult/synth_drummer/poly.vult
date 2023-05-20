@@ -183,7 +183,7 @@ and shouldLeftOvers(): bool {
 }
 
 and default() @[init] {
-      should_leftovers = true;
+      should_leftovers = false;
       _ = voice0:Drummer.default();
       _ = voice1:Drummer.default();
       _ = voice2:Drummer.default();
