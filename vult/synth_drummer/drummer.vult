@@ -134,6 +134,14 @@ and process_bufferTo(nb: int, oBuffer) {
         pos = 0.0;
       }
 
+      // adjust level for emergency release
+      if (quickKill) {
+        level = level - qkStep;
+        if (level < 0.0) {
+          level = 0.0;
+        }
+      }
+      
       if (slice >= 0) {
         value = (DrummerWrapper.getSample(idx) + (pos % 1.0) * (DrummerWrapper.getSample(idx+1) - DrummerWrapper.getSample(idx))) * level;
       }

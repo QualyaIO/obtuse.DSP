@@ -150,6 +150,12 @@ void synthDrummerNes_Drummer_process_bufferTo(synthDrummerNes_Drummer__ctx_type_
             _ctx.posBase = 0;
             _ctx.pos = 0x0 /* 0.000000 */;
          }
+         if(_ctx.quickKill){
+            _ctx.level = (_ctx.level + (- _ctx.qkStep));
+            if(_ctx.level < 0x0 /* 0.000000 */){
+               _ctx.level = 0x0 /* 0.000000 */;
+            }
+         }
          if(_ctx.slice >= 0){
             value = fix_mul(_ctx.level,(synthDrummerNes_DrummerWrapper_getSample(idx) + fix_mul((_ctx.pos % 0x10000 /* 1.000000 */),(synthDrummerNes_DrummerWrapper_getSample((1 + idx)) + (- synthDrummerNes_DrummerWrapper_getSample(idx))))));
          }
