@@ -11,25 +11,31 @@ static_inline fix16_t synthSamplerKoto_Util_noteToFrequency(int note){
    return fix_mul(0x217 /* 0.008176 */,fix_exp(fix_mul(0xec9 /* 0.057762 */,int_to_fix(note))));
 };
 
-typedef struct synthSamplerKoto_Util__ctx_type_1 {
+static_inline fix16_t synthSamplerKoto_Util_tonesToCoeff(fix16_t semitones){
+   fix16_t log_base;
+   log_base = 0xb172 /* 0.693147 */;
+   return fix_exp(fix_mul(fix_mul(0x1555 /* 0.083333 */,log_base),semitones));
+}
+
+typedef struct synthSamplerKoto_Util__ctx_type_2 {
    uint8_t pre;
-} synthSamplerKoto_Util__ctx_type_1;
+} synthSamplerKoto_Util__ctx_type_2;
 
-typedef synthSamplerKoto_Util__ctx_type_1 synthSamplerKoto_Util_edge_type;
+typedef synthSamplerKoto_Util__ctx_type_2 synthSamplerKoto_Util_edge_type;
 
-static_inline void synthSamplerKoto_Util__ctx_type_1_init(synthSamplerKoto_Util__ctx_type_1 &_output_){
-   synthSamplerKoto_Util__ctx_type_1 &_ctx = _output_;
+static_inline void synthSamplerKoto_Util__ctx_type_2_init(synthSamplerKoto_Util__ctx_type_2 &_output_){
+   synthSamplerKoto_Util__ctx_type_2 &_ctx = _output_;
    _ctx.pre = false;
    
    return ;
 }
 
-static_inline void synthSamplerKoto_Util_edge_init(synthSamplerKoto_Util__ctx_type_1 &_output_){
-   synthSamplerKoto_Util__ctx_type_1_init(_output_);
+static_inline void synthSamplerKoto_Util_edge_init(synthSamplerKoto_Util__ctx_type_2 &_output_){
+   synthSamplerKoto_Util__ctx_type_2_init(_output_);
    return ;
 }
 
-static_inline uint8_t synthSamplerKoto_Util_edge(synthSamplerKoto_Util__ctx_type_1 &_ctx, uint8_t x){
+static_inline uint8_t synthSamplerKoto_Util_edge(synthSamplerKoto_Util__ctx_type_2 &_ctx, uint8_t x){
    uint8_t ret;
    ret = (x && bool_not(_ctx.pre));
    _ctx.pre = x;
@@ -52,50 +58,50 @@ static_inline fix16_t synthSamplerKoto_Util_cubic_clipper(fix16_t x){
    }
 };
 
-typedef struct synthSamplerKoto_Util__ctx_type_3 {
+typedef struct synthSamplerKoto_Util__ctx_type_4 {
    fix16_t pre_x;
-} synthSamplerKoto_Util__ctx_type_3;
+} synthSamplerKoto_Util__ctx_type_4;
 
-typedef synthSamplerKoto_Util__ctx_type_3 synthSamplerKoto_Util_change_type;
+typedef synthSamplerKoto_Util__ctx_type_4 synthSamplerKoto_Util_change_type;
 
-static_inline void synthSamplerKoto_Util__ctx_type_3_init(synthSamplerKoto_Util__ctx_type_3 &_output_){
-   synthSamplerKoto_Util__ctx_type_3 &_ctx = _output_;
+static_inline void synthSamplerKoto_Util__ctx_type_4_init(synthSamplerKoto_Util__ctx_type_4 &_output_){
+   synthSamplerKoto_Util__ctx_type_4 &_ctx = _output_;
    _ctx.pre_x = 0x0 /* 0.000000 */;
    
    return ;
 }
 
-static_inline void synthSamplerKoto_Util_change_init(synthSamplerKoto_Util__ctx_type_3 &_output_){
-   synthSamplerKoto_Util__ctx_type_3_init(_output_);
+static_inline void synthSamplerKoto_Util_change_init(synthSamplerKoto_Util__ctx_type_4 &_output_){
+   synthSamplerKoto_Util__ctx_type_4_init(_output_);
    return ;
 }
 
-static_inline uint8_t synthSamplerKoto_Util_change(synthSamplerKoto_Util__ctx_type_3 &_ctx, fix16_t x){
+static_inline uint8_t synthSamplerKoto_Util_change(synthSamplerKoto_Util__ctx_type_4 &_ctx, fix16_t x){
    uint8_t v;
    v = (_ctx.pre_x != x);
    _ctx.pre_x = x;
    return v;
 }
 
-typedef struct synthSamplerKoto_Util__ctx_type_4 {
+typedef struct synthSamplerKoto_Util__ctx_type_5 {
    fix16_t x;
-} synthSamplerKoto_Util__ctx_type_4;
+} synthSamplerKoto_Util__ctx_type_5;
 
-typedef synthSamplerKoto_Util__ctx_type_4 synthSamplerKoto_Util_smooth_type;
+typedef synthSamplerKoto_Util__ctx_type_5 synthSamplerKoto_Util_smooth_type;
 
-static_inline void synthSamplerKoto_Util__ctx_type_4_init(synthSamplerKoto_Util__ctx_type_4 &_output_){
-   synthSamplerKoto_Util__ctx_type_4 &_ctx = _output_;
+static_inline void synthSamplerKoto_Util__ctx_type_5_init(synthSamplerKoto_Util__ctx_type_5 &_output_){
+   synthSamplerKoto_Util__ctx_type_5 &_ctx = _output_;
    _ctx.x = 0x0 /* 0.000000 */;
    
    return ;
 }
 
-static_inline void synthSamplerKoto_Util_smooth_init(synthSamplerKoto_Util__ctx_type_4 &_output_){
-   synthSamplerKoto_Util__ctx_type_4_init(_output_);
+static_inline void synthSamplerKoto_Util_smooth_init(synthSamplerKoto_Util__ctx_type_5 &_output_){
+   synthSamplerKoto_Util__ctx_type_5_init(_output_);
    return ;
 }
 
-static_inline fix16_t synthSamplerKoto_Util_smooth(synthSamplerKoto_Util__ctx_type_4 &_ctx, fix16_t input, fix16_t coeff){
+static_inline fix16_t synthSamplerKoto_Util_smooth(synthSamplerKoto_Util__ctx_type_5 &_ctx, fix16_t input, fix16_t coeff){
    _ctx.x = (_ctx.x + fix_mul(coeff,(input + (- _ctx.x))));
    return _ctx.x;
 }
@@ -277,6 +283,7 @@ typedef struct synthSamplerKoto_Sampler__ctx_type_0 {
    uint8_t crossfade;
    fix16_t buffer_o[256];
    fix16_t buffer_cross[256];
+   fix16_t bend;
 } synthSamplerKoto_Sampler__ctx_type_0;
 
 typedef synthSamplerKoto_Sampler__ctx_type_0 synthSamplerKoto_Sampler_updateStep_type;
@@ -290,6 +297,23 @@ static_inline void synthSamplerKoto_Sampler_updateStep_init(synthSamplerKoto_Sam
 
 static_inline void synthSamplerKoto_Sampler_updateStep(synthSamplerKoto_Sampler__ctx_type_0 &_ctx){
    _ctx.step = fix_mul(_ctx.fsRatio,_ctx.noteRatio);
+   if(_ctx.bend != 0x0 /* 0.000000 */){
+      _ctx.step = fix_mul(_ctx.step,synthSamplerKoto_Util_tonesToCoeff(_ctx.bend));
+   }
+}
+
+typedef synthSamplerKoto_Sampler__ctx_type_0 synthSamplerKoto_Sampler_pitchBend_type;
+
+static_inline void synthSamplerKoto_Sampler_pitchBend_init(synthSamplerKoto_Sampler__ctx_type_0 &_output_){
+   synthSamplerKoto_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerKoto_Sampler_pitchBend(synthSamplerKoto_Sampler__ctx_type_0 &_ctx, fix16_t semitones){
+   if(semitones != _ctx.bend){
+      _ctx.bend = semitones;
+      synthSamplerKoto_Sampler_updateStep(_ctx);
+   }
 };
 
 typedef synthSamplerKoto_Sampler__ctx_type_0 synthSamplerKoto_Sampler_setNote_type;
@@ -629,6 +653,20 @@ static_inline void synthSamplerKoto_Poly_synthSetSustain(synthSamplerKoto_Poly__
    synthSamplerKoto_Sampler_setSustain(_ctx.voice1,flag);
    synthSamplerKoto_Sampler_setSustain(_ctx.voice2,flag);
    synthSamplerKoto_Sampler_setSustain(_ctx.voice3,flag);
+}
+
+typedef synthSamplerKoto_Poly__ctx_type_0 synthSamplerKoto_Poly_synthPitchBend_type;
+
+static_inline void synthSamplerKoto_Poly_synthPitchBend_init(synthSamplerKoto_Poly__ctx_type_0 &_output_){
+   synthSamplerKoto_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerKoto_Poly_synthPitchBend(synthSamplerKoto_Poly__ctx_type_0 &_ctx, fix16_t semitones){
+   synthSamplerKoto_Sampler_pitchBend(_ctx.voice0,semitones);
+   synthSamplerKoto_Sampler_pitchBend(_ctx.voice1,semitones);
+   synthSamplerKoto_Sampler_pitchBend(_ctx.voice2,semitones);
+   synthSamplerKoto_Sampler_pitchBend(_ctx.voice3,semitones);
 }
 
 typedef synthSamplerKoto_Poly__ctx_type_0 synthSamplerKoto_Poly_synthSetLoop_type;
@@ -1010,6 +1048,17 @@ static_inline void synthSamplerKoto_Voice_synthSetSustain_init(synthSamplerKoto_
 
 static_inline void synthSamplerKoto_Voice_synthSetSustain(synthSamplerKoto_Voice__ctx_type_0 &_ctx, uint8_t flag){
    synthSamplerKoto_Poly_synthSetSustain(_ctx.poly,flag);
+};
+
+typedef synthSamplerKoto_Voice__ctx_type_0 synthSamplerKoto_Voice_synthPitchBend_type;
+
+static_inline void synthSamplerKoto_Voice_synthPitchBend_init(synthSamplerKoto_Voice__ctx_type_0 &_output_){
+   synthSamplerKoto_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerKoto_Voice_synthPitchBend(synthSamplerKoto_Voice__ctx_type_0 &_ctx, fix16_t semitones){
+   synthSamplerKoto_Poly_synthPitchBend(_ctx.poly,semitones);
 };
 
 typedef synthSamplerKoto_Voice__ctx_type_0 synthSamplerKoto_Voice_synthSetLoop_type;

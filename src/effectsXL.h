@@ -397,25 +397,31 @@ static_inline fix16_t effectsXL_Util_noteToFrequency(int note){
    return fix_mul(0x217 /* 0.008176 */,fix_exp(fix_mul(0xec9 /* 0.057762 */,int_to_fix(note))));
 };
 
-typedef struct effectsXL_Util__ctx_type_1 {
+static_inline fix16_t effectsXL_Util_tonesToCoeff(fix16_t semitones){
+   fix16_t log_base;
+   log_base = 0xb172 /* 0.693147 */;
+   return fix_exp(fix_mul(fix_mul(0x1555 /* 0.083333 */,log_base),semitones));
+}
+
+typedef struct effectsXL_Util__ctx_type_2 {
    uint8_t pre;
-} effectsXL_Util__ctx_type_1;
+} effectsXL_Util__ctx_type_2;
 
-typedef effectsXL_Util__ctx_type_1 effectsXL_Util_edge_type;
+typedef effectsXL_Util__ctx_type_2 effectsXL_Util_edge_type;
 
-static_inline void effectsXL_Util__ctx_type_1_init(effectsXL_Util__ctx_type_1 &_output_){
-   effectsXL_Util__ctx_type_1 &_ctx = _output_;
+static_inline void effectsXL_Util__ctx_type_2_init(effectsXL_Util__ctx_type_2 &_output_){
+   effectsXL_Util__ctx_type_2 &_ctx = _output_;
    _ctx.pre = false;
    
    return ;
 }
 
-static_inline void effectsXL_Util_edge_init(effectsXL_Util__ctx_type_1 &_output_){
-   effectsXL_Util__ctx_type_1_init(_output_);
+static_inline void effectsXL_Util_edge_init(effectsXL_Util__ctx_type_2 &_output_){
+   effectsXL_Util__ctx_type_2_init(_output_);
    return ;
 }
 
-static_inline uint8_t effectsXL_Util_edge(effectsXL_Util__ctx_type_1 &_ctx, uint8_t x){
+static_inline uint8_t effectsXL_Util_edge(effectsXL_Util__ctx_type_2 &_ctx, uint8_t x){
    uint8_t ret;
    ret = (x && bool_not(_ctx.pre));
    _ctx.pre = x;
@@ -438,50 +444,50 @@ static_inline fix16_t effectsXL_Util_cubic_clipper(fix16_t x){
    }
 };
 
-typedef struct effectsXL_Util__ctx_type_3 {
+typedef struct effectsXL_Util__ctx_type_4 {
    fix16_t pre_x;
-} effectsXL_Util__ctx_type_3;
+} effectsXL_Util__ctx_type_4;
 
-typedef effectsXL_Util__ctx_type_3 effectsXL_Util_change_type;
+typedef effectsXL_Util__ctx_type_4 effectsXL_Util_change_type;
 
-static_inline void effectsXL_Util__ctx_type_3_init(effectsXL_Util__ctx_type_3 &_output_){
-   effectsXL_Util__ctx_type_3 &_ctx = _output_;
+static_inline void effectsXL_Util__ctx_type_4_init(effectsXL_Util__ctx_type_4 &_output_){
+   effectsXL_Util__ctx_type_4 &_ctx = _output_;
    _ctx.pre_x = 0x0 /* 0.000000 */;
    
    return ;
 }
 
-static_inline void effectsXL_Util_change_init(effectsXL_Util__ctx_type_3 &_output_){
-   effectsXL_Util__ctx_type_3_init(_output_);
+static_inline void effectsXL_Util_change_init(effectsXL_Util__ctx_type_4 &_output_){
+   effectsXL_Util__ctx_type_4_init(_output_);
    return ;
 }
 
-static_inline uint8_t effectsXL_Util_change(effectsXL_Util__ctx_type_3 &_ctx, fix16_t x){
+static_inline uint8_t effectsXL_Util_change(effectsXL_Util__ctx_type_4 &_ctx, fix16_t x){
    uint8_t v;
    v = (_ctx.pre_x != x);
    _ctx.pre_x = x;
    return v;
 }
 
-typedef struct effectsXL_Util__ctx_type_4 {
+typedef struct effectsXL_Util__ctx_type_5 {
    fix16_t x;
-} effectsXL_Util__ctx_type_4;
+} effectsXL_Util__ctx_type_5;
 
-typedef effectsXL_Util__ctx_type_4 effectsXL_Util_smooth_type;
+typedef effectsXL_Util__ctx_type_5 effectsXL_Util_smooth_type;
 
-static_inline void effectsXL_Util__ctx_type_4_init(effectsXL_Util__ctx_type_4 &_output_){
-   effectsXL_Util__ctx_type_4 &_ctx = _output_;
+static_inline void effectsXL_Util__ctx_type_5_init(effectsXL_Util__ctx_type_5 &_output_){
+   effectsXL_Util__ctx_type_5 &_ctx = _output_;
    _ctx.x = 0x0 /* 0.000000 */;
    
    return ;
 }
 
-static_inline void effectsXL_Util_smooth_init(effectsXL_Util__ctx_type_4 &_output_){
-   effectsXL_Util__ctx_type_4_init(_output_);
+static_inline void effectsXL_Util_smooth_init(effectsXL_Util__ctx_type_5 &_output_){
+   effectsXL_Util__ctx_type_5_init(_output_);
    return ;
 }
 
-static_inline fix16_t effectsXL_Util_smooth(effectsXL_Util__ctx_type_4 &_ctx, fix16_t input, fix16_t coeff){
+static_inline fix16_t effectsXL_Util_smooth(effectsXL_Util__ctx_type_5 &_ctx, fix16_t input, fix16_t coeff){
    _ctx.x = (_ctx.x + fix_mul(coeff,(input + (- _ctx.x))));
    return _ctx.x;
 }
@@ -539,8 +545,8 @@ typedef struct effectsXL_Ladder__ctx_type_2 {
    fix16_t fh;
    effectsXL_Ladder__ctx_type_1 e;
    fix16_t cut;
-   effectsXL_Util__ctx_type_3 _inst43b;
-   effectsXL_Util__ctx_type_3 _inst13b;
+   effectsXL_Util__ctx_type_4 _inst43b;
+   effectsXL_Util__ctx_type_4 _inst13b;
 } effectsXL_Ladder__ctx_type_2;
 
 typedef effectsXL_Ladder__ctx_type_2 effectsXL_Ladder_getTune_type;
@@ -846,10 +852,10 @@ typedef struct effectsXL_SVF__ctx_type_0 {
    fix16_t fs_nyquist;
    fix16_t fs;
    fix16_t freq;
-   effectsXL_Util__ctx_type_4 _inst955;
-   effectsXL_Util__ctx_type_3 _inst173b;
-   effectsXL_Util__ctx_type_4 _inst1655;
-   effectsXL_Util__ctx_type_3 _inst103b;
+   effectsXL_Util__ctx_type_5 _inst955;
+   effectsXL_Util__ctx_type_4 _inst173b;
+   effectsXL_Util__ctx_type_5 _inst1655;
+   effectsXL_Util__ctx_type_4 _inst103b;
    fix16_t R;
 } effectsXL_SVF__ctx_type_0;
 

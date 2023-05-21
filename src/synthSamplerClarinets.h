@@ -11,25 +11,31 @@ static_inline fix16_t synthSamplerClarinets_Util_noteToFrequency(int note){
    return fix_mul(0x217 /* 0.008176 */,fix_exp(fix_mul(0xec9 /* 0.057762 */,int_to_fix(note))));
 };
 
-typedef struct synthSamplerClarinets_Util__ctx_type_1 {
+static_inline fix16_t synthSamplerClarinets_Util_tonesToCoeff(fix16_t semitones){
+   fix16_t log_base;
+   log_base = 0xb172 /* 0.693147 */;
+   return fix_exp(fix_mul(fix_mul(0x1555 /* 0.083333 */,log_base),semitones));
+}
+
+typedef struct synthSamplerClarinets_Util__ctx_type_2 {
    uint8_t pre;
-} synthSamplerClarinets_Util__ctx_type_1;
+} synthSamplerClarinets_Util__ctx_type_2;
 
-typedef synthSamplerClarinets_Util__ctx_type_1 synthSamplerClarinets_Util_edge_type;
+typedef synthSamplerClarinets_Util__ctx_type_2 synthSamplerClarinets_Util_edge_type;
 
-static_inline void synthSamplerClarinets_Util__ctx_type_1_init(synthSamplerClarinets_Util__ctx_type_1 &_output_){
-   synthSamplerClarinets_Util__ctx_type_1 &_ctx = _output_;
+static_inline void synthSamplerClarinets_Util__ctx_type_2_init(synthSamplerClarinets_Util__ctx_type_2 &_output_){
+   synthSamplerClarinets_Util__ctx_type_2 &_ctx = _output_;
    _ctx.pre = false;
    
    return ;
 }
 
-static_inline void synthSamplerClarinets_Util_edge_init(synthSamplerClarinets_Util__ctx_type_1 &_output_){
-   synthSamplerClarinets_Util__ctx_type_1_init(_output_);
+static_inline void synthSamplerClarinets_Util_edge_init(synthSamplerClarinets_Util__ctx_type_2 &_output_){
+   synthSamplerClarinets_Util__ctx_type_2_init(_output_);
    return ;
 }
 
-static_inline uint8_t synthSamplerClarinets_Util_edge(synthSamplerClarinets_Util__ctx_type_1 &_ctx, uint8_t x){
+static_inline uint8_t synthSamplerClarinets_Util_edge(synthSamplerClarinets_Util__ctx_type_2 &_ctx, uint8_t x){
    uint8_t ret;
    ret = (x && bool_not(_ctx.pre));
    _ctx.pre = x;
@@ -52,50 +58,50 @@ static_inline fix16_t synthSamplerClarinets_Util_cubic_clipper(fix16_t x){
    }
 };
 
-typedef struct synthSamplerClarinets_Util__ctx_type_3 {
+typedef struct synthSamplerClarinets_Util__ctx_type_4 {
    fix16_t pre_x;
-} synthSamplerClarinets_Util__ctx_type_3;
+} synthSamplerClarinets_Util__ctx_type_4;
 
-typedef synthSamplerClarinets_Util__ctx_type_3 synthSamplerClarinets_Util_change_type;
+typedef synthSamplerClarinets_Util__ctx_type_4 synthSamplerClarinets_Util_change_type;
 
-static_inline void synthSamplerClarinets_Util__ctx_type_3_init(synthSamplerClarinets_Util__ctx_type_3 &_output_){
-   synthSamplerClarinets_Util__ctx_type_3 &_ctx = _output_;
+static_inline void synthSamplerClarinets_Util__ctx_type_4_init(synthSamplerClarinets_Util__ctx_type_4 &_output_){
+   synthSamplerClarinets_Util__ctx_type_4 &_ctx = _output_;
    _ctx.pre_x = 0x0 /* 0.000000 */;
    
    return ;
 }
 
-static_inline void synthSamplerClarinets_Util_change_init(synthSamplerClarinets_Util__ctx_type_3 &_output_){
-   synthSamplerClarinets_Util__ctx_type_3_init(_output_);
+static_inline void synthSamplerClarinets_Util_change_init(synthSamplerClarinets_Util__ctx_type_4 &_output_){
+   synthSamplerClarinets_Util__ctx_type_4_init(_output_);
    return ;
 }
 
-static_inline uint8_t synthSamplerClarinets_Util_change(synthSamplerClarinets_Util__ctx_type_3 &_ctx, fix16_t x){
+static_inline uint8_t synthSamplerClarinets_Util_change(synthSamplerClarinets_Util__ctx_type_4 &_ctx, fix16_t x){
    uint8_t v;
    v = (_ctx.pre_x != x);
    _ctx.pre_x = x;
    return v;
 }
 
-typedef struct synthSamplerClarinets_Util__ctx_type_4 {
+typedef struct synthSamplerClarinets_Util__ctx_type_5 {
    fix16_t x;
-} synthSamplerClarinets_Util__ctx_type_4;
+} synthSamplerClarinets_Util__ctx_type_5;
 
-typedef synthSamplerClarinets_Util__ctx_type_4 synthSamplerClarinets_Util_smooth_type;
+typedef synthSamplerClarinets_Util__ctx_type_5 synthSamplerClarinets_Util_smooth_type;
 
-static_inline void synthSamplerClarinets_Util__ctx_type_4_init(synthSamplerClarinets_Util__ctx_type_4 &_output_){
-   synthSamplerClarinets_Util__ctx_type_4 &_ctx = _output_;
+static_inline void synthSamplerClarinets_Util__ctx_type_5_init(synthSamplerClarinets_Util__ctx_type_5 &_output_){
+   synthSamplerClarinets_Util__ctx_type_5 &_ctx = _output_;
    _ctx.x = 0x0 /* 0.000000 */;
    
    return ;
 }
 
-static_inline void synthSamplerClarinets_Util_smooth_init(synthSamplerClarinets_Util__ctx_type_4 &_output_){
-   synthSamplerClarinets_Util__ctx_type_4_init(_output_);
+static_inline void synthSamplerClarinets_Util_smooth_init(synthSamplerClarinets_Util__ctx_type_5 &_output_){
+   synthSamplerClarinets_Util__ctx_type_5_init(_output_);
    return ;
 }
 
-static_inline fix16_t synthSamplerClarinets_Util_smooth(synthSamplerClarinets_Util__ctx_type_4 &_ctx, fix16_t input, fix16_t coeff){
+static_inline fix16_t synthSamplerClarinets_Util_smooth(synthSamplerClarinets_Util__ctx_type_5 &_ctx, fix16_t input, fix16_t coeff){
    _ctx.x = (_ctx.x + fix_mul(coeff,(input + (- _ctx.x))));
    return _ctx.x;
 }
@@ -277,6 +283,7 @@ typedef struct synthSamplerClarinets_Sampler__ctx_type_0 {
    uint8_t crossfade;
    fix16_t buffer_o[256];
    fix16_t buffer_cross[256];
+   fix16_t bend;
 } synthSamplerClarinets_Sampler__ctx_type_0;
 
 typedef synthSamplerClarinets_Sampler__ctx_type_0 synthSamplerClarinets_Sampler_updateStep_type;
@@ -290,6 +297,23 @@ static_inline void synthSamplerClarinets_Sampler_updateStep_init(synthSamplerCla
 
 static_inline void synthSamplerClarinets_Sampler_updateStep(synthSamplerClarinets_Sampler__ctx_type_0 &_ctx){
    _ctx.step = fix_mul(_ctx.fsRatio,_ctx.noteRatio);
+   if(_ctx.bend != 0x0 /* 0.000000 */){
+      _ctx.step = fix_mul(_ctx.step,synthSamplerClarinets_Util_tonesToCoeff(_ctx.bend));
+   }
+}
+
+typedef synthSamplerClarinets_Sampler__ctx_type_0 synthSamplerClarinets_Sampler_pitchBend_type;
+
+static_inline void synthSamplerClarinets_Sampler_pitchBend_init(synthSamplerClarinets_Sampler__ctx_type_0 &_output_){
+   synthSamplerClarinets_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerClarinets_Sampler_pitchBend(synthSamplerClarinets_Sampler__ctx_type_0 &_ctx, fix16_t semitones){
+   if(semitones != _ctx.bend){
+      _ctx.bend = semitones;
+      synthSamplerClarinets_Sampler_updateStep(_ctx);
+   }
 };
 
 typedef synthSamplerClarinets_Sampler__ctx_type_0 synthSamplerClarinets_Sampler_setNote_type;
@@ -629,6 +653,20 @@ static_inline void synthSamplerClarinets_Poly_synthSetSustain(synthSamplerClarin
    synthSamplerClarinets_Sampler_setSustain(_ctx.voice1,flag);
    synthSamplerClarinets_Sampler_setSustain(_ctx.voice2,flag);
    synthSamplerClarinets_Sampler_setSustain(_ctx.voice3,flag);
+}
+
+typedef synthSamplerClarinets_Poly__ctx_type_0 synthSamplerClarinets_Poly_synthPitchBend_type;
+
+static_inline void synthSamplerClarinets_Poly_synthPitchBend_init(synthSamplerClarinets_Poly__ctx_type_0 &_output_){
+   synthSamplerClarinets_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerClarinets_Poly_synthPitchBend(synthSamplerClarinets_Poly__ctx_type_0 &_ctx, fix16_t semitones){
+   synthSamplerClarinets_Sampler_pitchBend(_ctx.voice0,semitones);
+   synthSamplerClarinets_Sampler_pitchBend(_ctx.voice1,semitones);
+   synthSamplerClarinets_Sampler_pitchBend(_ctx.voice2,semitones);
+   synthSamplerClarinets_Sampler_pitchBend(_ctx.voice3,semitones);
 }
 
 typedef synthSamplerClarinets_Poly__ctx_type_0 synthSamplerClarinets_Poly_synthSetLoop_type;
@@ -1010,6 +1048,17 @@ static_inline void synthSamplerClarinets_Voice_synthSetSustain_init(synthSampler
 
 static_inline void synthSamplerClarinets_Voice_synthSetSustain(synthSamplerClarinets_Voice__ctx_type_0 &_ctx, uint8_t flag){
    synthSamplerClarinets_Poly_synthSetSustain(_ctx.poly,flag);
+};
+
+typedef synthSamplerClarinets_Voice__ctx_type_0 synthSamplerClarinets_Voice_synthPitchBend_type;
+
+static_inline void synthSamplerClarinets_Voice_synthPitchBend_init(synthSamplerClarinets_Voice__ctx_type_0 &_output_){
+   synthSamplerClarinets_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerClarinets_Voice_synthPitchBend(synthSamplerClarinets_Voice__ctx_type_0 &_ctx, fix16_t semitones){
+   synthSamplerClarinets_Poly_synthPitchBend(_ctx.poly,semitones);
 };
 
 typedef synthSamplerClarinets_Voice__ctx_type_0 synthSamplerClarinets_Voice_synthSetLoop_type;

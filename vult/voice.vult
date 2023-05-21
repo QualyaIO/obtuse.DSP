@@ -328,6 +328,11 @@ and synthSetSustain(flag: bool) {
   _ =  poly:Poly.synthSetSustain(flag);
 }
 
+// apply pitch bend of +/- seminotes
+and synthPitchBend(semitones: real) {
+  _ =  poly:Poly.synthPitchBend(semitones);
+}
+
 // Sampler.setLoop()
 and synthSetLoop(flag: bool) {
   _ =  poly:Poly.synthSetLoop(flag);

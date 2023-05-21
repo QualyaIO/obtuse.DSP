@@ -323,8 +323,8 @@ void effects_Ladder__ctx_type_2_init(effects_Ladder__ctx_type_2 &_output_){
    _ctx.fh = 0x0 /* 0.000000 */;
    effects_Ladder__ctx_type_1_init(_ctx.e);
    _ctx.cut = 0x0 /* 0.000000 */;
-   effects_Util__ctx_type_3_init(_ctx._inst43b);
-   effects_Util__ctx_type_3_init(_ctx._inst13b);
+   effects_Util__ctx_type_4_init(_ctx._inst43b);
+   effects_Util__ctx_type_4_init(_ctx._inst13b);
    
    return ;
 }
@@ -464,10 +464,10 @@ void effects_SVF__ctx_type_0_init(effects_SVF__ctx_type_0 &_output_){
    _ctx.fs_nyquist = 0x0 /* 0.000000 */;
    _ctx.fs = 0x0 /* 0.000000 */;
    _ctx.freq = 0x0 /* 0.000000 */;
-   effects_Util__ctx_type_4_init(_ctx._inst955);
-   effects_Util__ctx_type_3_init(_ctx._inst173b);
-   effects_Util__ctx_type_4_init(_ctx._inst1655);
-   effects_Util__ctx_type_3_init(_ctx._inst103b);
+   effects_Util__ctx_type_5_init(_ctx._inst955);
+   effects_Util__ctx_type_4_init(_ctx._inst173b);
+   effects_Util__ctx_type_5_init(_ctx._inst1655);
+   effects_Util__ctx_type_4_init(_ctx._inst103b);
    _ctx.R = 0x0 /* 0.000000 */;
    effects_SVF_default(_ctx);
    

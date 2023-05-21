@@ -132,6 +132,7 @@ void synthSamplerAmbientLead_Sampler__ctx_type_0_init(synthSamplerAmbientLead_Sa
    _ctx.crossfade = false;
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_o);
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_cross);
+   _ctx.bend = 0x0 /* 0.000000 */;
    synthSamplerAmbientLead_Sampler_default(_ctx);
    
    return ;

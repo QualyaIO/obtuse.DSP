@@ -11,25 +11,31 @@ static_inline fix16_t synthSamplerCelesta_Util_noteToFrequency(int note){
    return fix_mul(0x217 /* 0.008176 */,fix_exp(fix_mul(0xec9 /* 0.057762 */,int_to_fix(note))));
 };
 
-typedef struct synthSamplerCelesta_Util__ctx_type_1 {
+static_inline fix16_t synthSamplerCelesta_Util_tonesToCoeff(fix16_t semitones){
+   fix16_t log_base;
+   log_base = 0xb172 /* 0.693147 */;
+   return fix_exp(fix_mul(fix_mul(0x1555 /* 0.083333 */,log_base),semitones));
+}
+
+typedef struct synthSamplerCelesta_Util__ctx_type_2 {
    uint8_t pre;
-} synthSamplerCelesta_Util__ctx_type_1;
+} synthSamplerCelesta_Util__ctx_type_2;
 
-typedef synthSamplerCelesta_Util__ctx_type_1 synthSamplerCelesta_Util_edge_type;
+typedef synthSamplerCelesta_Util__ctx_type_2 synthSamplerCelesta_Util_edge_type;
 
-static_inline void synthSamplerCelesta_Util__ctx_type_1_init(synthSamplerCelesta_Util__ctx_type_1 &_output_){
-   synthSamplerCelesta_Util__ctx_type_1 &_ctx = _output_;
+static_inline void synthSamplerCelesta_Util__ctx_type_2_init(synthSamplerCelesta_Util__ctx_type_2 &_output_){
+   synthSamplerCelesta_Util__ctx_type_2 &_ctx = _output_;
    _ctx.pre = false;
    
    return ;
 }
 
-static_inline void synthSamplerCelesta_Util_edge_init(synthSamplerCelesta_Util__ctx_type_1 &_output_){
-   synthSamplerCelesta_Util__ctx_type_1_init(_output_);
+static_inline void synthSamplerCelesta_Util_edge_init(synthSamplerCelesta_Util__ctx_type_2 &_output_){
+   synthSamplerCelesta_Util__ctx_type_2_init(_output_);
    return ;
 }
 
-static_inline uint8_t synthSamplerCelesta_Util_edge(synthSamplerCelesta_Util__ctx_type_1 &_ctx, uint8_t x){
+static_inline uint8_t synthSamplerCelesta_Util_edge(synthSamplerCelesta_Util__ctx_type_2 &_ctx, uint8_t x){
    uint8_t ret;
    ret = (x && bool_not(_ctx.pre));
    _ctx.pre = x;
@@ -52,50 +58,50 @@ static_inline fix16_t synthSamplerCelesta_Util_cubic_clipper(fix16_t x){
    }
 };
 
-typedef struct synthSamplerCelesta_Util__ctx_type_3 {
+typedef struct synthSamplerCelesta_Util__ctx_type_4 {
    fix16_t pre_x;
-} synthSamplerCelesta_Util__ctx_type_3;
+} synthSamplerCelesta_Util__ctx_type_4;
 
-typedef synthSamplerCelesta_Util__ctx_type_3 synthSamplerCelesta_Util_change_type;
+typedef synthSamplerCelesta_Util__ctx_type_4 synthSamplerCelesta_Util_change_type;
 
-static_inline void synthSamplerCelesta_Util__ctx_type_3_init(synthSamplerCelesta_Util__ctx_type_3 &_output_){
-   synthSamplerCelesta_Util__ctx_type_3 &_ctx = _output_;
+static_inline void synthSamplerCelesta_Util__ctx_type_4_init(synthSamplerCelesta_Util__ctx_type_4 &_output_){
+   synthSamplerCelesta_Util__ctx_type_4 &_ctx = _output_;
    _ctx.pre_x = 0x0 /* 0.000000 */;
    
    return ;
 }
 
-static_inline void synthSamplerCelesta_Util_change_init(synthSamplerCelesta_Util__ctx_type_3 &_output_){
-   synthSamplerCelesta_Util__ctx_type_3_init(_output_);
+static_inline void synthSamplerCelesta_Util_change_init(synthSamplerCelesta_Util__ctx_type_4 &_output_){
+   synthSamplerCelesta_Util__ctx_type_4_init(_output_);
    return ;
 }
 
-static_inline uint8_t synthSamplerCelesta_Util_change(synthSamplerCelesta_Util__ctx_type_3 &_ctx, fix16_t x){
+static_inline uint8_t synthSamplerCelesta_Util_change(synthSamplerCelesta_Util__ctx_type_4 &_ctx, fix16_t x){
    uint8_t v;
    v = (_ctx.pre_x != x);
    _ctx.pre_x = x;
    return v;
 }
 
-typedef struct synthSamplerCelesta_Util__ctx_type_4 {
+typedef struct synthSamplerCelesta_Util__ctx_type_5 {
    fix16_t x;
-} synthSamplerCelesta_Util__ctx_type_4;
+} synthSamplerCelesta_Util__ctx_type_5;
 
-typedef synthSamplerCelesta_Util__ctx_type_4 synthSamplerCelesta_Util_smooth_type;
+typedef synthSamplerCelesta_Util__ctx_type_5 synthSamplerCelesta_Util_smooth_type;
 
-static_inline void synthSamplerCelesta_Util__ctx_type_4_init(synthSamplerCelesta_Util__ctx_type_4 &_output_){
-   synthSamplerCelesta_Util__ctx_type_4 &_ctx = _output_;
+static_inline void synthSamplerCelesta_Util__ctx_type_5_init(synthSamplerCelesta_Util__ctx_type_5 &_output_){
+   synthSamplerCelesta_Util__ctx_type_5 &_ctx = _output_;
    _ctx.x = 0x0 /* 0.000000 */;
    
    return ;
 }
 
-static_inline void synthSamplerCelesta_Util_smooth_init(synthSamplerCelesta_Util__ctx_type_4 &_output_){
-   synthSamplerCelesta_Util__ctx_type_4_init(_output_);
+static_inline void synthSamplerCelesta_Util_smooth_init(synthSamplerCelesta_Util__ctx_type_5 &_output_){
+   synthSamplerCelesta_Util__ctx_type_5_init(_output_);
    return ;
 }
 
-static_inline fix16_t synthSamplerCelesta_Util_smooth(synthSamplerCelesta_Util__ctx_type_4 &_ctx, fix16_t input, fix16_t coeff){
+static_inline fix16_t synthSamplerCelesta_Util_smooth(synthSamplerCelesta_Util__ctx_type_5 &_ctx, fix16_t input, fix16_t coeff){
    _ctx.x = (_ctx.x + fix_mul(coeff,(input + (- _ctx.x))));
    return _ctx.x;
 }
@@ -277,6 +283,7 @@ typedef struct synthSamplerCelesta_Sampler__ctx_type_0 {
    uint8_t crossfade;
    fix16_t buffer_o[256];
    fix16_t buffer_cross[256];
+   fix16_t bend;
 } synthSamplerCelesta_Sampler__ctx_type_0;
 
 typedef synthSamplerCelesta_Sampler__ctx_type_0 synthSamplerCelesta_Sampler_updateStep_type;
@@ -290,6 +297,23 @@ static_inline void synthSamplerCelesta_Sampler_updateStep_init(synthSamplerCeles
 
 static_inline void synthSamplerCelesta_Sampler_updateStep(synthSamplerCelesta_Sampler__ctx_type_0 &_ctx){
    _ctx.step = fix_mul(_ctx.fsRatio,_ctx.noteRatio);
+   if(_ctx.bend != 0x0 /* 0.000000 */){
+      _ctx.step = fix_mul(_ctx.step,synthSamplerCelesta_Util_tonesToCoeff(_ctx.bend));
+   }
+}
+
+typedef synthSamplerCelesta_Sampler__ctx_type_0 synthSamplerCelesta_Sampler_pitchBend_type;
+
+static_inline void synthSamplerCelesta_Sampler_pitchBend_init(synthSamplerCelesta_Sampler__ctx_type_0 &_output_){
+   synthSamplerCelesta_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerCelesta_Sampler_pitchBend(synthSamplerCelesta_Sampler__ctx_type_0 &_ctx, fix16_t semitones){
+   if(semitones != _ctx.bend){
+      _ctx.bend = semitones;
+      synthSamplerCelesta_Sampler_updateStep(_ctx);
+   }
 };
 
 typedef synthSamplerCelesta_Sampler__ctx_type_0 synthSamplerCelesta_Sampler_setNote_type;
@@ -629,6 +653,20 @@ static_inline void synthSamplerCelesta_Poly_synthSetSustain(synthSamplerCelesta_
    synthSamplerCelesta_Sampler_setSustain(_ctx.voice1,flag);
    synthSamplerCelesta_Sampler_setSustain(_ctx.voice2,flag);
    synthSamplerCelesta_Sampler_setSustain(_ctx.voice3,flag);
+}
+
+typedef synthSamplerCelesta_Poly__ctx_type_0 synthSamplerCelesta_Poly_synthPitchBend_type;
+
+static_inline void synthSamplerCelesta_Poly_synthPitchBend_init(synthSamplerCelesta_Poly__ctx_type_0 &_output_){
+   synthSamplerCelesta_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerCelesta_Poly_synthPitchBend(synthSamplerCelesta_Poly__ctx_type_0 &_ctx, fix16_t semitones){
+   synthSamplerCelesta_Sampler_pitchBend(_ctx.voice0,semitones);
+   synthSamplerCelesta_Sampler_pitchBend(_ctx.voice1,semitones);
+   synthSamplerCelesta_Sampler_pitchBend(_ctx.voice2,semitones);
+   synthSamplerCelesta_Sampler_pitchBend(_ctx.voice3,semitones);
 }
 
 typedef synthSamplerCelesta_Poly__ctx_type_0 synthSamplerCelesta_Poly_synthSetLoop_type;
@@ -1010,6 +1048,17 @@ static_inline void synthSamplerCelesta_Voice_synthSetSustain_init(synthSamplerCe
 
 static_inline void synthSamplerCelesta_Voice_synthSetSustain(synthSamplerCelesta_Voice__ctx_type_0 &_ctx, uint8_t flag){
    synthSamplerCelesta_Poly_synthSetSustain(_ctx.poly,flag);
+};
+
+typedef synthSamplerCelesta_Voice__ctx_type_0 synthSamplerCelesta_Voice_synthPitchBend_type;
+
+static_inline void synthSamplerCelesta_Voice_synthPitchBend_init(synthSamplerCelesta_Voice__ctx_type_0 &_output_){
+   synthSamplerCelesta_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerCelesta_Voice_synthPitchBend(synthSamplerCelesta_Voice__ctx_type_0 &_ctx, fix16_t semitones){
+   synthSamplerCelesta_Poly_synthPitchBend(_ctx.poly,semitones);
 };
 
 typedef synthSamplerCelesta_Voice__ctx_type_0 synthSamplerCelesta_Voice_synthSetLoop_type;

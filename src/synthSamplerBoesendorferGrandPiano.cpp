@@ -132,6 +132,7 @@ void synthSamplerBoesendorferGrandPiano_Sampler__ctx_type_0_init(synthSamplerBoe
    _ctx.crossfade = false;
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_o);
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_cross);
+   _ctx.bend = 0x0 /* 0.000000 */;
    synthSamplerBoesendorferGrandPiano_Sampler_default(_ctx);
    
    return ;

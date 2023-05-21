@@ -70,6 +70,7 @@ void synthDrummerNes_Drummer__ctx_type_0_init(synthDrummerNes_Drummer__ctx_type_
    _ctx.fsRatio = 0x0 /* 0.000000 */;
    _ctx.fs = 0x0 /* 0.000000 */;
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_o);
+   _ctx.bend = 0x0 /* 0.000000 */;
    synthDrummerNes_Drummer_default(_ctx);
    
    return ;

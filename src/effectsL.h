@@ -397,25 +397,31 @@ static_inline fix16_t effectsL_Util_noteToFrequency(int note){
    return fix_mul(0x217 /* 0.008176 */,fix_exp(fix_mul(0xec9 /* 0.057762 */,int_to_fix(note))));
 };
 
-typedef struct effectsL_Util__ctx_type_1 {
+static_inline fix16_t effectsL_Util_tonesToCoeff(fix16_t semitones){
+   fix16_t log_base;
+   log_base = 0xb172 /* 0.693147 */;
+   return fix_exp(fix_mul(fix_mul(0x1555 /* 0.083333 */,log_base),semitones));
+}
+
+typedef struct effectsL_Util__ctx_type_2 {
    uint8_t pre;
-} effectsL_Util__ctx_type_1;
+} effectsL_Util__ctx_type_2;
 
-typedef effectsL_Util__ctx_type_1 effectsL_Util_edge_type;
+typedef effectsL_Util__ctx_type_2 effectsL_Util_edge_type;
 
-static_inline void effectsL_Util__ctx_type_1_init(effectsL_Util__ctx_type_1 &_output_){
-   effectsL_Util__ctx_type_1 &_ctx = _output_;
+static_inline void effectsL_Util__ctx_type_2_init(effectsL_Util__ctx_type_2 &_output_){
+   effectsL_Util__ctx_type_2 &_ctx = _output_;
    _ctx.pre = false;
    
    return ;
 }
 
-static_inline void effectsL_Util_edge_init(effectsL_Util__ctx_type_1 &_output_){
-   effectsL_Util__ctx_type_1_init(_output_);
+static_inline void effectsL_Util_edge_init(effectsL_Util__ctx_type_2 &_output_){
+   effectsL_Util__ctx_type_2_init(_output_);
    return ;
 }
 
-static_inline uint8_t effectsL_Util_edge(effectsL_Util__ctx_type_1 &_ctx, uint8_t x){
+static_inline uint8_t effectsL_Util_edge(effectsL_Util__ctx_type_2 &_ctx, uint8_t x){
    uint8_t ret;
    ret = (x && bool_not(_ctx.pre));
    _ctx.pre = x;
@@ -438,50 +444,50 @@ static_inline fix16_t effectsL_Util_cubic_clipper(fix16_t x){
    }
 };
 
-typedef struct effectsL_Util__ctx_type_3 {
+typedef struct effectsL_Util__ctx_type_4 {
    fix16_t pre_x;
-} effectsL_Util__ctx_type_3;
+} effectsL_Util__ctx_type_4;
 
-typedef effectsL_Util__ctx_type_3 effectsL_Util_change_type;
+typedef effectsL_Util__ctx_type_4 effectsL_Util_change_type;
 
-static_inline void effectsL_Util__ctx_type_3_init(effectsL_Util__ctx_type_3 &_output_){
-   effectsL_Util__ctx_type_3 &_ctx = _output_;
+static_inline void effectsL_Util__ctx_type_4_init(effectsL_Util__ctx_type_4 &_output_){
+   effectsL_Util__ctx_type_4 &_ctx = _output_;
    _ctx.pre_x = 0x0 /* 0.000000 */;
    
    return ;
 }
 
-static_inline void effectsL_Util_change_init(effectsL_Util__ctx_type_3 &_output_){
-   effectsL_Util__ctx_type_3_init(_output_);
+static_inline void effectsL_Util_change_init(effectsL_Util__ctx_type_4 &_output_){
+   effectsL_Util__ctx_type_4_init(_output_);
    return ;
 }
 
-static_inline uint8_t effectsL_Util_change(effectsL_Util__ctx_type_3 &_ctx, fix16_t x){
+static_inline uint8_t effectsL_Util_change(effectsL_Util__ctx_type_4 &_ctx, fix16_t x){
    uint8_t v;
    v = (_ctx.pre_x != x);
    _ctx.pre_x = x;
    return v;
 }
 
-typedef struct effectsL_Util__ctx_type_4 {
+typedef struct effectsL_Util__ctx_type_5 {
    fix16_t x;
-} effectsL_Util__ctx_type_4;
+} effectsL_Util__ctx_type_5;
 
-typedef effectsL_Util__ctx_type_4 effectsL_Util_smooth_type;
+typedef effectsL_Util__ctx_type_5 effectsL_Util_smooth_type;
 
-static_inline void effectsL_Util__ctx_type_4_init(effectsL_Util__ctx_type_4 &_output_){
-   effectsL_Util__ctx_type_4 &_ctx = _output_;
+static_inline void effectsL_Util__ctx_type_5_init(effectsL_Util__ctx_type_5 &_output_){
+   effectsL_Util__ctx_type_5 &_ctx = _output_;
    _ctx.x = 0x0 /* 0.000000 */;
    
    return ;
 }
 
-static_inline void effectsL_Util_smooth_init(effectsL_Util__ctx_type_4 &_output_){
-   effectsL_Util__ctx_type_4_init(_output_);
+static_inline void effectsL_Util_smooth_init(effectsL_Util__ctx_type_5 &_output_){
+   effectsL_Util__ctx_type_5_init(_output_);
    return ;
 }
 
-static_inline fix16_t effectsL_Util_smooth(effectsL_Util__ctx_type_4 &_ctx, fix16_t input, fix16_t coeff){
+static_inline fix16_t effectsL_Util_smooth(effectsL_Util__ctx_type_5 &_ctx, fix16_t input, fix16_t coeff){
    _ctx.x = (_ctx.x + fix_mul(coeff,(input + (- _ctx.x))));
    return _ctx.x;
 }
@@ -539,8 +545,8 @@ typedef struct effectsL_Ladder__ctx_type_2 {
    fix16_t fh;
    effectsL_Ladder__ctx_type_1 e;
    fix16_t cut;
-   effectsL_Util__ctx_type_3 _inst43b;
-   effectsL_Util__ctx_type_3 _inst13b;
+   effectsL_Util__ctx_type_4 _inst43b;
+   effectsL_Util__ctx_type_4 _inst13b;
 } effectsL_Ladder__ctx_type_2;
 
 typedef effectsL_Ladder__ctx_type_2 effectsL_Ladder_getTune_type;
@@ -846,10 +852,10 @@ typedef struct effectsL_SVF__ctx_type_0 {
    fix16_t fs_nyquist;
    fix16_t fs;
    fix16_t freq;
-   effectsL_Util__ctx_type_4 _inst955;
-   effectsL_Util__ctx_type_3 _inst173b;
-   effectsL_Util__ctx_type_4 _inst1655;
-   effectsL_Util__ctx_type_3 _inst103b;
+   effectsL_Util__ctx_type_5 _inst955;
+   effectsL_Util__ctx_type_4 _inst173b;
+   effectsL_Util__ctx_type_5 _inst1655;
+   effectsL_Util__ctx_type_4 _inst103b;
    fix16_t R;
 } effectsL_SVF__ctx_type_0;
 

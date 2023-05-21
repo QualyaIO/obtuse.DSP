@@ -402,8 +402,8 @@ void synthFM_ADSR__ctx_type_5_init(synthFM_ADSR__ctx_type_5 &_output_){
    _ctx.a_step = 0x0 /* 0.000000 */;
    _ctx.a = 0x0 /* 0.000000 */;
    synthFM_ADSR__ctx_type_0_init(_ctx._inst3673);
-   synthFM_Util__ctx_type_1_init(_ctx._inst1851);
-   synthFM_Util__ctx_type_1_init(_ctx._inst151);
+   synthFM_Util__ctx_type_2_init(_ctx._inst1851);
+   synthFM_Util__ctx_type_2_init(_ctx._inst151);
    synthFM_ADSR_default(_ctx);
    
    return ;
@@ -584,6 +584,7 @@ void synthFM_FM__ctx_type_0_init(synthFM_FM__ctx_type_0 &_output_){
    _ctx.level = 0x0 /* 0.000000 */;
    _ctx.gate = false;
    _ctx.fs = 0x0 /* 0.000000 */;
+   _ctx.freq = 0x0 /* 0.000000 */;
    _ctx.env_decimation_factor = 0;
    synthFM_ADSR__ctx_type_5_init(_ctx.carrieradsr);
    _ctx.carrier_phase_range = 0x0 /* 0.000000 */;
@@ -596,6 +597,7 @@ void synthFM_FM__ctx_type_0_init(synthFM_FM__ctx_type_0 &_output_){
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_modulator);
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_carrier_env_short);
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_carrier_env);
+   _ctx.bend = 0x0 /* 0.000000 */;
    synthFM_FM_default(_ctx);
    
    return ;
@@ -785,6 +787,23 @@ void synthFM_FM_setLevel(synthFM_FM__ctx_type_0 &_ctx, fix16_t newLevel){
    }
    if(fix_abs((_ctx.target_level + (- _ctx.level))) <= _ctx.level_step_ref){
       _ctx.level = _ctx.target_level;
+   }
+}
+
+void synthFM_FM_setFrequency(synthFM_FM__ctx_type_0 &_ctx, fix16_t newFreq){
+   if(newFreq >= 0x0 /* 0.000000 */){
+      _ctx.freq = newFreq;
+      fix16_t bendFreq;
+      bendFreq = _ctx.freq;
+      if(_ctx.bend != 0x0 /* 0.000000 */){
+         bendFreq = fix_mul(_ctx.freq,synthFM_Util_tonesToCoeff(_ctx.bend));
+      }
+      if(_ctx.carrierRatio >= 0x0 /* 0.000000 */){
+         synthFM_OSC_setFrequency(_ctx.carrier,fix_mul(_ctx.carrierRatio,bendFreq));
+      }
+      if(_ctx.modulatorRatio >= 0x0 /* 0.000000 */){
+         synthFM_OSC_setFrequency(_ctx.modulator,fix_mul(_ctx.modulatorRatio,bendFreq));
+      }
    }
 }
 

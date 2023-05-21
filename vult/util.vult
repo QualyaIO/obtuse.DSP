@@ -6,6 +6,13 @@ fun noteToFrequency(note: int) {
     return 0.008175798915643707 * exp(0.057762265046662105 * real(note)); 
 }
 
+// return the coefficient to multiply a frequency by in order to increase (or decrease) it by xxx semitones (12 equal temperament)
+fun tonesToCoeff(semitones: real) {
+  // we want 2^(tones/12) -- using for vult log10 rather than log to let it compute the actual value before transpiling
+  val log_base = log10(2.0)/log10(exp(1.0));
+  return exp(log_base * (semitones / 12.0));
+}
+
 // from vult examples
 fun edge(x:bool) : bool {
    mem pre;
