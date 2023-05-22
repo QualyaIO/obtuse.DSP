@@ -91,6 +91,14 @@ and synthSetSustain(flag: bool) {
   _ = voice3:Sampler.setSustain(flag);
 }
 
+// apply pitch bend of +/- seminotes
+and synthPitchBend(semitones: real) {
+  _ = voice0:Sampler.pitchBend(semitones);
+  _ = voice1:Sampler.pitchBend(semitones);
+  _ = voice2:Sampler.pitchBend(semitones);
+  _ = voice3:Sampler.pitchBend(semitones);
+}
+
 // Sampler.setLoop()
 and synthSetLoop(flag: bool) {
   _ = voice0:Sampler.setLoop(flag);

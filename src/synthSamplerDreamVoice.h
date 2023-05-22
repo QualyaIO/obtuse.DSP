@@ -11,25 +11,31 @@ static_inline fix16_t synthSamplerDreamVoice_Util_noteToFrequency(int note){
    return fix_mul(0x217 /* 0.008176 */,fix_exp(fix_mul(0xec9 /* 0.057762 */,int_to_fix(note))));
 };
 
-typedef struct synthSamplerDreamVoice_Util__ctx_type_1 {
+static_inline fix16_t synthSamplerDreamVoice_Util_tonesToCoeff(fix16_t semitones){
+   fix16_t log_base;
+   log_base = 0xb172 /* 0.693147 */;
+   return fix_exp(fix_mul(fix_mul(0x1555 /* 0.083333 */,log_base),semitones));
+}
+
+typedef struct synthSamplerDreamVoice_Util__ctx_type_2 {
    uint8_t pre;
-} synthSamplerDreamVoice_Util__ctx_type_1;
+} synthSamplerDreamVoice_Util__ctx_type_2;
 
-typedef synthSamplerDreamVoice_Util__ctx_type_1 synthSamplerDreamVoice_Util_edge_type;
+typedef synthSamplerDreamVoice_Util__ctx_type_2 synthSamplerDreamVoice_Util_edge_type;
 
-static_inline void synthSamplerDreamVoice_Util__ctx_type_1_init(synthSamplerDreamVoice_Util__ctx_type_1 &_output_){
-   synthSamplerDreamVoice_Util__ctx_type_1 &_ctx = _output_;
+static_inline void synthSamplerDreamVoice_Util__ctx_type_2_init(synthSamplerDreamVoice_Util__ctx_type_2 &_output_){
+   synthSamplerDreamVoice_Util__ctx_type_2 &_ctx = _output_;
    _ctx.pre = false;
    
    return ;
 }
 
-static_inline void synthSamplerDreamVoice_Util_edge_init(synthSamplerDreamVoice_Util__ctx_type_1 &_output_){
-   synthSamplerDreamVoice_Util__ctx_type_1_init(_output_);
+static_inline void synthSamplerDreamVoice_Util_edge_init(synthSamplerDreamVoice_Util__ctx_type_2 &_output_){
+   synthSamplerDreamVoice_Util__ctx_type_2_init(_output_);
    return ;
 }
 
-static_inline uint8_t synthSamplerDreamVoice_Util_edge(synthSamplerDreamVoice_Util__ctx_type_1 &_ctx, uint8_t x){
+static_inline uint8_t synthSamplerDreamVoice_Util_edge(synthSamplerDreamVoice_Util__ctx_type_2 &_ctx, uint8_t x){
    uint8_t ret;
    ret = (x && bool_not(_ctx.pre));
    _ctx.pre = x;
@@ -52,50 +58,50 @@ static_inline fix16_t synthSamplerDreamVoice_Util_cubic_clipper(fix16_t x){
    }
 };
 
-typedef struct synthSamplerDreamVoice_Util__ctx_type_3 {
+typedef struct synthSamplerDreamVoice_Util__ctx_type_4 {
    fix16_t pre_x;
-} synthSamplerDreamVoice_Util__ctx_type_3;
+} synthSamplerDreamVoice_Util__ctx_type_4;
 
-typedef synthSamplerDreamVoice_Util__ctx_type_3 synthSamplerDreamVoice_Util_change_type;
+typedef synthSamplerDreamVoice_Util__ctx_type_4 synthSamplerDreamVoice_Util_change_type;
 
-static_inline void synthSamplerDreamVoice_Util__ctx_type_3_init(synthSamplerDreamVoice_Util__ctx_type_3 &_output_){
-   synthSamplerDreamVoice_Util__ctx_type_3 &_ctx = _output_;
+static_inline void synthSamplerDreamVoice_Util__ctx_type_4_init(synthSamplerDreamVoice_Util__ctx_type_4 &_output_){
+   synthSamplerDreamVoice_Util__ctx_type_4 &_ctx = _output_;
    _ctx.pre_x = 0x0 /* 0.000000 */;
    
    return ;
 }
 
-static_inline void synthSamplerDreamVoice_Util_change_init(synthSamplerDreamVoice_Util__ctx_type_3 &_output_){
-   synthSamplerDreamVoice_Util__ctx_type_3_init(_output_);
+static_inline void synthSamplerDreamVoice_Util_change_init(synthSamplerDreamVoice_Util__ctx_type_4 &_output_){
+   synthSamplerDreamVoice_Util__ctx_type_4_init(_output_);
    return ;
 }
 
-static_inline uint8_t synthSamplerDreamVoice_Util_change(synthSamplerDreamVoice_Util__ctx_type_3 &_ctx, fix16_t x){
+static_inline uint8_t synthSamplerDreamVoice_Util_change(synthSamplerDreamVoice_Util__ctx_type_4 &_ctx, fix16_t x){
    uint8_t v;
    v = (_ctx.pre_x != x);
    _ctx.pre_x = x;
    return v;
 }
 
-typedef struct synthSamplerDreamVoice_Util__ctx_type_4 {
+typedef struct synthSamplerDreamVoice_Util__ctx_type_5 {
    fix16_t x;
-} synthSamplerDreamVoice_Util__ctx_type_4;
+} synthSamplerDreamVoice_Util__ctx_type_5;
 
-typedef synthSamplerDreamVoice_Util__ctx_type_4 synthSamplerDreamVoice_Util_smooth_type;
+typedef synthSamplerDreamVoice_Util__ctx_type_5 synthSamplerDreamVoice_Util_smooth_type;
 
-static_inline void synthSamplerDreamVoice_Util__ctx_type_4_init(synthSamplerDreamVoice_Util__ctx_type_4 &_output_){
-   synthSamplerDreamVoice_Util__ctx_type_4 &_ctx = _output_;
+static_inline void synthSamplerDreamVoice_Util__ctx_type_5_init(synthSamplerDreamVoice_Util__ctx_type_5 &_output_){
+   synthSamplerDreamVoice_Util__ctx_type_5 &_ctx = _output_;
    _ctx.x = 0x0 /* 0.000000 */;
    
    return ;
 }
 
-static_inline void synthSamplerDreamVoice_Util_smooth_init(synthSamplerDreamVoice_Util__ctx_type_4 &_output_){
-   synthSamplerDreamVoice_Util__ctx_type_4_init(_output_);
+static_inline void synthSamplerDreamVoice_Util_smooth_init(synthSamplerDreamVoice_Util__ctx_type_5 &_output_){
+   synthSamplerDreamVoice_Util__ctx_type_5_init(_output_);
    return ;
 }
 
-static_inline fix16_t synthSamplerDreamVoice_Util_smooth(synthSamplerDreamVoice_Util__ctx_type_4 &_ctx, fix16_t input, fix16_t coeff){
+static_inline fix16_t synthSamplerDreamVoice_Util_smooth(synthSamplerDreamVoice_Util__ctx_type_5 &_ctx, fix16_t input, fix16_t coeff){
    _ctx.x = (_ctx.x + fix_mul(coeff,(input + (- _ctx.x))));
    return _ctx.x;
 }
@@ -277,6 +283,7 @@ typedef struct synthSamplerDreamVoice_Sampler__ctx_type_0 {
    uint8_t crossfade;
    fix16_t buffer_o[256];
    fix16_t buffer_cross[256];
+   fix16_t bend;
 } synthSamplerDreamVoice_Sampler__ctx_type_0;
 
 typedef synthSamplerDreamVoice_Sampler__ctx_type_0 synthSamplerDreamVoice_Sampler_updateStep_type;
@@ -290,6 +297,23 @@ static_inline void synthSamplerDreamVoice_Sampler_updateStep_init(synthSamplerDr
 
 static_inline void synthSamplerDreamVoice_Sampler_updateStep(synthSamplerDreamVoice_Sampler__ctx_type_0 &_ctx){
    _ctx.step = fix_mul(_ctx.fsRatio,_ctx.noteRatio);
+   if(_ctx.bend != 0x0 /* 0.000000 */){
+      _ctx.step = fix_mul(_ctx.step,synthSamplerDreamVoice_Util_tonesToCoeff(_ctx.bend));
+   }
+}
+
+typedef synthSamplerDreamVoice_Sampler__ctx_type_0 synthSamplerDreamVoice_Sampler_pitchBend_type;
+
+static_inline void synthSamplerDreamVoice_Sampler_pitchBend_init(synthSamplerDreamVoice_Sampler__ctx_type_0 &_output_){
+   synthSamplerDreamVoice_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerDreamVoice_Sampler_pitchBend(synthSamplerDreamVoice_Sampler__ctx_type_0 &_ctx, fix16_t semitones){
+   if(semitones != _ctx.bend){
+      _ctx.bend = semitones;
+      synthSamplerDreamVoice_Sampler_updateStep(_ctx);
+   }
 };
 
 typedef synthSamplerDreamVoice_Sampler__ctx_type_0 synthSamplerDreamVoice_Sampler_setNote_type;
@@ -629,6 +653,20 @@ static_inline void synthSamplerDreamVoice_Poly_synthSetSustain(synthSamplerDream
    synthSamplerDreamVoice_Sampler_setSustain(_ctx.voice1,flag);
    synthSamplerDreamVoice_Sampler_setSustain(_ctx.voice2,flag);
    synthSamplerDreamVoice_Sampler_setSustain(_ctx.voice3,flag);
+}
+
+typedef synthSamplerDreamVoice_Poly__ctx_type_0 synthSamplerDreamVoice_Poly_synthPitchBend_type;
+
+static_inline void synthSamplerDreamVoice_Poly_synthPitchBend_init(synthSamplerDreamVoice_Poly__ctx_type_0 &_output_){
+   synthSamplerDreamVoice_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerDreamVoice_Poly_synthPitchBend(synthSamplerDreamVoice_Poly__ctx_type_0 &_ctx, fix16_t semitones){
+   synthSamplerDreamVoice_Sampler_pitchBend(_ctx.voice0,semitones);
+   synthSamplerDreamVoice_Sampler_pitchBend(_ctx.voice1,semitones);
+   synthSamplerDreamVoice_Sampler_pitchBend(_ctx.voice2,semitones);
+   synthSamplerDreamVoice_Sampler_pitchBend(_ctx.voice3,semitones);
 }
 
 typedef synthSamplerDreamVoice_Poly__ctx_type_0 synthSamplerDreamVoice_Poly_synthSetLoop_type;
@@ -1010,6 +1048,17 @@ static_inline void synthSamplerDreamVoice_Voice_synthSetSustain_init(synthSample
 
 static_inline void synthSamplerDreamVoice_Voice_synthSetSustain(synthSamplerDreamVoice_Voice__ctx_type_0 &_ctx, uint8_t flag){
    synthSamplerDreamVoice_Poly_synthSetSustain(_ctx.poly,flag);
+};
+
+typedef synthSamplerDreamVoice_Voice__ctx_type_0 synthSamplerDreamVoice_Voice_synthPitchBend_type;
+
+static_inline void synthSamplerDreamVoice_Voice_synthPitchBend_init(synthSamplerDreamVoice_Voice__ctx_type_0 &_output_){
+   synthSamplerDreamVoice_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerDreamVoice_Voice_synthPitchBend(synthSamplerDreamVoice_Voice__ctx_type_0 &_ctx, fix16_t semitones){
+   synthSamplerDreamVoice_Poly_synthPitchBend(_ctx.poly,semitones);
 };
 
 typedef synthSamplerDreamVoice_Voice__ctx_type_0 synthSamplerDreamVoice_Voice_synthSetLoop_type;

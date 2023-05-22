@@ -317,13 +317,33 @@ and setModulatorFeedback(feedback: real) {
 }
 
 // should be 0..nquist, in kHz
-and setFrequency(freq: real) {
+// apply current pitch bend, if any
+and setFrequency(newFreq: real) {
+  // save last freq and pitch bend
+  mem freq;
+  mem bend;
+  if (newFreq >= 0.0) {
+    freq = newFreq;
+    val bendFreq = freq;
+    if (bend <> 0.0) {
+      bendFreq = freq * Util.tonesToCoeff(bend);
+    }
     if (carrierRatio >= 0.0) {
-        _ = carrier:OSC.setFrequency(freq * carrierRatio);
+      _ = carrier:OSC.setFrequency(bendFreq * carrierRatio);
     }
     if (modulatorRatio >= 0.0) {
-        _ = modulator:OSC.setFrequency(freq * modulatorRatio);
+      _ = modulator:OSC.setFrequency(bendFreq * modulatorRatio);
     }
+  }
+}
+
+
+// bend the pitch by + or minus semitones. Apply changes to freq
+and pitchBend(semitones: real) {
+  if (semitones <> bend) {
+    bend = semitones;
+    setFrequency(freq);
+  }
 }
 
 // set polpyphonic (true flag) or monophonic (false flag)

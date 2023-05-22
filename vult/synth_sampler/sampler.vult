@@ -9,11 +9,24 @@
 fun updateStep() {
   // how much we jump each step
   mem step: real;
+  // pitch bend to apply
+  mem bend: real;
   // base for computing step
   mem noteRatio: real;
   mem fsRatio: real;
   // both for efficiency and because we don't want any result to be outside [1/32767 .. 32767] to avoid fixed float limits we compute step in two... steps
   step = noteRatio*fsRatio;
+  if (bend <> 0.0) {
+    step = step * Util.tonesToCoeff(bend);
+  }
+}
+
+// bend the pitch by + or minus semitones. Apply changes to step
+and pitchBend(semitones: real) {
+  if (semitones <> bend) {
+    bend = semitones;
+    _ = updateStep();
+  }
 }
 
 // note to be played. Here only handle equal temperament

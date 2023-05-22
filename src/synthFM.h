@@ -83,25 +83,31 @@ static_inline fix16_t synthFM_Util_noteToFrequency(int note){
    return fix_mul(0x217 /* 0.008176 */,fix_exp(fix_mul(0xec9 /* 0.057762 */,int_to_fix(note))));
 };
 
-typedef struct synthFM_Util__ctx_type_1 {
+static_inline fix16_t synthFM_Util_tonesToCoeff(fix16_t semitones){
+   fix16_t log_base;
+   log_base = 0xb172 /* 0.693147 */;
+   return fix_exp(fix_mul(fix_mul(0x1555 /* 0.083333 */,log_base),semitones));
+}
+
+typedef struct synthFM_Util__ctx_type_2 {
    uint8_t pre;
-} synthFM_Util__ctx_type_1;
+} synthFM_Util__ctx_type_2;
 
-typedef synthFM_Util__ctx_type_1 synthFM_Util_edge_type;
+typedef synthFM_Util__ctx_type_2 synthFM_Util_edge_type;
 
-static_inline void synthFM_Util__ctx_type_1_init(synthFM_Util__ctx_type_1 &_output_){
-   synthFM_Util__ctx_type_1 &_ctx = _output_;
+static_inline void synthFM_Util__ctx_type_2_init(synthFM_Util__ctx_type_2 &_output_){
+   synthFM_Util__ctx_type_2 &_ctx = _output_;
    _ctx.pre = false;
    
    return ;
 }
 
-static_inline void synthFM_Util_edge_init(synthFM_Util__ctx_type_1 &_output_){
-   synthFM_Util__ctx_type_1_init(_output_);
+static_inline void synthFM_Util_edge_init(synthFM_Util__ctx_type_2 &_output_){
+   synthFM_Util__ctx_type_2_init(_output_);
    return ;
 }
 
-static_inline uint8_t synthFM_Util_edge(synthFM_Util__ctx_type_1 &_ctx, uint8_t x){
+static_inline uint8_t synthFM_Util_edge(synthFM_Util__ctx_type_2 &_ctx, uint8_t x){
    uint8_t ret;
    ret = (x && bool_not(_ctx.pre));
    _ctx.pre = x;
@@ -124,50 +130,50 @@ static_inline fix16_t synthFM_Util_cubic_clipper(fix16_t x){
    }
 };
 
-typedef struct synthFM_Util__ctx_type_3 {
+typedef struct synthFM_Util__ctx_type_4 {
    fix16_t pre_x;
-} synthFM_Util__ctx_type_3;
+} synthFM_Util__ctx_type_4;
 
-typedef synthFM_Util__ctx_type_3 synthFM_Util_change_type;
+typedef synthFM_Util__ctx_type_4 synthFM_Util_change_type;
 
-static_inline void synthFM_Util__ctx_type_3_init(synthFM_Util__ctx_type_3 &_output_){
-   synthFM_Util__ctx_type_3 &_ctx = _output_;
+static_inline void synthFM_Util__ctx_type_4_init(synthFM_Util__ctx_type_4 &_output_){
+   synthFM_Util__ctx_type_4 &_ctx = _output_;
    _ctx.pre_x = 0x0 /* 0.000000 */;
    
    return ;
 }
 
-static_inline void synthFM_Util_change_init(synthFM_Util__ctx_type_3 &_output_){
-   synthFM_Util__ctx_type_3_init(_output_);
+static_inline void synthFM_Util_change_init(synthFM_Util__ctx_type_4 &_output_){
+   synthFM_Util__ctx_type_4_init(_output_);
    return ;
 }
 
-static_inline uint8_t synthFM_Util_change(synthFM_Util__ctx_type_3 &_ctx, fix16_t x){
+static_inline uint8_t synthFM_Util_change(synthFM_Util__ctx_type_4 &_ctx, fix16_t x){
    uint8_t v;
    v = (_ctx.pre_x != x);
    _ctx.pre_x = x;
    return v;
 }
 
-typedef struct synthFM_Util__ctx_type_4 {
+typedef struct synthFM_Util__ctx_type_5 {
    fix16_t x;
-} synthFM_Util__ctx_type_4;
+} synthFM_Util__ctx_type_5;
 
-typedef synthFM_Util__ctx_type_4 synthFM_Util_smooth_type;
+typedef synthFM_Util__ctx_type_5 synthFM_Util_smooth_type;
 
-static_inline void synthFM_Util__ctx_type_4_init(synthFM_Util__ctx_type_4 &_output_){
-   synthFM_Util__ctx_type_4 &_ctx = _output_;
+static_inline void synthFM_Util__ctx_type_5_init(synthFM_Util__ctx_type_5 &_output_){
+   synthFM_Util__ctx_type_5 &_ctx = _output_;
    _ctx.x = 0x0 /* 0.000000 */;
    
    return ;
 }
 
-static_inline void synthFM_Util_smooth_init(synthFM_Util__ctx_type_4 &_output_){
-   synthFM_Util__ctx_type_4_init(_output_);
+static_inline void synthFM_Util_smooth_init(synthFM_Util__ctx_type_5 &_output_){
+   synthFM_Util__ctx_type_5_init(_output_);
    return ;
 }
 
-static_inline fix16_t synthFM_Util_smooth(synthFM_Util__ctx_type_4 &_ctx, fix16_t input, fix16_t coeff){
+static_inline fix16_t synthFM_Util_smooth(synthFM_Util__ctx_type_5 &_ctx, fix16_t input, fix16_t coeff){
    _ctx.x = (_ctx.x + fix_mul(coeff,(input + (- _ctx.x))));
    return _ctx.x;
 }
@@ -605,8 +611,8 @@ typedef struct synthFM_ADSR__ctx_type_5 {
    fix16_t a_step;
    fix16_t a;
    synthFM_ADSR__ctx_type_0 _inst3673;
-   synthFM_Util__ctx_type_1 _inst1851;
-   synthFM_Util__ctx_type_1 _inst151;
+   synthFM_Util__ctx_type_2 _inst1851;
+   synthFM_Util__ctx_type_2 _inst151;
 } synthFM_ADSR__ctx_type_5;
 
 typedef synthFM_ADSR__ctx_type_5 synthFM_ADSR_stepToRelease_type;
@@ -747,6 +753,7 @@ typedef struct synthFM_FM__ctx_type_0 {
    fix16_t level;
    uint8_t gate;
    fix16_t fs;
+   fix16_t freq;
    int env_decimation_factor;
    synthFM_ADSR__ctx_type_5 carrieradsr;
    fix16_t carrier_phase_range;
@@ -759,6 +766,7 @@ typedef struct synthFM_FM__ctx_type_0 {
    fix16_t buffer_modulator[256];
    fix16_t buffer_carrier_env_short[256];
    fix16_t buffer_carrier_env[256];
+   fix16_t bend;
 } synthFM_FM__ctx_type_0;
 
 typedef synthFM_FM__ctx_type_0 synthFM_FM_process_type;
@@ -911,14 +919,21 @@ static_inline void synthFM_FM_setFrequency_init(synthFM_FM__ctx_type_0 &_output_
    return ;
 }
 
-static_inline void synthFM_FM_setFrequency(synthFM_FM__ctx_type_0 &_ctx, fix16_t freq){
-   if(_ctx.carrierRatio >= 0x0 /* 0.000000 */){
-      synthFM_OSC_setFrequency(_ctx.carrier,fix_mul(_ctx.carrierRatio,freq));
-   }
-   if(_ctx.modulatorRatio >= 0x0 /* 0.000000 */){
-      synthFM_OSC_setFrequency(_ctx.modulator,fix_mul(_ctx.modulatorRatio,freq));
-   }
+void synthFM_FM_setFrequency(synthFM_FM__ctx_type_0 &_ctx, fix16_t newFreq);
+
+typedef synthFM_FM__ctx_type_0 synthFM_FM_pitchBend_type;
+
+static_inline void synthFM_FM_pitchBend_init(synthFM_FM__ctx_type_0 &_output_){
+   synthFM_FM__ctx_type_0_init(_output_);
+   return ;
 }
+
+static_inline void synthFM_FM_pitchBend(synthFM_FM__ctx_type_0 &_ctx, fix16_t semitones){
+   if(semitones != _ctx.bend){
+      _ctx.bend = semitones;
+      synthFM_FM_setFrequency(_ctx,_ctx.freq);
+   }
+};
 
 typedef synthFM_FM__ctx_type_0 synthFM_FM_setPoly_type;
 
@@ -1141,6 +1156,20 @@ static_inline void synthFM_Poly_synthSetSustain(synthFM_Poly__ctx_type_0 &_ctx, 
    synthFM_FM_setSustain(_ctx.voice1,flag);
    synthFM_FM_setSustain(_ctx.voice2,flag);
    synthFM_FM_setSustain(_ctx.voice3,flag);
+}
+
+typedef synthFM_Poly__ctx_type_0 synthFM_Poly_synthPitchBend_type;
+
+static_inline void synthFM_Poly_synthPitchBend_init(synthFM_Poly__ctx_type_0 &_output_){
+   synthFM_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthFM_Poly_synthPitchBend(synthFM_Poly__ctx_type_0 &_ctx, fix16_t semitones){
+   synthFM_FM_pitchBend(_ctx.voice0,semitones);
+   synthFM_FM_pitchBend(_ctx.voice1,semitones);
+   synthFM_FM_pitchBend(_ctx.voice2,semitones);
+   synthFM_FM_pitchBend(_ctx.voice3,semitones);
 }
 
 typedef synthFM_Poly__ctx_type_0 synthFM_Poly_synthSetLoop_type;
@@ -1560,6 +1589,17 @@ static_inline void synthFM_Voice_synthSetSustain_init(synthFM_Voice__ctx_type_0 
 
 static_inline void synthFM_Voice_synthSetSustain(synthFM_Voice__ctx_type_0 &_ctx, uint8_t flag){
    synthFM_Poly_synthSetSustain(_ctx.poly,flag);
+};
+
+typedef synthFM_Voice__ctx_type_0 synthFM_Voice_synthPitchBend_type;
+
+static_inline void synthFM_Voice_synthPitchBend_init(synthFM_Voice__ctx_type_0 &_output_){
+   synthFM_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthFM_Voice_synthPitchBend(synthFM_Voice__ctx_type_0 &_ctx, fix16_t semitones){
+   synthFM_Poly_synthPitchBend(_ctx.poly,semitones);
 };
 
 typedef synthFM_Voice__ctx_type_0 synthFM_Voice_synthSetLoop_type;

@@ -70,6 +70,7 @@ void synthDrummerBbox_Drummer__ctx_type_0_init(synthDrummerBbox_Drummer__ctx_typ
    _ctx.fsRatio = 0x0 /* 0.000000 */;
    _ctx.fs = 0x0 /* 0.000000 */;
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_o);
+   _ctx.bend = 0x0 /* 0.000000 */;
    synthDrummerBbox_Drummer_default(_ctx);
    
    return ;
