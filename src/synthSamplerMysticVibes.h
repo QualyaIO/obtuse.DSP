@@ -149,6 +149,7 @@ typedef struct synthSamplerMysticVibes_Notes__ctx_type_0 {
    int notes[128];
    int nb_notes;
    int last_notes[128];
+   uint8_t allowDuplicates;
 } synthSamplerMysticVibes_Notes__ctx_type_0;
 
 typedef synthSamplerMysticVibes_Notes__ctx_type_0 synthSamplerMysticVibes_Notes_setPoly_type;
@@ -164,6 +165,28 @@ static_inline void synthSamplerMysticVibes_Notes_setPoly(synthSamplerMysticVibes
    _ctx.poly = flag;
 };
 
+typedef synthSamplerMysticVibes_Notes__ctx_type_0 synthSamplerMysticVibes_Notes_getPoly_type;
+
+static_inline void synthSamplerMysticVibes_Notes_getPoly_init(synthSamplerMysticVibes_Notes__ctx_type_0 &_output_){
+   synthSamplerMysticVibes_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSamplerMysticVibes_Notes_getPoly(synthSamplerMysticVibes_Notes__ctx_type_0 &_ctx){
+   return _ctx.poly;
+};
+
+typedef synthSamplerMysticVibes_Notes__ctx_type_0 synthSamplerMysticVibes_Notes_setAllowDuplicates_type;
+
+static_inline void synthSamplerMysticVibes_Notes_setAllowDuplicates_init(synthSamplerMysticVibes_Notes__ctx_type_0 &_output_){
+   synthSamplerMysticVibes_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerMysticVibes_Notes_setAllowDuplicates(synthSamplerMysticVibes_Notes__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.allowDuplicates = flag;
+};
+
 typedef synthSamplerMysticVibes_Notes__ctx_type_0 synthSamplerMysticVibes_Notes_default_type;
 
 static_inline void synthSamplerMysticVibes_Notes_default_init(synthSamplerMysticVibes_Notes__ctx_type_0 &_output_){
@@ -173,7 +196,8 @@ static_inline void synthSamplerMysticVibes_Notes_default_init(synthSamplerMystic
 
 static_inline void synthSamplerMysticVibes_Notes_default(synthSamplerMysticVibes_Notes__ctx_type_0 &_ctx){
    synthSamplerMysticVibes_Notes_setPoly(_ctx,false);
-};
+   synthSamplerMysticVibes_Notes_setAllowDuplicates(_ctx,false);
+}
 
 typedef synthSamplerMysticVibes_Notes__ctx_type_0 synthSamplerMysticVibes_Notes_nbNotes_type;
 
@@ -204,15 +228,6 @@ static_inline void synthSamplerMysticVibes_Notes_lastNote_init(synthSamplerMysti
 
 int synthSamplerMysticVibes_Notes_lastNote(synthSamplerMysticVibes_Notes__ctx_type_0 &_ctx);
 
-typedef synthSamplerMysticVibes_Notes__ctx_type_0 synthSamplerMysticVibes_Notes_noteOn_type;
-
-static_inline void synthSamplerMysticVibes_Notes_noteOn_init(synthSamplerMysticVibes_Notes__ctx_type_0 &_output_){
-   synthSamplerMysticVibes_Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-uint8_t synthSamplerMysticVibes_Notes_noteOn(synthSamplerMysticVibes_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
-
 typedef synthSamplerMysticVibes_Notes__ctx_type_0 synthSamplerMysticVibes_Notes_noteOff_type;
 
 static_inline void synthSamplerMysticVibes_Notes_noteOff_init(synthSamplerMysticVibes_Notes__ctx_type_0 &_output_){
@@ -222,12 +237,23 @@ static_inline void synthSamplerMysticVibes_Notes_noteOff_init(synthSamplerMystic
 
 uint8_t synthSamplerMysticVibes_Notes_noteOff(synthSamplerMysticVibes_Notes__ctx_type_0 &_ctx, int note, int channel);
 
+typedef synthSamplerMysticVibes_Notes__ctx_type_0 synthSamplerMysticVibes_Notes_noteOn_type;
+
+static_inline void synthSamplerMysticVibes_Notes_noteOn_init(synthSamplerMysticVibes_Notes__ctx_type_0 &_output_){
+   synthSamplerMysticVibes_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+uint8_t synthSamplerMysticVibes_Notes_noteOn(synthSamplerMysticVibes_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
+
 static_inline void synthSamplerMysticVibes_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
 
 void synthSamplerMysticVibes_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerMysticVibes_Sampler__ctx_type_0 {
+   uint8_t sustaining;
+   uint8_t sustain;
    fix16_t step;
    int state;
    int size;
@@ -408,6 +434,15 @@ static_inline void synthSamplerMysticVibes_Sampler_setLevel(synthSamplerMysticVi
    _ctx.level = newLevel;
 };
 
+typedef synthSamplerMysticVibes_Sampler__ctx_type_0 synthSamplerMysticVibes_Sampler_setSustain_type;
+
+static_inline void synthSamplerMysticVibes_Sampler_setSustain_init(synthSamplerMysticVibes_Sampler__ctx_type_0 &_output_){
+   synthSamplerMysticVibes_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthSamplerMysticVibes_Sampler_setSustain(synthSamplerMysticVibes_Sampler__ctx_type_0 &_ctx, uint8_t flag);
+
 typedef synthSamplerMysticVibes_Sampler__ctx_type_0 synthSamplerMysticVibes_Sampler_noteOn_type;
 
 static_inline void synthSamplerMysticVibes_Sampler_noteOn_init(synthSamplerMysticVibes_Sampler__ctx_type_0 &_output_){
@@ -415,7 +450,7 @@ static_inline void synthSamplerMysticVibes_Sampler_noteOn_init(synthSamplerMysti
    return ;
 }
 
-void synthSamplerMysticVibes_Sampler_noteOn(synthSamplerMysticVibes_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
+uint8_t synthSamplerMysticVibes_Sampler_noteOn(synthSamplerMysticVibes_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 typedef synthSamplerMysticVibes_Sampler__ctx_type_0 synthSamplerMysticVibes_Sampler_setPoly_type;
 
@@ -576,6 +611,20 @@ static_inline void synthSamplerMysticVibes_Poly_setSamplerate(synthSamplerMystic
    synthSamplerMysticVibes_Sampler_setSamplerate(_ctx.voice1,fs);
    synthSamplerMysticVibes_Sampler_setSamplerate(_ctx.voice2,fs);
    synthSamplerMysticVibes_Sampler_setSamplerate(_ctx.voice3,fs);
+}
+
+typedef synthSamplerMysticVibes_Poly__ctx_type_0 synthSamplerMysticVibes_Poly_synthSetSustain_type;
+
+static_inline void synthSamplerMysticVibes_Poly_synthSetSustain_init(synthSamplerMysticVibes_Poly__ctx_type_0 &_output_){
+   synthSamplerMysticVibes_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerMysticVibes_Poly_synthSetSustain(synthSamplerMysticVibes_Poly__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerMysticVibes_Sampler_setSustain(_ctx.voice0,flag);
+   synthSamplerMysticVibes_Sampler_setSustain(_ctx.voice1,flag);
+   synthSamplerMysticVibes_Sampler_setSustain(_ctx.voice2,flag);
+   synthSamplerMysticVibes_Sampler_setSustain(_ctx.voice3,flag);
 }
 
 typedef synthSamplerMysticVibes_Poly__ctx_type_0 synthSamplerMysticVibes_Poly_synthSetLoop_type;
@@ -844,6 +893,8 @@ typedef struct synthSamplerMysticVibes_Voice__ctx_type_0 {
    synthSamplerMysticVibes_Notes__ctx_type_0 voicesactive;
    fix16_t voices_ratio;
    int voices[4];
+   synthSamplerMysticVibes_Notes__ctx_type_0 voiceinsactive;
+   uint8_t reuse;
    synthSamplerMysticVibes_Poly__ctx_type_0 poly;
    int number_voices;
    int notes[128];
@@ -887,6 +938,17 @@ static_inline void synthSamplerMysticVibes_Voice_process_bufferTo_alt_init(synth
 }
 
 void synthSamplerMysticVibes_Voice_process_bufferTo_alt(synthSamplerMysticVibes_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
+
+typedef synthSamplerMysticVibes_Voice__ctx_type_0 synthSamplerMysticVibes_Voice_setReuse_type;
+
+static_inline void synthSamplerMysticVibes_Voice_setReuse_init(synthSamplerMysticVibes_Voice__ctx_type_0 &_output_){
+   synthSamplerMysticVibes_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerMysticVibes_Voice_setReuse(synthSamplerMysticVibes_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.reuse = flag;
+};
 
 typedef synthSamplerMysticVibes_Voice__ctx_type_0 synthSamplerMysticVibes_Voice_noteOff_type;
 
@@ -934,6 +996,17 @@ static_inline void synthSamplerMysticVibes_Voice_setSamplerate_init(synthSampler
 }
 
 void synthSamplerMysticVibes_Voice_setSamplerate(synthSamplerMysticVibes_Voice__ctx_type_0 &_ctx, fix16_t newFs);
+
+typedef synthSamplerMysticVibes_Voice__ctx_type_0 synthSamplerMysticVibes_Voice_synthSetSustain_type;
+
+static_inline void synthSamplerMysticVibes_Voice_synthSetSustain_init(synthSamplerMysticVibes_Voice__ctx_type_0 &_output_){
+   synthSamplerMysticVibes_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerMysticVibes_Voice_synthSetSustain(synthSamplerMysticVibes_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerMysticVibes_Poly_synthSetSustain(_ctx.poly,flag);
+};
 
 typedef synthSamplerMysticVibes_Voice__ctx_type_0 synthSamplerMysticVibes_Voice_synthSetLoop_type;
 

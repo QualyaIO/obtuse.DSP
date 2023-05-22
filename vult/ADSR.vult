@@ -61,12 +61,15 @@ and process(bgate:bool) {
    val scale = 1000.0;
    // ...faster to multiply by 1/1000...
    val scale_i = 0.001;
+   // can force to retrigger from outside, e.g. several note on
+   mem retrigger;
 
    // new gate, goto attack
-   if(Util.edge(bgate)) {
+   if(Util.edge(bgate) || retrigger) {
       state = 1;
       target = a_target * scale;
       step = a_step;
+      retrigger = false;
    }
 
    // idle, really nothing to do 
@@ -151,10 +154,11 @@ and process_bufferTo(bgate:bool, nb:int, oBuffer): bool {
    while (i < nb) {
 
       // new gate, goto attack
-      if(Util.edge(bgate)) {
+     if(Util.edge(bgate) || retrigger) {
          state = 1;
          target = a_target * scale;
          step = a_step;
+	 retrigger = false;
       }
 
       // idle, really nothing to do 
@@ -259,6 +263,11 @@ and config(newA, newD, newS, newR) {
    r =  clip(newR, 0.0, max_r);
    // so heavy computations
    _ = updateSteps();
+}
+
+// ask to retrigger upon next process
+and retrig() {
+  retrigger = true;
 }
 
 and default() @[init] {

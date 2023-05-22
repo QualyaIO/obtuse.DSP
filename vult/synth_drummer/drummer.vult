@@ -3,6 +3,7 @@
 // 12 slices, normal speed at C4-G5, then adjust each slice an octave up or down. Each new note replace immediately the previous one.
 
 // TODO: kill on noteOff
+// TODO: implement monophony mode similar to sampler?
 
 fun process() {
   // absolutely needs init to set that
@@ -153,9 +154,14 @@ and setLevel(newLevel: real) {
     level = newLevel;
 }
 
-// beginning of a note -- will effectively ignore duplicated noteOn for same note
-// we don't check velocity, yet
-and noteOn(note:int, velocity:int, channel:int){
+// No effect of sustain at the moment since there is no gate nor noteOff
+and setSustain(flag: bool) {
+}
+
+// beginning of a note
+// return true if was not playing, false otherwise
+and noteOn(note:int, velocity:int, channel:int): bool {
+  val isNew = slice < 0;
   // only 128 midi notes
   note = clip(note, 0, 127);
   // root note for the 12 slices: C4
@@ -175,6 +181,7 @@ and noteOn(note:int, velocity:int, channel:int){
   noteRatio = exp(log_two * octave);
   _ = updateStep();
   _ = setLevel(Util.velocityToLevel(velocity));
+  return isNew;
 }
 
 and noteOff(note:int, channel:int) {

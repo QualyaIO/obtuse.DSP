@@ -29,22 +29,26 @@ Interface
 Fixes
 
 - voice: buffer_alt with fixed 4 voices
-- better fix pop when a voice is stolen (e.g. take into account separately level and ADSR state?)
-- timeout for voices?
+- better fix pop when a voice is stolen (e.g. take into account separately level and ADSR state? wait for crossing 0?)
+- timeout for voices? (to take into account upon reuse)
 - OSC > 4096 can prevent modulation, adjust max phase depending on size to avoid hitting fixed float limit during computations
 - SVF: not compute while disabled while avoiding noise upon start
 - combFB (and those using): output not guaranteed to be kept within -1..1
 - gate: velocity and channel not kept
+- sampler: smoother transition upon retrigger
 
 Features
 
-- back to toubidou
+- sampler: add back to toubidou
 - velocity: not only linear? save for monophonic?
 - tremolo (e.g. at Voice level)
 - also folding for wavetable?
 - sampler: option for repeating samples, beyond looping
 - sampler, drummer: option to kill on note off?
 - clock: a version which handle time signature and different division for swing
+- gate: accommodate several noteOn (option to send duplicate noteOn ?)
+- synth: in case of monophonic option to retrigger for each note (already change velocity)?
+- synth: implement sostenuto pedal?
 
 Vult
 

@@ -8,6 +8,7 @@ void synthSamplerShootingStar_Notes__ctx_type_0_init(synthSamplerShootingStar_No
    int_init_array(128,0,_ctx.notes);
    _ctx.nb_notes = 0;
    int_init_array(128,0,_ctx.last_notes);
+   _ctx.allowDuplicates = false;
    synthSamplerShootingStar_Notes_default(_ctx);
    
    return ;
@@ -29,31 +30,6 @@ int synthSamplerShootingStar_Notes_lastNote(synthSamplerShootingStar_Notes__ctx_
       last_played = _ctx.last_notes[((-1) + _ctx.nb_notes)];
    }
    return last_played;
-}
-
-uint8_t synthSamplerShootingStar_Notes_noteOn(synthSamplerShootingStar_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel){
-   note = int_clip(note,0,127);
-   if(_ctx.notes[note] <= 0){
-      if(bool_not(_ctx.poly)){
-         _ctx.nb_notes = (1 + _ctx.nb_notes);
-         if(_ctx.nb_notes > 128){
-            _ctx.nb_notes = 128;
-         }
-      }
-      else
-      {
-         int last_note;
-         last_note = synthSamplerShootingStar_Notes_lastNote(_ctx);
-         if(last_note > 0){
-            _ctx.notes[((-1) + last_note)] = 0;
-         }
-         _ctx.nb_notes = 1;
-      }
-      _ctx.notes[note] = _ctx.nb_notes;
-      _ctx.last_notes[((-1) + _ctx.nb_notes)] = (1 + note);
-      return true;
-   }
-   return false;
 }
 
 uint8_t synthSamplerShootingStar_Notes_noteOff(synthSamplerShootingStar_Notes__ctx_type_0 &_ctx, int note, int channel){
@@ -91,6 +67,35 @@ uint8_t synthSamplerShootingStar_Notes_noteOff(synthSamplerShootingStar_Notes__c
    return false;
 }
 
+uint8_t synthSamplerShootingStar_Notes_noteOn(synthSamplerShootingStar_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel){
+   note = int_clip(note,0,127);
+   uint8_t isNew;
+   isNew = (_ctx.notes[note] <= 0);
+   if(_ctx.allowDuplicates || isNew){
+      if(bool_not(_ctx.poly)){
+         if(bool_not(isNew)){
+            synthSamplerShootingStar_Notes_noteOff(_ctx,note,channel);
+         }
+         _ctx.nb_notes = (1 + _ctx.nb_notes);
+         if(_ctx.nb_notes > 128){
+            _ctx.nb_notes = 128;
+         }
+      }
+      else
+      {
+         int last_note;
+         last_note = synthSamplerShootingStar_Notes_lastNote(_ctx);
+         if(last_note > 0){
+            _ctx.notes[((-1) + last_note)] = 0;
+         }
+         _ctx.nb_notes = 1;
+      }
+      _ctx.notes[note] = _ctx.nb_notes;
+      _ctx.last_notes[((-1) + _ctx.nb_notes)] = (1 + note);
+   }
+   return isNew;
+}
+
 void synthSamplerShootingStar_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
    int i;
    i = 0;
@@ -102,6 +107,8 @@ void synthSamplerShootingStar_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
 
 void synthSamplerShootingStar_Sampler__ctx_type_0_init(synthSamplerShootingStar_Sampler__ctx_type_0 &_output_){
    synthSamplerShootingStar_Sampler__ctx_type_0 &_ctx = _output_;
+   _ctx.sustaining = false;
+   _ctx.sustain = false;
    _ctx.step = 0x0 /* 0.000000 */;
    _ctx.state = 0;
    _ctx.size = 0;
@@ -144,7 +151,7 @@ fix16_t synthSamplerShootingStar_Sampler_process(synthSamplerShootingStar_Sample
       }
       else
       {
-         if((_ctx.state == 1) && _ctx.gate && _ctx.loopy && _ctx.crossfade && (idx >= (_ctx.loopE + (- (256 / 2)))) && (idx <= (_ctx.loopE + (256 / 2)))){
+         if((_ctx.state == 1) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && _ctx.crossfade && (idx >= (_ctx.loopE + (- (256 / 2)))) && (idx <= (_ctx.loopE + (256 / 2)))){
             _ctx.state = 2;
             idx = (idx + (- _ctx.loopE) + (256 / 2));
             _ctx.posBase = idx;
@@ -152,7 +159,7 @@ fix16_t synthSamplerShootingStar_Sampler_process(synthSamplerShootingStar_Sample
          }
          else
          {
-            if((_ctx.state == 1) && _ctx.gate && _ctx.loopy && (idx >= _ctx.loopE)){
+            if((_ctx.state == 1) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && (idx >= _ctx.loopE)){
                idx = (_ctx.loopS + idx + (- _ctx.loopE));
                _ctx.posBase = idx;
                _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
@@ -162,7 +169,7 @@ fix16_t synthSamplerShootingStar_Sampler_process(synthSamplerShootingStar_Sample
             idx = (_ctx.loopS + idx + (- (256 / 2)));
             _ctx.posBase = idx;
             _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
-            if(_ctx.gate){
+            if(_ctx.gate || _ctx.sustaining){
                _ctx.state = 1;
             }
             else
@@ -207,7 +214,7 @@ void synthSamplerShootingStar_Sampler_process_bufferTo(synthSamplerShootingStar_
          }
          else
          {
-            if((_ctx.state == 1) && _ctx.gate && _ctx.loopy && _ctx.crossfade && (idx >= (_ctx.loopE + (- (256 / 2)))) && (idx <= (_ctx.loopE + (256 / 2)))){
+            if((_ctx.state == 1) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && _ctx.crossfade && (idx >= (_ctx.loopE + (- (256 / 2)))) && (idx <= (_ctx.loopE + (256 / 2)))){
                _ctx.state = 2;
                idx = (idx + (- _ctx.loopE) + (256 / 2));
                _ctx.posBase = idx;
@@ -215,7 +222,7 @@ void synthSamplerShootingStar_Sampler_process_bufferTo(synthSamplerShootingStar_
             }
             else
             {
-               if((_ctx.state == 1) && _ctx.gate && _ctx.loopy && (idx >= _ctx.loopE)){
+               if((_ctx.state == 1) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && (idx >= _ctx.loopE)){
                   idx = (_ctx.loopS + idx + (- _ctx.loopE));
                   _ctx.posBase = idx;
                   _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
@@ -225,7 +232,7 @@ void synthSamplerShootingStar_Sampler_process_bufferTo(synthSamplerShootingStar_
                idx = (_ctx.loopS + idx + (- (256 / 2)));
                _ctx.posBase = idx;
                _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
-               if(_ctx.gate){
+               if(_ctx.gate || _ctx.sustaining){
                   _ctx.state = 1;
                }
                else
@@ -290,16 +297,30 @@ void synthSamplerShootingStar_Sampler_setNote(synthSamplerShootingStar_Sampler__
    synthSamplerShootingStar_Sampler_updateStep(_ctx);
 }
 
-void synthSamplerShootingStar_Sampler_noteOn(synthSamplerShootingStar_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel){
-   note = int_clip(note,0,127);
-   if(synthSamplerShootingStar_Notes_noteOn(_ctx.playingnotes,note,velocity,channel)){
-      synthSamplerShootingStar_Sampler_setNote(_ctx,note);
-      synthSamplerShootingStar_Sampler_setLevel(_ctx,synthSamplerShootingStar_Util_velocityToLevel(velocity));
-      _ctx.gate = true;
-      _ctx.posBase = 0;
-      _ctx.pos = 0x0 /* 0.000000 */;
-      _ctx.state = 1;
+void synthSamplerShootingStar_Sampler_setSustain(synthSamplerShootingStar_Sampler__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.sustain = flag;
+   if(_ctx.gate && _ctx.sustain){
+      _ctx.sustaining = true;
    }
+   if(bool_not(_ctx.sustain)){
+      _ctx.sustaining = false;
+   }
+}
+
+uint8_t synthSamplerShootingStar_Sampler_noteOn(synthSamplerShootingStar_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel){
+   note = int_clip(note,0,127);
+   uint8_t isNew;
+   isNew = synthSamplerShootingStar_Notes_noteOn(_ctx.playingnotes,note,velocity,channel);
+   synthSamplerShootingStar_Sampler_setNote(_ctx,note);
+   synthSamplerShootingStar_Sampler_setLevel(_ctx,synthSamplerShootingStar_Util_velocityToLevel(velocity));
+   _ctx.gate = true;
+   if(_ctx.sustain){
+      _ctx.sustaining = true;
+   }
+   _ctx.posBase = 0;
+   _ctx.pos = 0x0 /* 0.000000 */;
+   _ctx.state = 1;
+   return isNew;
 }
 
 void synthSamplerShootingStar_Sampler_noteOff(synthSamplerShootingStar_Sampler__ctx_type_0 &_ctx, int note, int channel){
@@ -341,6 +362,7 @@ void synthSamplerShootingStar_Sampler_default(synthSamplerShootingStar_Sampler__
    synthSamplerShootingStar_Sampler_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    synthSamplerShootingStar_Sampler_setNote(_ctx,69);
    synthSamplerShootingStar_Notes_default(_ctx.playingnotes);
+   synthSamplerShootingStar_Notes_setAllowDuplicates(_ctx.playingnotes,true);
    synthSamplerShootingStar_Sampler_setPoly(_ctx,false);
 }
 
@@ -393,6 +415,8 @@ void synthSamplerShootingStar_Voice__ctx_type_0_init(synthSamplerShootingStar_Vo
    synthSamplerShootingStar_Notes__ctx_type_0_init(_ctx.voicesactive);
    _ctx.voices_ratio = 0x0 /* 0.000000 */;
    int_init_array(4,0,_ctx.voices);
+   synthSamplerShootingStar_Notes__ctx_type_0_init(_ctx.voiceinsactive);
+   _ctx.reuse = false;
    synthSamplerShootingStar_Poly__ctx_type_0_init(_ctx.poly);
    _ctx.number_voices = 0;
    int_init_array(128,0,_ctx.notes);
@@ -530,8 +554,8 @@ void synthSamplerShootingStar_Voice_noteOff(synthSamplerShootingStar_Voice__ctx_
    if((v > 0) && (v <= 4)){
       if(synthSamplerShootingStar_Notes_noteOff(_ctx.voicesactive,((-1) + v),0)){
          synthSamplerShootingStar_Poly_sendNoteOff(_ctx.poly,((-1) + v),note,channel);
-         _ctx.notes[note] = 0;
-         _ctx.voices[((-1) + v)] = 0;
+         _ctx.notes[note] = (- v);
+         _ctx.voices[((-1) + v)] = (- (1 + note));
          if(v <= _ctx.number_voices){
             synthSamplerShootingStar_Notes_noteOn(_ctx.voicesinactive,((-1) + v),127,0);
          }
@@ -542,39 +566,66 @@ void synthSamplerShootingStar_Voice_noteOff(synthSamplerShootingStar_Voice__ctx_
 void synthSamplerShootingStar_Voice_noteOn(synthSamplerShootingStar_Voice__ctx_type_0 &_ctx, int note, int velocity, int channel){
    note = int_clip(note,0,127);
    velocity = int_clip(velocity,0,127);
-   if(_ctx.notes[note] <= 0){
-      int v;
-      v = synthSamplerShootingStar_Notes_firstNote(_ctx.voicesinactive);
-      if((v <= 0) || (v > _ctx.number_voices)){
-         int active_v;
-         active_v = synthSamplerShootingStar_Notes_firstNote(_ctx.voicesactive);
-         if(active_v > 0){
-            synthSamplerShootingStar_Voice_noteOff(_ctx,_ctx.voices[((-1) + active_v)],0);
+   int v;
+   v = _ctx.notes[note];
+   if((v > 0) && (v <= _ctx.number_voices)){
+      if(bool_not((synthSamplerShootingStar_Notes_noteOff(_ctx.voicesactive,((-1) + v),0) && synthSamplerShootingStar_Notes_noteOn(_ctx.voicesinactive,((-1) + v),127,0) && synthSamplerShootingStar_Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && synthSamplerShootingStar_Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)))){
+         _ctx.notes[note] = 0;
+         _ctx.voices[((-1) + v)] = 0;
+         v = 0;
+      }
+   }
+   else
+   {
+      if(_ctx.reuse && (v < 0) && ((- v) <= _ctx.number_voices) && (_ctx.voices[((-1) + (- v))] == (- (1 + note))) && (_ctx.notes[note] == v)){
+         v = (- v);
+         if(bool_not((synthSamplerShootingStar_Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && synthSamplerShootingStar_Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)))){
+            _ctx.notes[note] = 0;
+            _ctx.voices[((-1) + v)] = 0;
+            v = 0;
          }
       }
-      v = synthSamplerShootingStar_Notes_firstNote(_ctx.voicesinactive);
-      if((v > 0) && (v <= _ctx.number_voices)){
-         if(synthSamplerShootingStar_Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && synthSamplerShootingStar_Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)){
-            if(synthSamplerShootingStar_Poly_shouldLeftOvers(_ctx.poly)){
-               _ctx.leftovers = (_ctx.leftovers + _ctx.last_values[((-1) + v)]);
+      else
+      {
+         v = synthSamplerShootingStar_Notes_firstNote(_ctx.voicesinactive);
+         if((v <= 0) || (v > _ctx.number_voices)){
+            int active_v;
+            active_v = synthSamplerShootingStar_Notes_firstNote(_ctx.voicesactive);
+            if(active_v > 0){
+               synthSamplerShootingStar_Voice_noteOff(_ctx,_ctx.voices[((-1) + active_v)],0);
             }
-            else
-            {
-               int diff_velocity;
-               diff_velocity = (_ctx.last_velocities[((-1) + v)] + (- velocity));
-               fix16_t diff_level;
-               diff_level = 0x0 /* 0.000000 */;
-               if(diff_velocity > 0){
-                  diff_level = fix_mul(0x204 /* 0.007874 */,int_to_fix(diff_velocity));
-               }
-               _ctx.leftovers = (_ctx.leftovers + fix_mul(diff_level,_ctx.last_values[((-1) + v)]));
+         }
+         v = synthSamplerShootingStar_Notes_firstNote(_ctx.voicesinactive);
+         if((v > 0) && (v <= _ctx.number_voices)){
+            if(bool_not((synthSamplerShootingStar_Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && synthSamplerShootingStar_Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)))){
+               v = 0;
             }
-            synthSamplerShootingStar_Poly_sendNoteOn(_ctx.poly,((-1) + v),note,velocity,channel);
-            _ctx.notes[note] = v;
-            _ctx.voices[((-1) + v)] = note;
-            _ctx.last_velocities[((-1) + v)] = velocity;
+         }
+         else
+         {
+            v = 0;
          }
       }
+   }
+   if(v > 0){
+      if(synthSamplerShootingStar_Poly_shouldLeftOvers(_ctx.poly)){
+         _ctx.leftovers = (_ctx.leftovers + _ctx.last_values[((-1) + v)]);
+      }
+      else
+      {
+         int diff_velocity;
+         diff_velocity = (_ctx.last_velocities[((-1) + v)] + (- velocity));
+         fix16_t diff_level;
+         diff_level = 0x0 /* 0.000000 */;
+         if(diff_velocity > 0){
+            diff_level = fix_mul(0x204 /* 0.007874 */,int_to_fix(diff_velocity));
+         }
+         _ctx.leftovers = (_ctx.leftovers + fix_mul(diff_level,_ctx.last_values[((-1) + v)]));
+      }
+      synthSamplerShootingStar_Poly_sendNoteOn(_ctx.poly,((-1) + v),note,velocity,channel);
+      _ctx.notes[note] = v;
+      _ctx.voices[((-1) + v)] = note;
+      _ctx.last_velocities[((-1) + v)] = velocity;
    }
 }
 
@@ -629,10 +680,13 @@ void synthSamplerShootingStar_Voice_default(synthSamplerShootingStar_Voice__ctx_
    synthSamplerShootingStar_Voice_setNbVoices(_ctx,_ctx.number_voices);
    synthSamplerShootingStar_Notes_default(_ctx.voicesactive);
    synthSamplerShootingStar_Notes_setPoly(_ctx.voicesactive,false);
+   synthSamplerShootingStar_Notes_setAllowDuplicates(_ctx.voicesactive,false);
    synthSamplerShootingStar_Notes_default(_ctx.voicesinactive);
    synthSamplerShootingStar_Notes_setPoly(_ctx.voicesinactive,false);
+   synthSamplerShootingStar_Notes_setAllowDuplicates(_ctx.voiceinsactive,false);
    synthSamplerShootingStar_Voice_setNormalize(_ctx,true);
    synthSamplerShootingStar_Voice_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
+   synthSamplerShootingStar_Voice_setReuse(_ctx,false);
 }
 
 void synthSamplerShootingStar_Voice__ctx_type_1_init(synthSamplerShootingStar_Voice__ctx_type_1 &_output_){

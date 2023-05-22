@@ -35,11 +35,11 @@ int utils_Gate_compareTimeFract(int time1S, fix16_t time1Fract, int time2S, fix1
 }
 
 void utils_Gate__ctx_type_1_init(utils_Gate__ctx_type_1 &_output_){
-   utils_Gate__ctx_type_1 _ctx;
+   utils_Gate__ctx_type_1 &_ctx = _output_;
    int_init_array(128,0,_ctx.values);
    _ctx.e = 0;
    _ctx.b = 0;
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -104,7 +104,7 @@ int utils_Gate_search(utils_Gate__ctx_type_1 &_ctx, int value){
 }
 
 void utils_Gate__ctx_type_2_init(utils_Gate__ctx_type_2 &_output_){
-   utils_Gate__ctx_type_2 _ctx;
+   utils_Gate__ctx_type_2 &_ctx = _output_;
    _ctx.timeS = 0;
    _ctx.timeFract = 0x0 /* 0.000000 */;
    int_init_array(128,0,_ctx.notesS);
@@ -114,7 +114,7 @@ void utils_Gate__ctx_type_2_init(utils_Gate__ctx_type_2 &_output_){
    utils_Gate__ctx_type_1_init(_ctx.notesActive);
    _ctx.gateDuration = 0x0 /* 0.000000 */;
    utils_Gate_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -631,7 +631,7 @@ void utils_Tonnetz_getChordInversion(int chord, int inversion, int (&_output_)[3
 }
 
 void utils_Tonnetz__ctx_type_8_init(utils_Tonnetz__ctx_type_8 &_output_){
-   utils_Tonnetz__ctx_type_8 _ctx;
+   utils_Tonnetz__ctx_type_8 &_ctx = _output_;
    int_init_array(11,0,_ctx.shifts);
    _ctx.shift = 0;
    _ctx.scaleId = 0;
@@ -647,7 +647,7 @@ void utils_Tonnetz__ctx_type_8_init(utils_Tonnetz__ctx_type_8 &_output_){
    _ctx.chordSpread = 0x0 /* 0.000000 */;
    _ctx.chord = 0;
    utils_Tonnetz_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -996,7 +996,7 @@ void utils_Tonnetz_default(utils_Tonnetz__ctx_type_8 &_ctx){
 }
 
 void utils_Arp__ctx_type_0_init(utils_Arp__ctx_type_0 &_output_){
-   utils_Arp__ctx_type_0 _ctx;
+   utils_Arp__ctx_type_0 &_ctx = _output_;
    _ctx.step = 0;
    _ctx.sequenceSize = 0;
    int_init_array(32,0,_ctx.sequence);
@@ -1007,7 +1007,7 @@ void utils_Arp__ctx_type_0_init(utils_Arp__ctx_type_0 &_output_){
    _ctx.nbNotes = 0;
    _ctx.mode = 0;
    _ctx.dirty = false;
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -1145,7 +1145,7 @@ void utils_Arp_setPRandomNotes(utils_Arp__ctx_type_0 &_ctx, fix16_t p){
 }
 
 void utils_Trigg__ctx_type_0_init(utils_Trigg__ctx_type_0 &_output_){
-   utils_Trigg__ctx_type_0 _ctx;
+   utils_Trigg__ctx_type_0 &_ctx = _output_;
    bool_init_array(128,false,_ctx.triggers);
    _ctx.ticks = 0;
    _ctx.shift = 0;
@@ -1161,7 +1161,7 @@ void utils_Trigg__ctx_type_0_init(utils_Trigg__ctx_type_0 &_output_){
    _ctx.density = 0x0 /* 0.000000 */;
    _ctx.balance = 0x0 /* 0.000000 */;
    utils_Trigg_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 
@@ -1401,7 +1401,7 @@ int utils_Clock_compareTimeFract(int time1S, fix16_t time1Fract, int time2S, fix
 }
 
 void utils_Clock__ctx_type_7_init(utils_Clock__ctx_type_7 &_output_){
-   utils_Clock__ctx_type_7 _ctx;
+   utils_Clock__ctx_type_7 &_ctx = _output_;
    _ctx.timeS = 0;
    _ctx.timeFract = 0x0 /* 0.000000 */;
    _ctx.ticks = 0;
@@ -1423,7 +1423,7 @@ void utils_Clock__ctx_type_7_init(utils_Clock__ctx_type_7 &_output_){
    _ctx.groupRatio = 0x0 /* 0.000000 */;
    _ctx.bpm = 0x0 /* 0.000000 */;
    utils_Clock_default(_ctx);
-   _output_ = _ctx;
+   
    return ;
 }
 

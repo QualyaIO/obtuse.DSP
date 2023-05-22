@@ -35,6 +35,10 @@ fun process(wavetable_modulator, wavetable_carrier) {
 
     //  current gate
     mem gate : bool;
+    // sustain pedal held or not
+    mem sustain: bool;
+    // there is actually something to sustain
+    mem sustaining: bool;
 
     n = n + 1;
     val update_env:bool = true;
@@ -46,8 +50,8 @@ fun process(wavetable_modulator, wavetable_carrier) {
     val carrier_val = 0.0;
     // retrieve envelopes -- both, to make sure that modulator gets updated
     if (update_env) {
-       carrier_env = carrieradsr:ADSR.process(gate) * level;
-       modulator_env = modulatoradsr:ADSR.process(gate);
+       carrier_env = carrieradsr:ADSR.process(gate || sustaining) * level;
+       modulator_env = modulatoradsr:ADSR.process(gate || sustaining);
     }
 
     // only going forward if we got sound on the output
@@ -133,8 +137,8 @@ and process_bufferTo(wavetable_modulator, wavetable_carrier, nb: int, oBuffer) {
       val nb_env = (n + nb) / env_decimation_factor;
       // retrieve envelopes
       if (nb_env > 0) {
-         env_carrier_idle = carrieradsr:ADSR.process_bufferTo(gate, nb_env, buffer_carrier_env_short);
-         env_modulator_idle = modulatoradsr:ADSR.process_bufferTo(gate, nb_env, buffer_modulator_env_short);
+         env_carrier_idle = carrieradsr:ADSR.process_bufferTo(gate || sustaining, nb_env, buffer_carrier_env_short);
+         env_modulator_idle = modulatoradsr:ADSR.process_bufferTo(gate || sustaining, nb_env, buffer_modulator_env_short);
 
          // expand carrier envelop and retrieve to full version
          // FIXME: we update both envelopes, but we could select if only one is active
@@ -155,8 +159,8 @@ and process_bufferTo(wavetable_modulator, wavetable_carrier, nb: int, oBuffer) {
       }
     } else {
        // no decimation, direct the whole buffer
-       env_carrier_idle = carrieradsr:ADSR.process_bufferTo(gate, nb, buffer_carrier_env);
-       env_modulator_idle = modulatoradsr:ADSR.process_bufferTo(gate, nb, buffer_modulator_env);
+       env_carrier_idle = carrieradsr:ADSR.process_bufferTo(gate || sustaining, nb, buffer_carrier_env);
+       env_modulator_idle = modulatoradsr:ADSR.process_bufferTo(gate || sustaining, nb, buffer_modulator_env);
     }
 
     // apply to carrier
@@ -268,35 +272,59 @@ and setFrequency(freq: real) {
 }
 
 // set polpyphonic (true flag) or monophonic (false flag)
-// monophonic: will get back to former notes, if any, upon note off
-// polyphonic: does try to get back to held notes frequencies
+// monophonic: will get back to former notes, if any, upon note off, and does not retriger upon new notes
+// polyphonic: does not try to get back to held notes frequencies, retrigger on each new noteOn
 and setPoly(flag: bool) {
    _ = playingnotes:Notes.setPoly(flag);
 }
 
 // midi-like interface
 
-// beginning of a note -- will effectively ignore duplicated noteOn for same note
-// we don't check velocity, yet
+// Hold gate even after note-off
+// Note: do call setSustain(off) at some point to release notes!
+and setSustain(flag: bool) {
+  sustain = flag;
+  // activate sustain if there is already a gate
+  if (gate && sustain) {
+    sustaining = true;
+  }
+  // disable upon release
+  if (not(sustain)) {
+    sustaining = false;
+  }
+}
+
+// beginning of a note, retrigger each time in case of polyphony
+// return true if was not playing this note, false otherwise
 and noteOn(note:int, velocity:int, channel:int){
    // only 128 midi notes
    note = clip(note, 0, 127);
-   // only acts if action taken into account
-   if (playingnotes:Notes.noteOn(note, velocity, channel)) {
-       // set frequency... should we reset phase somehow? artifacts upon first tests
-       _ = setFrequency(Util.noteToFrequency(note));
-       _ = setLevel(Util.velocityToLevel(velocity));
-       // gate, no mater what
-       gate = true;
+   // check if the new note is new
+   val isNew = playingnotes:Notes.noteOn(note, velocity, channel);
+   // set frequency... should we reset phase somehow? artifacts upon first tests
+   _ = setFrequency(Util.noteToFrequency(note));
+   _ = setLevel(Util.velocityToLevel(velocity));
+   // gate, no mater what
+   gate = true;
+   // update status with sustain pedal
+   if (sustain) {
+     sustaining = true;
    }
+   // retrigger if we play the same note or if there is only one note playing (e.g. voice was stolen during polyphony)
+   if (playingnotes:Notes.getPoly()) {
+     _ = carrieradsr:ADSR.retrig();
+     _ = modulatoradsr:ADSR.retrig();
+   }
+   return isNew;
 }
+
 // note off whatever the channel, back to frequency of last still active note if any
 and noteOff(note:int, channel:int) {
    // only 128 midi notes
    note = clip(note, 0, 127);
    // only acts if action taken into account
    if (playingnotes:Notes.noteOff(note, channel)) {
-      // still gate on-going if there are note held, and switch to last
+      // still gate on-going if there are note held, and switch to last (should happen only for monophony)
       if (playingnotes:Notes.nbNotes() > 0){
          val last_played = playingnotes:Notes.lastNote();
 	 // check we do have a note -- and that it's in range
@@ -353,8 +381,9 @@ and default() @[init] {
     // sarting with LA
     _ = setFrequency(0.440);
 
-    // monophonic by default
+    // monophonic by default, we allow retrigger
     _ = playingnotes:Notes.default();
+    _ = playingnotes:Notes.setAllowDuplicates(true);
     _ = setPoly(false);
 }
 

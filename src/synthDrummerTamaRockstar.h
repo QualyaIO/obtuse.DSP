@@ -235,6 +235,16 @@ static_inline void synthDrummerTamaRockstar_Drummer_setLevel(synthDrummerTamaRoc
    _ctx.level = newLevel;
 };
 
+typedef synthDrummerTamaRockstar_Drummer__ctx_type_0 synthDrummerTamaRockstar_Drummer_setSustain_type;
+
+static_inline void synthDrummerTamaRockstar_Drummer_setSustain_init(synthDrummerTamaRockstar_Drummer__ctx_type_0 &_output_){
+   synthDrummerTamaRockstar_Drummer__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummerTamaRockstar_Drummer_setSustain(synthDrummerTamaRockstar_Drummer__ctx_type_0 &_ctx, uint8_t flag){
+}
+
 typedef synthDrummerTamaRockstar_Drummer__ctx_type_0 synthDrummerTamaRockstar_Drummer_noteOn_type;
 
 static_inline void synthDrummerTamaRockstar_Drummer_noteOn_init(synthDrummerTamaRockstar_Drummer__ctx_type_0 &_output_){
@@ -242,7 +252,7 @@ static_inline void synthDrummerTamaRockstar_Drummer_noteOn_init(synthDrummerTama
    return ;
 }
 
-void synthDrummerTamaRockstar_Drummer_noteOn(synthDrummerTamaRockstar_Drummer__ctx_type_0 &_ctx, int note, int velocity, int channel);
+uint8_t synthDrummerTamaRockstar_Drummer_noteOn(synthDrummerTamaRockstar_Drummer__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 typedef synthDrummerTamaRockstar_Drummer__ctx_type_0 synthDrummerTamaRockstar_Drummer_noteOff_type;
 
@@ -393,6 +403,20 @@ static_inline void synthDrummerTamaRockstar_Poly_setSamplerate(synthDrummerTamaR
    synthDrummerTamaRockstar_Drummer_setSamplerate(_ctx.voice1,fs);
    synthDrummerTamaRockstar_Drummer_setSamplerate(_ctx.voice2,fs);
    synthDrummerTamaRockstar_Drummer_setSamplerate(_ctx.voice3,fs);
+}
+
+typedef synthDrummerTamaRockstar_Poly__ctx_type_0 synthDrummerTamaRockstar_Poly_synthSetSustain_type;
+
+static_inline void synthDrummerTamaRockstar_Poly_synthSetSustain_init(synthDrummerTamaRockstar_Poly__ctx_type_0 &_output_){
+   synthDrummerTamaRockstar_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummerTamaRockstar_Poly_synthSetSustain(synthDrummerTamaRockstar_Poly__ctx_type_0 &_ctx, uint8_t flag){
+   synthDrummerTamaRockstar_Drummer_setSustain(_ctx.voice0,flag);
+   synthDrummerTamaRockstar_Drummer_setSustain(_ctx.voice1,flag);
+   synthDrummerTamaRockstar_Drummer_setSustain(_ctx.voice2,flag);
+   synthDrummerTamaRockstar_Drummer_setSustain(_ctx.voice3,flag);
 }
 
 typedef synthDrummerTamaRockstar_Poly__ctx_type_0 synthDrummerTamaRockstar_Poly_synthSetLoop_type;
@@ -649,6 +673,7 @@ typedef struct synthDrummerTamaRockstar_Notes__ctx_type_0 {
    int notes[128];
    int nb_notes;
    int last_notes[128];
+   uint8_t allowDuplicates;
 } synthDrummerTamaRockstar_Notes__ctx_type_0;
 
 typedef synthDrummerTamaRockstar_Notes__ctx_type_0 synthDrummerTamaRockstar_Notes_setPoly_type;
@@ -664,6 +689,28 @@ static_inline void synthDrummerTamaRockstar_Notes_setPoly(synthDrummerTamaRockst
    _ctx.poly = flag;
 };
 
+typedef synthDrummerTamaRockstar_Notes__ctx_type_0 synthDrummerTamaRockstar_Notes_getPoly_type;
+
+static_inline void synthDrummerTamaRockstar_Notes_getPoly_init(synthDrummerTamaRockstar_Notes__ctx_type_0 &_output_){
+   synthDrummerTamaRockstar_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthDrummerTamaRockstar_Notes_getPoly(synthDrummerTamaRockstar_Notes__ctx_type_0 &_ctx){
+   return _ctx.poly;
+};
+
+typedef synthDrummerTamaRockstar_Notes__ctx_type_0 synthDrummerTamaRockstar_Notes_setAllowDuplicates_type;
+
+static_inline void synthDrummerTamaRockstar_Notes_setAllowDuplicates_init(synthDrummerTamaRockstar_Notes__ctx_type_0 &_output_){
+   synthDrummerTamaRockstar_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummerTamaRockstar_Notes_setAllowDuplicates(synthDrummerTamaRockstar_Notes__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.allowDuplicates = flag;
+};
+
 typedef synthDrummerTamaRockstar_Notes__ctx_type_0 synthDrummerTamaRockstar_Notes_default_type;
 
 static_inline void synthDrummerTamaRockstar_Notes_default_init(synthDrummerTamaRockstar_Notes__ctx_type_0 &_output_){
@@ -673,7 +720,8 @@ static_inline void synthDrummerTamaRockstar_Notes_default_init(synthDrummerTamaR
 
 static_inline void synthDrummerTamaRockstar_Notes_default(synthDrummerTamaRockstar_Notes__ctx_type_0 &_ctx){
    synthDrummerTamaRockstar_Notes_setPoly(_ctx,false);
-};
+   synthDrummerTamaRockstar_Notes_setAllowDuplicates(_ctx,false);
+}
 
 typedef synthDrummerTamaRockstar_Notes__ctx_type_0 synthDrummerTamaRockstar_Notes_nbNotes_type;
 
@@ -704,15 +752,6 @@ static_inline void synthDrummerTamaRockstar_Notes_lastNote_init(synthDrummerTama
 
 int synthDrummerTamaRockstar_Notes_lastNote(synthDrummerTamaRockstar_Notes__ctx_type_0 &_ctx);
 
-typedef synthDrummerTamaRockstar_Notes__ctx_type_0 synthDrummerTamaRockstar_Notes_noteOn_type;
-
-static_inline void synthDrummerTamaRockstar_Notes_noteOn_init(synthDrummerTamaRockstar_Notes__ctx_type_0 &_output_){
-   synthDrummerTamaRockstar_Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-uint8_t synthDrummerTamaRockstar_Notes_noteOn(synthDrummerTamaRockstar_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
-
 typedef synthDrummerTamaRockstar_Notes__ctx_type_0 synthDrummerTamaRockstar_Notes_noteOff_type;
 
 static_inline void synthDrummerTamaRockstar_Notes_noteOff_init(synthDrummerTamaRockstar_Notes__ctx_type_0 &_output_){
@@ -722,11 +761,22 @@ static_inline void synthDrummerTamaRockstar_Notes_noteOff_init(synthDrummerTamaR
 
 uint8_t synthDrummerTamaRockstar_Notes_noteOff(synthDrummerTamaRockstar_Notes__ctx_type_0 &_ctx, int note, int channel);
 
+typedef synthDrummerTamaRockstar_Notes__ctx_type_0 synthDrummerTamaRockstar_Notes_noteOn_type;
+
+static_inline void synthDrummerTamaRockstar_Notes_noteOn_init(synthDrummerTamaRockstar_Notes__ctx_type_0 &_output_){
+   synthDrummerTamaRockstar_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+uint8_t synthDrummerTamaRockstar_Notes_noteOn(synthDrummerTamaRockstar_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
+
 typedef struct synthDrummerTamaRockstar_Voice__ctx_type_0 {
    synthDrummerTamaRockstar_Notes__ctx_type_0 voicesinactive;
    synthDrummerTamaRockstar_Notes__ctx_type_0 voicesactive;
    fix16_t voices_ratio;
    int voices[4];
+   synthDrummerTamaRockstar_Notes__ctx_type_0 voiceinsactive;
+   uint8_t reuse;
    synthDrummerTamaRockstar_Poly__ctx_type_0 poly;
    int number_voices;
    int notes[128];
@@ -770,6 +820,17 @@ static_inline void synthDrummerTamaRockstar_Voice_process_bufferTo_alt_init(synt
 }
 
 void synthDrummerTamaRockstar_Voice_process_bufferTo_alt(synthDrummerTamaRockstar_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
+
+typedef synthDrummerTamaRockstar_Voice__ctx_type_0 synthDrummerTamaRockstar_Voice_setReuse_type;
+
+static_inline void synthDrummerTamaRockstar_Voice_setReuse_init(synthDrummerTamaRockstar_Voice__ctx_type_0 &_output_){
+   synthDrummerTamaRockstar_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummerTamaRockstar_Voice_setReuse(synthDrummerTamaRockstar_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.reuse = flag;
+};
 
 typedef synthDrummerTamaRockstar_Voice__ctx_type_0 synthDrummerTamaRockstar_Voice_noteOff_type;
 
@@ -817,6 +878,17 @@ static_inline void synthDrummerTamaRockstar_Voice_setSamplerate_init(synthDrumme
 }
 
 void synthDrummerTamaRockstar_Voice_setSamplerate(synthDrummerTamaRockstar_Voice__ctx_type_0 &_ctx, fix16_t newFs);
+
+typedef synthDrummerTamaRockstar_Voice__ctx_type_0 synthDrummerTamaRockstar_Voice_synthSetSustain_type;
+
+static_inline void synthDrummerTamaRockstar_Voice_synthSetSustain_init(synthDrummerTamaRockstar_Voice__ctx_type_0 &_output_){
+   synthDrummerTamaRockstar_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummerTamaRockstar_Voice_synthSetSustain(synthDrummerTamaRockstar_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   synthDrummerTamaRockstar_Poly_synthSetSustain(_ctx.poly,flag);
+};
 
 typedef synthDrummerTamaRockstar_Voice__ctx_type_0 synthDrummerTamaRockstar_Voice_synthSetLoop_type;
 

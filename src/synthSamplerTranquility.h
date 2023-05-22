@@ -149,6 +149,7 @@ typedef struct synthSamplerTranquility_Notes__ctx_type_0 {
    int notes[128];
    int nb_notes;
    int last_notes[128];
+   uint8_t allowDuplicates;
 } synthSamplerTranquility_Notes__ctx_type_0;
 
 typedef synthSamplerTranquility_Notes__ctx_type_0 synthSamplerTranquility_Notes_setPoly_type;
@@ -164,6 +165,28 @@ static_inline void synthSamplerTranquility_Notes_setPoly(synthSamplerTranquility
    _ctx.poly = flag;
 };
 
+typedef synthSamplerTranquility_Notes__ctx_type_0 synthSamplerTranquility_Notes_getPoly_type;
+
+static_inline void synthSamplerTranquility_Notes_getPoly_init(synthSamplerTranquility_Notes__ctx_type_0 &_output_){
+   synthSamplerTranquility_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSamplerTranquility_Notes_getPoly(synthSamplerTranquility_Notes__ctx_type_0 &_ctx){
+   return _ctx.poly;
+};
+
+typedef synthSamplerTranquility_Notes__ctx_type_0 synthSamplerTranquility_Notes_setAllowDuplicates_type;
+
+static_inline void synthSamplerTranquility_Notes_setAllowDuplicates_init(synthSamplerTranquility_Notes__ctx_type_0 &_output_){
+   synthSamplerTranquility_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerTranquility_Notes_setAllowDuplicates(synthSamplerTranquility_Notes__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.allowDuplicates = flag;
+};
+
 typedef synthSamplerTranquility_Notes__ctx_type_0 synthSamplerTranquility_Notes_default_type;
 
 static_inline void synthSamplerTranquility_Notes_default_init(synthSamplerTranquility_Notes__ctx_type_0 &_output_){
@@ -173,7 +196,8 @@ static_inline void synthSamplerTranquility_Notes_default_init(synthSamplerTranqu
 
 static_inline void synthSamplerTranquility_Notes_default(synthSamplerTranquility_Notes__ctx_type_0 &_ctx){
    synthSamplerTranquility_Notes_setPoly(_ctx,false);
-};
+   synthSamplerTranquility_Notes_setAllowDuplicates(_ctx,false);
+}
 
 typedef synthSamplerTranquility_Notes__ctx_type_0 synthSamplerTranquility_Notes_nbNotes_type;
 
@@ -204,15 +228,6 @@ static_inline void synthSamplerTranquility_Notes_lastNote_init(synthSamplerTranq
 
 int synthSamplerTranquility_Notes_lastNote(synthSamplerTranquility_Notes__ctx_type_0 &_ctx);
 
-typedef synthSamplerTranquility_Notes__ctx_type_0 synthSamplerTranquility_Notes_noteOn_type;
-
-static_inline void synthSamplerTranquility_Notes_noteOn_init(synthSamplerTranquility_Notes__ctx_type_0 &_output_){
-   synthSamplerTranquility_Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-uint8_t synthSamplerTranquility_Notes_noteOn(synthSamplerTranquility_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
-
 typedef synthSamplerTranquility_Notes__ctx_type_0 synthSamplerTranquility_Notes_noteOff_type;
 
 static_inline void synthSamplerTranquility_Notes_noteOff_init(synthSamplerTranquility_Notes__ctx_type_0 &_output_){
@@ -222,12 +237,23 @@ static_inline void synthSamplerTranquility_Notes_noteOff_init(synthSamplerTranqu
 
 uint8_t synthSamplerTranquility_Notes_noteOff(synthSamplerTranquility_Notes__ctx_type_0 &_ctx, int note, int channel);
 
+typedef synthSamplerTranquility_Notes__ctx_type_0 synthSamplerTranquility_Notes_noteOn_type;
+
+static_inline void synthSamplerTranquility_Notes_noteOn_init(synthSamplerTranquility_Notes__ctx_type_0 &_output_){
+   synthSamplerTranquility_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+uint8_t synthSamplerTranquility_Notes_noteOn(synthSamplerTranquility_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
+
 static_inline void synthSamplerTranquility_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
 
 void synthSamplerTranquility_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerTranquility_Sampler__ctx_type_0 {
+   uint8_t sustaining;
+   uint8_t sustain;
    fix16_t step;
    int state;
    int size;
@@ -408,6 +434,15 @@ static_inline void synthSamplerTranquility_Sampler_setLevel(synthSamplerTranquil
    _ctx.level = newLevel;
 };
 
+typedef synthSamplerTranquility_Sampler__ctx_type_0 synthSamplerTranquility_Sampler_setSustain_type;
+
+static_inline void synthSamplerTranquility_Sampler_setSustain_init(synthSamplerTranquility_Sampler__ctx_type_0 &_output_){
+   synthSamplerTranquility_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthSamplerTranquility_Sampler_setSustain(synthSamplerTranquility_Sampler__ctx_type_0 &_ctx, uint8_t flag);
+
 typedef synthSamplerTranquility_Sampler__ctx_type_0 synthSamplerTranquility_Sampler_noteOn_type;
 
 static_inline void synthSamplerTranquility_Sampler_noteOn_init(synthSamplerTranquility_Sampler__ctx_type_0 &_output_){
@@ -415,7 +450,7 @@ static_inline void synthSamplerTranquility_Sampler_noteOn_init(synthSamplerTranq
    return ;
 }
 
-void synthSamplerTranquility_Sampler_noteOn(synthSamplerTranquility_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
+uint8_t synthSamplerTranquility_Sampler_noteOn(synthSamplerTranquility_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 typedef synthSamplerTranquility_Sampler__ctx_type_0 synthSamplerTranquility_Sampler_setPoly_type;
 
@@ -576,6 +611,20 @@ static_inline void synthSamplerTranquility_Poly_setSamplerate(synthSamplerTranqu
    synthSamplerTranquility_Sampler_setSamplerate(_ctx.voice1,fs);
    synthSamplerTranquility_Sampler_setSamplerate(_ctx.voice2,fs);
    synthSamplerTranquility_Sampler_setSamplerate(_ctx.voice3,fs);
+}
+
+typedef synthSamplerTranquility_Poly__ctx_type_0 synthSamplerTranquility_Poly_synthSetSustain_type;
+
+static_inline void synthSamplerTranquility_Poly_synthSetSustain_init(synthSamplerTranquility_Poly__ctx_type_0 &_output_){
+   synthSamplerTranquility_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerTranquility_Poly_synthSetSustain(synthSamplerTranquility_Poly__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerTranquility_Sampler_setSustain(_ctx.voice0,flag);
+   synthSamplerTranquility_Sampler_setSustain(_ctx.voice1,flag);
+   synthSamplerTranquility_Sampler_setSustain(_ctx.voice2,flag);
+   synthSamplerTranquility_Sampler_setSustain(_ctx.voice3,flag);
 }
 
 typedef synthSamplerTranquility_Poly__ctx_type_0 synthSamplerTranquility_Poly_synthSetLoop_type;
@@ -844,6 +893,8 @@ typedef struct synthSamplerTranquility_Voice__ctx_type_0 {
    synthSamplerTranquility_Notes__ctx_type_0 voicesactive;
    fix16_t voices_ratio;
    int voices[4];
+   synthSamplerTranquility_Notes__ctx_type_0 voiceinsactive;
+   uint8_t reuse;
    synthSamplerTranquility_Poly__ctx_type_0 poly;
    int number_voices;
    int notes[128];
@@ -887,6 +938,17 @@ static_inline void synthSamplerTranquility_Voice_process_bufferTo_alt_init(synth
 }
 
 void synthSamplerTranquility_Voice_process_bufferTo_alt(synthSamplerTranquility_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
+
+typedef synthSamplerTranquility_Voice__ctx_type_0 synthSamplerTranquility_Voice_setReuse_type;
+
+static_inline void synthSamplerTranquility_Voice_setReuse_init(synthSamplerTranquility_Voice__ctx_type_0 &_output_){
+   synthSamplerTranquility_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerTranquility_Voice_setReuse(synthSamplerTranquility_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.reuse = flag;
+};
 
 typedef synthSamplerTranquility_Voice__ctx_type_0 synthSamplerTranquility_Voice_noteOff_type;
 
@@ -934,6 +996,17 @@ static_inline void synthSamplerTranquility_Voice_setSamplerate_init(synthSampler
 }
 
 void synthSamplerTranquility_Voice_setSamplerate(synthSamplerTranquility_Voice__ctx_type_0 &_ctx, fix16_t newFs);
+
+typedef synthSamplerTranquility_Voice__ctx_type_0 synthSamplerTranquility_Voice_synthSetSustain_type;
+
+static_inline void synthSamplerTranquility_Voice_synthSetSustain_init(synthSamplerTranquility_Voice__ctx_type_0 &_output_){
+   synthSamplerTranquility_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerTranquility_Voice_synthSetSustain(synthSamplerTranquility_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerTranquility_Poly_synthSetSustain(_ctx.poly,flag);
+};
 
 typedef synthSamplerTranquility_Voice__ctx_type_0 synthSamplerTranquility_Voice_synthSetLoop_type;
 

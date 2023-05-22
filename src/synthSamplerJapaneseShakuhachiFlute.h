@@ -149,6 +149,7 @@ typedef struct synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 {
    int notes[128];
    int nb_notes;
    int last_notes[128];
+   uint8_t allowDuplicates;
 } synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0;
 
 typedef synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 synthSamplerJapaneseShakuhachiFlute_Notes_setPoly_type;
@@ -164,6 +165,28 @@ static_inline void synthSamplerJapaneseShakuhachiFlute_Notes_setPoly(synthSample
    _ctx.poly = flag;
 };
 
+typedef synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 synthSamplerJapaneseShakuhachiFlute_Notes_getPoly_type;
+
+static_inline void synthSamplerJapaneseShakuhachiFlute_Notes_getPoly_init(synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 &_output_){
+   synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline uint8_t synthSamplerJapaneseShakuhachiFlute_Notes_getPoly(synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 &_ctx){
+   return _ctx.poly;
+};
+
+typedef synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 synthSamplerJapaneseShakuhachiFlute_Notes_setAllowDuplicates_type;
+
+static_inline void synthSamplerJapaneseShakuhachiFlute_Notes_setAllowDuplicates_init(synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 &_output_){
+   synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerJapaneseShakuhachiFlute_Notes_setAllowDuplicates(synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.allowDuplicates = flag;
+};
+
 typedef synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 synthSamplerJapaneseShakuhachiFlute_Notes_default_type;
 
 static_inline void synthSamplerJapaneseShakuhachiFlute_Notes_default_init(synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 &_output_){
@@ -173,7 +196,8 @@ static_inline void synthSamplerJapaneseShakuhachiFlute_Notes_default_init(synthS
 
 static_inline void synthSamplerJapaneseShakuhachiFlute_Notes_default(synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 &_ctx){
    synthSamplerJapaneseShakuhachiFlute_Notes_setPoly(_ctx,false);
-};
+   synthSamplerJapaneseShakuhachiFlute_Notes_setAllowDuplicates(_ctx,false);
+}
 
 typedef synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 synthSamplerJapaneseShakuhachiFlute_Notes_nbNotes_type;
 
@@ -204,15 +228,6 @@ static_inline void synthSamplerJapaneseShakuhachiFlute_Notes_lastNote_init(synth
 
 int synthSamplerJapaneseShakuhachiFlute_Notes_lastNote(synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 &_ctx);
 
-typedef synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 synthSamplerJapaneseShakuhachiFlute_Notes_noteOn_type;
-
-static_inline void synthSamplerJapaneseShakuhachiFlute_Notes_noteOn_init(synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 &_output_){
-   synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0_init(_output_);
-   return ;
-}
-
-uint8_t synthSamplerJapaneseShakuhachiFlute_Notes_noteOn(synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
-
 typedef synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 synthSamplerJapaneseShakuhachiFlute_Notes_noteOff_type;
 
 static_inline void synthSamplerJapaneseShakuhachiFlute_Notes_noteOff_init(synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 &_output_){
@@ -222,12 +237,23 @@ static_inline void synthSamplerJapaneseShakuhachiFlute_Notes_noteOff_init(synthS
 
 uint8_t synthSamplerJapaneseShakuhachiFlute_Notes_noteOff(synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 &_ctx, int note, int channel);
 
+typedef synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 synthSamplerJapaneseShakuhachiFlute_Notes_noteOn_type;
+
+static_inline void synthSamplerJapaneseShakuhachiFlute_Notes_noteOn_init(synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 &_output_){
+   synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0_init(_output_);
+   return ;
+}
+
+uint8_t synthSamplerJapaneseShakuhachiFlute_Notes_noteOn(synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
+
 static_inline void synthSamplerJapaneseShakuhachiFlute_Buffer_buffer(fix16_t (&oBuff)[256]){
 }
 
 void synthSamplerJapaneseShakuhachiFlute_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
 typedef struct synthSamplerJapaneseShakuhachiFlute_Sampler__ctx_type_0 {
+   uint8_t sustaining;
+   uint8_t sustain;
    fix16_t step;
    int state;
    int size;
@@ -408,6 +434,15 @@ static_inline void synthSamplerJapaneseShakuhachiFlute_Sampler_setLevel(synthSam
    _ctx.level = newLevel;
 };
 
+typedef synthSamplerJapaneseShakuhachiFlute_Sampler__ctx_type_0 synthSamplerJapaneseShakuhachiFlute_Sampler_setSustain_type;
+
+static_inline void synthSamplerJapaneseShakuhachiFlute_Sampler_setSustain_init(synthSamplerJapaneseShakuhachiFlute_Sampler__ctx_type_0 &_output_){
+   synthSamplerJapaneseShakuhachiFlute_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthSamplerJapaneseShakuhachiFlute_Sampler_setSustain(synthSamplerJapaneseShakuhachiFlute_Sampler__ctx_type_0 &_ctx, uint8_t flag);
+
 typedef synthSamplerJapaneseShakuhachiFlute_Sampler__ctx_type_0 synthSamplerJapaneseShakuhachiFlute_Sampler_noteOn_type;
 
 static_inline void synthSamplerJapaneseShakuhachiFlute_Sampler_noteOn_init(synthSamplerJapaneseShakuhachiFlute_Sampler__ctx_type_0 &_output_){
@@ -415,7 +450,7 @@ static_inline void synthSamplerJapaneseShakuhachiFlute_Sampler_noteOn_init(synth
    return ;
 }
 
-void synthSamplerJapaneseShakuhachiFlute_Sampler_noteOn(synthSamplerJapaneseShakuhachiFlute_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
+uint8_t synthSamplerJapaneseShakuhachiFlute_Sampler_noteOn(synthSamplerJapaneseShakuhachiFlute_Sampler__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
 typedef synthSamplerJapaneseShakuhachiFlute_Sampler__ctx_type_0 synthSamplerJapaneseShakuhachiFlute_Sampler_setPoly_type;
 
@@ -576,6 +611,20 @@ static_inline void synthSamplerJapaneseShakuhachiFlute_Poly_setSamplerate(synthS
    synthSamplerJapaneseShakuhachiFlute_Sampler_setSamplerate(_ctx.voice1,fs);
    synthSamplerJapaneseShakuhachiFlute_Sampler_setSamplerate(_ctx.voice2,fs);
    synthSamplerJapaneseShakuhachiFlute_Sampler_setSamplerate(_ctx.voice3,fs);
+}
+
+typedef synthSamplerJapaneseShakuhachiFlute_Poly__ctx_type_0 synthSamplerJapaneseShakuhachiFlute_Poly_synthSetSustain_type;
+
+static_inline void synthSamplerJapaneseShakuhachiFlute_Poly_synthSetSustain_init(synthSamplerJapaneseShakuhachiFlute_Poly__ctx_type_0 &_output_){
+   synthSamplerJapaneseShakuhachiFlute_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerJapaneseShakuhachiFlute_Poly_synthSetSustain(synthSamplerJapaneseShakuhachiFlute_Poly__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerJapaneseShakuhachiFlute_Sampler_setSustain(_ctx.voice0,flag);
+   synthSamplerJapaneseShakuhachiFlute_Sampler_setSustain(_ctx.voice1,flag);
+   synthSamplerJapaneseShakuhachiFlute_Sampler_setSustain(_ctx.voice2,flag);
+   synthSamplerJapaneseShakuhachiFlute_Sampler_setSustain(_ctx.voice3,flag);
 }
 
 typedef synthSamplerJapaneseShakuhachiFlute_Poly__ctx_type_0 synthSamplerJapaneseShakuhachiFlute_Poly_synthSetLoop_type;
@@ -844,6 +893,8 @@ typedef struct synthSamplerJapaneseShakuhachiFlute_Voice__ctx_type_0 {
    synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 voicesactive;
    fix16_t voices_ratio;
    int voices[4];
+   synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 voiceinsactive;
+   uint8_t reuse;
    synthSamplerJapaneseShakuhachiFlute_Poly__ctx_type_0 poly;
    int number_voices;
    int notes[128];
@@ -887,6 +938,17 @@ static_inline void synthSamplerJapaneseShakuhachiFlute_Voice_process_bufferTo_al
 }
 
 void synthSamplerJapaneseShakuhachiFlute_Voice_process_bufferTo_alt(synthSamplerJapaneseShakuhachiFlute_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
+
+typedef synthSamplerJapaneseShakuhachiFlute_Voice__ctx_type_0 synthSamplerJapaneseShakuhachiFlute_Voice_setReuse_type;
+
+static_inline void synthSamplerJapaneseShakuhachiFlute_Voice_setReuse_init(synthSamplerJapaneseShakuhachiFlute_Voice__ctx_type_0 &_output_){
+   synthSamplerJapaneseShakuhachiFlute_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerJapaneseShakuhachiFlute_Voice_setReuse(synthSamplerJapaneseShakuhachiFlute_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.reuse = flag;
+};
 
 typedef synthSamplerJapaneseShakuhachiFlute_Voice__ctx_type_0 synthSamplerJapaneseShakuhachiFlute_Voice_noteOff_type;
 
@@ -934,6 +996,17 @@ static_inline void synthSamplerJapaneseShakuhachiFlute_Voice_setSamplerate_init(
 }
 
 void synthSamplerJapaneseShakuhachiFlute_Voice_setSamplerate(synthSamplerJapaneseShakuhachiFlute_Voice__ctx_type_0 &_ctx, fix16_t newFs);
+
+typedef synthSamplerJapaneseShakuhachiFlute_Voice__ctx_type_0 synthSamplerJapaneseShakuhachiFlute_Voice_synthSetSustain_type;
+
+static_inline void synthSamplerJapaneseShakuhachiFlute_Voice_synthSetSustain_init(synthSamplerJapaneseShakuhachiFlute_Voice__ctx_type_0 &_output_){
+   synthSamplerJapaneseShakuhachiFlute_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerJapaneseShakuhachiFlute_Voice_synthSetSustain(synthSamplerJapaneseShakuhachiFlute_Voice__ctx_type_0 &_ctx, uint8_t flag){
+   synthSamplerJapaneseShakuhachiFlute_Poly_synthSetSustain(_ctx.poly,flag);
+};
 
 typedef synthSamplerJapaneseShakuhachiFlute_Voice__ctx_type_0 synthSamplerJapaneseShakuhachiFlute_Voice_synthSetLoop_type;
 
