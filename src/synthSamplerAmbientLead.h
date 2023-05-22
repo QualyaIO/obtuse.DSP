@@ -259,10 +259,14 @@ typedef struct synthSamplerAmbientLead_Sampler__ctx_type_0 {
    int size;
    int sampleNote;
    fix16_t sampleFs;
+   uint8_t quickKill;
+   fix16_t qkStep;
    int posBase;
    fix16_t pos;
    synthSamplerAmbientLead_Notes__ctx_type_0 playingnotes;
    fix16_t noteRatio;
+   int nextVelocity;
+   int nextNote;
    uint8_t loopy;
    int loopS;
    int loopE;
@@ -275,9 +279,40 @@ typedef struct synthSamplerAmbientLead_Sampler__ctx_type_0 {
    fix16_t buffer_cross[256];
 } synthSamplerAmbientLead_Sampler__ctx_type_0;
 
-typedef synthSamplerAmbientLead_Sampler__ctx_type_0 synthSamplerAmbientLead_Sampler_process_type;
+typedef synthSamplerAmbientLead_Sampler__ctx_type_0 synthSamplerAmbientLead_Sampler_updateStep_type;
 
 void synthSamplerAmbientLead_Sampler__ctx_type_0_init(synthSamplerAmbientLead_Sampler__ctx_type_0 &_output_);
+
+static_inline void synthSamplerAmbientLead_Sampler_updateStep_init(synthSamplerAmbientLead_Sampler__ctx_type_0 &_output_){
+   synthSamplerAmbientLead_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerAmbientLead_Sampler_updateStep(synthSamplerAmbientLead_Sampler__ctx_type_0 &_ctx){
+   _ctx.step = fix_mul(_ctx.fsRatio,_ctx.noteRatio);
+};
+
+typedef synthSamplerAmbientLead_Sampler__ctx_type_0 synthSamplerAmbientLead_Sampler_setNote_type;
+
+static_inline void synthSamplerAmbientLead_Sampler_setNote_init(synthSamplerAmbientLead_Sampler__ctx_type_0 &_output_){
+   synthSamplerAmbientLead_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthSamplerAmbientLead_Sampler_setNote(synthSamplerAmbientLead_Sampler__ctx_type_0 &_ctx, int note);
+
+typedef synthSamplerAmbientLead_Sampler__ctx_type_0 synthSamplerAmbientLead_Sampler_setLevel_type;
+
+static_inline void synthSamplerAmbientLead_Sampler_setLevel_init(synthSamplerAmbientLead_Sampler__ctx_type_0 &_output_){
+   synthSamplerAmbientLead_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerAmbientLead_Sampler_setLevel(synthSamplerAmbientLead_Sampler__ctx_type_0 &_ctx, fix16_t newLevel){
+   _ctx.level = newLevel;
+};
+
+typedef synthSamplerAmbientLead_Sampler__ctx_type_0 synthSamplerAmbientLead_Sampler_process_type;
 
 static_inline void synthSamplerAmbientLead_Sampler_process_init(synthSamplerAmbientLead_Sampler__ctx_type_0 &_output_){
    synthSamplerAmbientLead_Sampler__ctx_type_0_init(_output_);
@@ -304,17 +339,6 @@ static_inline void synthSamplerAmbientLead_Sampler_process_buffer_init(synthSamp
 
 static_inline void synthSamplerAmbientLead_Sampler_process_buffer(synthSamplerAmbientLead_Sampler__ctx_type_0 &_ctx, int nb){
    synthSamplerAmbientLead_Sampler_process_bufferTo(_ctx,nb,_ctx.buffer_o);
-};
-
-typedef synthSamplerAmbientLead_Sampler__ctx_type_0 synthSamplerAmbientLead_Sampler_updateStep_type;
-
-static_inline void synthSamplerAmbientLead_Sampler_updateStep_init(synthSamplerAmbientLead_Sampler__ctx_type_0 &_output_){
-   synthSamplerAmbientLead_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthSamplerAmbientLead_Sampler_updateStep(synthSamplerAmbientLead_Sampler__ctx_type_0 &_ctx){
-   _ctx.step = fix_mul(_ctx.fsRatio,_ctx.noteRatio);
 };
 
 typedef synthSamplerAmbientLead_Sampler__ctx_type_0 synthSamplerAmbientLead_Sampler_setSamplerate_type;
@@ -412,26 +436,6 @@ static_inline void synthSamplerAmbientLead_Sampler_getSampleSize_init(synthSampl
 
 static_inline int synthSamplerAmbientLead_Sampler_getSampleSize(synthSamplerAmbientLead_Sampler__ctx_type_0 &_ctx){
    return _ctx.size;
-};
-
-typedef synthSamplerAmbientLead_Sampler__ctx_type_0 synthSamplerAmbientLead_Sampler_setNote_type;
-
-static_inline void synthSamplerAmbientLead_Sampler_setNote_init(synthSamplerAmbientLead_Sampler__ctx_type_0 &_output_){
-   synthSamplerAmbientLead_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-void synthSamplerAmbientLead_Sampler_setNote(synthSamplerAmbientLead_Sampler__ctx_type_0 &_ctx, int note);
-
-typedef synthSamplerAmbientLead_Sampler__ctx_type_0 synthSamplerAmbientLead_Sampler_setLevel_type;
-
-static_inline void synthSamplerAmbientLead_Sampler_setLevel_init(synthSamplerAmbientLead_Sampler__ctx_type_0 &_output_){
-   synthSamplerAmbientLead_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthSamplerAmbientLead_Sampler_setLevel(synthSamplerAmbientLead_Sampler__ctx_type_0 &_ctx, fix16_t newLevel){
-   _ctx.level = newLevel;
 };
 
 typedef synthSamplerAmbientLead_Sampler__ctx_type_0 synthSamplerAmbientLead_Sampler_setSustain_type;

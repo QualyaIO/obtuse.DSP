@@ -259,10 +259,14 @@ typedef struct synthSamplerMagnificentDrone_Sampler__ctx_type_0 {
    int size;
    int sampleNote;
    fix16_t sampleFs;
+   uint8_t quickKill;
+   fix16_t qkStep;
    int posBase;
    fix16_t pos;
    synthSamplerMagnificentDrone_Notes__ctx_type_0 playingnotes;
    fix16_t noteRatio;
+   int nextVelocity;
+   int nextNote;
    uint8_t loopy;
    int loopS;
    int loopE;
@@ -275,9 +279,40 @@ typedef struct synthSamplerMagnificentDrone_Sampler__ctx_type_0 {
    fix16_t buffer_cross[256];
 } synthSamplerMagnificentDrone_Sampler__ctx_type_0;
 
-typedef synthSamplerMagnificentDrone_Sampler__ctx_type_0 synthSamplerMagnificentDrone_Sampler_process_type;
+typedef synthSamplerMagnificentDrone_Sampler__ctx_type_0 synthSamplerMagnificentDrone_Sampler_updateStep_type;
 
 void synthSamplerMagnificentDrone_Sampler__ctx_type_0_init(synthSamplerMagnificentDrone_Sampler__ctx_type_0 &_output_);
+
+static_inline void synthSamplerMagnificentDrone_Sampler_updateStep_init(synthSamplerMagnificentDrone_Sampler__ctx_type_0 &_output_){
+   synthSamplerMagnificentDrone_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerMagnificentDrone_Sampler_updateStep(synthSamplerMagnificentDrone_Sampler__ctx_type_0 &_ctx){
+   _ctx.step = fix_mul(_ctx.fsRatio,_ctx.noteRatio);
+};
+
+typedef synthSamplerMagnificentDrone_Sampler__ctx_type_0 synthSamplerMagnificentDrone_Sampler_setNote_type;
+
+static_inline void synthSamplerMagnificentDrone_Sampler_setNote_init(synthSamplerMagnificentDrone_Sampler__ctx_type_0 &_output_){
+   synthSamplerMagnificentDrone_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthSamplerMagnificentDrone_Sampler_setNote(synthSamplerMagnificentDrone_Sampler__ctx_type_0 &_ctx, int note);
+
+typedef synthSamplerMagnificentDrone_Sampler__ctx_type_0 synthSamplerMagnificentDrone_Sampler_setLevel_type;
+
+static_inline void synthSamplerMagnificentDrone_Sampler_setLevel_init(synthSamplerMagnificentDrone_Sampler__ctx_type_0 &_output_){
+   synthSamplerMagnificentDrone_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerMagnificentDrone_Sampler_setLevel(synthSamplerMagnificentDrone_Sampler__ctx_type_0 &_ctx, fix16_t newLevel){
+   _ctx.level = newLevel;
+};
+
+typedef synthSamplerMagnificentDrone_Sampler__ctx_type_0 synthSamplerMagnificentDrone_Sampler_process_type;
 
 static_inline void synthSamplerMagnificentDrone_Sampler_process_init(synthSamplerMagnificentDrone_Sampler__ctx_type_0 &_output_){
    synthSamplerMagnificentDrone_Sampler__ctx_type_0_init(_output_);
@@ -304,17 +339,6 @@ static_inline void synthSamplerMagnificentDrone_Sampler_process_buffer_init(synt
 
 static_inline void synthSamplerMagnificentDrone_Sampler_process_buffer(synthSamplerMagnificentDrone_Sampler__ctx_type_0 &_ctx, int nb){
    synthSamplerMagnificentDrone_Sampler_process_bufferTo(_ctx,nb,_ctx.buffer_o);
-};
-
-typedef synthSamplerMagnificentDrone_Sampler__ctx_type_0 synthSamplerMagnificentDrone_Sampler_updateStep_type;
-
-static_inline void synthSamplerMagnificentDrone_Sampler_updateStep_init(synthSamplerMagnificentDrone_Sampler__ctx_type_0 &_output_){
-   synthSamplerMagnificentDrone_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthSamplerMagnificentDrone_Sampler_updateStep(synthSamplerMagnificentDrone_Sampler__ctx_type_0 &_ctx){
-   _ctx.step = fix_mul(_ctx.fsRatio,_ctx.noteRatio);
 };
 
 typedef synthSamplerMagnificentDrone_Sampler__ctx_type_0 synthSamplerMagnificentDrone_Sampler_setSamplerate_type;
@@ -412,26 +436,6 @@ static_inline void synthSamplerMagnificentDrone_Sampler_getSampleSize_init(synth
 
 static_inline int synthSamplerMagnificentDrone_Sampler_getSampleSize(synthSamplerMagnificentDrone_Sampler__ctx_type_0 &_ctx){
    return _ctx.size;
-};
-
-typedef synthSamplerMagnificentDrone_Sampler__ctx_type_0 synthSamplerMagnificentDrone_Sampler_setNote_type;
-
-static_inline void synthSamplerMagnificentDrone_Sampler_setNote_init(synthSamplerMagnificentDrone_Sampler__ctx_type_0 &_output_){
-   synthSamplerMagnificentDrone_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-void synthSamplerMagnificentDrone_Sampler_setNote(synthSamplerMagnificentDrone_Sampler__ctx_type_0 &_ctx, int note);
-
-typedef synthSamplerMagnificentDrone_Sampler__ctx_type_0 synthSamplerMagnificentDrone_Sampler_setLevel_type;
-
-static_inline void synthSamplerMagnificentDrone_Sampler_setLevel_init(synthSamplerMagnificentDrone_Sampler__ctx_type_0 &_output_){
-   synthSamplerMagnificentDrone_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthSamplerMagnificentDrone_Sampler_setLevel(synthSamplerMagnificentDrone_Sampler__ctx_type_0 &_ctx, fix16_t newLevel){
-   _ctx.level = newLevel;
 };
 
 typedef synthSamplerMagnificentDrone_Sampler__ctx_type_0 synthSamplerMagnificentDrone_Sampler_setSustain_type;

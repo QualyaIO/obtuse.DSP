@@ -259,10 +259,14 @@ typedef struct synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 {
    int size;
    int sampleNote;
    fix16_t sampleFs;
+   uint8_t quickKill;
+   fix16_t qkStep;
    int posBase;
    fix16_t pos;
    synthSamplerClassicSuitcaseMk1_Notes__ctx_type_0 playingnotes;
    fix16_t noteRatio;
+   int nextVelocity;
+   int nextNote;
    uint8_t loopy;
    int loopS;
    int loopE;
@@ -275,9 +279,40 @@ typedef struct synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 {
    fix16_t buffer_cross[256];
 } synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0;
 
-typedef synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 synthSamplerClassicSuitcaseMk1_Sampler_process_type;
+typedef synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 synthSamplerClassicSuitcaseMk1_Sampler_updateStep_type;
 
 void synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0_init(synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 &_output_);
+
+static_inline void synthSamplerClassicSuitcaseMk1_Sampler_updateStep_init(synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 &_output_){
+   synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerClassicSuitcaseMk1_Sampler_updateStep(synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 &_ctx){
+   _ctx.step = fix_mul(_ctx.fsRatio,_ctx.noteRatio);
+};
+
+typedef synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 synthSamplerClassicSuitcaseMk1_Sampler_setNote_type;
+
+static_inline void synthSamplerClassicSuitcaseMk1_Sampler_setNote_init(synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 &_output_){
+   synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthSamplerClassicSuitcaseMk1_Sampler_setNote(synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 &_ctx, int note);
+
+typedef synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 synthSamplerClassicSuitcaseMk1_Sampler_setLevel_type;
+
+static_inline void synthSamplerClassicSuitcaseMk1_Sampler_setLevel_init(synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 &_output_){
+   synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerClassicSuitcaseMk1_Sampler_setLevel(synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 &_ctx, fix16_t newLevel){
+   _ctx.level = newLevel;
+};
+
+typedef synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 synthSamplerClassicSuitcaseMk1_Sampler_process_type;
 
 static_inline void synthSamplerClassicSuitcaseMk1_Sampler_process_init(synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 &_output_){
    synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0_init(_output_);
@@ -304,17 +339,6 @@ static_inline void synthSamplerClassicSuitcaseMk1_Sampler_process_buffer_init(sy
 
 static_inline void synthSamplerClassicSuitcaseMk1_Sampler_process_buffer(synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 &_ctx, int nb){
    synthSamplerClassicSuitcaseMk1_Sampler_process_bufferTo(_ctx,nb,_ctx.buffer_o);
-};
-
-typedef synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 synthSamplerClassicSuitcaseMk1_Sampler_updateStep_type;
-
-static_inline void synthSamplerClassicSuitcaseMk1_Sampler_updateStep_init(synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 &_output_){
-   synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthSamplerClassicSuitcaseMk1_Sampler_updateStep(synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 &_ctx){
-   _ctx.step = fix_mul(_ctx.fsRatio,_ctx.noteRatio);
 };
 
 typedef synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 synthSamplerClassicSuitcaseMk1_Sampler_setSamplerate_type;
@@ -412,26 +436,6 @@ static_inline void synthSamplerClassicSuitcaseMk1_Sampler_getSampleSize_init(syn
 
 static_inline int synthSamplerClassicSuitcaseMk1_Sampler_getSampleSize(synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 &_ctx){
    return _ctx.size;
-};
-
-typedef synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 synthSamplerClassicSuitcaseMk1_Sampler_setNote_type;
-
-static_inline void synthSamplerClassicSuitcaseMk1_Sampler_setNote_init(synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 &_output_){
-   synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-void synthSamplerClassicSuitcaseMk1_Sampler_setNote(synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 &_ctx, int note);
-
-typedef synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 synthSamplerClassicSuitcaseMk1_Sampler_setLevel_type;
-
-static_inline void synthSamplerClassicSuitcaseMk1_Sampler_setLevel_init(synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 &_output_){
-   synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthSamplerClassicSuitcaseMk1_Sampler_setLevel(synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 &_ctx, fix16_t newLevel){
-   _ctx.level = newLevel;
 };
 
 typedef synthSamplerClassicSuitcaseMk1_Sampler__ctx_type_0 synthSamplerClassicSuitcaseMk1_Sampler_setSustain_type;

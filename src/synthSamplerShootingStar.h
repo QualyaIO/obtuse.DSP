@@ -259,10 +259,14 @@ typedef struct synthSamplerShootingStar_Sampler__ctx_type_0 {
    int size;
    int sampleNote;
    fix16_t sampleFs;
+   uint8_t quickKill;
+   fix16_t qkStep;
    int posBase;
    fix16_t pos;
    synthSamplerShootingStar_Notes__ctx_type_0 playingnotes;
    fix16_t noteRatio;
+   int nextVelocity;
+   int nextNote;
    uint8_t loopy;
    int loopS;
    int loopE;
@@ -275,9 +279,40 @@ typedef struct synthSamplerShootingStar_Sampler__ctx_type_0 {
    fix16_t buffer_cross[256];
 } synthSamplerShootingStar_Sampler__ctx_type_0;
 
-typedef synthSamplerShootingStar_Sampler__ctx_type_0 synthSamplerShootingStar_Sampler_process_type;
+typedef synthSamplerShootingStar_Sampler__ctx_type_0 synthSamplerShootingStar_Sampler_updateStep_type;
 
 void synthSamplerShootingStar_Sampler__ctx_type_0_init(synthSamplerShootingStar_Sampler__ctx_type_0 &_output_);
+
+static_inline void synthSamplerShootingStar_Sampler_updateStep_init(synthSamplerShootingStar_Sampler__ctx_type_0 &_output_){
+   synthSamplerShootingStar_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerShootingStar_Sampler_updateStep(synthSamplerShootingStar_Sampler__ctx_type_0 &_ctx){
+   _ctx.step = fix_mul(_ctx.fsRatio,_ctx.noteRatio);
+};
+
+typedef synthSamplerShootingStar_Sampler__ctx_type_0 synthSamplerShootingStar_Sampler_setNote_type;
+
+static_inline void synthSamplerShootingStar_Sampler_setNote_init(synthSamplerShootingStar_Sampler__ctx_type_0 &_output_){
+   synthSamplerShootingStar_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthSamplerShootingStar_Sampler_setNote(synthSamplerShootingStar_Sampler__ctx_type_0 &_ctx, int note);
+
+typedef synthSamplerShootingStar_Sampler__ctx_type_0 synthSamplerShootingStar_Sampler_setLevel_type;
+
+static_inline void synthSamplerShootingStar_Sampler_setLevel_init(synthSamplerShootingStar_Sampler__ctx_type_0 &_output_){
+   synthSamplerShootingStar_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerShootingStar_Sampler_setLevel(synthSamplerShootingStar_Sampler__ctx_type_0 &_ctx, fix16_t newLevel){
+   _ctx.level = newLevel;
+};
+
+typedef synthSamplerShootingStar_Sampler__ctx_type_0 synthSamplerShootingStar_Sampler_process_type;
 
 static_inline void synthSamplerShootingStar_Sampler_process_init(synthSamplerShootingStar_Sampler__ctx_type_0 &_output_){
    synthSamplerShootingStar_Sampler__ctx_type_0_init(_output_);
@@ -304,17 +339,6 @@ static_inline void synthSamplerShootingStar_Sampler_process_buffer_init(synthSam
 
 static_inline void synthSamplerShootingStar_Sampler_process_buffer(synthSamplerShootingStar_Sampler__ctx_type_0 &_ctx, int nb){
    synthSamplerShootingStar_Sampler_process_bufferTo(_ctx,nb,_ctx.buffer_o);
-};
-
-typedef synthSamplerShootingStar_Sampler__ctx_type_0 synthSamplerShootingStar_Sampler_updateStep_type;
-
-static_inline void synthSamplerShootingStar_Sampler_updateStep_init(synthSamplerShootingStar_Sampler__ctx_type_0 &_output_){
-   synthSamplerShootingStar_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthSamplerShootingStar_Sampler_updateStep(synthSamplerShootingStar_Sampler__ctx_type_0 &_ctx){
-   _ctx.step = fix_mul(_ctx.fsRatio,_ctx.noteRatio);
 };
 
 typedef synthSamplerShootingStar_Sampler__ctx_type_0 synthSamplerShootingStar_Sampler_setSamplerate_type;
@@ -412,26 +436,6 @@ static_inline void synthSamplerShootingStar_Sampler_getSampleSize_init(synthSamp
 
 static_inline int synthSamplerShootingStar_Sampler_getSampleSize(synthSamplerShootingStar_Sampler__ctx_type_0 &_ctx){
    return _ctx.size;
-};
-
-typedef synthSamplerShootingStar_Sampler__ctx_type_0 synthSamplerShootingStar_Sampler_setNote_type;
-
-static_inline void synthSamplerShootingStar_Sampler_setNote_init(synthSamplerShootingStar_Sampler__ctx_type_0 &_output_){
-   synthSamplerShootingStar_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-void synthSamplerShootingStar_Sampler_setNote(synthSamplerShootingStar_Sampler__ctx_type_0 &_ctx, int note);
-
-typedef synthSamplerShootingStar_Sampler__ctx_type_0 synthSamplerShootingStar_Sampler_setLevel_type;
-
-static_inline void synthSamplerShootingStar_Sampler_setLevel_init(synthSamplerShootingStar_Sampler__ctx_type_0 &_output_){
-   synthSamplerShootingStar_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthSamplerShootingStar_Sampler_setLevel(synthSamplerShootingStar_Sampler__ctx_type_0 &_ctx, fix16_t newLevel){
-   _ctx.level = newLevel;
 };
 
 typedef synthSamplerShootingStar_Sampler__ctx_type_0 synthSamplerShootingStar_Sampler_setSustain_type;

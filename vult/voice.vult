@@ -7,6 +7,7 @@
 // When max voices is reached (which can happen fast with sustain), still oldest playing voice. Stealing in priority voice playing same note could sound better, but makes less sense for music (could skip newer notes)
 // Note: does not take midi channel into account at this level
 // TODO: back to monophonic if number of voices is 1
+// FIXME: properly normalize leftovers?
 
 // retrieve sample from all voices, mix
 fun process() {
@@ -254,18 +255,9 @@ and noteOn(note:int, velocity:int, channel:int){
 
    // we either retrigger, re-activated an old vice (typo too good to correct), get a new voice or steal a voice, apply changes
    if (v > 0) {
-      // retrieve last value of this voice to mitigate pops. If synth discourage this option (e.g. FM with simpler OSC waveform) then only take into account difference in levels if new note is at lower velocity
+      // retrieve last value of this voice to mitigate pops 
       if (poly:Poly.shouldLeftOvers()) {
          leftovers = leftovers + last_values[v-1];
-      } else {
-         val diff_velocity = last_velocities[v-1] - velocity;
-         val diff_level = 0.0; 
-         // only enable leftovers if new velocity is lower
-         if (diff_velocity > 0) {
-            // velocity should be capped at 127
-            diff_level = real(diff_velocity) / 127.0;
-         }
-         leftovers = leftovers + last_values[v-1] * diff_level;
       }
       // forward info
       _ = poly:Poly.sendNoteOn(v - 1, note, velocity, channel);

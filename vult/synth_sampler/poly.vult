@@ -197,7 +197,7 @@ and shouldLeftOvers(): bool {
 }
 
 and default() @[init] {
-      should_leftovers = true;
+      should_leftovers = false;
       _ = voice0:Sampler.default();
       _ = voice0:Sampler.setPoly(true);
       _ = voice1:Sampler.default();

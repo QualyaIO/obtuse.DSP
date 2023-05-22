@@ -144,18 +144,53 @@ typedef struct synthDrummerTamaRockstar_Drummer__ctx_type_0 {
    int slice;
    int size;
    fix16_t sampleFs;
+   uint8_t quickKill;
+   fix16_t qkStep;
    int posBase;
    fix16_t pos;
    fix16_t noteRatio;
+   int nextVelocity;
+   int nextNote;
    fix16_t level;
    fix16_t fsRatio;
    fix16_t fs;
    fix16_t buffer_o[256];
 } synthDrummerTamaRockstar_Drummer__ctx_type_0;
 
-typedef synthDrummerTamaRockstar_Drummer__ctx_type_0 synthDrummerTamaRockstar_Drummer_process_type;
+typedef synthDrummerTamaRockstar_Drummer__ctx_type_0 synthDrummerTamaRockstar_Drummer_updateStep_type;
 
 void synthDrummerTamaRockstar_Drummer__ctx_type_0_init(synthDrummerTamaRockstar_Drummer__ctx_type_0 &_output_);
+
+static_inline void synthDrummerTamaRockstar_Drummer_updateStep_init(synthDrummerTamaRockstar_Drummer__ctx_type_0 &_output_){
+   synthDrummerTamaRockstar_Drummer__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummerTamaRockstar_Drummer_updateStep(synthDrummerTamaRockstar_Drummer__ctx_type_0 &_ctx){
+   _ctx.step = fix_mul(_ctx.fsRatio,_ctx.noteRatio);
+};
+
+typedef synthDrummerTamaRockstar_Drummer__ctx_type_0 synthDrummerTamaRockstar_Drummer_setNote_type;
+
+static_inline void synthDrummerTamaRockstar_Drummer_setNote_init(synthDrummerTamaRockstar_Drummer__ctx_type_0 &_output_){
+   synthDrummerTamaRockstar_Drummer__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthDrummerTamaRockstar_Drummer_setNote(synthDrummerTamaRockstar_Drummer__ctx_type_0 &_ctx, int note);
+
+typedef synthDrummerTamaRockstar_Drummer__ctx_type_0 synthDrummerTamaRockstar_Drummer_setLevel_type;
+
+static_inline void synthDrummerTamaRockstar_Drummer_setLevel_init(synthDrummerTamaRockstar_Drummer__ctx_type_0 &_output_){
+   synthDrummerTamaRockstar_Drummer__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummerTamaRockstar_Drummer_setLevel(synthDrummerTamaRockstar_Drummer__ctx_type_0 &_ctx, fix16_t newLevel){
+   _ctx.level = newLevel;
+};
+
+typedef synthDrummerTamaRockstar_Drummer__ctx_type_0 synthDrummerTamaRockstar_Drummer_process_type;
 
 static_inline void synthDrummerTamaRockstar_Drummer_process_init(synthDrummerTamaRockstar_Drummer__ctx_type_0 &_output_){
    synthDrummerTamaRockstar_Drummer__ctx_type_0_init(_output_);
@@ -182,17 +217,6 @@ static_inline void synthDrummerTamaRockstar_Drummer_process_buffer_init(synthDru
 
 static_inline void synthDrummerTamaRockstar_Drummer_process_buffer(synthDrummerTamaRockstar_Drummer__ctx_type_0 &_ctx, int nb){
    synthDrummerTamaRockstar_Drummer_process_bufferTo(_ctx,nb,_ctx.buffer_o);
-};
-
-typedef synthDrummerTamaRockstar_Drummer__ctx_type_0 synthDrummerTamaRockstar_Drummer_updateStep_type;
-
-static_inline void synthDrummerTamaRockstar_Drummer_updateStep_init(synthDrummerTamaRockstar_Drummer__ctx_type_0 &_output_){
-   synthDrummerTamaRockstar_Drummer__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthDrummerTamaRockstar_Drummer_updateStep(synthDrummerTamaRockstar_Drummer__ctx_type_0 &_ctx){
-   _ctx.step = fix_mul(_ctx.fsRatio,_ctx.noteRatio);
 };
 
 typedef synthDrummerTamaRockstar_Drummer__ctx_type_0 synthDrummerTamaRockstar_Drummer_setSlices_type;
@@ -222,17 +246,6 @@ static_inline void synthDrummerTamaRockstar_Drummer_getSampleSize_init(synthDrum
 
 static_inline int synthDrummerTamaRockstar_Drummer_getSampleSize(synthDrummerTamaRockstar_Drummer__ctx_type_0 &_ctx){
    return _ctx.size;
-};
-
-typedef synthDrummerTamaRockstar_Drummer__ctx_type_0 synthDrummerTamaRockstar_Drummer_setLevel_type;
-
-static_inline void synthDrummerTamaRockstar_Drummer_setLevel_init(synthDrummerTamaRockstar_Drummer__ctx_type_0 &_output_){
-   synthDrummerTamaRockstar_Drummer__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthDrummerTamaRockstar_Drummer_setLevel(synthDrummerTamaRockstar_Drummer__ctx_type_0 &_ctx, fix16_t newLevel){
-   _ctx.level = newLevel;
 };
 
 typedef synthDrummerTamaRockstar_Drummer__ctx_type_0 synthDrummerTamaRockstar_Drummer_setSustain_type;

@@ -5,9 +5,20 @@
 // TODO: kill on noteOff
 // TODO: implement monophony mode similar to sampler?
 
-fun process() {
-  // absolutely needs init to set that
-  mem size: int;
+
+// called internally when Samplerate or note is altered
+fun updateStep() {
+  // how much we jump each step
+  mem step: real;
+  // base for computing step
+  mem noteRatio: real;
+  mem fsRatio: real;
+  // both for efficiency and because we don't want any result to be outside [1/32767 .. 32767] to avoid fixed float limits we compute step in two... steps
+  step = noteRatio*fsRatio;
+}
+
+// called internally, note to be played
+and setNote(note: int) {
   // start and end positions for slices
   mem slices_start, slices_end;
   // current slice playing [0..11], out of bound to stop playing
@@ -15,10 +26,41 @@ fun process() {
   // using integer "base position" float position to overcome limitation of fixed point
   mem posBase: int;
   mem pos: real;
-  // how much we jump each step
-  mem step: real;
+  // root note for the 12 slices: C4
+  val root = 60;
+  slice = note % 12;
+  // set starting position
+  if (slice >= 0 && slice < size(slices_start)) {
+    posBase = slices_start[slice];
+    pos = 0.0;
+  }
+
+  // find octave compared to root note, 
+  val slice_root = note - slice;
+  // use ratio of note rather than freq to be more precise, +1 octave (12 semitones) doubles speed, -1 octave halves it
+  val log_two = log10(2.0)/log10(exp(1.0)); // so that vultc replace with result of log(2)
+  val octave = real(slice_root-root)/12.0;
+  noteRatio = exp(log_two * octave);
+  _ = updateStep();
+}
+
+// set level of the output [0..1] (applied on the envelop)
+and setLevel(newLevel: real) {
   // we are velocity sensitive
   mem level: real;
+  level = newLevel;
+}
+
+and process() {
+  // absolutely needs init to set that
+  mem size: int;
+  // should we terminate quickly the note? Used to avoid pops upon stealing voice
+  mem quickKill: bool;
+  // linear decrease of level for quick kill
+  mem qkStep: real;
+  // in case of quick kill, the note and velocity to play
+  mem nextNote: int;
+  mem nextVelocity: int;
 
   val value = 0.0;
 
@@ -32,22 +74,32 @@ fun process() {
     }
 
     val idx = posBase + int(pos);
-    // will stop and reset note once reach the end of file
-    if (idx >= size) {
+    // will stop and reset note once reach the end of file or end of sample
+    if (idx >= size || idx >= slices_end[slice]) {
       slice = -1;
       posBase = 0;
       pos = 0.0;
     }
 
-    // stop and reset once reached and of sample
-    if (idx >= slices_end[slice]) {
-      slice = -1;
-      posBase = 0;
-      pos = 0.0;
-    } else {
+    // adjust level for emergency release
+    if (quickKill) {
+      level = level - qkStep;
+      if (level < 0.0) {
+        level = 0.0;
+      }
+    }
+
+    if (slice >= 0) {
       value = (DrummerWrapper.getSample(idx) + (pos % 1.0) * (DrummerWrapper.getSample(idx+1) - DrummerWrapper.getSample(idx))) * level;
     }
 
+    // reached the end, either killed or we finished to play the note before the kill, time to go to next note
+    if (quickKill && (level <= 0.0 || slice < 0)) {
+      quickKill = false;
+      // we might have missed a note while quick killing, just read the last one to date
+      _ = setNote(nextNote);
+      _ = setLevel(Util.velocityToLevel(nextVelocity));
+    }
   }
 
   return value;
@@ -75,22 +127,32 @@ and process_bufferTo(nb: int, oBuffer) {
       }
   
       val idx = posBase + int(pos);
-      // will stop and reset note once reach the end of file
-      if (idx >= size) {
+      // will stop and reset note once reach the end of file or end of sample
+      if (idx >= size || idx >= slices_end[slice]) {
         slice = -1;
         posBase = 0;
         pos = 0.0;
       }
 
-      // stop and reset once reached and of sample
-      if (idx >= slices_end[slice]) {
-        slice = -1;
-        posBase = 0;
-        pos = 0.0;
-      } else {
-        value = (DrummerWrapper.getSample(idx) + (pos % 1.0) * (DrummerWrapper.getSample(idx+1) - DrummerWrapper.getSample(idx))) * level;
+      // adjust level for emergency release
+      if (quickKill) {
+        level = level - qkStep;
+        if (level < 0.0) {
+          level = 0.0;
+        }
       }
       
+      if (slice >= 0) {
+        value = (DrummerWrapper.getSample(idx) + (pos % 1.0) * (DrummerWrapper.getSample(idx+1) - DrummerWrapper.getSample(idx))) * level;
+      }
+
+      // reached the end, either killed or we finished to play the note before the kill, time to go to next note
+      if (quickKill && (level <= 0.0 || slice < 0)) {
+        quickKill = false;
+        // we might have missed a note while quick killing, just read the last one to date
+        _ = setNote(nextNote);
+        _ = setLevel(Util.velocityToLevel(nextVelocity));
+      }
     }
     
     oBuffer[i] = value;
@@ -102,15 +164,6 @@ and process_bufferTo(nb: int, oBuffer) {
 and process_buffer(nb: int) {
   mem buffer_o;
   _ = process_bufferTo(nb, buffer_o);
-}
-
-// called internally when Samplerate or note is altered
-and updateStep() {
-  // base for computing step
-  mem noteRatio: real;
-  mem fsRatio: real;
-  // both for efficiency and because we don't want any result to be outside [1/32767 .. 32767] to avoid fixed float limits we compute step in two... steps
-  step = noteRatio*fsRatio;
 }
 
 // passes start and stop arrays for slices. arrays must have same size, and same size as inner slices_start and slices_end arrays. For a slice to be updated indices must be within sample size range, and for each slice start pos must be before end pos.
@@ -142,16 +195,13 @@ and setSamplerate(newFs:real) {
       fsRatio = sampleFs/fs;
    }
    _ = updateStep();
+   // during quick kill, expects to go from 0 to 1 between levels in 5ms to avoid clicks
+   qkStep = 1.0/(fs * 5.0);
 }
 
 // number of samples (note: valid once init)
 and getSampleSize() {
   return size;
-}
-
-// set level of the output [0..1] (applied on the envelop)
-and setLevel(newLevel: real) {
-    level = newLevel;
 }
 
 // No effect of sustain at the moment since there is no gate nor noteOff
@@ -164,23 +214,19 @@ and noteOn(note:int, velocity:int, channel:int): bool {
   val isNew = slice < 0;
   // only 128 midi notes
   note = clip(note, 0, 127);
-  // root note for the 12 slices: C4
-  val root = 60;
-  slice = note % 12;
-  // set starting position
-  if (slice >= 0 && slice < size(slices_start)) {
-    posBase = slices_start[slice];
-    pos = 0.0;
+
+  // not playing, car start right away
+  if (slice < 0) {
+    _ = setNote(note);
+    _ = setLevel(Util.velocityToLevel(velocity));
+  }
+  // delay for quick kill
+  else {
+    quickKill = true;
+    nextNote = note;
+    nextVelocity = velocity;
   }
 
-  // find octave compared to root note, 
-  val slice_root = note - slice;
-  // use ratio of note rather than freq to be more precise, +1 octave (12 semitones) doubles speed, -1 octave halves it
-  val log_two = log10(2.0)/log10(exp(1.0)); // so that vultc replace with result of log(2)
-  val octave = real(slice_root-root)/12.0;
-  noteRatio = exp(log_two * octave);
-  _ = updateStep();
-  _ = setLevel(Util.velocityToLevel(velocity));
   return isNew;
 }
 
@@ -206,6 +252,7 @@ and default() @[init] {
   Buffer.buffer(buffer_o);
   // start with nothing
   slice = -1;
+  quickKill = false;
 }
 
 // to let vult find above the good buffer size

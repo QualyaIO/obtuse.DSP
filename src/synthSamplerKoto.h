@@ -259,10 +259,14 @@ typedef struct synthSamplerKoto_Sampler__ctx_type_0 {
    int size;
    int sampleNote;
    fix16_t sampleFs;
+   uint8_t quickKill;
+   fix16_t qkStep;
    int posBase;
    fix16_t pos;
    synthSamplerKoto_Notes__ctx_type_0 playingnotes;
    fix16_t noteRatio;
+   int nextVelocity;
+   int nextNote;
    uint8_t loopy;
    int loopS;
    int loopE;
@@ -275,9 +279,40 @@ typedef struct synthSamplerKoto_Sampler__ctx_type_0 {
    fix16_t buffer_cross[256];
 } synthSamplerKoto_Sampler__ctx_type_0;
 
-typedef synthSamplerKoto_Sampler__ctx_type_0 synthSamplerKoto_Sampler_process_type;
+typedef synthSamplerKoto_Sampler__ctx_type_0 synthSamplerKoto_Sampler_updateStep_type;
 
 void synthSamplerKoto_Sampler__ctx_type_0_init(synthSamplerKoto_Sampler__ctx_type_0 &_output_);
+
+static_inline void synthSamplerKoto_Sampler_updateStep_init(synthSamplerKoto_Sampler__ctx_type_0 &_output_){
+   synthSamplerKoto_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerKoto_Sampler_updateStep(synthSamplerKoto_Sampler__ctx_type_0 &_ctx){
+   _ctx.step = fix_mul(_ctx.fsRatio,_ctx.noteRatio);
+};
+
+typedef synthSamplerKoto_Sampler__ctx_type_0 synthSamplerKoto_Sampler_setNote_type;
+
+static_inline void synthSamplerKoto_Sampler_setNote_init(synthSamplerKoto_Sampler__ctx_type_0 &_output_){
+   synthSamplerKoto_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthSamplerKoto_Sampler_setNote(synthSamplerKoto_Sampler__ctx_type_0 &_ctx, int note);
+
+typedef synthSamplerKoto_Sampler__ctx_type_0 synthSamplerKoto_Sampler_setLevel_type;
+
+static_inline void synthSamplerKoto_Sampler_setLevel_init(synthSamplerKoto_Sampler__ctx_type_0 &_output_){
+   synthSamplerKoto_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerKoto_Sampler_setLevel(synthSamplerKoto_Sampler__ctx_type_0 &_ctx, fix16_t newLevel){
+   _ctx.level = newLevel;
+};
+
+typedef synthSamplerKoto_Sampler__ctx_type_0 synthSamplerKoto_Sampler_process_type;
 
 static_inline void synthSamplerKoto_Sampler_process_init(synthSamplerKoto_Sampler__ctx_type_0 &_output_){
    synthSamplerKoto_Sampler__ctx_type_0_init(_output_);
@@ -304,17 +339,6 @@ static_inline void synthSamplerKoto_Sampler_process_buffer_init(synthSamplerKoto
 
 static_inline void synthSamplerKoto_Sampler_process_buffer(synthSamplerKoto_Sampler__ctx_type_0 &_ctx, int nb){
    synthSamplerKoto_Sampler_process_bufferTo(_ctx,nb,_ctx.buffer_o);
-};
-
-typedef synthSamplerKoto_Sampler__ctx_type_0 synthSamplerKoto_Sampler_updateStep_type;
-
-static_inline void synthSamplerKoto_Sampler_updateStep_init(synthSamplerKoto_Sampler__ctx_type_0 &_output_){
-   synthSamplerKoto_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthSamplerKoto_Sampler_updateStep(synthSamplerKoto_Sampler__ctx_type_0 &_ctx){
-   _ctx.step = fix_mul(_ctx.fsRatio,_ctx.noteRatio);
 };
 
 typedef synthSamplerKoto_Sampler__ctx_type_0 synthSamplerKoto_Sampler_setSamplerate_type;
@@ -412,26 +436,6 @@ static_inline void synthSamplerKoto_Sampler_getSampleSize_init(synthSamplerKoto_
 
 static_inline int synthSamplerKoto_Sampler_getSampleSize(synthSamplerKoto_Sampler__ctx_type_0 &_ctx){
    return _ctx.size;
-};
-
-typedef synthSamplerKoto_Sampler__ctx_type_0 synthSamplerKoto_Sampler_setNote_type;
-
-static_inline void synthSamplerKoto_Sampler_setNote_init(synthSamplerKoto_Sampler__ctx_type_0 &_output_){
-   synthSamplerKoto_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-void synthSamplerKoto_Sampler_setNote(synthSamplerKoto_Sampler__ctx_type_0 &_ctx, int note);
-
-typedef synthSamplerKoto_Sampler__ctx_type_0 synthSamplerKoto_Sampler_setLevel_type;
-
-static_inline void synthSamplerKoto_Sampler_setLevel_init(synthSamplerKoto_Sampler__ctx_type_0 &_output_){
-   synthSamplerKoto_Sampler__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthSamplerKoto_Sampler_setLevel(synthSamplerKoto_Sampler__ctx_type_0 &_ctx, fix16_t newLevel){
-   _ctx.level = newLevel;
 };
 
 typedef synthSamplerKoto_Sampler__ctx_type_0 synthSamplerKoto_Sampler_setSustain_type;

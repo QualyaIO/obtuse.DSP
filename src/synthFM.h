@@ -726,6 +726,7 @@ static_inline void synthFM_ADSR_dummy(synthFM_ADSR__ctx_type_6 &_ctx){
 }
 
 typedef struct synthFM_FM__ctx_type_0 {
+   fix16_t target_level;
    uint8_t sustaining;
    uint8_t sustain;
    synthFM_Notes__ctx_type_0 playingnotes;
@@ -741,6 +742,8 @@ typedef struct synthFM_FM__ctx_type_0 {
    fix16_t modulator_env;
    fix16_t modulatorRatio;
    synthFM_OSC__ctx_type_0 modulator;
+   fix16_t level_step_ref;
+   fix16_t level_step;
    fix16_t level;
    uint8_t gate;
    fix16_t fs;
@@ -778,6 +781,32 @@ static_inline void synthFM_FM_process_bufferTo_init(synthFM_FM__ctx_type_0 &_out
 
 void synthFM_FM_process_bufferTo(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetable_modulator)[4096], fix16_t (&wavetable_carrier)[4096], int nb, fix16_t (&oBuffer)[256]);
 
+typedef synthFM_FM__ctx_type_0 synthFM_FM__updateLevelStep_type;
+
+static_inline void synthFM_FM__updateLevelStep_init(synthFM_FM__ctx_type_0 &_output_){
+   synthFM_FM__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthFM_FM__updateLevelStep(synthFM_FM__ctx_type_0 &_ctx){
+   _ctx.level_step_ref = fix_div(0x10000 /* 1.000000 */,fix_mul(0x50000 /* 5.000000 */,_ctx.fs));
+   if(_ctx.env_decimation_factor > 0){
+      _ctx.level_step_ref = fix_mul(_ctx.level_step_ref,int_to_fix(_ctx.env_decimation_factor));
+   }
+}
+
+typedef synthFM_FM__ctx_type_0 synthFM_FM_setEnvDecimationFactor_type;
+
+static_inline void synthFM_FM_setEnvDecimationFactor_init(synthFM_FM__ctx_type_0 &_output_){
+   synthFM_FM__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthFM_FM_setEnvDecimationFactor(synthFM_FM__ctx_type_0 &_ctx, int newFactor){
+   _ctx.env_decimation_factor = int_clip(newFactor,0,1000);
+   synthFM_FM__updateLevelStep(_ctx);
+}
+
 typedef synthFM_FM__ctx_type_0 synthFM_FM_setSamplerate_type;
 
 static_inline void synthFM_FM_setSamplerate_init(synthFM_FM__ctx_type_0 &_output_){
@@ -786,6 +815,15 @@ static_inline void synthFM_FM_setSamplerate_init(synthFM_FM__ctx_type_0 &_output
 }
 
 void synthFM_FM_setSamplerate(synthFM_FM__ctx_type_0 &_ctx, fix16_t newFs);
+
+typedef synthFM_FM__ctx_type_0 synthFM_FM_setLevel_type;
+
+static_inline void synthFM_FM_setLevel_init(synthFM_FM__ctx_type_0 &_output_){
+   synthFM_FM__ctx_type_0_init(_output_);
+   return ;
+}
+
+void synthFM_FM_setLevel(synthFM_FM__ctx_type_0 &_ctx, fix16_t newLevel);
 
 typedef synthFM_FM__ctx_type_0 synthFM_FM_setCarrierRatio_type;
 
@@ -865,17 +903,6 @@ static_inline void synthFM_FM_setModulatorFeedback(synthFM_FM__ctx_type_0 &_ctx,
    _ctx.modulator_max_phase = (synthFM_OSC_getSize(_ctx.modulator) << 1);
    _ctx.modulator_phase_range = fix_mul(_ctx.modulator_max_phase,feedback);
 }
-
-typedef synthFM_FM__ctx_type_0 synthFM_FM_setLevel_type;
-
-static_inline void synthFM_FM_setLevel_init(synthFM_FM__ctx_type_0 &_output_){
-   synthFM_FM__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthFM_FM_setLevel(synthFM_FM__ctx_type_0 &_ctx, fix16_t newLevel){
-   _ctx.level = newLevel;
-};
 
 typedef synthFM_FM__ctx_type_0 synthFM_FM_setFrequency_type;
 
