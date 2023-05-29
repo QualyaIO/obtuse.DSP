@@ -150,13 +150,15 @@ if __name__ == "__main__":
     per = 1
     # duration of wavefile
     length = 4096
-    t = linspace(0, 1, num = length * 440, endpoint = False)
+    t = linspace(0, 1, num = length, endpoint = False)
 
     # cutoff freq (or really, number of harmonics?)
     fs = sr / f / 2
 
     print("Generate square")
     data = bl_square(2 * pi * per * t, fs)
+    # same phase as current wavetables
+    data = np.roll(data, int(length/4))
     print("Lenght of wavetable: %f, min val: %f, max val: %f" % (len(data), np.min(data), np.max(data)))
     data = (data - np.min(data)) / (np.max(data) - np.min(data))
     print("Lenght of wavetable: %f, min val: %f, max val: %f" % (len(data), np.min(data), np.max(data)))
