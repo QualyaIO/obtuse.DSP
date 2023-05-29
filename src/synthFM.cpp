@@ -18,6 +18,24 @@ fix16_t synthFM_Wavetable_getSample(int wavetableIdx, int index){
       case 3:
          sample = synthFM_Wavetable_square_wave(0,index);
       break;
+      case 4:
+         sample = synthFM_Wavetable_sin_wave(0,index);
+      break;
+      case 5:
+         sample = synthFM_Wavetable_tri_wave_bl(0,index);
+      break;
+      case 6:
+         sample = synthFM_Wavetable_saw_wave_bl(0,index);
+      break;
+      case 7:
+         sample = synthFM_Wavetable_square_wave_bl(0,index);
+      break;
+      case 8:
+         sample = synthFM_Wavetable_sin_wave(0,index);
+      break;
+      case 9:
+         sample = synthFM_Wavetable_noise_wave(0,index);
+      break;
     
    }
    return sample;
@@ -38,17 +56,17 @@ fix16_t synthFM_Wavetable_getSampleFrom(fix16_t (&wavetable)[4096], fix16_t inde
 }
 
 void synthFM_Wavetable_morphTo(fix16_t wavetableIdx, fix16_t phase, fix16_t (&buffer)[4096]){
-   wavetableIdx = fix_clip(wavetableIdx,0x0 /* 0.000000 */,0x40000 /* 4.000000 */);
+   wavetableIdx = fix_clip(wavetableIdx,0x0 /* 0.000000 */,0xa0000 /* 10.000000 */);
    int phase_shift;
    phase_shift = fix_to_int((phase << 12));
    int wavetable1;
    wavetable1 = fix_to_int(fix_floor(wavetableIdx));
    int wavetable2;
    wavetable2 = (1 + wavetable1);
-   if(wavetable2 >= 4){
+   if(wavetable2 >= 10){
       wavetable2 = 0;
    }
-   if(wavetable1 >= 4){
+   if(wavetable1 >= 10){
       wavetable1 = 0;
    }
    fix16_t ratio;
@@ -68,8 +86,8 @@ void synthFM_Wavetable_morphTo(fix16_t wavetableIdx, fix16_t phase, fix16_t (&bu
 void synthFM_Wavetable_getRandomMorph(fix16_t (&oBuff)[4096]){
    int basetable;
    basetable = 0;
-   if(4 > 1){
-      basetable = (irandom() % 3);
+   if(10 > 1){
+      basetable = (irandom() % 9);
    }
    fix16_t wavetableIdx;
    wavetableIdx = (fix_random() + int_to_fix(basetable));

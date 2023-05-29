@@ -58,12 +58,56 @@ static_inline fix16_t synthFM_Wavetable_square_wave(int channel, int index){
    return 0x0 /* 0.000000 */;
 }
 
+static_inline int synthFM_Wavetable_tri_wave_bl_samples(){
+   return 4096;
+};
+
+static_inline fix16_t synthFM_Wavetable_tri_wave_bl(int channel, int index){
+   if(channel == 0){
+      return fix_wrap_array(synthFM_Wavetable_tri_wave_bl_chan_0)[(index % 4096)];
+   }
+   return 0x0 /* 0.000000 */;
+}
+
+static_inline int synthFM_Wavetable_saw_wave_bl_samples(){
+   return 4096;
+};
+
+static_inline fix16_t synthFM_Wavetable_saw_wave_bl(int channel, int index){
+   if(channel == 0){
+      return fix_wrap_array(synthFM_Wavetable_saw_wave_bl_chan_0)[(index % 4096)];
+   }
+   return 0x0 /* 0.000000 */;
+}
+
+static_inline int synthFM_Wavetable_square_wave_bl_samples(){
+   return 4096;
+};
+
+static_inline fix16_t synthFM_Wavetable_square_wave_bl(int channel, int index){
+   if(channel == 0){
+      return fix_wrap_array(synthFM_Wavetable_square_wave_bl_chan_0)[(index % 4096)];
+   }
+   return 0x0 /* 0.000000 */;
+}
+
+static_inline int synthFM_Wavetable_noise_wave_samples(){
+   return 4096;
+};
+
+static_inline fix16_t synthFM_Wavetable_noise_wave(int channel, int index){
+   if(channel == 0){
+      return fix_wrap_array(synthFM_Wavetable_noise_wave_chan_0)[(index % 4096)];
+   }
+   return 0x0 /* 0.000000 */;
+}
+
 fix16_t synthFM_Wavetable_getSample(int wavetableIdx, int index);
 
 fix16_t synthFM_Wavetable_getSampleFrom(fix16_t (&wavetable)[4096], fix16_t index);
 
 static_inline int synthFM_Wavetable_getNbWavetables(){
-   return 4;
+   return 10;
 };
 
 void synthFM_Wavetable_morphTo(fix16_t wavetableIdx, fix16_t phase, fix16_t (&buffer)[4096]);
@@ -1254,7 +1298,7 @@ static_inline void synthFM_Poly_synthGetNbWavetables_init(synthFM_Poly__ctx_type
 }
 
 static_inline int synthFM_Poly_synthGetNbWavetables(synthFM_Poly__ctx_type_0 &_ctx){
-   return 4;
+   return 10;
 };
 
 typedef synthFM_Poly__ctx_type_0 synthFM_Poly_synthSetModulatorWavetable_type;
