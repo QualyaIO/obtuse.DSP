@@ -157,8 +157,6 @@ if __name__ == "__main__":
 
     print("Generate square")
     data = bl_square(2 * pi * per * t, fs)
-    # same phase as current wavetables
-    data = np.roll(data, int(length/4))
     print("Lenght of wavetable: %f, min val: %f, max val: %f" % (len(data), np.min(data), np.max(data)))
     data = (data - np.min(data)) / (np.max(data) - np.min(data))
     print("Lenght of wavetable: %f, min val: %f, max val: %f" % (len(data), np.min(data), np.max(data)))
@@ -168,6 +166,8 @@ if __name__ == "__main__":
 
     print("Generate sawtooth")
     data = bl_sawtooth(2 * pi * per * t, fs)
+    # same phase as current wavetables
+    data = np.roll(data, int(length/2))
     print("Lenght of wavetable: %f, min val: %f, max val: %f" % (len(data), np.min(data), np.max(data)))
     data = (data - np.min(data)) / (np.max(data) - np.min(data))
     print("Lenght of wavetable: %f, min val: %f, max val: %f" % (len(data), np.min(data), np.max(data)))
@@ -177,6 +177,8 @@ if __name__ == "__main__":
 
     print("Generate triangle")
     data = bl_triangle(2 * pi * per * t, fs)
+    # same phase as current wavetables
+    data = np.roll(data, -int(length/4))
     print("Lenght of wavetable: %f, min val: %f, max val: %f" % (len(data), np.min(data), np.max(data)))
     data = (data - np.min(data)) / (np.max(data) - np.min(data))
     print("Lenght of wavetable: %f, min val: %f, max val: %f" % (len(data), np.min(data), np.max(data)))

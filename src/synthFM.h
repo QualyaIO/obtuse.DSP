@@ -37,12 +37,12 @@ static_inline fix16_t synthFM_Wavetable_tri_wave(int channel, int index){
 }
 
 static_inline int synthFM_Wavetable_saw_wave_samples(){
-   return 2048;
+   return 4096;
 };
 
 static_inline fix16_t synthFM_Wavetable_saw_wave(int channel, int index){
    if(channel == 0){
-      return fix_wrap_array(synthFM_Wavetable_saw_wave_chan_0)[(index % 2048)];
+      return fix_wrap_array(synthFM_Wavetable_saw_wave_chan_0)[(index % 4096)];
    }
    return 0x0 /* 0.000000 */;
 }

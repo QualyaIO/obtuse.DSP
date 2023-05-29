@@ -6,8 +6,11 @@ from scipy.io import wavfile
 
 size = 4096
 
-data = np.linspace(-1.0, 1.0, int(size/2))
+data = np.linspace(-1.0, 1.0, size)
 
+
+# smooth transition between wavetables
+data = np.roll(data, int(size/2))
 
 # set to whole int16 range, from -1 .. 1 to -32768..32767
 data = np.round((data + 1) * (65535.0 / 2) - 32768)

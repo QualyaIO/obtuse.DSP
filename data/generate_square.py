@@ -8,10 +8,10 @@ size = 4096
 data = np.zeros((size,))
 
 for i in range(size):
-    if i < size / 4 or i >= size * 3/4:
-        data[i] = -1.0
+    if i < size / 2:
+        data[i] = 1.0
     else:
-       data[i] = 1 
+       data[i] = -1.0 
 
 # set to whole int16 range, from -1 .. 1 to -32768..32767
 data = np.round((data + 1) * (65535.0 / 2) - 32768)
