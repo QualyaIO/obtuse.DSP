@@ -832,7 +832,7 @@ static_inline int utils_Clock_getMinTicks(){
 };
 
 static_inline int utils_Clock_getMaxTicks(){
-   return 65535;
+   return 32765;
 };
 
 int utils_Clock_compareTimeFract(int time1S, fix16_t time1Fract, int time2S, fix16_t time2Fract);

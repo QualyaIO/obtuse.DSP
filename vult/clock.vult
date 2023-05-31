@@ -31,8 +31,8 @@ fun getMinTicks(): int {
   return 1;
 }
 fun getMaxTicks(): int {
-  // a bit arbitrary
-  return 65535;
+  // max with current implementation due to use of (fixed) float
+  return 32765;
 }
 
 // compare two times stored as seconds and fraction of seconds
