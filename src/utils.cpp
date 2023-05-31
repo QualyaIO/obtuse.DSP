@@ -1555,7 +1555,7 @@ int utils_Clock_getNbNewTicks(utils_Clock__ctx_type_7 &_ctx){
 }
 
 void utils_Clock_setNbTicks(utils_Clock__ctx_type_7 &_ctx, int newTicks){
-   newTicks = int_clip(newTicks,1,4096);
+   newTicks = int_clip(newTicks,1,65535);
    if(newTicks != _ctx.ticks){
       _ctx.pendingTicks = (_ctx.pendingTicks + utils_Clock_getNbNewTicks(_ctx));
       _ctx.ticks = newTicks;
