@@ -256,15 +256,16 @@ and getTicks(): int {
 and getNbNewTicks(): int {
   // ticks from last call
   mem lastTicks;
-  // pending ticks upon BPM change
+  // pending ticks upon BPM or ticks change
   mem pendingTicks;
   val curTicks = getTicks();
   val newTicks = (curTicks - lastTicks) + pendingTicks;
   pendingTicks = 0;
   // we handle up to one beat late (minus one tick) between calls
-  while (newTicks < 0) {
+  if (newTicks < 0) {
     // I should not forget that a % b in C can be negative if a is negative, % is remainder
-    newTicks = newTicks + ticks;
+    // custom formula for mod of negative number
+    newTicks = (ticks - (-newTicks % ticks)) % ticks;
   }
   lastTicks = curTicks;
   return newTicks;
@@ -276,7 +277,7 @@ and setNbTicks(newTicks: int) {
   newTicks = clip(newTicks, getMinTicks(), getMaxTicks());
   if (newTicks <> ticks) {
     // current ticks we might have missed
-    pendingTicks = pendingTicks + getNbNewTicks();
+    pendingTicks = getNbNewTicks();
     ticks = newTicks;
     // reset ticks with new ticks
     lastTicks = getTicks();
@@ -288,7 +289,7 @@ and setBPM(newBPM: real) {
   newBPM = clip(newBPM, getMinBPM(), getMaxBPM());
   if (newBPM <> bpm){
     // current ticks we might have missed
-    pendingTicks = pendingTicks + getNbNewTicks();
+    pendingTicks = getNbNewTicks();
     bpm = newBPM;
     _ = _recompute();
     // reset ticks with new BPM
