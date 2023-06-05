@@ -946,9 +946,6 @@ typedef struct synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0 {
    int last_velocities[4];
    fix16_t last_values[4];
    fix16_t fs;
-   fix16_t buffer_v3[128];
-   fix16_t buffer_v2[128];
-   fix16_t buffer_v1[128];
    fix16_t buffer_v0[128];
 } synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0;
 
@@ -971,15 +968,6 @@ static_inline void synthSamplerBoesendorferGrandPiano_Voice_process_bufferTo_ini
 }
 
 void synthSamplerBoesendorferGrandPiano_Voice_process_bufferTo(synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]);
-
-typedef synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0 synthSamplerBoesendorferGrandPiano_Voice_process_bufferTo_alt_type;
-
-static_inline void synthSamplerBoesendorferGrandPiano_Voice_process_bufferTo_alt_init(synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0 &_output_){
-   synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0_init(_output_);
-   return ;
-}
-
-void synthSamplerBoesendorferGrandPiano_Voice_process_bufferTo_alt(synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]);
 
 typedef synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0 synthSamplerBoesendorferGrandPiano_Voice_setReuse_type;
 
@@ -1291,13 +1279,17 @@ static_inline void synthSamplerBoesendorferGrandPiano_Voice_default_init(synthSa
 void synthSamplerBoesendorferGrandPiano_Voice_default(synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0 &_ctx);
 
 typedef struct synthSamplerBoesendorferGrandPiano_Voice__ctx_type_1 {
-   synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0 _inst275;
    synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0 _inst1b9;
 } synthSamplerBoesendorferGrandPiano_Voice__ctx_type_1;
 
 typedef synthSamplerBoesendorferGrandPiano_Voice__ctx_type_1 synthSamplerBoesendorferGrandPiano_Voice_dummy_type;
 
-void synthSamplerBoesendorferGrandPiano_Voice__ctx_type_1_init(synthSamplerBoesendorferGrandPiano_Voice__ctx_type_1 &_output_);
+static_inline void synthSamplerBoesendorferGrandPiano_Voice__ctx_type_1_init(synthSamplerBoesendorferGrandPiano_Voice__ctx_type_1 &_output_){
+   synthSamplerBoesendorferGrandPiano_Voice__ctx_type_1 &_ctx = _output_;
+   synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0_init(_ctx._inst1b9);
+   
+   return ;
+}
 
 static_inline void synthSamplerBoesendorferGrandPiano_Voice_dummy_init(synthSamplerBoesendorferGrandPiano_Voice__ctx_type_1 &_output_){
    synthSamplerBoesendorferGrandPiano_Voice__ctx_type_1_init(_output_);
@@ -1308,7 +1300,6 @@ static_inline void synthSamplerBoesendorferGrandPiano_Voice_dummy(synthSamplerBo
    fix16_t buff[128];
    synthSamplerBoesendorferGrandPiano_Buffer_buffer(buff);
    synthSamplerBoesendorferGrandPiano_Voice_process_bufferTo(_ctx._inst1b9,0,buff);
-   synthSamplerBoesendorferGrandPiano_Voice_process_bufferTo_alt(_ctx._inst275,0,buff);
 }
 
 

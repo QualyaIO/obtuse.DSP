@@ -104,56 +104,6 @@ and process_bufferTo(nb: int, oBuffer) {
    }
 }
 
-// several buffer
-// FIXME: only set for 4 voices
-and process_bufferTo_alt(nb: int, oBuffer) {
-   // temporary buffer to hold each voice
-   mem buffer_v0, buffer_v1, buffer_v2, buffer_v3;
-   nb = clip(nb, 0, size(oBuffer));
-   if (nb == 0) {
-      nb = size(oBuffer);
-   }
-   _ = poly:Poly.runVoice(0, nb, buffer_v0);
-   _ = poly:Poly.runVoice(1, nb, buffer_v1);
-   _ = poly:Poly.runVoice(2, nb, buffer_v2);
-   _ = poly:Poly.runVoice(3, nb, buffer_v3);
-
-   if (nb > 0) {
-       last_values[0] = buffer_v0[nb - 1];
-       last_values[1] = buffer_v1[nb - 1];
-       last_values[2] = buffer_v2[nb - 1];
-       last_values[3] = buffer_v3[nb - 1];
-   }
-
-   val i = 0;
-   if (normalize) {
-      while (i < nb) {
-         oBuffer[i] = (buffer_v0[i] + buffer_v1[i] + buffer_v2[i] + buffer_v3[i]) * voices_ratio;
-         i = i + 1;
-      }
-      // leftovers, if any
-      i = 0;
-      while (leftovers <> 0.0 && i < nb) {
-         leftovers = leftovers * leftovers_decay;
-         oBuffer[i] = oBuffer[i] + leftovers * voices_ratio;
-         i = i + 1;
-      }
-   } else {
-      while (i < nb) {
-         oBuffer[i] = buffer_v0[i] + buffer_v1[i] + buffer_v2[i] + buffer_v3[i];
-         i = i + 1;
-      }
-      // leftovers, if any
-      i = 0;
-      while (leftovers <> 0.0 && i < nb) {
-         leftovers = leftovers * leftovers_decay;
-         oBuffer[i] = oBuffer[i] + leftovers;
-         i = i + 1;
-      }
-
-   }
-}
-
 // Upon new notes, should we reuse in priority the last voice which played the note, if it was not used in-between? By default pick oldest inactive voice, no matter what, e.g. rotating.
 // Does not affect the behavior when all voices are taken, e.g. steal oldest voice, rotating.
 and setReuse(flag: bool) {
@@ -437,9 +387,6 @@ and default() @[init] {
    _ = poly:Poly.default();
 
    Buffer.buffer(buffer_v0);
-   Buffer.buffer(buffer_v1);
-   Buffer.buffer(buffer_v2);
-   Buffer.buffer(buffer_v3);
 
    mem voices: array(int, 4);
    number_voices = if number_voices == 0 then size(voices) else number_voices;
@@ -471,5 +418,4 @@ fun dummy() {
    val buff;
    Buffer.buffer(buff);
    _ = process_bufferTo(0, buff);
-   _ = process_bufferTo_alt(0, buff);
 }

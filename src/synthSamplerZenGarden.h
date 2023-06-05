@@ -946,9 +946,6 @@ typedef struct synthSamplerZenGarden_Voice__ctx_type_0 {
    int last_velocities[4];
    fix16_t last_values[4];
    fix16_t fs;
-   fix16_t buffer_v3[128];
-   fix16_t buffer_v2[128];
-   fix16_t buffer_v1[128];
    fix16_t buffer_v0[128];
 } synthSamplerZenGarden_Voice__ctx_type_0;
 
@@ -971,15 +968,6 @@ static_inline void synthSamplerZenGarden_Voice_process_bufferTo_init(synthSample
 }
 
 void synthSamplerZenGarden_Voice_process_bufferTo(synthSamplerZenGarden_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]);
-
-typedef synthSamplerZenGarden_Voice__ctx_type_0 synthSamplerZenGarden_Voice_process_bufferTo_alt_type;
-
-static_inline void synthSamplerZenGarden_Voice_process_bufferTo_alt_init(synthSamplerZenGarden_Voice__ctx_type_0 &_output_){
-   synthSamplerZenGarden_Voice__ctx_type_0_init(_output_);
-   return ;
-}
-
-void synthSamplerZenGarden_Voice_process_bufferTo_alt(synthSamplerZenGarden_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]);
 
 typedef synthSamplerZenGarden_Voice__ctx_type_0 synthSamplerZenGarden_Voice_setReuse_type;
 
@@ -1291,13 +1279,17 @@ static_inline void synthSamplerZenGarden_Voice_default_init(synthSamplerZenGarde
 void synthSamplerZenGarden_Voice_default(synthSamplerZenGarden_Voice__ctx_type_0 &_ctx);
 
 typedef struct synthSamplerZenGarden_Voice__ctx_type_1 {
-   synthSamplerZenGarden_Voice__ctx_type_0 _inst275;
    synthSamplerZenGarden_Voice__ctx_type_0 _inst1b9;
 } synthSamplerZenGarden_Voice__ctx_type_1;
 
 typedef synthSamplerZenGarden_Voice__ctx_type_1 synthSamplerZenGarden_Voice_dummy_type;
 
-void synthSamplerZenGarden_Voice__ctx_type_1_init(synthSamplerZenGarden_Voice__ctx_type_1 &_output_);
+static_inline void synthSamplerZenGarden_Voice__ctx_type_1_init(synthSamplerZenGarden_Voice__ctx_type_1 &_output_){
+   synthSamplerZenGarden_Voice__ctx_type_1 &_ctx = _output_;
+   synthSamplerZenGarden_Voice__ctx_type_0_init(_ctx._inst1b9);
+   
+   return ;
+}
 
 static_inline void synthSamplerZenGarden_Voice_dummy_init(synthSamplerZenGarden_Voice__ctx_type_1 &_output_){
    synthSamplerZenGarden_Voice__ctx_type_1_init(_output_);
@@ -1308,7 +1300,6 @@ static_inline void synthSamplerZenGarden_Voice_dummy(synthSamplerZenGarden_Voice
    fix16_t buff[128];
    synthSamplerZenGarden_Buffer_buffer(buff);
    synthSamplerZenGarden_Voice_process_bufferTo(_ctx._inst1b9,0,buff);
-   synthSamplerZenGarden_Voice_process_bufferTo_alt(_ctx._inst275,0,buff);
 }
 
 

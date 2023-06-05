@@ -946,9 +946,6 @@ typedef struct synthSamplerPowerFifths_Voice__ctx_type_0 {
    int last_velocities[4];
    fix16_t last_values[4];
    fix16_t fs;
-   fix16_t buffer_v3[128];
-   fix16_t buffer_v2[128];
-   fix16_t buffer_v1[128];
    fix16_t buffer_v0[128];
 } synthSamplerPowerFifths_Voice__ctx_type_0;
 
@@ -971,15 +968,6 @@ static_inline void synthSamplerPowerFifths_Voice_process_bufferTo_init(synthSamp
 }
 
 void synthSamplerPowerFifths_Voice_process_bufferTo(synthSamplerPowerFifths_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]);
-
-typedef synthSamplerPowerFifths_Voice__ctx_type_0 synthSamplerPowerFifths_Voice_process_bufferTo_alt_type;
-
-static_inline void synthSamplerPowerFifths_Voice_process_bufferTo_alt_init(synthSamplerPowerFifths_Voice__ctx_type_0 &_output_){
-   synthSamplerPowerFifths_Voice__ctx_type_0_init(_output_);
-   return ;
-}
-
-void synthSamplerPowerFifths_Voice_process_bufferTo_alt(synthSamplerPowerFifths_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]);
 
 typedef synthSamplerPowerFifths_Voice__ctx_type_0 synthSamplerPowerFifths_Voice_setReuse_type;
 
@@ -1291,13 +1279,17 @@ static_inline void synthSamplerPowerFifths_Voice_default_init(synthSamplerPowerF
 void synthSamplerPowerFifths_Voice_default(synthSamplerPowerFifths_Voice__ctx_type_0 &_ctx);
 
 typedef struct synthSamplerPowerFifths_Voice__ctx_type_1 {
-   synthSamplerPowerFifths_Voice__ctx_type_0 _inst275;
    synthSamplerPowerFifths_Voice__ctx_type_0 _inst1b9;
 } synthSamplerPowerFifths_Voice__ctx_type_1;
 
 typedef synthSamplerPowerFifths_Voice__ctx_type_1 synthSamplerPowerFifths_Voice_dummy_type;
 
-void synthSamplerPowerFifths_Voice__ctx_type_1_init(synthSamplerPowerFifths_Voice__ctx_type_1 &_output_);
+static_inline void synthSamplerPowerFifths_Voice__ctx_type_1_init(synthSamplerPowerFifths_Voice__ctx_type_1 &_output_){
+   synthSamplerPowerFifths_Voice__ctx_type_1 &_ctx = _output_;
+   synthSamplerPowerFifths_Voice__ctx_type_0_init(_ctx._inst1b9);
+   
+   return ;
+}
 
 static_inline void synthSamplerPowerFifths_Voice_dummy_init(synthSamplerPowerFifths_Voice__ctx_type_1 &_output_){
    synthSamplerPowerFifths_Voice__ctx_type_1_init(_output_);
@@ -1308,7 +1300,6 @@ static_inline void synthSamplerPowerFifths_Voice_dummy(synthSamplerPowerFifths_V
    fix16_t buff[128];
    synthSamplerPowerFifths_Buffer_buffer(buff);
    synthSamplerPowerFifths_Voice_process_bufferTo(_ctx._inst1b9,0,buff);
-   synthSamplerPowerFifths_Voice_process_bufferTo_alt(_ctx._inst275,0,buff);
 }
 
 

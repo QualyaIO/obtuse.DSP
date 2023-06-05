@@ -946,9 +946,6 @@ typedef struct synthSamplerClassicSuitcaseMk1_Voice__ctx_type_0 {
    int last_velocities[4];
    fix16_t last_values[4];
    fix16_t fs;
-   fix16_t buffer_v3[128];
-   fix16_t buffer_v2[128];
-   fix16_t buffer_v1[128];
    fix16_t buffer_v0[128];
 } synthSamplerClassicSuitcaseMk1_Voice__ctx_type_0;
 
@@ -971,15 +968,6 @@ static_inline void synthSamplerClassicSuitcaseMk1_Voice_process_bufferTo_init(sy
 }
 
 void synthSamplerClassicSuitcaseMk1_Voice_process_bufferTo(synthSamplerClassicSuitcaseMk1_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]);
-
-typedef synthSamplerClassicSuitcaseMk1_Voice__ctx_type_0 synthSamplerClassicSuitcaseMk1_Voice_process_bufferTo_alt_type;
-
-static_inline void synthSamplerClassicSuitcaseMk1_Voice_process_bufferTo_alt_init(synthSamplerClassicSuitcaseMk1_Voice__ctx_type_0 &_output_){
-   synthSamplerClassicSuitcaseMk1_Voice__ctx_type_0_init(_output_);
-   return ;
-}
-
-void synthSamplerClassicSuitcaseMk1_Voice_process_bufferTo_alt(synthSamplerClassicSuitcaseMk1_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]);
 
 typedef synthSamplerClassicSuitcaseMk1_Voice__ctx_type_0 synthSamplerClassicSuitcaseMk1_Voice_setReuse_type;
 
@@ -1291,13 +1279,17 @@ static_inline void synthSamplerClassicSuitcaseMk1_Voice_default_init(synthSample
 void synthSamplerClassicSuitcaseMk1_Voice_default(synthSamplerClassicSuitcaseMk1_Voice__ctx_type_0 &_ctx);
 
 typedef struct synthSamplerClassicSuitcaseMk1_Voice__ctx_type_1 {
-   synthSamplerClassicSuitcaseMk1_Voice__ctx_type_0 _inst275;
    synthSamplerClassicSuitcaseMk1_Voice__ctx_type_0 _inst1b9;
 } synthSamplerClassicSuitcaseMk1_Voice__ctx_type_1;
 
 typedef synthSamplerClassicSuitcaseMk1_Voice__ctx_type_1 synthSamplerClassicSuitcaseMk1_Voice_dummy_type;
 
-void synthSamplerClassicSuitcaseMk1_Voice__ctx_type_1_init(synthSamplerClassicSuitcaseMk1_Voice__ctx_type_1 &_output_);
+static_inline void synthSamplerClassicSuitcaseMk1_Voice__ctx_type_1_init(synthSamplerClassicSuitcaseMk1_Voice__ctx_type_1 &_output_){
+   synthSamplerClassicSuitcaseMk1_Voice__ctx_type_1 &_ctx = _output_;
+   synthSamplerClassicSuitcaseMk1_Voice__ctx_type_0_init(_ctx._inst1b9);
+   
+   return ;
+}
 
 static_inline void synthSamplerClassicSuitcaseMk1_Voice_dummy_init(synthSamplerClassicSuitcaseMk1_Voice__ctx_type_1 &_output_){
    synthSamplerClassicSuitcaseMk1_Voice__ctx_type_1_init(_output_);
@@ -1308,7 +1300,6 @@ static_inline void synthSamplerClassicSuitcaseMk1_Voice_dummy(synthSamplerClassi
    fix16_t buff[128];
    synthSamplerClassicSuitcaseMk1_Buffer_buffer(buff);
    synthSamplerClassicSuitcaseMk1_Voice_process_bufferTo(_ctx._inst1b9,0,buff);
-   synthSamplerClassicSuitcaseMk1_Voice_process_bufferTo_alt(_ctx._inst275,0,buff);
 }
 
 

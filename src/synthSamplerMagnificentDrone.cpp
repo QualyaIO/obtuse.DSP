@@ -473,9 +473,6 @@ void synthSamplerMagnificentDrone_Voice__ctx_type_0_init(synthSamplerMagnificent
    int_init_array(4,0,_ctx.last_velocities);
    fix_init_array(4,0x0 /* 0.000000 */,_ctx.last_values);
    _ctx.fs = 0x0 /* 0.000000 */;
-   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_v3);
-   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_v2);
-   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_v1);
    fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_v0);
    synthSamplerMagnificentDrone_Voice_default(_ctx);
    
@@ -545,50 +542,6 @@ void synthSamplerMagnificentDrone_Voice_process_bufferTo(synthSamplerMagnificent
       i = 0;
       while(i < nb){
          oBuffer[i] = fix_mul(_ctx.voices_ratio,oBuffer[i]);
-         i = (1 + i);
-      }
-   }
-}
-
-void synthSamplerMagnificentDrone_Voice_process_bufferTo_alt(synthSamplerMagnificentDrone_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]){
-   nb = int_clip(nb,0,128);
-   if(nb == 0){
-      nb = 128;
-   }
-   synthSamplerMagnificentDrone_Poly_runVoice(_ctx.poly,0,nb,_ctx.buffer_v0);
-   synthSamplerMagnificentDrone_Poly_runVoice(_ctx.poly,1,nb,_ctx.buffer_v1);
-   synthSamplerMagnificentDrone_Poly_runVoice(_ctx.poly,2,nb,_ctx.buffer_v2);
-   synthSamplerMagnificentDrone_Poly_runVoice(_ctx.poly,3,nb,_ctx.buffer_v3);
-   if(nb > 0){
-      _ctx.last_values[0] = _ctx.buffer_v0[((-1) + nb)];
-      _ctx.last_values[1] = _ctx.buffer_v1[((-1) + nb)];
-      _ctx.last_values[2] = _ctx.buffer_v2[((-1) + nb)];
-      _ctx.last_values[3] = _ctx.buffer_v3[((-1) + nb)];
-   }
-   int i;
-   i = 0;
-   if(_ctx.normalize){
-      while(i < nb){
-         oBuffer[i] = fix_mul(_ctx.voices_ratio,(_ctx.buffer_v0[i] + _ctx.buffer_v1[i] + _ctx.buffer_v2[i] + _ctx.buffer_v3[i]));
-         i = (1 + i);
-      }
-      i = 0;
-      while((_ctx.leftovers != 0x0 /* 0.000000 */) && (i < nb)){
-         _ctx.leftovers = fix_mul(_ctx.leftovers,_ctx.leftovers_decay);
-         oBuffer[i] = (oBuffer[i] + fix_mul(_ctx.leftovers,_ctx.voices_ratio));
-         i = (1 + i);
-      }
-   }
-   else
-   {
-      while(i < nb){
-         oBuffer[i] = (_ctx.buffer_v0[i] + _ctx.buffer_v1[i] + _ctx.buffer_v2[i] + _ctx.buffer_v3[i]);
-         i = (1 + i);
-      }
-      i = 0;
-      while((_ctx.leftovers != 0x0 /* 0.000000 */) && (i < nb)){
-         _ctx.leftovers = fix_mul(_ctx.leftovers,_ctx.leftovers_decay);
-         oBuffer[i] = (_ctx.leftovers + oBuffer[i]);
          i = (1 + i);
       }
    }
@@ -707,9 +660,6 @@ void synthSamplerMagnificentDrone_Voice_setSamplerate(synthSamplerMagnificentDro
 void synthSamplerMagnificentDrone_Voice_default(synthSamplerMagnificentDrone_Voice__ctx_type_0 &_ctx){
    synthSamplerMagnificentDrone_Poly_default(_ctx.poly);
    synthSamplerMagnificentDrone_Buffer_buffer(_ctx.buffer_v0);
-   synthSamplerMagnificentDrone_Buffer_buffer(_ctx.buffer_v1);
-   synthSamplerMagnificentDrone_Buffer_buffer(_ctx.buffer_v2);
-   synthSamplerMagnificentDrone_Buffer_buffer(_ctx.buffer_v3);
    if(_ctx.number_voices == 0){
       _ctx.number_voices = 4;
    }
@@ -723,14 +673,6 @@ void synthSamplerMagnificentDrone_Voice_default(synthSamplerMagnificentDrone_Voi
    synthSamplerMagnificentDrone_Voice_setNormalize(_ctx,true);
    synthSamplerMagnificentDrone_Voice_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    synthSamplerMagnificentDrone_Voice_setReuse(_ctx,false);
-}
-
-void synthSamplerMagnificentDrone_Voice__ctx_type_1_init(synthSamplerMagnificentDrone_Voice__ctx_type_1 &_output_){
-   synthSamplerMagnificentDrone_Voice__ctx_type_1 &_ctx = _output_;
-   synthSamplerMagnificentDrone_Voice__ctx_type_0_init(_ctx._inst275);
-   synthSamplerMagnificentDrone_Voice__ctx_type_0_init(_ctx._inst1b9);
-   
-   return ;
 }
 
 

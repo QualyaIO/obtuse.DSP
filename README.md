@@ -28,7 +28,6 @@ Interface
 
 Fixes
 
-- voice: buffer_alt with fixed 4 voices
 - timeout for voices? (to take into account upon reuse)
 - OSC > 4096 can prevent modulation, adjust max phase depending on size to avoid hitting fixed float limit during computations
 - SVF: not compute while disabled while avoiding noise upon start

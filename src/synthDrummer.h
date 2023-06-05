@@ -837,9 +837,6 @@ typedef struct synthDrummer_Voice__ctx_type_0 {
    int last_velocities[4];
    fix16_t last_values[4];
    fix16_t fs;
-   fix16_t buffer_v3[128];
-   fix16_t buffer_v2[128];
-   fix16_t buffer_v1[128];
    fix16_t buffer_v0[128];
 } synthDrummer_Voice__ctx_type_0;
 
@@ -862,15 +859,6 @@ static_inline void synthDrummer_Voice_process_bufferTo_init(synthDrummer_Voice__
 }
 
 void synthDrummer_Voice_process_bufferTo(synthDrummer_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]);
-
-typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_process_bufferTo_alt_type;
-
-static_inline void synthDrummer_Voice_process_bufferTo_alt_init(synthDrummer_Voice__ctx_type_0 &_output_){
-   synthDrummer_Voice__ctx_type_0_init(_output_);
-   return ;
-}
-
-void synthDrummer_Voice_process_bufferTo_alt(synthDrummer_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]);
 
 typedef synthDrummer_Voice__ctx_type_0 synthDrummer_Voice_setReuse_type;
 
@@ -1182,13 +1170,17 @@ static_inline void synthDrummer_Voice_default_init(synthDrummer_Voice__ctx_type_
 void synthDrummer_Voice_default(synthDrummer_Voice__ctx_type_0 &_ctx);
 
 typedef struct synthDrummer_Voice__ctx_type_1 {
-   synthDrummer_Voice__ctx_type_0 _inst275;
    synthDrummer_Voice__ctx_type_0 _inst1b9;
 } synthDrummer_Voice__ctx_type_1;
 
 typedef synthDrummer_Voice__ctx_type_1 synthDrummer_Voice_dummy_type;
 
-void synthDrummer_Voice__ctx_type_1_init(synthDrummer_Voice__ctx_type_1 &_output_);
+static_inline void synthDrummer_Voice__ctx_type_1_init(synthDrummer_Voice__ctx_type_1 &_output_){
+   synthDrummer_Voice__ctx_type_1 &_ctx = _output_;
+   synthDrummer_Voice__ctx_type_0_init(_ctx._inst1b9);
+   
+   return ;
+}
 
 static_inline void synthDrummer_Voice_dummy_init(synthDrummer_Voice__ctx_type_1 &_output_){
    synthDrummer_Voice__ctx_type_1_init(_output_);
@@ -1199,7 +1191,6 @@ static_inline void synthDrummer_Voice_dummy(synthDrummer_Voice__ctx_type_1 &_ctx
    fix16_t buff[128];
    synthDrummer_Buffer_buffer(buff);
    synthDrummer_Voice_process_bufferTo(_ctx._inst1b9,0,buff);
-   synthDrummer_Voice_process_bufferTo_alt(_ctx._inst275,0,buff);
 }
 
 
