@@ -131,7 +131,7 @@ void synthSamplerMysticVibes_Sampler__ctx_type_0_init(synthSamplerMysticVibes_Sa
    _ctx.fs = 0x0 /* 0.000000 */;
    _ctx.crossfade = false;
    fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_o);
-   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_cross);
+   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_cross);
    _ctx.bend = 0x0 /* 0.000000 */;
    synthSamplerMysticVibes_Sampler_default(_ctx);
    
@@ -165,9 +165,9 @@ fix16_t synthSamplerMysticVibes_Sampler_process(synthSamplerMysticVibes_Sampler_
       }
       else
       {
-         if((_ctx.state == 1) && bool_not(_ctx.quickKill) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && _ctx.crossfade && (idx >= (_ctx.loopE + (- (128 / 2)))) && (idx <= (_ctx.loopE + (128 / 2)))){
+         if((_ctx.state == 1) && bool_not(_ctx.quickKill) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && _ctx.crossfade && (idx >= (_ctx.loopE + (- (256 / 2)))) && (idx <= (_ctx.loopE + (256 / 2)))){
             _ctx.state = 2;
-            idx = (idx + (- _ctx.loopE) + (128 / 2));
+            idx = (idx + (- _ctx.loopE) + (256 / 2));
             _ctx.posBase = idx;
             _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
          }
@@ -179,8 +179,8 @@ fix16_t synthSamplerMysticVibes_Sampler_process(synthSamplerMysticVibes_Sampler_
                _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
             }
          }
-         if((_ctx.state == 2) && (idx >= 127)){
-            idx = (_ctx.loopS + idx + (- (128 / 2)));
+         if((_ctx.state == 2) && (idx >= 255)){
+            idx = (_ctx.loopS + idx + (- (256 / 2)));
             _ctx.posBase = idx;
             _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
             if(_ctx.gate || _ctx.sustaining){
@@ -242,9 +242,9 @@ void synthSamplerMysticVibes_Sampler_process_bufferTo(synthSamplerMysticVibes_Sa
          }
          else
          {
-            if((_ctx.state == 1) && bool_not(_ctx.quickKill) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && _ctx.crossfade && (idx >= (_ctx.loopE + (- (128 / 2)))) && (idx <= (_ctx.loopE + (128 / 2)))){
+            if((_ctx.state == 1) && bool_not(_ctx.quickKill) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && _ctx.crossfade && (idx >= (_ctx.loopE + (- (256 / 2)))) && (idx <= (_ctx.loopE + (256 / 2)))){
                _ctx.state = 2;
-               idx = (idx + (- _ctx.loopE) + (128 / 2));
+               idx = (idx + (- _ctx.loopE) + (256 / 2));
                _ctx.posBase = idx;
                _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
             }
@@ -256,8 +256,8 @@ void synthSamplerMysticVibes_Sampler_process_bufferTo(synthSamplerMysticVibes_Sa
                   _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
                }
             }
-            if((_ctx.state == 2) && (idx >= 127)){
-               idx = (_ctx.loopS + idx + (- (128 / 2)));
+            if((_ctx.state == 2) && (idx >= 255)){
+               idx = (_ctx.loopS + idx + (- (256 / 2)));
                _ctx.posBase = idx;
                _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
                if(_ctx.gate || _ctx.sustaining){
@@ -309,18 +309,18 @@ void synthSamplerMysticVibes_Sampler_setSamplerate(synthSamplerMysticVibes_Sampl
 }
 
 void synthSamplerMysticVibes_Sampler_updateCrossFade(synthSamplerMysticVibes_Sampler__ctx_type_0 &_ctx){
-   if((_ctx.loopS > (128 / 2)) && ((_ctx.size + (- _ctx.loopE)) > (1 + (128 / 2)))){
+   if((_ctx.loopS > (256 / 2)) && ((_ctx.size + (- _ctx.loopE)) > (1 + (256 / 2)))){
       _ctx.crossfade = true;
       int i;
       i = 0;
       fix16_t k;
       k = 0x0 /* 0.000000 */;
       int idxS;
-      idxS = (_ctx.loopS + (- (128 / 2)));
+      idxS = (_ctx.loopS + (- (256 / 2)));
       int idxE;
-      idxE = (_ctx.loopE + (- (128 / 2)));
-      while(i < 128){
-         k = fix_mul(0x204 /* 0.007874 */,int_to_fix(i));
+      idxE = (_ctx.loopE + (- (256 / 2)));
+      while(i < 256){
+         k = fix_mul(0x101 /* 0.003922 */,int_to_fix(i));
          _ctx.buffer_cross[i] = (fix_mul(k,synthSamplerMysticVibes_SampleWrapper_getSample((i + idxS))) + fix_mul(synthSamplerMysticVibes_SampleWrapper_getSample((i + idxE)),(0x10000 /* 1.000000 */ + (- k))));
          i = (1 + i);
       }
@@ -390,7 +390,6 @@ void synthSamplerMysticVibes_Sampler_noteOff(synthSamplerMysticVibes_Sampler__ct
 
 void synthSamplerMysticVibes_Sampler_default(synthSamplerMysticVibes_Sampler__ctx_type_0 &_ctx){
    _ctx.size = synthSamplerMysticVibes_SampleWrapper_getSampleSize();
-   synthSamplerMysticVibes_Buffer_buffer(_ctx.buffer_cross);
    _ctx.crossfade = false;
    _ctx.sampleFs = 0x1e0000 /* 30.000000 */;
    _ctx.sampleNote = 60;

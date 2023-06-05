@@ -282,7 +282,7 @@ typedef struct synthSamplerMagnificentDrone_Sampler__ctx_type_0 {
    fix16_t fs;
    uint8_t crossfade;
    fix16_t buffer_o[128];
-   fix16_t buffer_cross[128];
+   fix16_t buffer_cross[256];
    fix16_t bend;
 } synthSamplerMagnificentDrone_Sampler__ctx_type_0;
 

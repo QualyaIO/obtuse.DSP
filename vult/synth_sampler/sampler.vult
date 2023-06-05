@@ -56,7 +56,8 @@ and process() {
   mem loopS: int;
   mem loopE: int;
   mem crossfade: bool;
-  mem buffer_cross;
+  // used to compute cross-fade. Declare fixed size here, so as not to change behavior if Buffer is changed
+  mem buffer_cross: array(real, 256);
   // using integer "base position" float position to overcome limitation of fixed point
   mem posBase: int;
   mem pos: real;
@@ -421,8 +422,6 @@ and noteOff(note:int, channel:int) {
 
 and default() @[init] {
   size = SampleWrapper.getSampleSize();
-  // will copy a new array
-  Buffer.buffer(buffer_cross);
   crossfade = false;
   // defaults for current sample
   sampleFs = SampleWrapper.getSampleFs();

@@ -131,7 +131,7 @@ void synthSamplerKoto_Sampler__ctx_type_0_init(synthSamplerKoto_Sampler__ctx_typ
    _ctx.fs = 0x0 /* 0.000000 */;
    _ctx.crossfade = false;
    fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_o);
-   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_cross);
+   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_cross);
    _ctx.bend = 0x0 /* 0.000000 */;
    synthSamplerKoto_Sampler_default(_ctx);
    
@@ -165,9 +165,9 @@ fix16_t synthSamplerKoto_Sampler_process(synthSamplerKoto_Sampler__ctx_type_0 &_
       }
       else
       {
-         if((_ctx.state == 1) && bool_not(_ctx.quickKill) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && _ctx.crossfade && (idx >= (_ctx.loopE + (- (128 / 2)))) && (idx <= (_ctx.loopE + (128 / 2)))){
+         if((_ctx.state == 1) && bool_not(_ctx.quickKill) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && _ctx.crossfade && (idx >= (_ctx.loopE + (- (256 / 2)))) && (idx <= (_ctx.loopE + (256 / 2)))){
             _ctx.state = 2;
-            idx = (idx + (- _ctx.loopE) + (128 / 2));
+            idx = (idx + (- _ctx.loopE) + (256 / 2));
             _ctx.posBase = idx;
             _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
          }
@@ -179,8 +179,8 @@ fix16_t synthSamplerKoto_Sampler_process(synthSamplerKoto_Sampler__ctx_type_0 &_
                _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
             }
          }
-         if((_ctx.state == 2) && (idx >= 127)){
-            idx = (_ctx.loopS + idx + (- (128 / 2)));
+         if((_ctx.state == 2) && (idx >= 255)){
+            idx = (_ctx.loopS + idx + (- (256 / 2)));
             _ctx.posBase = idx;
             _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
             if(_ctx.gate || _ctx.sustaining){
@@ -242,9 +242,9 @@ void synthSamplerKoto_Sampler_process_bufferTo(synthSamplerKoto_Sampler__ctx_typ
          }
          else
          {
-            if((_ctx.state == 1) && bool_not(_ctx.quickKill) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && _ctx.crossfade && (idx >= (_ctx.loopE + (- (128 / 2)))) && (idx <= (_ctx.loopE + (128 / 2)))){
+            if((_ctx.state == 1) && bool_not(_ctx.quickKill) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && _ctx.crossfade && (idx >= (_ctx.loopE + (- (256 / 2)))) && (idx <= (_ctx.loopE + (256 / 2)))){
                _ctx.state = 2;
-               idx = (idx + (- _ctx.loopE) + (128 / 2));
+               idx = (idx + (- _ctx.loopE) + (256 / 2));
                _ctx.posBase = idx;
                _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
             }
@@ -256,8 +256,8 @@ void synthSamplerKoto_Sampler_process_bufferTo(synthSamplerKoto_Sampler__ctx_typ
                   _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
                }
             }
-            if((_ctx.state == 2) && (idx >= 127)){
-               idx = (_ctx.loopS + idx + (- (128 / 2)));
+            if((_ctx.state == 2) && (idx >= 255)){
+               idx = (_ctx.loopS + idx + (- (256 / 2)));
                _ctx.posBase = idx;
                _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
                if(_ctx.gate || _ctx.sustaining){
@@ -309,18 +309,18 @@ void synthSamplerKoto_Sampler_setSamplerate(synthSamplerKoto_Sampler__ctx_type_0
 }
 
 void synthSamplerKoto_Sampler_updateCrossFade(synthSamplerKoto_Sampler__ctx_type_0 &_ctx){
-   if((_ctx.loopS > (128 / 2)) && ((_ctx.size + (- _ctx.loopE)) > (1 + (128 / 2)))){
+   if((_ctx.loopS > (256 / 2)) && ((_ctx.size + (- _ctx.loopE)) > (1 + (256 / 2)))){
       _ctx.crossfade = true;
       int i;
       i = 0;
       fix16_t k;
       k = 0x0 /* 0.000000 */;
       int idxS;
-      idxS = (_ctx.loopS + (- (128 / 2)));
+      idxS = (_ctx.loopS + (- (256 / 2)));
       int idxE;
-      idxE = (_ctx.loopE + (- (128 / 2)));
-      while(i < 128){
-         k = fix_mul(0x204 /* 0.007874 */,int_to_fix(i));
+      idxE = (_ctx.loopE + (- (256 / 2)));
+      while(i < 256){
+         k = fix_mul(0x101 /* 0.003922 */,int_to_fix(i));
          _ctx.buffer_cross[i] = (fix_mul(k,synthSamplerKoto_SampleWrapper_getSample((i + idxS))) + fix_mul(synthSamplerKoto_SampleWrapper_getSample((i + idxE)),(0x10000 /* 1.000000 */ + (- k))));
          i = (1 + i);
       }
@@ -390,7 +390,6 @@ void synthSamplerKoto_Sampler_noteOff(synthSamplerKoto_Sampler__ctx_type_0 &_ctx
 
 void synthSamplerKoto_Sampler_default(synthSamplerKoto_Sampler__ctx_type_0 &_ctx){
    _ctx.size = synthSamplerKoto_SampleWrapper_getSampleSize();
-   synthSamplerKoto_Buffer_buffer(_ctx.buffer_cross);
    _ctx.crossfade = false;
    _ctx.sampleFs = 0x1e0000 /* 30.000000 */;
    _ctx.sampleNote = 60;
