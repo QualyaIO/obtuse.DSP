@@ -130,8 +130,8 @@ void synthSamplerCello_Sampler__ctx_type_0_init(synthSamplerCello_Sampler__ctx_t
    _ctx.fsRatio = 0x0 /* 0.000000 */;
    _ctx.fs = 0x0 /* 0.000000 */;
    _ctx.crossfade = false;
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_o);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_cross);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_o);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_cross);
    _ctx.bend = 0x0 /* 0.000000 */;
    synthSamplerCello_Sampler_default(_ctx);
    
@@ -165,9 +165,9 @@ fix16_t synthSamplerCello_Sampler_process(synthSamplerCello_Sampler__ctx_type_0 
       }
       else
       {
-         if((_ctx.state == 1) && bool_not(_ctx.quickKill) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && _ctx.crossfade && (idx >= (_ctx.loopE + (- (256 / 2)))) && (idx <= (_ctx.loopE + (256 / 2)))){
+         if((_ctx.state == 1) && bool_not(_ctx.quickKill) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && _ctx.crossfade && (idx >= (_ctx.loopE + (- (128 / 2)))) && (idx <= (_ctx.loopE + (128 / 2)))){
             _ctx.state = 2;
-            idx = (idx + (- _ctx.loopE) + (256 / 2));
+            idx = (idx + (- _ctx.loopE) + (128 / 2));
             _ctx.posBase = idx;
             _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
          }
@@ -179,8 +179,8 @@ fix16_t synthSamplerCello_Sampler_process(synthSamplerCello_Sampler__ctx_type_0 
                _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
             }
          }
-         if((_ctx.state == 2) && (idx >= 255)){
-            idx = (_ctx.loopS + idx + (- (256 / 2)));
+         if((_ctx.state == 2) && (idx >= 127)){
+            idx = (_ctx.loopS + idx + (- (128 / 2)));
             _ctx.posBase = idx;
             _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
             if(_ctx.gate || _ctx.sustaining){
@@ -217,10 +217,10 @@ fix16_t synthSamplerCello_Sampler_process(synthSamplerCello_Sampler__ctx_type_0 
    return value;
 }
 
-void synthSamplerCello_Sampler_process_bufferTo(synthSamplerCello_Sampler__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void synthSamplerCello_Sampler_process_bufferTo(synthSamplerCello_Sampler__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    int idx;
    idx = 0;
@@ -242,9 +242,9 @@ void synthSamplerCello_Sampler_process_bufferTo(synthSamplerCello_Sampler__ctx_t
          }
          else
          {
-            if((_ctx.state == 1) && bool_not(_ctx.quickKill) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && _ctx.crossfade && (idx >= (_ctx.loopE + (- (256 / 2)))) && (idx <= (_ctx.loopE + (256 / 2)))){
+            if((_ctx.state == 1) && bool_not(_ctx.quickKill) && (_ctx.gate || _ctx.sustaining) && _ctx.loopy && _ctx.crossfade && (idx >= (_ctx.loopE + (- (128 / 2)))) && (idx <= (_ctx.loopE + (128 / 2)))){
                _ctx.state = 2;
-               idx = (idx + (- _ctx.loopE) + (256 / 2));
+               idx = (idx + (- _ctx.loopE) + (128 / 2));
                _ctx.posBase = idx;
                _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
             }
@@ -256,8 +256,8 @@ void synthSamplerCello_Sampler_process_bufferTo(synthSamplerCello_Sampler__ctx_t
                   _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
                }
             }
-            if((_ctx.state == 2) && (idx >= 255)){
-               idx = (_ctx.loopS + idx + (- (256 / 2)));
+            if((_ctx.state == 2) && (idx >= 127)){
+               idx = (_ctx.loopS + idx + (- (128 / 2)));
                _ctx.posBase = idx;
                _ctx.pos = (_ctx.pos % 0x10000 /* 1.000000 */);
                if(_ctx.gate || _ctx.sustaining){
@@ -309,18 +309,18 @@ void synthSamplerCello_Sampler_setSamplerate(synthSamplerCello_Sampler__ctx_type
 }
 
 void synthSamplerCello_Sampler_updateCrossFade(synthSamplerCello_Sampler__ctx_type_0 &_ctx){
-   if((_ctx.loopS > (256 / 2)) && ((_ctx.size + (- _ctx.loopE)) > (1 + (256 / 2)))){
+   if((_ctx.loopS > (128 / 2)) && ((_ctx.size + (- _ctx.loopE)) > (1 + (128 / 2)))){
       _ctx.crossfade = true;
       int i;
       i = 0;
       fix16_t k;
       k = 0x0 /* 0.000000 */;
       int idxS;
-      idxS = (_ctx.loopS + (- (256 / 2)));
+      idxS = (_ctx.loopS + (- (128 / 2)));
       int idxE;
-      idxE = (_ctx.loopE + (- (256 / 2)));
-      while(i < 256){
-         k = fix_mul(0x101 /* 0.003922 */,int_to_fix(i));
+      idxE = (_ctx.loopE + (- (128 / 2)));
+      while(i < 128){
+         k = fix_mul(0x204 /* 0.007874 */,int_to_fix(i));
          _ctx.buffer_cross[i] = (fix_mul(k,synthSamplerCello_SampleWrapper_getSample((i + idxS))) + fix_mul(synthSamplerCello_SampleWrapper_getSample((i + idxE)),(0x10000 /* 1.000000 */ + (- k))));
          i = (1 + i);
       }
@@ -474,10 +474,10 @@ void synthSamplerCello_Voice__ctx_type_0_init(synthSamplerCello_Voice__ctx_type_
    int_init_array(4,0,_ctx.last_velocities);
    fix_init_array(4,0x0 /* 0.000000 */,_ctx.last_values);
    _ctx.fs = 0x0 /* 0.000000 */;
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v3);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v2);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v1);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v0);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_v3);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_v2);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_v1);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_v0);
    synthSamplerCello_Voice_default(_ctx);
    
    return ;
@@ -503,10 +503,10 @@ fix16_t synthSamplerCello_Voice_process(synthSamplerCello_Voice__ctx_type_0 &_ct
    return value;
 }
 
-void synthSamplerCello_Voice_process_bufferTo(synthSamplerCello_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void synthSamplerCello_Voice_process_bufferTo(synthSamplerCello_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    int v;
    v = 0;
@@ -551,10 +551,10 @@ void synthSamplerCello_Voice_process_bufferTo(synthSamplerCello_Voice__ctx_type_
    }
 }
 
-void synthSamplerCello_Voice_process_bufferTo_alt(synthSamplerCello_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void synthSamplerCello_Voice_process_bufferTo_alt(synthSamplerCello_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    synthSamplerCello_Poly_runVoice(_ctx.poly,0,nb,_ctx.buffer_v0);
    synthSamplerCello_Poly_runVoice(_ctx.poly,1,nb,_ctx.buffer_v1);

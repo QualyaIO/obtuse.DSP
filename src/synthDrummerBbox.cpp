@@ -69,7 +69,7 @@ void synthDrummerBbox_Drummer__ctx_type_0_init(synthDrummerBbox_Drummer__ctx_typ
    _ctx.level = 0x0 /* 0.000000 */;
    _ctx.fsRatio = 0x0 /* 0.000000 */;
    _ctx.fs = 0x0 /* 0.000000 */;
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_o);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_o);
    _ctx.bend = 0x0 /* 0.000000 */;
    synthDrummerBbox_Drummer_default(_ctx);
    
@@ -128,10 +128,10 @@ fix16_t synthDrummerBbox_Drummer_process(synthDrummerBbox_Drummer__ctx_type_0 &_
    return value;
 }
 
-void synthDrummerBbox_Drummer_process_bufferTo(synthDrummerBbox_Drummer__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void synthDrummerBbox_Drummer_process_bufferTo(synthDrummerBbox_Drummer__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    fix16_t value;
    int i;
@@ -406,10 +406,10 @@ void synthDrummerBbox_Voice__ctx_type_0_init(synthDrummerBbox_Voice__ctx_type_0 
    int_init_array(4,0,_ctx.last_velocities);
    fix_init_array(4,0x0 /* 0.000000 */,_ctx.last_values);
    _ctx.fs = 0x0 /* 0.000000 */;
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v3);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v2);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v1);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v0);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_v3);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_v2);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_v1);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_v0);
    synthDrummerBbox_Voice_default(_ctx);
    
    return ;
@@ -435,10 +435,10 @@ fix16_t synthDrummerBbox_Voice_process(synthDrummerBbox_Voice__ctx_type_0 &_ctx)
    return value;
 }
 
-void synthDrummerBbox_Voice_process_bufferTo(synthDrummerBbox_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void synthDrummerBbox_Voice_process_bufferTo(synthDrummerBbox_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    int v;
    v = 0;
@@ -483,10 +483,10 @@ void synthDrummerBbox_Voice_process_bufferTo(synthDrummerBbox_Voice__ctx_type_0 
    }
 }
 
-void synthDrummerBbox_Voice_process_bufferTo_alt(synthDrummerBbox_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void synthDrummerBbox_Voice_process_bufferTo_alt(synthDrummerBbox_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    synthDrummerBbox_Poly_runVoice(_ctx.poly,0,nb,_ctx.buffer_v0);
    synthDrummerBbox_Poly_runVoice(_ctx.poly,1,nb,_ctx.buffer_v1);

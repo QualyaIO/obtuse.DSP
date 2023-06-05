@@ -7,7 +7,7 @@
 #include "vultin.h"
 #include "effectsL.tables.h"
 
-static_inline void effectsL_Buffer_buffer(fix16_t (&oBuff)[256]){
+static_inline void effectsL_Buffer_buffer(fix16_t (&oBuff)[128]){
 }
 
 void effectsL_Buffer_buffer_large(fix16_t (&oBuff)[8192]);
@@ -39,7 +39,7 @@ static_inline void effectsL_CombFB_process_bufferTo_init(effectsL_CombFB__ctx_ty
    return ;
 }
 
-void effectsL_CombFB_process_bufferTo(effectsL_CombFB__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256], fix16_t (&oBuffer)[256]);
+void effectsL_CombFB_process_bufferTo(effectsL_CombFB__ctx_type_0 &_ctx, int nb, fix16_t (&input)[128], fix16_t (&oBuffer)[128]);
 
 typedef effectsL_CombFB__ctx_type_0 effectsL_CombFB_setDecay_type;
 
@@ -147,7 +147,7 @@ static_inline void effectsL_CombFB_dummy_init(effectsL_CombFB__ctx_type_1 &_outp
 }
 
 static_inline void effectsL_CombFB_dummy(effectsL_CombFB__ctx_type_1 &_ctx){
-   fix16_t buff[256];
+   fix16_t buff[128];
    effectsL_Buffer_buffer(buff);
    effectsL_CombFB_process_bufferTo(_ctx._inst13c,0,buff,buff);
 }
@@ -180,7 +180,7 @@ static_inline void effectsL_Allpass_process_bufferTo_init(effectsL_Allpass__ctx_
    return ;
 }
 
-void effectsL_Allpass_process_bufferTo(effectsL_Allpass__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256], fix16_t (&oBuffer)[256]);
+void effectsL_Allpass_process_bufferTo(effectsL_Allpass__ctx_type_0 &_ctx, int nb, fix16_t (&input)[128], fix16_t (&oBuffer)[128]);
 
 typedef effectsL_Allpass__ctx_type_0 effectsL_Allpass_setDecay_type;
 
@@ -283,7 +283,7 @@ static_inline void effectsL_Allpass_dummy_init(effectsL_Allpass__ctx_type_1 &_ou
 }
 
 static_inline void effectsL_Allpass_dummy(effectsL_Allpass__ctx_type_1 &_ctx){
-   fix16_t buff[256];
+   fix16_t buff[128];
    effectsL_Buffer_buffer(buff);
    effectsL_Allpass_process_bufferTo(_ctx._inst156,0,buff,buff);
 }
@@ -299,12 +299,12 @@ typedef struct effectsL_Reverb__ctx_type_0 {
    effectsL_CombFB__ctx_type_0 comb1;
    int comb0delay;
    effectsL_CombFB__ctx_type_0 comb0;
-   fix16_t buffer_c3[256];
-   fix16_t buffer_c2[256];
-   fix16_t buffer_c1[256];
-   fix16_t buffer_c0[256];
-   fix16_t buffer_a1[256];
-   fix16_t buffer_a0[256];
+   fix16_t buffer_c3[128];
+   fix16_t buffer_c2[128];
+   fix16_t buffer_c1[128];
+   fix16_t buffer_c0[128];
+   fix16_t buffer_a1[128];
+   fix16_t buffer_a0[128];
    effectsL_Allpass__ctx_type_0 allpass1;
    effectsL_Allpass__ctx_type_0 allpass0;
 } effectsL_Reverb__ctx_type_0;
@@ -331,7 +331,7 @@ static_inline void effectsL_Reverb_process_bufferTo_init(effectsL_Reverb__ctx_ty
    return ;
 }
 
-void effectsL_Reverb_process_bufferTo(effectsL_Reverb__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256], fix16_t (&oBuffer)[256]);
+void effectsL_Reverb_process_bufferTo(effectsL_Reverb__ctx_type_0 &_ctx, int nb, fix16_t (&input)[128], fix16_t (&oBuffer)[128]);
 
 typedef effectsL_Reverb__ctx_type_0 effectsL_Reverb_setSamplerate_type;
 
@@ -388,7 +388,7 @@ static_inline void effectsL_Reverb_dummy_init(effectsL_Reverb__ctx_type_1 &_outp
 }
 
 static_inline void effectsL_Reverb_dummy(effectsL_Reverb__ctx_type_1 &_ctx){
-   fix16_t buff[256];
+   fix16_t buff[128];
    effectsL_Buffer_buffer(buff);
    effectsL_Reverb_process_bufferTo(_ctx._inst1f2,0,buff,buff);
 }
@@ -602,7 +602,7 @@ static_inline void effectsL_Ladder_process_bufferTo_init(effectsL_Ladder__ctx_ty
    return ;
 }
 
-void effectsL_Ladder_process_bufferTo(effectsL_Ladder__ctx_type_2 &_ctx, int nb, fix16_t (&input)[256], fix16_t (&oBuffer)[256]);
+void effectsL_Ladder_process_bufferTo(effectsL_Ladder__ctx_type_2 &_ctx, int nb, fix16_t (&input)[128], fix16_t (&oBuffer)[128]);
 
 typedef effectsL_Ladder__ctx_type_2 effectsL_Ladder_updateTune_type;
 
@@ -693,7 +693,7 @@ static_inline void effectsL_Ladder_dummy_init(effectsL_Ladder__ctx_type_3 &_outp
 }
 
 static_inline void effectsL_Ladder_dummy(effectsL_Ladder__ctx_type_3 &_ctx){
-   fix16_t buff[256];
+   fix16_t buff[128];
    effectsL_Buffer_buffer(buff);
    effectsL_Ladder_process_bufferTo(_ctx._inst163,0,buff,buff);
 }
@@ -725,7 +725,7 @@ static_inline void effectsL_CombFF_process_bufferTo_init(effectsL_CombFF__ctx_ty
    return ;
 }
 
-void effectsL_CombFF_process_bufferTo(effectsL_CombFF__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256], fix16_t (&oBuffer)[256]);
+void effectsL_CombFF_process_bufferTo(effectsL_CombFF__ctx_type_0 &_ctx, int nb, fix16_t (&input)[128], fix16_t (&oBuffer)[128]);
 
 typedef effectsL_CombFF__ctx_type_0 effectsL_CombFF_setDecay_type;
 
@@ -833,7 +833,7 @@ static_inline void effectsL_CombFF_dummy_init(effectsL_CombFF__ctx_type_1 &_outp
 }
 
 static_inline void effectsL_CombFF_dummy(effectsL_CombFF__ctx_type_1 &_ctx){
-   fix16_t buff[256];
+   fix16_t buff[128];
    effectsL_Buffer_buffer(buff);
    effectsL_CombFF_process_bufferTo(_ctx._inst115,0,buff,buff);
 }
@@ -945,7 +945,7 @@ static_inline void effectsL_SVF_process_bufferTo_init(effectsL_SVF__ctx_type_0 &
    return ;
 }
 
-void effectsL_SVF_process_bufferTo(effectsL_SVF__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256], fix16_t (&oBuffer)[256]);
+void effectsL_SVF_process_bufferTo(effectsL_SVF__ctx_type_0 &_ctx, int nb, fix16_t (&input)[128], fix16_t (&oBuffer)[128]);
 
 typedef effectsL_SVF__ctx_type_0 effectsL_SVF_setSamplerate_type;
 
@@ -989,7 +989,7 @@ static_inline void effectsL_SVF_dummy_init(effectsL_SVF__ctx_type_1 &_output_){
 }
 
 static_inline void effectsL_SVF_dummy(effectsL_SVF__ctx_type_1 &_ctx){
-   fix16_t buff[256];
+   fix16_t buff[128];
    effectsL_Buffer_buffer(buff);
    effectsL_SVF_process_bufferTo(_ctx._inst1f,0,buff,buff);
 }

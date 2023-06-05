@@ -252,7 +252,7 @@ static_inline void synthSamplerDreamVoice_Notes_noteOn_init(synthSamplerDreamVoi
 
 uint8_t synthSamplerDreamVoice_Notes_noteOn(synthSamplerDreamVoice_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
-static_inline void synthSamplerDreamVoice_Buffer_buffer(fix16_t (&oBuff)[256]){
+static_inline void synthSamplerDreamVoice_Buffer_buffer(fix16_t (&oBuff)[128]){
 }
 
 void synthSamplerDreamVoice_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
@@ -281,8 +281,8 @@ typedef struct synthSamplerDreamVoice_Sampler__ctx_type_0 {
    fix16_t fsRatio;
    fix16_t fs;
    uint8_t crossfade;
-   fix16_t buffer_o[256];
-   fix16_t buffer_cross[256];
+   fix16_t buffer_o[128];
+   fix16_t buffer_cross[128];
    fix16_t bend;
 } synthSamplerDreamVoice_Sampler__ctx_type_0;
 
@@ -352,7 +352,7 @@ static_inline void synthSamplerDreamVoice_Sampler_process_bufferTo_init(synthSam
    return ;
 }
 
-void synthSamplerDreamVoice_Sampler_process_bufferTo(synthSamplerDreamVoice_Sampler__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
+void synthSamplerDreamVoice_Sampler_process_bufferTo(synthSamplerDreamVoice_Sampler__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]);
 
 typedef synthSamplerDreamVoice_Sampler__ctx_type_0 synthSamplerDreamVoice_Sampler_process_buffer_type;
 
@@ -528,7 +528,7 @@ static_inline void synthSamplerDreamVoice_Sampler_dummy_init(synthSamplerDreamVo
 }
 
 static_inline void synthSamplerDreamVoice_Sampler_dummy(synthSamplerDreamVoice_Sampler__ctx_type_1 &_ctx){
-   fix16_t buff[256];
+   fix16_t buff[128];
    synthSamplerDreamVoice_Buffer_buffer(buff);
    synthSamplerDreamVoice_Sampler_process_bufferTo(_ctx._inst1fd,0,buff);
 }
@@ -559,7 +559,7 @@ static_inline void synthSamplerDreamVoice_Poly_runVoice_init(synthSamplerDreamVo
    return ;
 }
 
-static_inline void synthSamplerDreamVoice_Poly_runVoice(synthSamplerDreamVoice_Poly__ctx_type_0 &_ctx, int voice, int nb, fix16_t (&buff)[256]){
+static_inline void synthSamplerDreamVoice_Poly_runVoice(synthSamplerDreamVoice_Poly__ctx_type_0 &_ctx, int voice, int nb, fix16_t (&buff)[128]){
    switch(voice) {
       case 0:
          synthSamplerDreamVoice_Sampler_process_bufferTo(_ctx.voice0,nb,buff);
@@ -925,7 +925,7 @@ static_inline void synthSamplerDreamVoice_Poly_dummy_init(synthSamplerDreamVoice
 }
 
 static_inline void synthSamplerDreamVoice_Poly_dummy(synthSamplerDreamVoice_Poly__ctx_type_1 &_ctx){
-   fix16_t buff[256];
+   fix16_t buff[128];
    synthSamplerDreamVoice_Buffer_buffer(buff);
    synthSamplerDreamVoice_Poly_runVoice(_ctx._inst179,0,0,buff);
 }
@@ -946,10 +946,10 @@ typedef struct synthSamplerDreamVoice_Voice__ctx_type_0 {
    int last_velocities[4];
    fix16_t last_values[4];
    fix16_t fs;
-   fix16_t buffer_v3[256];
-   fix16_t buffer_v2[256];
-   fix16_t buffer_v1[256];
-   fix16_t buffer_v0[256];
+   fix16_t buffer_v3[128];
+   fix16_t buffer_v2[128];
+   fix16_t buffer_v1[128];
+   fix16_t buffer_v0[128];
 } synthSamplerDreamVoice_Voice__ctx_type_0;
 
 typedef synthSamplerDreamVoice_Voice__ctx_type_0 synthSamplerDreamVoice_Voice_process_type;
@@ -970,7 +970,7 @@ static_inline void synthSamplerDreamVoice_Voice_process_bufferTo_init(synthSampl
    return ;
 }
 
-void synthSamplerDreamVoice_Voice_process_bufferTo(synthSamplerDreamVoice_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
+void synthSamplerDreamVoice_Voice_process_bufferTo(synthSamplerDreamVoice_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]);
 
 typedef synthSamplerDreamVoice_Voice__ctx_type_0 synthSamplerDreamVoice_Voice_process_bufferTo_alt_type;
 
@@ -979,7 +979,7 @@ static_inline void synthSamplerDreamVoice_Voice_process_bufferTo_alt_init(synthS
    return ;
 }
 
-void synthSamplerDreamVoice_Voice_process_bufferTo_alt(synthSamplerDreamVoice_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
+void synthSamplerDreamVoice_Voice_process_bufferTo_alt(synthSamplerDreamVoice_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]);
 
 typedef synthSamplerDreamVoice_Voice__ctx_type_0 synthSamplerDreamVoice_Voice_setReuse_type;
 
@@ -1305,7 +1305,7 @@ static_inline void synthSamplerDreamVoice_Voice_dummy_init(synthSamplerDreamVoic
 }
 
 static_inline void synthSamplerDreamVoice_Voice_dummy(synthSamplerDreamVoice_Voice__ctx_type_1 &_ctx){
-   fix16_t buff[256];
+   fix16_t buff[128];
    synthSamplerDreamVoice_Buffer_buffer(buff);
    synthSamplerDreamVoice_Voice_process_bufferTo(_ctx._inst1b9,0,buff);
    synthSamplerDreamVoice_Voice_process_bufferTo_alt(_ctx._inst275,0,buff);

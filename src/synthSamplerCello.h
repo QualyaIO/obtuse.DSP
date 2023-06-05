@@ -252,7 +252,7 @@ static_inline void synthSamplerCello_Notes_noteOn_init(synthSamplerCello_Notes__
 
 uint8_t synthSamplerCello_Notes_noteOn(synthSamplerCello_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
-static_inline void synthSamplerCello_Buffer_buffer(fix16_t (&oBuff)[256]){
+static_inline void synthSamplerCello_Buffer_buffer(fix16_t (&oBuff)[128]){
 }
 
 void synthSamplerCello_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
@@ -281,8 +281,8 @@ typedef struct synthSamplerCello_Sampler__ctx_type_0 {
    fix16_t fsRatio;
    fix16_t fs;
    uint8_t crossfade;
-   fix16_t buffer_o[256];
-   fix16_t buffer_cross[256];
+   fix16_t buffer_o[128];
+   fix16_t buffer_cross[128];
    fix16_t bend;
 } synthSamplerCello_Sampler__ctx_type_0;
 
@@ -352,7 +352,7 @@ static_inline void synthSamplerCello_Sampler_process_bufferTo_init(synthSamplerC
    return ;
 }
 
-void synthSamplerCello_Sampler_process_bufferTo(synthSamplerCello_Sampler__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
+void synthSamplerCello_Sampler_process_bufferTo(synthSamplerCello_Sampler__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]);
 
 typedef synthSamplerCello_Sampler__ctx_type_0 synthSamplerCello_Sampler_process_buffer_type;
 
@@ -528,7 +528,7 @@ static_inline void synthSamplerCello_Sampler_dummy_init(synthSamplerCello_Sample
 }
 
 static_inline void synthSamplerCello_Sampler_dummy(synthSamplerCello_Sampler__ctx_type_1 &_ctx){
-   fix16_t buff[256];
+   fix16_t buff[128];
    synthSamplerCello_Buffer_buffer(buff);
    synthSamplerCello_Sampler_process_bufferTo(_ctx._inst1fd,0,buff);
 }
@@ -559,7 +559,7 @@ static_inline void synthSamplerCello_Poly_runVoice_init(synthSamplerCello_Poly__
    return ;
 }
 
-static_inline void synthSamplerCello_Poly_runVoice(synthSamplerCello_Poly__ctx_type_0 &_ctx, int voice, int nb, fix16_t (&buff)[256]){
+static_inline void synthSamplerCello_Poly_runVoice(synthSamplerCello_Poly__ctx_type_0 &_ctx, int voice, int nb, fix16_t (&buff)[128]){
    switch(voice) {
       case 0:
          synthSamplerCello_Sampler_process_bufferTo(_ctx.voice0,nb,buff);
@@ -925,7 +925,7 @@ static_inline void synthSamplerCello_Poly_dummy_init(synthSamplerCello_Poly__ctx
 }
 
 static_inline void synthSamplerCello_Poly_dummy(synthSamplerCello_Poly__ctx_type_1 &_ctx){
-   fix16_t buff[256];
+   fix16_t buff[128];
    synthSamplerCello_Buffer_buffer(buff);
    synthSamplerCello_Poly_runVoice(_ctx._inst179,0,0,buff);
 }
@@ -946,10 +946,10 @@ typedef struct synthSamplerCello_Voice__ctx_type_0 {
    int last_velocities[4];
    fix16_t last_values[4];
    fix16_t fs;
-   fix16_t buffer_v3[256];
-   fix16_t buffer_v2[256];
-   fix16_t buffer_v1[256];
-   fix16_t buffer_v0[256];
+   fix16_t buffer_v3[128];
+   fix16_t buffer_v2[128];
+   fix16_t buffer_v1[128];
+   fix16_t buffer_v0[128];
 } synthSamplerCello_Voice__ctx_type_0;
 
 typedef synthSamplerCello_Voice__ctx_type_0 synthSamplerCello_Voice_process_type;
@@ -970,7 +970,7 @@ static_inline void synthSamplerCello_Voice_process_bufferTo_init(synthSamplerCel
    return ;
 }
 
-void synthSamplerCello_Voice_process_bufferTo(synthSamplerCello_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
+void synthSamplerCello_Voice_process_bufferTo(synthSamplerCello_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]);
 
 typedef synthSamplerCello_Voice__ctx_type_0 synthSamplerCello_Voice_process_bufferTo_alt_type;
 
@@ -979,7 +979,7 @@ static_inline void synthSamplerCello_Voice_process_bufferTo_alt_init(synthSample
    return ;
 }
 
-void synthSamplerCello_Voice_process_bufferTo_alt(synthSamplerCello_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
+void synthSamplerCello_Voice_process_bufferTo_alt(synthSamplerCello_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]);
 
 typedef synthSamplerCello_Voice__ctx_type_0 synthSamplerCello_Voice_setReuse_type;
 
@@ -1305,7 +1305,7 @@ static_inline void synthSamplerCello_Voice_dummy_init(synthSamplerCello_Voice__c
 }
 
 static_inline void synthSamplerCello_Voice_dummy(synthSamplerCello_Voice__ctx_type_1 &_ctx){
-   fix16_t buff[256];
+   fix16_t buff[128];
    synthSamplerCello_Buffer_buffer(buff);
    synthSamplerCello_Voice_process_bufferTo(_ctx._inst1b9,0,buff);
    synthSamplerCello_Voice_process_bufferTo_alt(_ctx._inst275,0,buff);

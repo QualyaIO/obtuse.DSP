@@ -69,7 +69,7 @@ void synthDrummerTamaRockstar_Drummer__ctx_type_0_init(synthDrummerTamaRockstar_
    _ctx.level = 0x0 /* 0.000000 */;
    _ctx.fsRatio = 0x0 /* 0.000000 */;
    _ctx.fs = 0x0 /* 0.000000 */;
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_o);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_o);
    _ctx.bend = 0x0 /* 0.000000 */;
    synthDrummerTamaRockstar_Drummer_default(_ctx);
    
@@ -128,10 +128,10 @@ fix16_t synthDrummerTamaRockstar_Drummer_process(synthDrummerTamaRockstar_Drumme
    return value;
 }
 
-void synthDrummerTamaRockstar_Drummer_process_bufferTo(synthDrummerTamaRockstar_Drummer__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void synthDrummerTamaRockstar_Drummer_process_bufferTo(synthDrummerTamaRockstar_Drummer__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    fix16_t value;
    int i;
@@ -406,10 +406,10 @@ void synthDrummerTamaRockstar_Voice__ctx_type_0_init(synthDrummerTamaRockstar_Vo
    int_init_array(4,0,_ctx.last_velocities);
    fix_init_array(4,0x0 /* 0.000000 */,_ctx.last_values);
    _ctx.fs = 0x0 /* 0.000000 */;
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v3);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v2);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v1);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v0);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_v3);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_v2);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_v1);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_v0);
    synthDrummerTamaRockstar_Voice_default(_ctx);
    
    return ;
@@ -435,10 +435,10 @@ fix16_t synthDrummerTamaRockstar_Voice_process(synthDrummerTamaRockstar_Voice__c
    return value;
 }
 
-void synthDrummerTamaRockstar_Voice_process_bufferTo(synthDrummerTamaRockstar_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void synthDrummerTamaRockstar_Voice_process_bufferTo(synthDrummerTamaRockstar_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    int v;
    v = 0;
@@ -483,10 +483,10 @@ void synthDrummerTamaRockstar_Voice_process_bufferTo(synthDrummerTamaRockstar_Vo
    }
 }
 
-void synthDrummerTamaRockstar_Voice_process_bufferTo_alt(synthDrummerTamaRockstar_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void synthDrummerTamaRockstar_Voice_process_bufferTo_alt(synthDrummerTamaRockstar_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    synthDrummerTamaRockstar_Poly_runVoice(_ctx.poly,0,nb,_ctx.buffer_v0);
    synthDrummerTamaRockstar_Poly_runVoice(_ctx.poly,1,nb,_ctx.buffer_v1);

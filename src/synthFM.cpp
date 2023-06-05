@@ -123,10 +123,10 @@ void synthFM_OSC__ctx_type_0_init(synthFM_OSC__ctx_type_0 &_output_){
    return ;
 }
 
-void synthFM_OSC_process_bufferTo(synthFM_OSC__ctx_type_0 &_ctx, fix16_t (&wavetable)[4096], int nb, fix16_t (&env)[256], fix16_t (&phase_shift)[256], fix16_t (&phase_env)[256], fix16_t phase_shift_level, uint8_t shift_level, fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void synthFM_OSC_process_bufferTo(synthFM_OSC__ctx_type_0 &_ctx, fix16_t (&wavetable)[4096], int nb, fix16_t (&env)[128], fix16_t (&phase_shift)[128], fix16_t (&phase_env)[128], fix16_t phase_shift_level, uint8_t shift_level, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    fix16_t max_phase;
    max_phase = (_ctx.rsize << 1);
@@ -159,10 +159,10 @@ void synthFM_OSC_process_bufferTo(synthFM_OSC__ctx_type_0 &_ctx, fix16_t (&wavet
    }
 }
 
-void synthFM_OSC_process_bufferTo_simple(synthFM_OSC__ctx_type_0 &_ctx, fix16_t (&wavetable)[4096], int nb, fix16_t (&env)[256], fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void synthFM_OSC_process_bufferTo_simple(synthFM_OSC__ctx_type_0 &_ctx, fix16_t (&wavetable)[4096], int nb, fix16_t (&env)[128], fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    int i;
    i = 0;
@@ -176,10 +176,10 @@ void synthFM_OSC_process_bufferTo_simple(synthFM_OSC__ctx_type_0 &_ctx, fix16_t 
    }
 }
 
-void synthFM_OSC_process_bufferTo_feedback(synthFM_OSC__ctx_type_0 &_ctx, fix16_t (&wavetable)[4096], int nb, fix16_t (&env)[256], fix16_t feedback, fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void synthFM_OSC_process_bufferTo_feedback(synthFM_OSC__ctx_type_0 &_ctx, fix16_t (&wavetable)[4096], int nb, fix16_t (&env)[128], fix16_t feedback, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    fix16_t max_phase;
    max_phase = (_ctx.rsize << 1);
@@ -198,10 +198,10 @@ void synthFM_OSC_process_bufferTo_feedback(synthFM_OSC__ctx_type_0 &_ctx, fix16_
    }
 }
 
-void synthFM_OSC_process_bufferTo_simplest(synthFM_OSC__ctx_type_0 &_ctx, fix16_t (&wavetable)[4096], int nb, fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void synthFM_OSC_process_bufferTo_simplest(synthFM_OSC__ctx_type_0 &_ctx, fix16_t (&wavetable)[4096], int nb, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    int i;
    i = 0;
@@ -234,7 +234,7 @@ void synthFM_OSC__ctx_type_1_init(synthFM_OSC__ctx_type_1 &_output_){
 }
 
 void synthFM_OSC_dummy(synthFM_OSC__ctx_type_1 &_ctx, fix16_t (&wavetable)[4096]){
-   fix16_t buff[256];
+   fix16_t buff[128];
    synthFM_Buffer_buffer(buff);
    synthFM_OSC_process_bufferTo(_ctx._inst133,wavetable,0,buff,buff,buff,0x0 /* 0.000000 */,false,buff);
    synthFM_OSC_process_bufferTo_simple(_ctx._inst2a3,wavetable,0,buff,buff);
@@ -482,10 +482,10 @@ fix16_t synthFM_ADSR_process(synthFM_ADSR__ctx_type_5 &_ctx, uint8_t bgate){
    return fix_clip(fix_mul(_ctx.out,scale_i),0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
 }
 
-uint8_t synthFM_ADSR_process_bufferTo(synthFM_ADSR__ctx_type_5 &_ctx, uint8_t bgate, int nb, fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+uint8_t synthFM_ADSR_process_bufferTo(synthFM_ADSR__ctx_type_5 &_ctx, uint8_t bgate, int nb, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    fix16_t scale;
    scale = 0x3e80000 /* 1000.000000 */;
@@ -604,11 +604,11 @@ void synthFM_FM__ctx_type_0_init(synthFM_FM__ctx_type_0 &_output_){
    _ctx.carrier_env = 0x0 /* 0.000000 */;
    _ctx.carrierRatio = 0x0 /* 0.000000 */;
    synthFM_OSC__ctx_type_0_init(_ctx.carrier);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_modulator_env_short);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_modulator_env);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_modulator);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_carrier_env_short);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_carrier_env);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_modulator_env_short);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_modulator_env);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_modulator);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_carrier_env_short);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_carrier_env);
    _ctx.bend = 0x0 /* 0.000000 */;
    synthFM_FM_default(_ctx);
    
@@ -685,10 +685,10 @@ fix16_t synthFM_FM_process(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetable_mod
    return carrier_val;
 }
 
-void synthFM_FM_process_bufferTo(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetable_modulator)[4096], fix16_t (&wavetable_carrier)[4096], int nb, fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void synthFM_FM_process_bufferTo(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetable_modulator)[4096], fix16_t (&wavetable_carrier)[4096], int nb, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    uint8_t env_modulator_idle;
    env_modulator_idle = true;
@@ -962,10 +962,10 @@ void synthFM_Voice__ctx_type_0_init(synthFM_Voice__ctx_type_0 &_output_){
    int_init_array(4,0,_ctx.last_velocities);
    fix_init_array(4,0x0 /* 0.000000 */,_ctx.last_values);
    _ctx.fs = 0x0 /* 0.000000 */;
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v3);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v2);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v1);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v0);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_v3);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_v2);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_v1);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_v0);
    synthFM_Voice_default(_ctx);
    
    return ;
@@ -991,10 +991,10 @@ fix16_t synthFM_Voice_process(synthFM_Voice__ctx_type_0 &_ctx){
    return value;
 }
 
-void synthFM_Voice_process_bufferTo(synthFM_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void synthFM_Voice_process_bufferTo(synthFM_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    int v;
    v = 0;
@@ -1039,10 +1039,10 @@ void synthFM_Voice_process_bufferTo(synthFM_Voice__ctx_type_0 &_ctx, int nb, fix
    }
 }
 
-void synthFM_Voice_process_bufferTo_alt(synthFM_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void synthFM_Voice_process_bufferTo_alt(synthFM_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    synthFM_Poly_runVoice(_ctx.poly,0,nb,_ctx.buffer_v0);
    synthFM_Poly_runVoice(_ctx.poly,1,nb,_ctx.buffer_v1);
