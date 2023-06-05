@@ -2,7 +2,7 @@
 // allocate an audio buffer
 // size tuned for current use, default non-blocking I2S buffer
 // note: if > 999 should manually set to 0
-fun buffer(oBuff: array(real, 256)) {
+fun buffer(oBuff: array(real, 128)) {
 }
 
 // allocate an audio buffer, this one for things like effects. Be wary of memory consumption -- and most probably avoid to put in PROGMEM in MCU

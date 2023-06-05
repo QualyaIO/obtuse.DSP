@@ -138,7 +138,7 @@ void synthDrummerTamaRockstar_DrummerWrapper_getSlicesStart(int (&_output_)[12])
 
 void synthDrummerTamaRockstar_DrummerWrapper_getSlicesEnd(int (&_output_)[12]);
 
-static_inline void synthDrummerTamaRockstar_Buffer_buffer(fix16_t (&oBuff)[256]){
+static_inline void synthDrummerTamaRockstar_Buffer_buffer(fix16_t (&oBuff)[128]){
 }
 
 void synthDrummerTamaRockstar_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
@@ -160,7 +160,7 @@ typedef struct synthDrummerTamaRockstar_Drummer__ctx_type_0 {
    fix16_t level;
    fix16_t fsRatio;
    fix16_t fs;
-   fix16_t buffer_o[256];
+   fix16_t buffer_o[128];
    fix16_t bend;
 } synthDrummerTamaRockstar_Drummer__ctx_type_0;
 
@@ -230,7 +230,7 @@ static_inline void synthDrummerTamaRockstar_Drummer_process_bufferTo_init(synthD
    return ;
 }
 
-void synthDrummerTamaRockstar_Drummer_process_bufferTo(synthDrummerTamaRockstar_Drummer__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
+void synthDrummerTamaRockstar_Drummer_process_bufferTo(synthDrummerTamaRockstar_Drummer__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]);
 
 typedef synthDrummerTamaRockstar_Drummer__ctx_type_0 synthDrummerTamaRockstar_Drummer_process_buffer_type;
 
@@ -329,7 +329,7 @@ static_inline void synthDrummerTamaRockstar_Drummer_dummy_init(synthDrummerTamaR
 }
 
 static_inline void synthDrummerTamaRockstar_Drummer_dummy(synthDrummerTamaRockstar_Drummer__ctx_type_1 &_ctx){
-   fix16_t buff[256];
+   fix16_t buff[128];
    synthDrummerTamaRockstar_Buffer_buffer(buff);
    synthDrummerTamaRockstar_Drummer_process_bufferTo(_ctx._inst1b,0,buff);
 }
@@ -360,7 +360,7 @@ static_inline void synthDrummerTamaRockstar_Poly_runVoice_init(synthDrummerTamaR
    return ;
 }
 
-static_inline void synthDrummerTamaRockstar_Poly_runVoice(synthDrummerTamaRockstar_Poly__ctx_type_0 &_ctx, int voice, int nb, fix16_t (&buff)[256]){
+static_inline void synthDrummerTamaRockstar_Poly_runVoice(synthDrummerTamaRockstar_Poly__ctx_type_0 &_ctx, int voice, int nb, fix16_t (&buff)[128]){
    switch(voice) {
       case 0:
          synthDrummerTamaRockstar_Drummer_process_bufferTo(_ctx.voice0,nb,buff);
@@ -714,7 +714,7 @@ static_inline void synthDrummerTamaRockstar_Poly_dummy_init(synthDrummerTamaRock
 }
 
 static_inline void synthDrummerTamaRockstar_Poly_dummy(synthDrummerTamaRockstar_Poly__ctx_type_1 &_ctx){
-   fix16_t buff[256];
+   fix16_t buff[128];
    synthDrummerTamaRockstar_Buffer_buffer(buff);
    synthDrummerTamaRockstar_Poly_runVoice(_ctx._inst179,0,0,buff);
 }
@@ -837,10 +837,7 @@ typedef struct synthDrummerTamaRockstar_Voice__ctx_type_0 {
    int last_velocities[4];
    fix16_t last_values[4];
    fix16_t fs;
-   fix16_t buffer_v3[256];
-   fix16_t buffer_v2[256];
-   fix16_t buffer_v1[256];
-   fix16_t buffer_v0[256];
+   fix16_t buffer_v0[128];
 } synthDrummerTamaRockstar_Voice__ctx_type_0;
 
 typedef synthDrummerTamaRockstar_Voice__ctx_type_0 synthDrummerTamaRockstar_Voice_process_type;
@@ -861,16 +858,7 @@ static_inline void synthDrummerTamaRockstar_Voice_process_bufferTo_init(synthDru
    return ;
 }
 
-void synthDrummerTamaRockstar_Voice_process_bufferTo(synthDrummerTamaRockstar_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
-
-typedef synthDrummerTamaRockstar_Voice__ctx_type_0 synthDrummerTamaRockstar_Voice_process_bufferTo_alt_type;
-
-static_inline void synthDrummerTamaRockstar_Voice_process_bufferTo_alt_init(synthDrummerTamaRockstar_Voice__ctx_type_0 &_output_){
-   synthDrummerTamaRockstar_Voice__ctx_type_0_init(_output_);
-   return ;
-}
-
-void synthDrummerTamaRockstar_Voice_process_bufferTo_alt(synthDrummerTamaRockstar_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
+void synthDrummerTamaRockstar_Voice_process_bufferTo(synthDrummerTamaRockstar_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]);
 
 typedef synthDrummerTamaRockstar_Voice__ctx_type_0 synthDrummerTamaRockstar_Voice_setReuse_type;
 
@@ -1182,13 +1170,17 @@ static_inline void synthDrummerTamaRockstar_Voice_default_init(synthDrummerTamaR
 void synthDrummerTamaRockstar_Voice_default(synthDrummerTamaRockstar_Voice__ctx_type_0 &_ctx);
 
 typedef struct synthDrummerTamaRockstar_Voice__ctx_type_1 {
-   synthDrummerTamaRockstar_Voice__ctx_type_0 _inst275;
    synthDrummerTamaRockstar_Voice__ctx_type_0 _inst1b9;
 } synthDrummerTamaRockstar_Voice__ctx_type_1;
 
 typedef synthDrummerTamaRockstar_Voice__ctx_type_1 synthDrummerTamaRockstar_Voice_dummy_type;
 
-void synthDrummerTamaRockstar_Voice__ctx_type_1_init(synthDrummerTamaRockstar_Voice__ctx_type_1 &_output_);
+static_inline void synthDrummerTamaRockstar_Voice__ctx_type_1_init(synthDrummerTamaRockstar_Voice__ctx_type_1 &_output_){
+   synthDrummerTamaRockstar_Voice__ctx_type_1 &_ctx = _output_;
+   synthDrummerTamaRockstar_Voice__ctx_type_0_init(_ctx._inst1b9);
+   
+   return ;
+}
 
 static_inline void synthDrummerTamaRockstar_Voice_dummy_init(synthDrummerTamaRockstar_Voice__ctx_type_1 &_output_){
    synthDrummerTamaRockstar_Voice__ctx_type_1_init(_output_);
@@ -1196,10 +1188,9 @@ static_inline void synthDrummerTamaRockstar_Voice_dummy_init(synthDrummerTamaRoc
 }
 
 static_inline void synthDrummerTamaRockstar_Voice_dummy(synthDrummerTamaRockstar_Voice__ctx_type_1 &_ctx){
-   fix16_t buff[256];
+   fix16_t buff[128];
    synthDrummerTamaRockstar_Buffer_buffer(buff);
    synthDrummerTamaRockstar_Voice_process_bufferTo(_ctx._inst1b9,0,buff);
-   synthDrummerTamaRockstar_Voice_process_bufferTo_alt(_ctx._inst275,0,buff);
 }
 
 

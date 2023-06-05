@@ -123,10 +123,10 @@ void synthFM_OSC__ctx_type_0_init(synthFM_OSC__ctx_type_0 &_output_){
    return ;
 }
 
-void synthFM_OSC_process_bufferTo(synthFM_OSC__ctx_type_0 &_ctx, fix16_t (&wavetable)[4096], int nb, fix16_t (&env)[256], fix16_t (&phase_shift)[256], fix16_t (&phase_env)[256], fix16_t phase_shift_level, uint8_t shift_level, fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void synthFM_OSC_process_bufferTo(synthFM_OSC__ctx_type_0 &_ctx, fix16_t (&wavetable)[4096], int nb, fix16_t (&env)[128], fix16_t (&phase_shift)[128], fix16_t (&phase_env)[128], fix16_t phase_shift_level, uint8_t shift_level, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    fix16_t max_phase;
    max_phase = (_ctx.rsize << 1);
@@ -159,10 +159,10 @@ void synthFM_OSC_process_bufferTo(synthFM_OSC__ctx_type_0 &_ctx, fix16_t (&wavet
    }
 }
 
-void synthFM_OSC_process_bufferTo_simple(synthFM_OSC__ctx_type_0 &_ctx, fix16_t (&wavetable)[4096], int nb, fix16_t (&env)[256], fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void synthFM_OSC_process_bufferTo_simple(synthFM_OSC__ctx_type_0 &_ctx, fix16_t (&wavetable)[4096], int nb, fix16_t (&env)[128], fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    int i;
    i = 0;
@@ -176,10 +176,10 @@ void synthFM_OSC_process_bufferTo_simple(synthFM_OSC__ctx_type_0 &_ctx, fix16_t 
    }
 }
 
-void synthFM_OSC_process_bufferTo_feedback(synthFM_OSC__ctx_type_0 &_ctx, fix16_t (&wavetable)[4096], int nb, fix16_t (&env)[256], fix16_t feedback, fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void synthFM_OSC_process_bufferTo_feedback(synthFM_OSC__ctx_type_0 &_ctx, fix16_t (&wavetable)[4096], int nb, fix16_t (&env)[128], fix16_t feedback, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    fix16_t max_phase;
    max_phase = (_ctx.rsize << 1);
@@ -198,10 +198,10 @@ void synthFM_OSC_process_bufferTo_feedback(synthFM_OSC__ctx_type_0 &_ctx, fix16_
    }
 }
 
-void synthFM_OSC_process_bufferTo_simplest(synthFM_OSC__ctx_type_0 &_ctx, fix16_t (&wavetable)[4096], int nb, fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void synthFM_OSC_process_bufferTo_simplest(synthFM_OSC__ctx_type_0 &_ctx, fix16_t (&wavetable)[4096], int nb, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    int i;
    i = 0;
@@ -234,7 +234,7 @@ void synthFM_OSC__ctx_type_1_init(synthFM_OSC__ctx_type_1 &_output_){
 }
 
 void synthFM_OSC_dummy(synthFM_OSC__ctx_type_1 &_ctx, fix16_t (&wavetable)[4096]){
-   fix16_t buff[256];
+   fix16_t buff[128];
    synthFM_Buffer_buffer(buff);
    synthFM_OSC_process_bufferTo(_ctx._inst133,wavetable,0,buff,buff,buff,0x0 /* 0.000000 */,false,buff);
    synthFM_OSC_process_bufferTo_simple(_ctx._inst2a3,wavetable,0,buff,buff);
@@ -482,10 +482,10 @@ fix16_t synthFM_ADSR_process(synthFM_ADSR__ctx_type_5 &_ctx, uint8_t bgate){
    return fix_clip(fix_mul(_ctx.out,scale_i),0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
 }
 
-uint8_t synthFM_ADSR_process_bufferTo(synthFM_ADSR__ctx_type_5 &_ctx, uint8_t bgate, int nb, fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+uint8_t synthFM_ADSR_process_bufferTo(synthFM_ADSR__ctx_type_5 &_ctx, uint8_t bgate, int nb, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    fix16_t scale;
    scale = 0x3e80000 /* 1000.000000 */;
@@ -597,18 +597,18 @@ void synthFM_FM__ctx_type_0_init(synthFM_FM__ctx_type_0 &_output_){
    _ctx.gate = false;
    _ctx.fs = 0x0 /* 0.000000 */;
    _ctx.freq = 0x0 /* 0.000000 */;
+   _ctx.env_modulator_idle = false;
    _ctx.env_decimation_factor = 0;
+   _ctx.env_carrier_idle = false;
    synthFM_ADSR__ctx_type_5_init(_ctx.carrieradsr);
    _ctx.carrier_phase_range = 0x0 /* 0.000000 */;
    _ctx.carrier_max_phase = 0x0 /* 0.000000 */;
    _ctx.carrier_env = 0x0 /* 0.000000 */;
    _ctx.carrierRatio = 0x0 /* 0.000000 */;
    synthFM_OSC__ctx_type_0_init(_ctx.carrier);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_modulator_env_short);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_modulator_env);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_modulator);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_carrier_env_short);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_carrier_env);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_modulator_env);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_modulator);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_carrier_env);
    _ctx.bend = 0x0 /* 0.000000 */;
    synthFM_FM_default(_ctx);
    
@@ -634,11 +634,13 @@ fix16_t synthFM_FM_process(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetable_mod
       _ctx.carrier_env = fix_mul(_ctx.level,synthFM_ADSR_process(_ctx.carrieradsr,(_ctx.gate || _ctx.sustaining)));
       _ctx.modulator_env = synthFM_ADSR_process(_ctx.modulatoradsr,(_ctx.gate || _ctx.sustaining));
    }
-   if(_ctx.carrier_env > 0x0 /* 0.000000 */){
+   _ctx.env_carrier_idle = (_ctx.carrier_env <= 0x0 /* 0.000000 */);
+   _ctx.env_modulator_idle = (_ctx.modulator_env <= 0x0 /* 0.000000 */);
+   if(bool_not(_ctx.env_carrier_idle)){
       if(_ctx.modulator_target_level){
          fix16_t carrier_level;
          carrier_level = 0x10000 /* 1.000000 */;
-         if(_ctx.modulator_env > 0x0 /* 0.000000 */){
+         if(bool_not(_ctx.env_modulator_idle)){
             fix16_t modulator_val;
             modulator_val = fix_mul(_ctx.modulator_env,synthFM_OSC_process(_ctx.modulator,wavetable_modulator));
             carrier_level = (0x10000 /* 1.000000 */ + (- fix_mul(_ctx.modulator_level_coeff,(_ctx.modulator_env + modulator_val))));
@@ -657,7 +659,7 @@ fix16_t synthFM_FM_process(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetable_mod
       {
          fix16_t carrier_phase;
          carrier_phase = 0x0 /* 0.000000 */;
-         if(_ctx.modulator_env > 0x0 /* 0.000000 */){
+         if(bool_not(_ctx.env_modulator_idle)){
             fix16_t modulator_val;
             modulator_val = fix_mul(_ctx.modulator_env,synthFM_OSC_process(_ctx.modulator,wavetable_modulator));
             carrier_phase = (_ctx.carrier_max_phase + fix_mul(_ctx.carrier_phase_range,modulator_val));
@@ -677,7 +679,7 @@ fix16_t synthFM_FM_process(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetable_mod
    else
    {
       synthFM_OSC_resetPhase(_ctx.carrier);
-      if(_ctx.modulator_env <= 0x0 /* 0.000000 */){
+      if(_ctx.env_modulator_idle){
          synthFM_OSC_resetPhase(_ctx.modulator);
          synthFM_OSC_setPhase(_ctx.modulator,_ctx.modulator_phase_shift);
       }
@@ -685,57 +687,70 @@ fix16_t synthFM_FM_process(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetable_mod
    return carrier_val;
 }
 
-void synthFM_FM_process_bufferTo(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetable_modulator)[4096], fix16_t (&wavetable_carrier)[4096], int nb, fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void synthFM_FM_process_bufferTo(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetable_modulator)[4096], fix16_t (&wavetable_carrier)[4096], int nb, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
-   uint8_t env_modulator_idle;
-   env_modulator_idle = true;
-   uint8_t env_carrier_idle;
-   env_carrier_idle = true;
    int env_df;
    env_df = _ctx.env_decimation_factor;
    if(env_df < 1){
       env_df = 1;
    }
+   int nb_env;
+   nb_env = nb;
    if(_ctx.env_decimation_factor > 1){
-      int nb_env;
       nb_env = ((_ctx.n + nb) / _ctx.env_decimation_factor);
-      if(nb_env > 0){
-         env_carrier_idle = synthFM_ADSR_process_bufferTo(_ctx.carrieradsr,(_ctx.gate || _ctx.sustaining),nb_env,_ctx.buffer_carrier_env_short);
-         env_modulator_idle = synthFM_ADSR_process_bufferTo(_ctx.modulatoradsr,(_ctx.gate || _ctx.sustaining),nb_env,_ctx.buffer_modulator_env_short);
-         int i;
-         i = 0;
-         int i_env;
-         i_env = 0;
-         while(i < nb){
-            _ctx.n = ((1 + _ctx.n) % _ctx.env_decimation_factor);
-            if(_ctx.n == 0){
-               if(_ctx.level != _ctx.target_level){
-                  _ctx.level = (_ctx.level + _ctx.level_step);
-                  if(((_ctx.level_step > 0x0 /* 0.000000 */) && (_ctx.level > _ctx.target_level)) || ((_ctx.level_step < 0x0 /* 0.000000 */) && (_ctx.level < _ctx.target_level))){
-                     _ctx.level = _ctx.target_level;
-                  }
-               }
-               _ctx.modulator_env = _ctx.buffer_modulator_env_short[i_env];
-               _ctx.carrier_env = fix_mul(_ctx.level,_ctx.buffer_carrier_env_short[i_env]);
-               i_env = (1 + i_env);
-            }
-            _ctx.buffer_modulator_env[i] = _ctx.modulator_env;
-            _ctx.buffer_carrier_env[i] = _ctx.carrier_env;
-            i = (1 + i);
-         }
+   }
+   if(nb_env <= 0){
+      int i;
+      i = 0;
+      while(i < nb){
+         _ctx.buffer_modulator_env[i] = _ctx.modulator_env;
+         _ctx.buffer_carrier_env[i] = _ctx.carrier_env;
+         i = (1 + i);
       }
    }
    else
    {
-      env_carrier_idle = synthFM_ADSR_process_bufferTo(_ctx.carrieradsr,(_ctx.gate || _ctx.sustaining),nb,_ctx.buffer_carrier_env);
-      env_modulator_idle = synthFM_ADSR_process_bufferTo(_ctx.modulatoradsr,(_ctx.gate || _ctx.sustaining),nb,_ctx.buffer_modulator_env);
+      _ctx.env_carrier_idle = synthFM_ADSR_process_bufferTo(_ctx.carrieradsr,(_ctx.gate || _ctx.sustaining),nb_env,_ctx.buffer_carrier_env);
+      _ctx.env_modulator_idle = synthFM_ADSR_process_bufferTo(_ctx.modulatoradsr,(_ctx.gate || _ctx.sustaining),nb_env,_ctx.buffer_modulator_env);
+      int i;
+      i = 0;
+      while(i < nb_env){
+         if(_ctx.level != _ctx.target_level){
+            _ctx.level = (_ctx.level + _ctx.level_step);
+            if(((_ctx.level_step > 0x0 /* 0.000000 */) && (_ctx.level > _ctx.target_level)) || ((_ctx.level_step < 0x0 /* 0.000000 */) && (_ctx.level < _ctx.target_level))){
+               _ctx.level = _ctx.target_level;
+            }
+         }
+         _ctx.buffer_carrier_env[i] = fix_mul(_ctx.level,_ctx.buffer_carrier_env[i]);
+         i = (1 + i);
+      }
+      _ctx.n = ((_ctx.n + nb_env) % env_df);
+      _ctx.modulator_env = _ctx.buffer_modulator_env[((-1) + nb_env)];
+      _ctx.carrier_env = _ctx.buffer_carrier_env[((-1) + nb_env)];
+      if(nb_env < nb){
+         i = nb;
+         int i_env;
+         i_env = nb_env;
+         int n_rev;
+         n_rev = _ctx.n;
+         while((i > 1) && (i_env > 1)){
+            _ctx.buffer_modulator_env[((-1) + i)] = _ctx.buffer_modulator_env[((-1) + i_env)];
+            _ctx.buffer_carrier_env[((-1) + i)] = _ctx.buffer_carrier_env[((-1) + i_env)];
+            i = ((-1) + i);
+            n_rev = ((-1) + n_rev);
+            if(n_rev <= 0){
+               n_rev = env_df;
+               i_env = ((-1) + i_env);
+            }
+         }
+      }
    }
-   if(env_carrier_idle){
+   if(_ctx.env_carrier_idle){
       synthFM_OSC_resetPhase(_ctx.carrier);
-      if(env_modulator_idle){
+      if(_ctx.env_modulator_idle){
          synthFM_OSC_resetPhase(_ctx.modulator);
          synthFM_OSC_setPhase(_ctx.modulator,_ctx.modulator_phase_shift);
       }
@@ -748,7 +763,7 @@ void synthFM_FM_process_bufferTo(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetab
    }
    else
    {
-      if(env_modulator_idle){
+      if(_ctx.env_modulator_idle){
          synthFM_OSC_resetPhase(_ctx.modulator);
          synthFM_OSC_setPhase(_ctx.modulator,_ctx.modulator_phase_shift);
          int i;
@@ -865,8 +880,6 @@ void synthFM_FM_noteOff(synthFM_FM__ctx_type_0 &_ctx, int note, int channel){
 
 void synthFM_FM_default(synthFM_FM__ctx_type_0 &_ctx){
    synthFM_Buffer_buffer(_ctx.buffer_modulator);
-   synthFM_Buffer_buffer(_ctx.buffer_carrier_env_short);
-   synthFM_Buffer_buffer(_ctx.buffer_modulator_env_short);
    synthFM_Buffer_buffer(_ctx.buffer_carrier_env);
    synthFM_Buffer_buffer(_ctx.buffer_modulator_env);
    synthFM_FM_setEnvDecimationFactor(_ctx,3);
@@ -962,10 +975,7 @@ void synthFM_Voice__ctx_type_0_init(synthFM_Voice__ctx_type_0 &_output_){
    int_init_array(4,0,_ctx.last_velocities);
    fix_init_array(4,0x0 /* 0.000000 */,_ctx.last_values);
    _ctx.fs = 0x0 /* 0.000000 */;
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v3);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v2);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v1);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v0);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_v0);
    synthFM_Voice_default(_ctx);
    
    return ;
@@ -991,10 +1001,10 @@ fix16_t synthFM_Voice_process(synthFM_Voice__ctx_type_0 &_ctx){
    return value;
 }
 
-void synthFM_Voice_process_bufferTo(synthFM_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void synthFM_Voice_process_bufferTo(synthFM_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    int v;
    v = 0;
@@ -1034,50 +1044,6 @@ void synthFM_Voice_process_bufferTo(synthFM_Voice__ctx_type_0 &_ctx, int nb, fix
       i = 0;
       while(i < nb){
          oBuffer[i] = fix_mul(_ctx.voices_ratio,oBuffer[i]);
-         i = (1 + i);
-      }
-   }
-}
-
-void synthFM_Voice_process_bufferTo_alt(synthFM_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
-   if(nb == 0){
-      nb = 256;
-   }
-   synthFM_Poly_runVoice(_ctx.poly,0,nb,_ctx.buffer_v0);
-   synthFM_Poly_runVoice(_ctx.poly,1,nb,_ctx.buffer_v1);
-   synthFM_Poly_runVoice(_ctx.poly,2,nb,_ctx.buffer_v2);
-   synthFM_Poly_runVoice(_ctx.poly,3,nb,_ctx.buffer_v3);
-   if(nb > 0){
-      _ctx.last_values[0] = _ctx.buffer_v0[((-1) + nb)];
-      _ctx.last_values[1] = _ctx.buffer_v1[((-1) + nb)];
-      _ctx.last_values[2] = _ctx.buffer_v2[((-1) + nb)];
-      _ctx.last_values[3] = _ctx.buffer_v3[((-1) + nb)];
-   }
-   int i;
-   i = 0;
-   if(_ctx.normalize){
-      while(i < nb){
-         oBuffer[i] = fix_mul(_ctx.voices_ratio,(_ctx.buffer_v0[i] + _ctx.buffer_v1[i] + _ctx.buffer_v2[i] + _ctx.buffer_v3[i]));
-         i = (1 + i);
-      }
-      i = 0;
-      while((_ctx.leftovers != 0x0 /* 0.000000 */) && (i < nb)){
-         _ctx.leftovers = fix_mul(_ctx.leftovers,_ctx.leftovers_decay);
-         oBuffer[i] = (oBuffer[i] + fix_mul(_ctx.leftovers,_ctx.voices_ratio));
-         i = (1 + i);
-      }
-   }
-   else
-   {
-      while(i < nb){
-         oBuffer[i] = (_ctx.buffer_v0[i] + _ctx.buffer_v1[i] + _ctx.buffer_v2[i] + _ctx.buffer_v3[i]);
-         i = (1 + i);
-      }
-      i = 0;
-      while((_ctx.leftovers != 0x0 /* 0.000000 */) && (i < nb)){
-         _ctx.leftovers = fix_mul(_ctx.leftovers,_ctx.leftovers_decay);
-         oBuffer[i] = (_ctx.leftovers + oBuffer[i]);
          i = (1 + i);
       }
    }
@@ -1196,9 +1162,6 @@ void synthFM_Voice_setSamplerate(synthFM_Voice__ctx_type_0 &_ctx, fix16_t newFs)
 void synthFM_Voice_default(synthFM_Voice__ctx_type_0 &_ctx){
    synthFM_Poly_default(_ctx.poly);
    synthFM_Buffer_buffer(_ctx.buffer_v0);
-   synthFM_Buffer_buffer(_ctx.buffer_v1);
-   synthFM_Buffer_buffer(_ctx.buffer_v2);
-   synthFM_Buffer_buffer(_ctx.buffer_v3);
    if(_ctx.number_voices == 0){
       _ctx.number_voices = 4;
    }
@@ -1212,14 +1175,6 @@ void synthFM_Voice_default(synthFM_Voice__ctx_type_0 &_ctx){
    synthFM_Voice_setNormalize(_ctx,true);
    synthFM_Voice_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    synthFM_Voice_setReuse(_ctx,false);
-}
-
-void synthFM_Voice__ctx_type_1_init(synthFM_Voice__ctx_type_1 &_output_){
-   synthFM_Voice__ctx_type_1 &_ctx = _output_;
-   synthFM_Voice__ctx_type_0_init(_ctx._inst275);
-   synthFM_Voice__ctx_type_0_init(_ctx._inst1b9);
-   
-   return ;
 }
 
 

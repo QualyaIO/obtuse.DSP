@@ -33,10 +33,10 @@ fix16_t effectsXL_CombFB_process(effectsXL_CombFB__ctx_type_0 &_ctx, fix16_t sam
    return fix_mul(_ctx.scale,out);
 }
 
-void effectsXL_CombFB_process_bufferTo(effectsXL_CombFB__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256], fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void effectsXL_CombFB_process_bufferTo(effectsXL_CombFB__ctx_type_0 &_ctx, int nb, fix16_t (&input)[128], fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    fix16_t out;
    int i;
@@ -75,10 +75,10 @@ fix16_t effectsXL_Allpass_process(effectsXL_Allpass__ctx_type_0 &_ctx, fix16_t s
    return fix_mul(_ctx.scale,out);
 }
 
-void effectsXL_Allpass_process_bufferTo(effectsXL_Allpass__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256], fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void effectsXL_Allpass_process_bufferTo(effectsXL_Allpass__ctx_type_0 &_ctx, int nb, fix16_t (&input)[128], fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    fix16_t out;
    int i;
@@ -114,12 +114,12 @@ void effectsXL_Reverb__ctx_type_0_init(effectsXL_Reverb__ctx_type_0 &_output_){
    effectsXL_CombFB__ctx_type_0_init(_ctx.comb1);
    _ctx.comb0delay = 0;
    effectsXL_CombFB__ctx_type_0_init(_ctx.comb0);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_c3);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_c2);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_c1);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_c0);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_a1);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_a0);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_c3);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_c2);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_c1);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_c0);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_a1);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_a0);
    effectsXL_Allpass__ctx_type_0_init(_ctx.allpass1);
    effectsXL_Allpass__ctx_type_0_init(_ctx.allpass0);
    effectsXL_Reverb_default(_ctx);
@@ -127,10 +127,10 @@ void effectsXL_Reverb__ctx_type_0_init(effectsXL_Reverb__ctx_type_0 &_output_){
    return ;
 }
 
-void effectsXL_Reverb_process_bufferTo(effectsXL_Reverb__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256], fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void effectsXL_Reverb_process_bufferTo(effectsXL_Reverb__ctx_type_0 &_ctx, int nb, fix16_t (&input)[128], fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    effectsXL_CombFB_process_bufferTo(_ctx.comb0,nb,input,_ctx.buffer_c0);
    effectsXL_CombFB_process_bufferTo(_ctx.comb1,nb,input,_ctx.buffer_c1);
@@ -362,11 +362,11 @@ fix16_t effectsXL_Ladder_process_heun(effectsXL_Ladder__ctx_type_2 &_ctx, fix16_
    return out;
 }
 
-void effectsXL_Ladder_process_bufferTo(effectsXL_Ladder__ctx_type_2 &_ctx, int nb, fix16_t (&input)[256], fix16_t (&oBuffer)[256]){
+void effectsXL_Ladder_process_bufferTo(effectsXL_Ladder__ctx_type_2 &_ctx, int nb, fix16_t (&input)[128], fix16_t (&oBuffer)[128]){
    int min_nb;
-   min_nb = 256;
-   if(256 < min_nb){
-      min_nb = 256;
+   min_nb = 128;
+   if(128 < min_nb){
+      min_nb = 128;
    }
    nb = int_clip(nb,0,min_nb);
    if(nb == 0){
@@ -431,10 +431,10 @@ fix16_t effectsXL_CombFF_process(effectsXL_CombFF__ctx_type_0 &_ctx, fix16_t sam
    return fix_mul(_ctx.scale,(decayed + sample));
 }
 
-void effectsXL_CombFF_process_bufferTo(effectsXL_CombFF__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256], fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void effectsXL_CombFF_process_bufferTo(effectsXL_CombFF__ctx_type_0 &_ctx, int nb, fix16_t (&input)[128], fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    fix16_t decayed;
    int i;
@@ -540,11 +540,11 @@ fix16_t effectsXL_SVF_process(effectsXL_SVF__ctx_type_0 &_ctx, fix16_t input){
    return output;
 }
 
-void effectsXL_SVF_process_bufferTo(effectsXL_SVF__ctx_type_0 &_ctx, int nb, fix16_t (&input)[256], fix16_t (&oBuffer)[256]){
+void effectsXL_SVF_process_bufferTo(effectsXL_SVF__ctx_type_0 &_ctx, int nb, fix16_t (&input)[128], fix16_t (&oBuffer)[128]){
    int min_nb;
-   min_nb = 256;
-   if(256 < min_nb){
-      min_nb = 256;
+   min_nb = 128;
+   if(128 < min_nb){
+      min_nb = 128;
    }
    nb = int_clip(nb,0,min_nb);
    if(nb == 0){

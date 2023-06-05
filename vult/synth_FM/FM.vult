@@ -26,6 +26,10 @@ fun process(wavetable_modulator, wavetable_carrier) {
     mem env_decimation_factor;
     mem carrier_env;
     mem modulator_env;
+    // do we have any envelope?
+    // FIXME: force update with small n or high decimation, we should keep value between run and ideally sync with process()
+    mem env_modulator_idle: bool;
+    mem env_carrier_idle: bool;
     // if we should modulate sound level instead of phase
     mem modulator_target_level: bool;
     // level of the synth, applied to envelop, current one and the one to target
@@ -69,12 +73,15 @@ fun process(wavetable_modulator, wavetable_carrier) {
        modulator_env = modulatoradsr:ADSR.process(gate || sustaining);
     }
 
+    env_carrier_idle = carrier_env <= 0.0;
+    env_modulator_idle = modulator_env <= 0.0;
+
     // only going forward if we got sound on the output
-    if (carrier_env > 0.0) {
+    if (not(env_carrier_idle)) {
        // modulate volume
        if (modulator_target_level) {
 	 val carrier_level = 1.0;
-	 if (modulator_env > 0.0) {
+	 if (not(env_modulator_idle)) {
 	   val modulator_val = modulator:OSC.process(wavetable_modulator) * modulator_env;
 	   // modulator val will be -env .. env, shift to 0..2*env (max 0..2). Most efficient considering feedback needs envelope 
 	   carrier_level = 1.0 - (modulator_val + modulator_env) *  modulator_level_coeff;
@@ -93,7 +100,7 @@ fun process(wavetable_modulator, wavetable_carrier) {
 	 // apply to wavetables
 	 val carrier_phase = 0.0;
 	 // only modulate if we got level on modulator
-	 if (modulator_env > 0.0) {
+	 if (not(env_modulator_idle)) {
 	   val modulator_val = modulator:OSC.process(wavetable_modulator) * modulator_env;
 	   carrier_phase = carrier_max_phase + modulator_val * carrier_phase_range;
 	   // apply feedback, if any
@@ -111,7 +118,7 @@ fun process(wavetable_modulator, wavetable_carrier) {
     // when an envelop ends we reset everything to make sure to start anew
     else {
       _ = carrier:OSC.resetPhase();
-      if (modulator_env <= 0.0) {
+      if (env_modulator_idle) {
         _ = modulator:OSC.resetPhase();
 	_ = modulator:OSC.setPhase(modulator_phase_shift);
       }
@@ -131,63 +138,80 @@ and process_bufferTo(wavetable_modulator, wavetable_carrier, nb: int, oBuffer) {
     mem modulator_level;
     // amount of feedback
     mem modulator_feedback;
-    // buffers for envelops, decimated and the full 
-    mem buffer_carrier_env_short;
-    mem buffer_modulator_env_short;
+    // buffers for envelops -- will be using the same for decimated and full
     mem buffer_carrier_env;
     mem buffer_modulator_env;
-
-    // do we have any envelope?
-    val env_modulator_idle = true;
-    val env_carrier_idle = true;
 
     // sanitize env decimation
     val env_df = env_decimation_factor;
     if (env_df < 1) {
       env_df = 1;
     }
-     
+    
+    val nb_env = nb;
     if (env_decimation_factor > 1) {
       // compute number of samples for this buffer's decimation
-      val nb_env = (n + nb) / env_decimation_factor;
-      // retrieve envelopes
-      if (nb_env > 0) {
-         env_carrier_idle = carrieradsr:ADSR.process_bufferTo(gate || sustaining, nb_env, buffer_carrier_env_short);
-         env_modulator_idle = modulatoradsr:ADSR.process_bufferTo(gate || sustaining, nb_env, buffer_modulator_env_short);
+      nb_env = (n + nb) / env_decimation_factor;
+    }
 
-         // expand carrier envelop and retrieve to full version
-         // FIXME: we update both envelopes, but we could select if only one is active
-         val i = 0;
-         val i_env = 0;
-         while (i < nb) {
-            // advance and update envelope
-            n = (n + 1) % env_decimation_factor;
-            if (n == 0) {
-	      // smooth level change
-	      if (level <> target_level) {
-		level = level + level_step;
-		// reached target
-		if (
-		    (level_step > 0.0 && level > target_level) ||
-		    (level_step < 0.0 && level < target_level)
-		    ) {
-		  level = target_level;
-		}
-	      }
-	      // update envelopes
-	      modulator_env = buffer_modulator_env_short[i_env];
-	      carrier_env = buffer_carrier_env_short[i_env] * level;
-	      i_env = i_env + 1;
-            }
-            buffer_modulator_env[i] = modulator_env;
-            buffer_carrier_env[i] = carrier_env;
-            i = i + 1;
-         }
+    // we should not update envelop, just copy over last values
+    if (nb_env <= 0) {
+      val i = 0;
+      while (i < nb) {
+	// note: last env_(carrier/modulator)_idle will be also kept
+	buffer_modulator_env[i] = modulator_env;
+	buffer_carrier_env[i] = carrier_env;
+	i = i + 1;
       }
-    } else {
-       // no decimation, direct the whole buffer
-       env_carrier_idle = carrieradsr:ADSR.process_bufferTo(gate || sustaining, nb, buffer_carrier_env);
-       env_modulator_idle = modulatoradsr:ADSR.process_bufferTo(gate || sustaining, nb, buffer_modulator_env);
+    }
+    // retrieve envelopes
+    else {
+      env_carrier_idle = carrieradsr:ADSR.process_bufferTo(gate || sustaining, nb_env, buffer_carrier_env);
+      env_modulator_idle = modulatoradsr:ADSR.process_bufferTo(gate || sustaining, nb_env, buffer_modulator_env);
+      // apply level to carrier
+      // TODO: skip that if carrier idle?
+      val i = 0;
+      while (i < nb_env) {
+	// smooth level change
+	if (level <> target_level) {
+	  level = level + level_step;
+	  // reached target
+	  if (
+	      (level_step > 0.0 && level > target_level) ||
+	      (level_step < 0.0 && level < target_level)
+	      ) {
+	       level = target_level;
+	  }
+	}
+	buffer_carrier_env[i] = buffer_carrier_env[i] * level;
+	i = i + 1;
+      }
+      // update position in envelop
+      n = (n + nb_env) % env_df;
+      // update for next pass the last values
+      modulator_env = buffer_modulator_env[nb_env-1];
+      carrier_env = buffer_carrier_env[nb_env-1];
+	 
+      // expand carrier envelop and retrieve to full version
+      // FIXME: we update both envelopes, but we could select if only one is active
+      if (nb_env < nb) {
+	// going backward to use the same buffer
+	i = nb;
+	val i_env = nb_env;
+	// detecting envelop updates
+	val n_rev = n;
+	while (i > 1 && i_env > 1) {
+	  buffer_modulator_env[i-1] = buffer_modulator_env[i_env-1];
+	  buffer_carrier_env[i-1] = buffer_carrier_env[i_env-1];
+	  i = i - 1;
+	  n_rev = n_rev - 1;
+	  // reset counter to detect envelop change
+	  if (n_rev <= 0) {
+	    n_rev = env_df;
+	    i_env = i_env - 1;
+	  }
+	}
+      }
     }
 
     // apply to carrier
@@ -425,8 +449,6 @@ and setCarrierADSR(a, d, s, r) {
 // to be called on start
 and default() @[init] {
     Buffer.buffer(buffer_modulator);
-    Buffer.buffer(buffer_carrier_env_short);
-    Buffer.buffer(buffer_modulator_env_short);
     Buffer.buffer(buffer_carrier_env);
     Buffer.buffer(buffer_modulator_env);
 

@@ -252,7 +252,7 @@ static_inline void synthSamplerKoto_Notes_noteOn_init(synthSamplerKoto_Notes__ct
 
 uint8_t synthSamplerKoto_Notes_noteOn(synthSamplerKoto_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel);
 
-static_inline void synthSamplerKoto_Buffer_buffer(fix16_t (&oBuff)[256]){
+static_inline void synthSamplerKoto_Buffer_buffer(fix16_t (&oBuff)[128]){
 }
 
 void synthSamplerKoto_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
@@ -281,7 +281,7 @@ typedef struct synthSamplerKoto_Sampler__ctx_type_0 {
    fix16_t fsRatio;
    fix16_t fs;
    uint8_t crossfade;
-   fix16_t buffer_o[256];
+   fix16_t buffer_o[128];
    fix16_t buffer_cross[256];
    fix16_t bend;
 } synthSamplerKoto_Sampler__ctx_type_0;
@@ -352,7 +352,7 @@ static_inline void synthSamplerKoto_Sampler_process_bufferTo_init(synthSamplerKo
    return ;
 }
 
-void synthSamplerKoto_Sampler_process_bufferTo(synthSamplerKoto_Sampler__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
+void synthSamplerKoto_Sampler_process_bufferTo(synthSamplerKoto_Sampler__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]);
 
 typedef synthSamplerKoto_Sampler__ctx_type_0 synthSamplerKoto_Sampler_process_buffer_type;
 
@@ -528,7 +528,7 @@ static_inline void synthSamplerKoto_Sampler_dummy_init(synthSamplerKoto_Sampler_
 }
 
 static_inline void synthSamplerKoto_Sampler_dummy(synthSamplerKoto_Sampler__ctx_type_1 &_ctx){
-   fix16_t buff[256];
+   fix16_t buff[128];
    synthSamplerKoto_Buffer_buffer(buff);
    synthSamplerKoto_Sampler_process_bufferTo(_ctx._inst1fd,0,buff);
 }
@@ -559,7 +559,7 @@ static_inline void synthSamplerKoto_Poly_runVoice_init(synthSamplerKoto_Poly__ct
    return ;
 }
 
-static_inline void synthSamplerKoto_Poly_runVoice(synthSamplerKoto_Poly__ctx_type_0 &_ctx, int voice, int nb, fix16_t (&buff)[256]){
+static_inline void synthSamplerKoto_Poly_runVoice(synthSamplerKoto_Poly__ctx_type_0 &_ctx, int voice, int nb, fix16_t (&buff)[128]){
    switch(voice) {
       case 0:
          synthSamplerKoto_Sampler_process_bufferTo(_ctx.voice0,nb,buff);
@@ -925,7 +925,7 @@ static_inline void synthSamplerKoto_Poly_dummy_init(synthSamplerKoto_Poly__ctx_t
 }
 
 static_inline void synthSamplerKoto_Poly_dummy(synthSamplerKoto_Poly__ctx_type_1 &_ctx){
-   fix16_t buff[256];
+   fix16_t buff[128];
    synthSamplerKoto_Buffer_buffer(buff);
    synthSamplerKoto_Poly_runVoice(_ctx._inst179,0,0,buff);
 }
@@ -946,10 +946,7 @@ typedef struct synthSamplerKoto_Voice__ctx_type_0 {
    int last_velocities[4];
    fix16_t last_values[4];
    fix16_t fs;
-   fix16_t buffer_v3[256];
-   fix16_t buffer_v2[256];
-   fix16_t buffer_v1[256];
-   fix16_t buffer_v0[256];
+   fix16_t buffer_v0[128];
 } synthSamplerKoto_Voice__ctx_type_0;
 
 typedef synthSamplerKoto_Voice__ctx_type_0 synthSamplerKoto_Voice_process_type;
@@ -970,16 +967,7 @@ static_inline void synthSamplerKoto_Voice_process_bufferTo_init(synthSamplerKoto
    return ;
 }
 
-void synthSamplerKoto_Voice_process_bufferTo(synthSamplerKoto_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
-
-typedef synthSamplerKoto_Voice__ctx_type_0 synthSamplerKoto_Voice_process_bufferTo_alt_type;
-
-static_inline void synthSamplerKoto_Voice_process_bufferTo_alt_init(synthSamplerKoto_Voice__ctx_type_0 &_output_){
-   synthSamplerKoto_Voice__ctx_type_0_init(_output_);
-   return ;
-}
-
-void synthSamplerKoto_Voice_process_bufferTo_alt(synthSamplerKoto_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]);
+void synthSamplerKoto_Voice_process_bufferTo(synthSamplerKoto_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]);
 
 typedef synthSamplerKoto_Voice__ctx_type_0 synthSamplerKoto_Voice_setReuse_type;
 
@@ -1291,13 +1279,17 @@ static_inline void synthSamplerKoto_Voice_default_init(synthSamplerKoto_Voice__c
 void synthSamplerKoto_Voice_default(synthSamplerKoto_Voice__ctx_type_0 &_ctx);
 
 typedef struct synthSamplerKoto_Voice__ctx_type_1 {
-   synthSamplerKoto_Voice__ctx_type_0 _inst275;
    synthSamplerKoto_Voice__ctx_type_0 _inst1b9;
 } synthSamplerKoto_Voice__ctx_type_1;
 
 typedef synthSamplerKoto_Voice__ctx_type_1 synthSamplerKoto_Voice_dummy_type;
 
-void synthSamplerKoto_Voice__ctx_type_1_init(synthSamplerKoto_Voice__ctx_type_1 &_output_);
+static_inline void synthSamplerKoto_Voice__ctx_type_1_init(synthSamplerKoto_Voice__ctx_type_1 &_output_){
+   synthSamplerKoto_Voice__ctx_type_1 &_ctx = _output_;
+   synthSamplerKoto_Voice__ctx_type_0_init(_ctx._inst1b9);
+   
+   return ;
+}
 
 static_inline void synthSamplerKoto_Voice_dummy_init(synthSamplerKoto_Voice__ctx_type_1 &_output_){
    synthSamplerKoto_Voice__ctx_type_1_init(_output_);
@@ -1305,10 +1297,9 @@ static_inline void synthSamplerKoto_Voice_dummy_init(synthSamplerKoto_Voice__ctx
 }
 
 static_inline void synthSamplerKoto_Voice_dummy(synthSamplerKoto_Voice__ctx_type_1 &_ctx){
-   fix16_t buff[256];
+   fix16_t buff[128];
    synthSamplerKoto_Buffer_buffer(buff);
    synthSamplerKoto_Voice_process_bufferTo(_ctx._inst1b9,0,buff);
-   synthSamplerKoto_Voice_process_bufferTo_alt(_ctx._inst275,0,buff);
 }
 
 

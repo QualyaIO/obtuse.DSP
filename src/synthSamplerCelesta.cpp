@@ -130,7 +130,7 @@ void synthSamplerCelesta_Sampler__ctx_type_0_init(synthSamplerCelesta_Sampler__c
    _ctx.fsRatio = 0x0 /* 0.000000 */;
    _ctx.fs = 0x0 /* 0.000000 */;
    _ctx.crossfade = false;
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_o);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_o);
    fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_cross);
    _ctx.bend = 0x0 /* 0.000000 */;
    synthSamplerCelesta_Sampler_default(_ctx);
@@ -217,10 +217,10 @@ fix16_t synthSamplerCelesta_Sampler_process(synthSamplerCelesta_Sampler__ctx_typ
    return value;
 }
 
-void synthSamplerCelesta_Sampler_process_bufferTo(synthSamplerCelesta_Sampler__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void synthSamplerCelesta_Sampler_process_bufferTo(synthSamplerCelesta_Sampler__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    int idx;
    idx = 0;
@@ -390,7 +390,6 @@ void synthSamplerCelesta_Sampler_noteOff(synthSamplerCelesta_Sampler__ctx_type_0
 
 void synthSamplerCelesta_Sampler_default(synthSamplerCelesta_Sampler__ctx_type_0 &_ctx){
    _ctx.size = synthSamplerCelesta_SampleWrapper_getSampleSize();
-   synthSamplerCelesta_Buffer_buffer(_ctx.buffer_cross);
    _ctx.crossfade = false;
    _ctx.sampleFs = 0x1e0000 /* 30.000000 */;
    _ctx.sampleNote = 60;
@@ -474,10 +473,7 @@ void synthSamplerCelesta_Voice__ctx_type_0_init(synthSamplerCelesta_Voice__ctx_t
    int_init_array(4,0,_ctx.last_velocities);
    fix_init_array(4,0x0 /* 0.000000 */,_ctx.last_values);
    _ctx.fs = 0x0 /* 0.000000 */;
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v3);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v2);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v1);
-   fix_init_array(256,0x0 /* 0.000000 */,_ctx.buffer_v0);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_v0);
    synthSamplerCelesta_Voice_default(_ctx);
    
    return ;
@@ -503,10 +499,10 @@ fix16_t synthSamplerCelesta_Voice_process(synthSamplerCelesta_Voice__ctx_type_0 
    return value;
 }
 
-void synthSamplerCelesta_Voice_process_bufferTo(synthSamplerCelesta_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
+void synthSamplerCelesta_Voice_process_bufferTo(synthSamplerCelesta_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 256;
+      nb = 128;
    }
    int v;
    v = 0;
@@ -546,50 +542,6 @@ void synthSamplerCelesta_Voice_process_bufferTo(synthSamplerCelesta_Voice__ctx_t
       i = 0;
       while(i < nb){
          oBuffer[i] = fix_mul(_ctx.voices_ratio,oBuffer[i]);
-         i = (1 + i);
-      }
-   }
-}
-
-void synthSamplerCelesta_Voice_process_bufferTo_alt(synthSamplerCelesta_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[256]){
-   nb = int_clip(nb,0,256);
-   if(nb == 0){
-      nb = 256;
-   }
-   synthSamplerCelesta_Poly_runVoice(_ctx.poly,0,nb,_ctx.buffer_v0);
-   synthSamplerCelesta_Poly_runVoice(_ctx.poly,1,nb,_ctx.buffer_v1);
-   synthSamplerCelesta_Poly_runVoice(_ctx.poly,2,nb,_ctx.buffer_v2);
-   synthSamplerCelesta_Poly_runVoice(_ctx.poly,3,nb,_ctx.buffer_v3);
-   if(nb > 0){
-      _ctx.last_values[0] = _ctx.buffer_v0[((-1) + nb)];
-      _ctx.last_values[1] = _ctx.buffer_v1[((-1) + nb)];
-      _ctx.last_values[2] = _ctx.buffer_v2[((-1) + nb)];
-      _ctx.last_values[3] = _ctx.buffer_v3[((-1) + nb)];
-   }
-   int i;
-   i = 0;
-   if(_ctx.normalize){
-      while(i < nb){
-         oBuffer[i] = fix_mul(_ctx.voices_ratio,(_ctx.buffer_v0[i] + _ctx.buffer_v1[i] + _ctx.buffer_v2[i] + _ctx.buffer_v3[i]));
-         i = (1 + i);
-      }
-      i = 0;
-      while((_ctx.leftovers != 0x0 /* 0.000000 */) && (i < nb)){
-         _ctx.leftovers = fix_mul(_ctx.leftovers,_ctx.leftovers_decay);
-         oBuffer[i] = (oBuffer[i] + fix_mul(_ctx.leftovers,_ctx.voices_ratio));
-         i = (1 + i);
-      }
-   }
-   else
-   {
-      while(i < nb){
-         oBuffer[i] = (_ctx.buffer_v0[i] + _ctx.buffer_v1[i] + _ctx.buffer_v2[i] + _ctx.buffer_v3[i]);
-         i = (1 + i);
-      }
-      i = 0;
-      while((_ctx.leftovers != 0x0 /* 0.000000 */) && (i < nb)){
-         _ctx.leftovers = fix_mul(_ctx.leftovers,_ctx.leftovers_decay);
-         oBuffer[i] = (_ctx.leftovers + oBuffer[i]);
          i = (1 + i);
       }
    }
@@ -708,9 +660,6 @@ void synthSamplerCelesta_Voice_setSamplerate(synthSamplerCelesta_Voice__ctx_type
 void synthSamplerCelesta_Voice_default(synthSamplerCelesta_Voice__ctx_type_0 &_ctx){
    synthSamplerCelesta_Poly_default(_ctx.poly);
    synthSamplerCelesta_Buffer_buffer(_ctx.buffer_v0);
-   synthSamplerCelesta_Buffer_buffer(_ctx.buffer_v1);
-   synthSamplerCelesta_Buffer_buffer(_ctx.buffer_v2);
-   synthSamplerCelesta_Buffer_buffer(_ctx.buffer_v3);
    if(_ctx.number_voices == 0){
       _ctx.number_voices = 4;
    }
@@ -724,14 +673,6 @@ void synthSamplerCelesta_Voice_default(synthSamplerCelesta_Voice__ctx_type_0 &_c
    synthSamplerCelesta_Voice_setNormalize(_ctx,true);
    synthSamplerCelesta_Voice_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    synthSamplerCelesta_Voice_setReuse(_ctx,false);
-}
-
-void synthSamplerCelesta_Voice__ctx_type_1_init(synthSamplerCelesta_Voice__ctx_type_1 &_output_){
-   synthSamplerCelesta_Voice__ctx_type_1 &_ctx = _output_;
-   synthSamplerCelesta_Voice__ctx_type_0_init(_ctx._inst275);
-   synthSamplerCelesta_Voice__ctx_type_0_init(_ctx._inst1b9);
-   
-   return ;
 }
 
 
