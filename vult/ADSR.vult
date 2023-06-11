@@ -22,7 +22,7 @@ fun getMaxDecay() {
   return max_d;
 }
 
-fun getMaxSurtain() {
+fun getMaxSustain() {
   val _, _, max_s, _ = getMaxValues();
   return max_s;
 }
@@ -32,14 +32,39 @@ fun getMaxRelease() {
   return max_r;
 }
 
+fun getMinValues() {
+   // 1ms minimum -- should be > 0 to avoid errors in updateSteps()
+   val min_t = 0.001;
+   return (min_t, min_t, 0.0, min_t);
+}
+
+fun getMinAttack() {
+  val min_a, _, _, _ = getMinValues();
+  return min_a;
+}
+
+fun getMinDecay() {
+  val _, min_d, _, _ = getMinValues();
+  return min_d;
+}
+
+fun getMinSustain() {
+  val _, _, min_s, _ = getMinValues();
+  return min_s;
+}
+
+fun getMinRelease() {
+  val _, _, _, min_r = getMinValues();
+  return min_r;
+}
+
 
 // return release step from "current value" to 0, e.g. when note released earlier
 fun stepToRelease(curr_val: real) {
    // parameters
    mem a, d, r, fs;
    // to avoid division by 0 and cliks, smooth at least a tiny bit. Note that sample rate of envelope should match that
-   mem min_t;
-   return (-curr_val) / (fs * (r + min_t));
+   return (-curr_val) / (fs * (clip(r, getMinRelease(), r)));
 }
 
 and process(bgate:bool) {
@@ -233,11 +258,13 @@ and process_bufferTo(bgate:bool, nb:int, oBuffer): bool {
 and updateSteps() {
    // to stay within fixed point limit we don't want the left part too big (target value as precise as the scale let it be, around 0.01 threshold), and the right part too big (too much time) -- rember limit [1/32767 .. 32767]
    // Note: because target will be scaled to 1000, compensate for sample rate in kHz
-   a_step = a_target / (fs * (a + min_t));
+   // clip to min to make it work even without init
+   val min_a, min_d, _, min_r = getMinValues(); 
+   a_step = a_target / (fs * (clip(a, min_a, a)));
    // decay will go from 1 to sustain
-   d_step = (s - a_target) / (fs * (d + min_t));
+   d_step = (s - a_target) / (fs * (clip(d, min_d, d)));
    // release from sustain to nothingness
-   r_step = (- s) / (fs * (r + min_t));
+   r_step = (- s) / (fs * (clip(r, min_r, r)));
 }
 
 // current sampling rate in kHz
@@ -256,11 +283,12 @@ and setSamplerate(newFs:real) {
 // Note: will set internally minimal value of 0.01, suitable for at least 10kHz
 and config(newA, newD, newS, newR) {
    val max_a, max_d, max_s, max_r = getMaxValues(); 
+   val min_a, min_d, min_s, min_r = getMinValues(); 
    // sanity check
-   a =  clip(newA, 0.0, max_a);
-   d =  clip(newD, 0.0, max_d);
-   s =  clip(newS, 0.0, max_s);
-   r =  clip(newR, 0.0, max_r);
+   a =  clip(newA, min_a, max_a);
+   d =  clip(newD, min_d, max_d);
+   s =  clip(newS, min_s, max_s);
+   r =  clip(newR, min_r, max_r);
    // so heavy computations
    _ = updateSteps();
 }
@@ -273,7 +301,6 @@ and retrig() {
 and default() @[init] {
    // Note: if fore some reason becomes < s, adapt decay to check if we reach sustain "from below" in process()
    mem a_target = 1.0;
-   mem min_t = 0.01;
    _ = setSamplerate(44.1);
    //_ = config(1.0, 1.0, 0.8, 1.0);
    _ = config(0.0, 0.0, 0.5, 0.0);

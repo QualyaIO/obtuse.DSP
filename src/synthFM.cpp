@@ -376,7 +376,7 @@ fix16_t synthFM_ADSR_getMaxDecay(synthFM_ADSR__ctx_type_2 &_ctx){
    return max_d;
 }
 
-fix16_t synthFM_ADSR_getMaxSurtain(synthFM_ADSR__ctx_type_3 &_ctx){
+fix16_t synthFM_ADSR_getMaxSustain(synthFM_ADSR__ctx_type_3 &_ctx){
    fix16_t max_s;
    synthFM_ADSR_getMaxValues(_ctx._inst173);
    synthFM_ADSR_getMaxValues_ret_0(_ctx._inst173);
@@ -398,6 +398,66 @@ fix16_t synthFM_ADSR_getMaxRelease(synthFM_ADSR__ctx_type_4 &_ctx){
 
 void synthFM_ADSR__ctx_type_5_init(synthFM_ADSR__ctx_type_5 &_output_){
    synthFM_ADSR__ctx_type_5 &_ctx = _output_;
+   _ctx.getMinValues_ret_3 = 0x0 /* 0.000000 */;
+   _ctx.getMinValues_ret_2 = 0x0 /* 0.000000 */;
+   _ctx.getMinValues_ret_1 = 0x0 /* 0.000000 */;
+   _ctx.getMinValues_ret_0 = 0x0 /* 0.000000 */;
+   
+   return ;
+}
+
+void synthFM_ADSR_getMinValues(synthFM_ADSR__ctx_type_5 &_ctx){
+   fix16_t min_t;
+   min_t = 0x41 /* 0.001000 */;
+   _ctx.getMinValues_ret_0 = min_t;
+   _ctx.getMinValues_ret_1 = min_t;
+   _ctx.getMinValues_ret_2 = 0x0 /* 0.000000 */;
+   _ctx.getMinValues_ret_3 = min_t;
+   return ;
+}
+
+fix16_t synthFM_ADSR_getMinAttack(synthFM_ADSR__ctx_type_6 &_ctx){
+   fix16_t min_a;
+   synthFM_ADSR_getMinValues(_ctx._inst1d6);
+   min_a = synthFM_ADSR_getMinValues_ret_0(_ctx._inst1d6);
+   synthFM_ADSR_getMinValues_ret_1(_ctx._inst1d6);
+   synthFM_ADSR_getMinValues_ret_2(_ctx._inst1d6);
+   synthFM_ADSR_getMinValues_ret_3(_ctx._inst1d6);
+   return min_a;
+}
+
+fix16_t synthFM_ADSR_getMinDecay(synthFM_ADSR__ctx_type_7 &_ctx){
+   fix16_t min_d;
+   synthFM_ADSR_getMinValues(_ctx._inst1d6);
+   synthFM_ADSR_getMinValues_ret_0(_ctx._inst1d6);
+   min_d = synthFM_ADSR_getMinValues_ret_1(_ctx._inst1d6);
+   synthFM_ADSR_getMinValues_ret_2(_ctx._inst1d6);
+   synthFM_ADSR_getMinValues_ret_3(_ctx._inst1d6);
+   return min_d;
+}
+
+fix16_t synthFM_ADSR_getMinSustain(synthFM_ADSR__ctx_type_8 &_ctx){
+   fix16_t min_s;
+   synthFM_ADSR_getMinValues(_ctx._inst1d6);
+   synthFM_ADSR_getMinValues_ret_0(_ctx._inst1d6);
+   synthFM_ADSR_getMinValues_ret_1(_ctx._inst1d6);
+   min_s = synthFM_ADSR_getMinValues_ret_2(_ctx._inst1d6);
+   synthFM_ADSR_getMinValues_ret_3(_ctx._inst1d6);
+   return min_s;
+}
+
+fix16_t synthFM_ADSR_getMinRelease(synthFM_ADSR__ctx_type_9 &_ctx){
+   fix16_t min_r;
+   synthFM_ADSR_getMinValues(_ctx._inst1d6);
+   synthFM_ADSR_getMinValues_ret_0(_ctx._inst1d6);
+   synthFM_ADSR_getMinValues_ret_1(_ctx._inst1d6);
+   synthFM_ADSR_getMinValues_ret_2(_ctx._inst1d6);
+   min_r = synthFM_ADSR_getMinValues_ret_3(_ctx._inst1d6);
+   return min_r;
+}
+
+void synthFM_ADSR__ctx_type_10_init(synthFM_ADSR__ctx_type_10 &_output_){
+   synthFM_ADSR__ctx_type_10 &_ctx = _output_;
    _ctx.target = 0x0 /* 0.000000 */;
    _ctx.step = 0x0 /* 0.000000 */;
    _ctx.state = 0;
@@ -406,22 +466,24 @@ void synthFM_ADSR__ctx_type_5_init(synthFM_ADSR__ctx_type_5 &_output_){
    _ctx.r_step = 0x0 /* 0.000000 */;
    _ctx.r = 0x0 /* 0.000000 */;
    _ctx.out = 0x0 /* 0.000000 */;
-   _ctx.min_t = 0x0 /* 0.000000 */;
    _ctx.fs = 0x0 /* 0.000000 */;
    _ctx.d_step = 0x0 /* 0.000000 */;
    _ctx.d = 0x0 /* 0.000000 */;
    _ctx.a_target = 0x0 /* 0.000000 */;
    _ctx.a_step = 0x0 /* 0.000000 */;
    _ctx.a = 0x0 /* 0.000000 */;
-   synthFM_ADSR__ctx_type_0_init(_ctx._inst3673);
+   synthFM_ADSR__ctx_type_5_init(_ctx._inst38d6);
+   synthFM_ADSR__ctx_type_0_init(_ctx._inst3773);
+   synthFM_ADSR__ctx_type_5_init(_ctx._inst33d6);
    synthFM_Util__ctx_type_2_init(_ctx._inst1851);
    synthFM_Util__ctx_type_2_init(_ctx._inst151);
+   synthFM_ADSR__ctx_type_9_init(_ctx._inst12c);
    synthFM_ADSR_default(_ctx);
    
    return ;
 }
 
-fix16_t synthFM_ADSR_process(synthFM_ADSR__ctx_type_5 &_ctx, uint8_t bgate){
+fix16_t synthFM_ADSR_process(synthFM_ADSR__ctx_type_10 &_ctx, uint8_t bgate){
    fix16_t scale;
    scale = 0x3e80000 /* 1000.000000 */;
    fix16_t scale_i;
@@ -482,7 +544,7 @@ fix16_t synthFM_ADSR_process(synthFM_ADSR__ctx_type_5 &_ctx, uint8_t bgate){
    return fix_clip(fix_mul(_ctx.out,scale_i),0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
 }
 
-uint8_t synthFM_ADSR_process_bufferTo(synthFM_ADSR__ctx_type_5 &_ctx, uint8_t bgate, int nb, fix16_t (&oBuffer)[128]){
+uint8_t synthFM_ADSR_process_bufferTo(synthFM_ADSR__ctx_type_10 &_ctx, uint8_t bgate, int nb, fix16_t (&oBuffer)[128]){
    nb = int_clip(nb,0,128);
    if(nb == 0){
       nb = 128;
@@ -556,20 +618,43 @@ uint8_t synthFM_ADSR_process_bufferTo(synthFM_ADSR__ctx_type_5 &_ctx, uint8_t bg
    return idle;
 }
 
-void synthFM_ADSR_config(synthFM_ADSR__ctx_type_5 &_ctx, fix16_t newA, fix16_t newD, fix16_t newS, fix16_t newR){
+void synthFM_ADSR_updateSteps(synthFM_ADSR__ctx_type_10 &_ctx){
+   fix16_t min_a;
+   fix16_t min_d;
+   fix16_t min_r;
+   synthFM_ADSR_getMinValues(_ctx._inst33d6);
+   min_a = synthFM_ADSR_getMinValues_ret_0(_ctx._inst33d6);
+   min_d = synthFM_ADSR_getMinValues_ret_1(_ctx._inst33d6);
+   synthFM_ADSR_getMinValues_ret_2(_ctx._inst33d6);
+   min_r = synthFM_ADSR_getMinValues_ret_3(_ctx._inst33d6);
+   _ctx.a_step = fix_div(_ctx.a_target,fix_mul(_ctx.fs,fix_clip(_ctx.a,min_a,_ctx.a)));
+   _ctx.d_step = fix_div((_ctx.s + (- _ctx.a_target)),fix_mul(_ctx.fs,fix_clip(_ctx.d,min_d,_ctx.d)));
+   _ctx.r_step = fix_div((- _ctx.s),fix_mul(_ctx.fs,fix_clip(_ctx.r,min_r,_ctx.r)));
+}
+
+void synthFM_ADSR_config(synthFM_ADSR__ctx_type_10 &_ctx, fix16_t newA, fix16_t newD, fix16_t newS, fix16_t newR){
    fix16_t max_a;
    fix16_t max_d;
    fix16_t max_s;
    fix16_t max_r;
-   synthFM_ADSR_getMaxValues(_ctx._inst3673);
-   max_a = synthFM_ADSR_getMaxValues_ret_0(_ctx._inst3673);
-   max_d = synthFM_ADSR_getMaxValues_ret_1(_ctx._inst3673);
-   max_s = synthFM_ADSR_getMaxValues_ret_2(_ctx._inst3673);
-   max_r = synthFM_ADSR_getMaxValues_ret_3(_ctx._inst3673);
-   _ctx.a = fix_clip(newA,0x0 /* 0.000000 */,max_a);
-   _ctx.d = fix_clip(newD,0x0 /* 0.000000 */,max_d);
-   _ctx.s = fix_clip(newS,0x0 /* 0.000000 */,max_s);
-   _ctx.r = fix_clip(newR,0x0 /* 0.000000 */,max_r);
+   synthFM_ADSR_getMaxValues(_ctx._inst3773);
+   max_a = synthFM_ADSR_getMaxValues_ret_0(_ctx._inst3773);
+   max_d = synthFM_ADSR_getMaxValues_ret_1(_ctx._inst3773);
+   max_s = synthFM_ADSR_getMaxValues_ret_2(_ctx._inst3773);
+   max_r = synthFM_ADSR_getMaxValues_ret_3(_ctx._inst3773);
+   fix16_t min_a;
+   fix16_t min_d;
+   fix16_t min_s;
+   fix16_t min_r;
+   synthFM_ADSR_getMinValues(_ctx._inst38d6);
+   min_a = synthFM_ADSR_getMinValues_ret_0(_ctx._inst38d6);
+   min_d = synthFM_ADSR_getMinValues_ret_1(_ctx._inst38d6);
+   min_s = synthFM_ADSR_getMinValues_ret_2(_ctx._inst38d6);
+   min_r = synthFM_ADSR_getMinValues_ret_3(_ctx._inst38d6);
+   _ctx.a = fix_clip(newA,min_a,max_a);
+   _ctx.d = fix_clip(newD,min_d,max_d);
+   _ctx.s = fix_clip(newS,min_s,max_s);
+   _ctx.r = fix_clip(newR,min_r,max_r);
    synthFM_ADSR_updateSteps(_ctx);
 }
 
@@ -580,7 +665,7 @@ void synthFM_FM__ctx_type_0_init(synthFM_FM__ctx_type_0 &_output_){
    _ctx.sustain = false;
    synthFM_Notes__ctx_type_0_init(_ctx.playingnotes);
    _ctx.n = 0;
-   synthFM_ADSR__ctx_type_5_init(_ctx.modulatoradsr);
+   synthFM_ADSR__ctx_type_10_init(_ctx.modulatoradsr);
    _ctx.modulator_target_level = false;
    _ctx.modulator_phase_shift = 0x0 /* 0.000000 */;
    _ctx.modulator_phase_range = 0x0 /* 0.000000 */;
@@ -600,7 +685,7 @@ void synthFM_FM__ctx_type_0_init(synthFM_FM__ctx_type_0 &_output_){
    _ctx.env_modulator_idle = false;
    _ctx.env_decimation_factor = 0;
    _ctx.env_carrier_idle = false;
-   synthFM_ADSR__ctx_type_5_init(_ctx.carrieradsr);
+   synthFM_ADSR__ctx_type_10_init(_ctx.carrieradsr);
    _ctx.carrier_phase_range = 0x0 /* 0.000000 */;
    _ctx.carrier_max_phase = 0x0 /* 0.000000 */;
    _ctx.carrier_env = 0x0 /* 0.000000 */;
