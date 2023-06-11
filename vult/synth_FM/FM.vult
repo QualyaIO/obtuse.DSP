@@ -254,8 +254,9 @@ and process_bufferTo(wavetable_modulator, wavetable_carrier, nb: int, oBuffer) {
 }
 // to be called internally, for smoothing changes in levels
 and _updateLevelStep() {
-  // expects to go from 0 to 1 between levels in 1ms to avoid clicks
-  level_step_ref = 1.0/(fs * 1.0);
+  // expects to go from 0 to 1 between levels in 3ms to avoid clicks -- albeit could counter lower attack in ADSR
+  // TODO: leave that as on option ?
+  level_step_ref = 1.0/(fs * 3.0);
   // might probably overflow at high factor...
   if (env_decimation_factor > 0) {
     level_step_ref = level_step_ref * real(env_decimation_factor);

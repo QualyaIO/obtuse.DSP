@@ -969,7 +969,7 @@ static_inline void synthFM_FM__updateLevelStep_init(synthFM_FM__ctx_type_0 &_out
 }
 
 static_inline void synthFM_FM__updateLevelStep(synthFM_FM__ctx_type_0 &_ctx){
-   _ctx.level_step_ref = fix_div(0x10000 /* 1.000000 */,_ctx.fs);
+   _ctx.level_step_ref = fix_div(0x10000 /* 1.000000 */,fix_mul(0x30000 /* 3.000000 */,_ctx.fs));
    if(_ctx.env_decimation_factor > 0){
       _ctx.level_step_ref = fix_mul(_ctx.level_step_ref,int_to_fix(_ctx.env_decimation_factor));
    }
