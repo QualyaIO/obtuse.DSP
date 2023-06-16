@@ -449,6 +449,127 @@ void effectsXL_CombFF_process_bufferTo(effectsXL_CombFF__ctx_type_0 &_ctx, int n
    }
 }
 
+void effectsXL_Saturator__ctx_type_6_init(effectsXL_Saturator__ctx_type_6 &_output_){
+   effectsXL_Saturator__ctx_type_6 &_ctx = _output_;
+   _ctx.threshopp = 0x0 /* 0.000000 */;
+   _ctx.threshinv = 0x0 /* 0.000000 */;
+   _ctx.thresh = 0x0 /* 0.000000 */;
+   _ctx.coeff = 0x0 /* 0.000000 */;
+   effectsXL_Saturator_default(_ctx);
+   
+   return ;
+}
+
+fix16_t effectsXL_Saturator_process(effectsXL_Saturator__ctx_type_6 &_ctx, fix16_t x){
+   if(x == 0x0 /* 0.000000 */){
+      return 0x0 /* 0.000000 */;
+   }
+   if(_ctx.coeff != 0x10000 /* 1.000000 */){
+      x = fix_mul(_ctx.coeff,x);
+   }
+   if(fix_abs(x) <= _ctx.thresh){
+      return x;
+   }
+   else
+   {
+      if(x > 0x0 /* 0.000000 */){
+         if(_ctx.thresh >= 0x10000 /* 1.000000 */){
+            return 0x10000 /* 1.000000 */;
+         }
+         else
+         {
+            if(_ctx.thresh <= 0x0 /* 0.000000 */){
+               return effectsXL_Saturator_tanh_table(x);
+            }
+            else
+            {
+               return (_ctx.thresh + fix_mul(_ctx.threshopp,effectsXL_Saturator_tanh_table(fix_mul(_ctx.threshinv,(x + (- _ctx.thresh))))));
+            }
+         }
+      }
+      else
+      {
+         if(_ctx.thresh >= 0x10000 /* 1.000000 */){
+            return -0x10000 /* -1.000000 */;
+         }
+         else
+         {
+            if(_ctx.thresh <= 0x0 /* 0.000000 */){
+               return effectsXL_Saturator_tanh_table(x);
+            }
+            else
+            {
+               return (- (_ctx.thresh + fix_mul(_ctx.threshopp,effectsXL_Saturator_tanh_table(fix_mul(_ctx.threshinv,((- _ctx.thresh) + (- x)))))));
+            }
+         }
+      }
+   }
+}
+
+void effectsXL_Saturator_process_bufferTo(effectsXL_Saturator__ctx_type_6 &_ctx, int nb, fix16_t (&input)[128], fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
+   if(nb == 0){
+      nb = 128;
+   }
+   int i;
+   i = 0;
+   fix16_t x;
+   x = 0x0 /* 0.000000 */;
+   fix16_t v;
+   v = 0x0 /* 0.000000 */;
+   while(i < nb){
+      x = input[i];
+      if((x == 0x0 /* 0.000000 */) || (_ctx.coeff == 0x0 /* 0.000000 */)){
+         v = 0x0 /* 0.000000 */;
+      }
+      else
+      {
+         if(_ctx.coeff != 0x10000 /* 1.000000 */){
+            x = fix_mul(_ctx.coeff,x);
+         }
+         if(fix_abs(x) <= _ctx.thresh){
+            v = x;
+         }
+         else
+         {
+            if(x > 0x0 /* 0.000000 */){
+               if(_ctx.thresh >= 0x10000 /* 1.000000 */){
+                  v = 0x10000 /* 1.000000 */;
+               }
+               else
+               {
+                  if(_ctx.thresh <= 0x0 /* 0.000000 */){
+                     v = effectsXL_Saturator_tanh_table(x);
+                  }
+                  else
+                  {
+                     v = (_ctx.thresh + fix_mul(_ctx.threshopp,effectsXL_Saturator_tanh_table(fix_mul(_ctx.threshinv,(x + (- _ctx.thresh))))));
+                  }
+               }
+            }
+            else
+            {
+               if(_ctx.thresh >= 0x10000 /* 1.000000 */){
+                  v = -0x10000 /* -1.000000 */;
+               }
+               else
+               {
+                  if(_ctx.thresh <= 0x0 /* 0.000000 */){
+                     v = effectsXL_Saturator_tanh_table(x);
+                  }
+                  else
+                  {
+                     v = (- (_ctx.thresh + fix_mul(_ctx.threshopp,effectsXL_Saturator_tanh_table(fix_mul(_ctx.threshinv,((- _ctx.thresh) + (- x)))))));
+                  }
+               }
+            }
+         }
+      }
+      oBuffer[i] = v;
+      i = (1 + i);
+   }
+}
+
 void effectsXL_SVF__ctx_type_0_init(effectsXL_SVF__ctx_type_0 &_output_){
    effectsXL_SVF__ctx_type_0 &_ctx = _output_;
    _ctx.z2 = 0x0 /* 0.000000 */;

@@ -1,0 +1,183 @@
+
+// tanh saturator with adjustable threshold and coeff. Output guaranteed -1..1
+
+// note: update code if limits are changed
+fun tanh_table(x) @[table(min = -4.0, max = 4.0, size = 512)] {
+  // hack to counter artifacts around limits due to polynomial interpolation, we want to clip near the edges. linear function from tanh to clip at some point for smooth transition
+  // probably there is a simpler way to do that
+  val min = -4.0;
+  val max = 4.0;
+  val thresh = 95.0/100.0;
+  val clip = 99.0/100.0;
+  if (x < min * clip) {
+    return -1.0;
+  }
+  else if (x < min * thresh) {
+    x = clip(x, min * clip, min * thresh);
+    val x_range = (x - min * thresh) / (min * clip - min * thresh);
+    //return x;
+    val s = tanh(min * thresh);
+    val smin = tanh(min * clip);
+    return s + (smin - s) * x_range;
+  }
+  else if (x > max * clip) {
+    return 1.0;
+  }
+  else if (x > max * thresh) {
+    x = clip(x, max * thresh, max * clip);
+    val x_range = (x - max * thresh) / (max * clip - max * thresh);
+    val s = tanh(max * thresh);
+    val smax = tanh(max * clip);
+    return s + (smax - s) * x_range;
+  }
+  else {
+    return tanh(x);
+  }
+}
+
+// arbitatry limit coeff range to reduce chance of overflow with fixed point (but would then create some other distortion)
+fun getMinCoeff() {
+  return -1000.0;
+}
+
+fun getMaxCoeff() {
+  return 1000.0;
+}
+
+// time: passing by, in seconds, should be positive
+// return 1 upon first beat, 2 new beat from first sub-group, 3 for second sub-group (groupped by IBI length afterward), 0 otherwise
+// will return trigger upon first call (start with beat)
+fun process(x: real): real {
+  // optional coefficient for ginal
+  mem coeff: real;
+  // when saturator is applied to signal
+  mem thresh: real;
+  // shortcuts to save few operations
+  mem threshopp: real; // 1.0 - thresh
+  mem threshinv: real; // 1/(1.0 - thresh)
+
+  // to save some computations
+  if (x == 0.0) {
+    return 0.0;
+  }
+  
+  if (coeff <> 1.0) {
+    x = x * coeff;
+  }
+
+  if (abs(x) <= thresh) {
+    return x;
+  }
+  else {
+    // treat differently positive numbers
+    if (x > 0.0) {
+      // hard clipping
+      if (thresh >= 1.0) {
+        return 1.0;
+      }
+      // tanh to soften the blow
+      else if (thresh <= 0.0) {
+        return tanh_table(x);
+      }
+      // tanh only starting threshold
+      else {
+        return thresh + threshopp*tanh_table((x-thresh) * threshinv);
+      }
+    }
+    else {
+      if (thresh >= 1.0) {
+        return -1.0;
+      }
+      else if (thresh <= 0.0) {
+        return tanh_table(x);
+      }
+      else {
+        return -(thresh + threshopp*tanh_table((-x-thresh) * threshinv));
+      }
+    }
+  }
+}
+
+
+and process_bufferTo(nb: int, input, oBuffer) {
+  nb = clip(nb, 0, size(oBuffer));
+  if (nb == 0) {
+     nb = size(oBuffer);
+  }
+  // essentially the same code as in process. 
+  val i = 0;
+  val x = 0.0;
+  val v = 0.0;
+  while (i < nb) {
+    x = input[i]; 
+
+    // to save some computations
+    if (x == 0.0 || coeff == 0.0) {
+      v = 0.0;
+    }
+    else {
+      if (coeff <> 1.0) {
+        x = x * coeff;
+      }
+      if (abs(x) <= thresh) {
+        v = x;
+      }
+      else {
+        // treat differently positive numbers
+        if (x > 0.0) {
+          // hard clipping
+          if (thresh >= 1.0) {
+            v = 1.0;
+          }
+          // tanh to soften the blow
+          else if (thresh <= 0.0) {
+            v = tanh_table(x);
+          }
+          // tanh only starting threshold
+          else {
+            v =  thresh + threshopp*tanh_table((x-thresh) * threshinv);
+          }
+        }
+        else {
+          if (thresh >= 1.0) {
+            v = -1.0;
+          }
+          else if (thresh <= 0.0) {
+            v = tanh_table(x);
+          }
+          else {
+            v = -(thresh + threshopp*tanh_table((-x-thresh) * threshinv));
+          }
+        }
+      }
+    }
+    oBuffer[i] = v;
+    i = i + 1;
+  }
+}
+
+// set threshold when the saturator kicks in. 0: tanh is applied immediately. 1: hard clip when outside [-1, 1]
+and setThreshold(t: real) {
+  thresh = clip(t, 0.0, 1.0);
+  threshopp = 1.0 - thresh;
+  if (thresh < 1.0) {
+    threshinv = 1.0 / (1.0- thresh);
+  }
+}
+
+// apply multiplicative to signal, can be use to avoid or increase deformation, e.g. coeff and threshold to 0.8 would ensure that any incoming signal in [-0.8..0.8] is not distored. Can also be used to invert signal, for some reason. Impose some arbitrary limits to help normalizing.
+and setCoeff(c: real) {
+  coeff = clip(c, getMinCoeff(), getMaxCoeff());
+}
+
+and default() @[init] {
+  _ = setCoeff(1.0);
+  _ = setThreshold(0.8);
+}
+
+// to let vult find above the good buffer size
+fun dummy() {
+   val buff;
+   Buffer.buffer(buff);
+   _ = process_bufferTo(0, buff, buff);
+}

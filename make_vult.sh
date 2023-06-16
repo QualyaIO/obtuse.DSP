@@ -34,17 +34,17 @@ for i in `ls -d ./vult/synth_drummer/*/ | cut -f4 -d'/'`; do
 done
 
 echo "Generate Effects"
-vultc -ccode vult/reverb.vult vult/ladder.vult vult/SVF.vult vult/combFB.vult vult/allpass.vult vult/combFF.vult -i vult/buffer_medium -real fixed -o src/effects -output-prefix effects_
+vultc -ccode vult/reverb.vult vult/ladder.vult vult/SVF.vult vult/combFB.vult vult/allpass.vult vult/combFF.vult vult/saturator.vult -i vult/buffer_medium -real fixed -o src/effects -output-prefix effects_
 
 # actually sequencing
 echo "Generate Utils"
 vultc -ccode vult/trigg.vult vult/clock.vult vult/tonnetz.vult vult/arp.vult vult/gate.vult -i vult/buffer_medium -real fixed -o src/utils -output-prefix utils_
 
 echo "Generate Effects with large buffer"
-vultc -ccode vult/reverb.vult vult/ladder.vult vult/SVF.vult vult/combFB.vult vult/allpass.vult vult/combFF.vult -i vult/buffer_large -real fixed -o src/effectsL -output-prefix effectsL_
+vultc -ccode vult/reverb.vult vult/ladder.vult vult/SVF.vult vult/combFB.vult vult/allpass.vult vult/combFF.vult vult/saturator.vult -i vult/buffer_large -real fixed -o src/effectsL -output-prefix effectsL_
 
 echo "Generate Effects with extra large buffer"
-vultc -ccode vult/reverb.vult vult/ladder.vult vult/SVF.vult vult/combFB.vult vult/allpass.vult vult/combFF.vult -i vult/buffer_extra_large -real fixed -o src/effectsXL -output-prefix effectsXL_
+vultc -ccode vult/reverb.vult vult/ladder.vult vult/SVF.vult vult/combFB.vult vult/allpass.vult vult/combFF.vult vult/saturator.vult -i vult/buffer_extra_large -real fixed -o src/effectsXL -output-prefix effectsXL_
 
 echo "Hack init"
 # check at best as we can that we will replace the correct pieces

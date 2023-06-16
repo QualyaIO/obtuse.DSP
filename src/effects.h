@@ -838,6 +838,121 @@ static_inline void effects_CombFF_dummy(effects_CombFF__ctx_type_1 &_ctx){
    effects_CombFF_process_bufferTo(_ctx._inst115,0,buff,buff);
 }
 
+static_inline fix16_t effects_Saturator_tanh_table_raw_c0(int index){
+   return effects_Saturator_tanh_table_c0[index];
+};
+
+static_inline fix16_t effects_Saturator_tanh_table_raw_c1(int index){
+   return effects_Saturator_tanh_table_c1[index];
+};
+
+static_inline fix16_t effects_Saturator_tanh_table_raw_c2(int index){
+   return effects_Saturator_tanh_table_c2[index];
+};
+
+static_inline fix16_t effects_Saturator_tanh_table(fix16_t x){
+   int index;
+   index = int_clip(fix_to_int(fix_mul(0x3fe000 /* 63.875000 */,(0x40000 /* 4.000000 */ + x))),0,511);
+   return (fix_wrap_array(effects_Saturator_tanh_table_c0)[index] + fix_mul(x,(fix_wrap_array(effects_Saturator_tanh_table_c1)[index] + fix_mul(x,fix_wrap_array(effects_Saturator_tanh_table_c2)[index]))));
+}
+
+static_inline fix16_t effects_Saturator_getMinCoeff(){
+   return -0x3e80000 /* -1000.000000 */;
+};
+
+static_inline fix16_t effects_Saturator_getMaxCoeff(){
+   return 0x3e80000 /* 1000.000000 */;
+};
+
+typedef struct effects_Saturator__ctx_type_6 {
+   fix16_t threshopp;
+   fix16_t threshinv;
+   fix16_t thresh;
+   fix16_t coeff;
+} effects_Saturator__ctx_type_6;
+
+typedef effects_Saturator__ctx_type_6 effects_Saturator_process_type;
+
+void effects_Saturator__ctx_type_6_init(effects_Saturator__ctx_type_6 &_output_);
+
+static_inline void effects_Saturator_process_init(effects_Saturator__ctx_type_6 &_output_){
+   effects_Saturator__ctx_type_6_init(_output_);
+   return ;
+}
+
+fix16_t effects_Saturator_process(effects_Saturator__ctx_type_6 &_ctx, fix16_t x);
+
+typedef effects_Saturator__ctx_type_6 effects_Saturator_process_bufferTo_type;
+
+static_inline void effects_Saturator_process_bufferTo_init(effects_Saturator__ctx_type_6 &_output_){
+   effects_Saturator__ctx_type_6_init(_output_);
+   return ;
+}
+
+void effects_Saturator_process_bufferTo(effects_Saturator__ctx_type_6 &_ctx, int nb, fix16_t (&input)[128], fix16_t (&oBuffer)[128]);
+
+typedef effects_Saturator__ctx_type_6 effects_Saturator_setThreshold_type;
+
+static_inline void effects_Saturator_setThreshold_init(effects_Saturator__ctx_type_6 &_output_){
+   effects_Saturator__ctx_type_6_init(_output_);
+   return ;
+}
+
+static_inline void effects_Saturator_setThreshold(effects_Saturator__ctx_type_6 &_ctx, fix16_t t){
+   _ctx.thresh = fix_clip(t,0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
+   _ctx.threshopp = (0x10000 /* 1.000000 */ + (- _ctx.thresh));
+   if(_ctx.thresh < 0x10000 /* 1.000000 */){
+      _ctx.threshinv = fix_div(0x10000 /* 1.000000 */,(0x10000 /* 1.000000 */ + (- _ctx.thresh)));
+   }
+}
+
+typedef effects_Saturator__ctx_type_6 effects_Saturator_setCoeff_type;
+
+static_inline void effects_Saturator_setCoeff_init(effects_Saturator__ctx_type_6 &_output_){
+   effects_Saturator__ctx_type_6_init(_output_);
+   return ;
+}
+
+static_inline void effects_Saturator_setCoeff(effects_Saturator__ctx_type_6 &_ctx, fix16_t c){
+   _ctx.coeff = fix_clip(c,-0x3e80000 /* -1000.000000 */,0x3e80000 /* 1000.000000 */);
+};
+
+typedef effects_Saturator__ctx_type_6 effects_Saturator_default_type;
+
+static_inline void effects_Saturator_default_init(effects_Saturator__ctx_type_6 &_output_){
+   effects_Saturator__ctx_type_6_init(_output_);
+   return ;
+}
+
+static_inline void effects_Saturator_default(effects_Saturator__ctx_type_6 &_ctx){
+   effects_Saturator_setCoeff(_ctx,0x10000 /* 1.000000 */);
+   effects_Saturator_setThreshold(_ctx,0xcccc /* 0.800000 */);
+}
+
+typedef struct effects_Saturator__ctx_type_7 {
+   effects_Saturator__ctx_type_6 _inst15c;
+} effects_Saturator__ctx_type_7;
+
+typedef effects_Saturator__ctx_type_7 effects_Saturator_dummy_type;
+
+static_inline void effects_Saturator__ctx_type_7_init(effects_Saturator__ctx_type_7 &_output_){
+   effects_Saturator__ctx_type_7 &_ctx = _output_;
+   effects_Saturator__ctx_type_6_init(_ctx._inst15c);
+   
+   return ;
+}
+
+static_inline void effects_Saturator_dummy_init(effects_Saturator__ctx_type_7 &_output_){
+   effects_Saturator__ctx_type_7_init(_output_);
+   return ;
+}
+
+static_inline void effects_Saturator_dummy(effects_Saturator__ctx_type_7 &_ctx){
+   fix16_t buff[128];
+   effects_Buffer_buffer(buff);
+   effects_Saturator_process_bufferTo(_ctx._inst15c,0,buff,buff);
+}
+
 typedef struct effects_SVF__ctx_type_0 {
    fix16_t z2;
    fix16_t z1;
