@@ -856,6 +856,8 @@ static_inline fix16_t effectsL_Saturator_tanh_table(fix16_t x){
    return (fix_wrap_array(effectsL_Saturator_tanh_table_c0)[index] + fix_mul(x,(fix_wrap_array(effectsL_Saturator_tanh_table_c1)[index] + fix_mul(x,fix_wrap_array(effectsL_Saturator_tanh_table_c2)[index]))));
 }
 
+fix16_t effectsL_Saturator_tanh_wrapper(fix16_t x);
+
 static_inline fix16_t effectsL_Saturator_getMinCoeff(){
    return -0x3e80000 /* -1000.000000 */;
 };
@@ -864,41 +866,41 @@ static_inline fix16_t effectsL_Saturator_getMaxCoeff(){
    return 0x3e80000 /* 1000.000000 */;
 };
 
-typedef struct effectsL_Saturator__ctx_type_6 {
+typedef struct effectsL_Saturator__ctx_type_7 {
    fix16_t threshopp;
    fix16_t threshinv;
    fix16_t thresh;
    fix16_t coeff;
-} effectsL_Saturator__ctx_type_6;
+} effectsL_Saturator__ctx_type_7;
 
-typedef effectsL_Saturator__ctx_type_6 effectsL_Saturator_process_type;
+typedef effectsL_Saturator__ctx_type_7 effectsL_Saturator_process_type;
 
-void effectsL_Saturator__ctx_type_6_init(effectsL_Saturator__ctx_type_6 &_output_);
+void effectsL_Saturator__ctx_type_7_init(effectsL_Saturator__ctx_type_7 &_output_);
 
-static_inline void effectsL_Saturator_process_init(effectsL_Saturator__ctx_type_6 &_output_){
-   effectsL_Saturator__ctx_type_6_init(_output_);
+static_inline void effectsL_Saturator_process_init(effectsL_Saturator__ctx_type_7 &_output_){
+   effectsL_Saturator__ctx_type_7_init(_output_);
    return ;
 }
 
-fix16_t effectsL_Saturator_process(effectsL_Saturator__ctx_type_6 &_ctx, fix16_t x);
+fix16_t effectsL_Saturator_process(effectsL_Saturator__ctx_type_7 &_ctx, fix16_t x);
 
-typedef effectsL_Saturator__ctx_type_6 effectsL_Saturator_process_bufferTo_type;
+typedef effectsL_Saturator__ctx_type_7 effectsL_Saturator_process_bufferTo_type;
 
-static_inline void effectsL_Saturator_process_bufferTo_init(effectsL_Saturator__ctx_type_6 &_output_){
-   effectsL_Saturator__ctx_type_6_init(_output_);
+static_inline void effectsL_Saturator_process_bufferTo_init(effectsL_Saturator__ctx_type_7 &_output_){
+   effectsL_Saturator__ctx_type_7_init(_output_);
    return ;
 }
 
-void effectsL_Saturator_process_bufferTo(effectsL_Saturator__ctx_type_6 &_ctx, int nb, fix16_t (&input)[128], fix16_t (&oBuffer)[128]);
+void effectsL_Saturator_process_bufferTo(effectsL_Saturator__ctx_type_7 &_ctx, int nb, fix16_t (&input)[128], fix16_t (&oBuffer)[128]);
 
-typedef effectsL_Saturator__ctx_type_6 effectsL_Saturator_setThreshold_type;
+typedef effectsL_Saturator__ctx_type_7 effectsL_Saturator_setThreshold_type;
 
-static_inline void effectsL_Saturator_setThreshold_init(effectsL_Saturator__ctx_type_6 &_output_){
-   effectsL_Saturator__ctx_type_6_init(_output_);
+static_inline void effectsL_Saturator_setThreshold_init(effectsL_Saturator__ctx_type_7 &_output_){
+   effectsL_Saturator__ctx_type_7_init(_output_);
    return ;
 }
 
-static_inline void effectsL_Saturator_setThreshold(effectsL_Saturator__ctx_type_6 &_ctx, fix16_t t){
+static_inline void effectsL_Saturator_setThreshold(effectsL_Saturator__ctx_type_7 &_ctx, fix16_t t){
    _ctx.thresh = fix_clip(t,0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
    _ctx.threshopp = (0x10000 /* 1.000000 */ + (- _ctx.thresh));
    if(_ctx.thresh < 0x10000 /* 1.000000 */){
@@ -906,48 +908,48 @@ static_inline void effectsL_Saturator_setThreshold(effectsL_Saturator__ctx_type_
    }
 }
 
-typedef effectsL_Saturator__ctx_type_6 effectsL_Saturator_setCoeff_type;
+typedef effectsL_Saturator__ctx_type_7 effectsL_Saturator_setCoeff_type;
 
-static_inline void effectsL_Saturator_setCoeff_init(effectsL_Saturator__ctx_type_6 &_output_){
-   effectsL_Saturator__ctx_type_6_init(_output_);
-   return ;
-}
-
-static_inline void effectsL_Saturator_setCoeff(effectsL_Saturator__ctx_type_6 &_ctx, fix16_t c){
-   _ctx.coeff = fix_clip(c,-0x3e80000 /* -1000.000000 */,0x3e80000 /* 1000.000000 */);
-};
-
-typedef effectsL_Saturator__ctx_type_6 effectsL_Saturator_default_type;
-
-static_inline void effectsL_Saturator_default_init(effectsL_Saturator__ctx_type_6 &_output_){
-   effectsL_Saturator__ctx_type_6_init(_output_);
-   return ;
-}
-
-static_inline void effectsL_Saturator_default(effectsL_Saturator__ctx_type_6 &_ctx){
-   effectsL_Saturator_setCoeff(_ctx,0x10000 /* 1.000000 */);
-   effectsL_Saturator_setThreshold(_ctx,0xcccc /* 0.800000 */);
-}
-
-typedef struct effectsL_Saturator__ctx_type_7 {
-   effectsL_Saturator__ctx_type_6 _inst15c;
-} effectsL_Saturator__ctx_type_7;
-
-typedef effectsL_Saturator__ctx_type_7 effectsL_Saturator_dummy_type;
-
-static_inline void effectsL_Saturator__ctx_type_7_init(effectsL_Saturator__ctx_type_7 &_output_){
-   effectsL_Saturator__ctx_type_7 &_ctx = _output_;
-   effectsL_Saturator__ctx_type_6_init(_ctx._inst15c);
-   
-   return ;
-}
-
-static_inline void effectsL_Saturator_dummy_init(effectsL_Saturator__ctx_type_7 &_output_){
+static_inline void effectsL_Saturator_setCoeff_init(effectsL_Saturator__ctx_type_7 &_output_){
    effectsL_Saturator__ctx_type_7_init(_output_);
    return ;
 }
 
-static_inline void effectsL_Saturator_dummy(effectsL_Saturator__ctx_type_7 &_ctx){
+static_inline void effectsL_Saturator_setCoeff(effectsL_Saturator__ctx_type_7 &_ctx, fix16_t c){
+   _ctx.coeff = fix_clip(c,-0x3e80000 /* -1000.000000 */,0x3e80000 /* 1000.000000 */);
+};
+
+typedef effectsL_Saturator__ctx_type_7 effectsL_Saturator_default_type;
+
+static_inline void effectsL_Saturator_default_init(effectsL_Saturator__ctx_type_7 &_output_){
+   effectsL_Saturator__ctx_type_7_init(_output_);
+   return ;
+}
+
+static_inline void effectsL_Saturator_default(effectsL_Saturator__ctx_type_7 &_ctx){
+   effectsL_Saturator_setCoeff(_ctx,0x10000 /* 1.000000 */);
+   effectsL_Saturator_setThreshold(_ctx,0xcccc /* 0.800000 */);
+}
+
+typedef struct effectsL_Saturator__ctx_type_8 {
+   effectsL_Saturator__ctx_type_7 _inst15c;
+} effectsL_Saturator__ctx_type_8;
+
+typedef effectsL_Saturator__ctx_type_8 effectsL_Saturator_dummy_type;
+
+static_inline void effectsL_Saturator__ctx_type_8_init(effectsL_Saturator__ctx_type_8 &_output_){
+   effectsL_Saturator__ctx_type_8 &_ctx = _output_;
+   effectsL_Saturator__ctx_type_7_init(_ctx._inst15c);
+   
+   return ;
+}
+
+static_inline void effectsL_Saturator_dummy_init(effectsL_Saturator__ctx_type_8 &_output_){
+   effectsL_Saturator__ctx_type_8_init(_output_);
+   return ;
+}
+
+static_inline void effectsL_Saturator_dummy(effectsL_Saturator__ctx_type_8 &_ctx){
    fix16_t buff[128];
    effectsL_Buffer_buffer(buff);
    effectsL_Saturator_process_bufferTo(_ctx._inst15c,0,buff,buff);

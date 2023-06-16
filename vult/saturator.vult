@@ -1,38 +1,21 @@
 
 // tanh saturator with adjustable threshold and coeff. Output guaranteed -1..1
 
-// note: update code if limits are changed
+// note: with fixed float my previous hack consisting in having linear function and clip around edges produces still artifacts when we are too much beyond edges, rely on client to clip signal if beyond limits. To sync with the process code
 fun tanh_table(x) @[table(min = -4.0, max = 4.0, size = 512)] {
-  // hack to counter artifacts around limits due to polynomial interpolation, we want to clip near the edges. linear function from tanh to clip at some point for smooth transition
-  // probably there is a simpler way to do that
-  val min = -4.0;
-  val max = 4.0;
-  val thresh = 95.0/100.0;
-  val clip = 99.0/100.0;
-  if (x < min * clip) {
-    return -1.0;
-  }
-  else if (x < min * thresh) {
-    x = clip(x, min * clip, min * thresh);
-    val x_range = (x - min * thresh) / (min * clip - min * thresh);
-    //return x;
-    val s = tanh(min * thresh);
-    val smin = tanh(min * clip);
-    return s + (smin - s) * x_range;
-  }
-  else if (x > max * clip) {
+  return tanh(x);
+}
+
+// make sure we respect out of bound tanh -- hard clip beyond tanh table definition, avoid artifacts with interpolation
+// To sync with tanh_table limits!
+fun tanh_wrapper(x) {
+  if (x > 4.0) {
     return 1.0;
   }
-  else if (x > max * thresh) {
-    x = clip(x, max * thresh, max * clip);
-    val x_range = (x - max * thresh) / (max * clip - max * thresh);
-    val s = tanh(max * thresh);
-    val smax = tanh(max * clip);
-    return s + (smax - s) * x_range;
+  if (x < -4.0) {
+    return -1.0;
   }
-  else {
-    return tanh(x);
-  }
+  return tanh_table(x);
 }
 
 // arbitatry limit coeff range to reduce chance of overflow with fixed point (but would then create some other distortion)
@@ -60,7 +43,7 @@ fun process(x: real): real {
   if (x == 0.0 || coeff == 0.0) {
     return 0.0;
   }
-  
+
   if (coeff <> 1.0) {
     x = x * coeff;
   }
@@ -77,11 +60,11 @@ fun process(x: real): real {
       }
       // tanh to soften the blow
       else if (thresh <= 0.0) {
-        return tanh_table(x);
+        return tanh_wrapper(x);
       }
       // tanh only starting threshold
       else {
-        return thresh + threshopp*tanh_table((x-thresh) * threshinv);
+        return thresh + threshopp*tanh_wrapper((x-thresh) * threshinv);
       }
     }
     else {
@@ -92,7 +75,7 @@ fun process(x: real): real {
         return tanh_table(x);
       }
       else {
-        return -(thresh + threshopp*tanh_table((-x-thresh) * threshinv));
+        return -(thresh + threshopp*tanh_wrapper((-x-thresh) * threshinv));
       }
     }
   }
@@ -156,7 +139,7 @@ and process_bufferTo(nb: int, input, oBuffer) {
     else if (thresh <= 0.0) {
       i = 0;
       while (i < nb) {
-        oBuffer[i] = tanh_table(oBuffer[i]);
+        oBuffer[i] = tanh_wrapper(oBuffer[i]);
         i = i + 1;
       }
     }
@@ -167,11 +150,11 @@ and process_bufferTo(nb: int, input, oBuffer) {
       while (i < nb) {
         // positive value, above threshold
         if (oBuffer[i] > thresh) {
-          oBuffer[i]  =  thresh + threshopp*tanh_table((oBuffer[i]-thresh) * threshinv);
+          oBuffer[i]  =  thresh + threshopp*tanh_wrapper((oBuffer[i]-thresh) * threshinv);
         }
         // negative value, below threshold
         else if (oBuffer[i] < -thresh) {
-          oBuffer[i] = -(thresh + threshopp*tanh_table((-oBuffer[i]-thresh) * threshinv));
+          oBuffer[i] = -(thresh + threshopp*tanh_wrapper((-oBuffer[i]-thresh) * threshinv));
         }
         i = i + 1;
       }

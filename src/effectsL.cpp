@@ -449,8 +449,18 @@ void effectsL_CombFF_process_bufferTo(effectsL_CombFF__ctx_type_0 &_ctx, int nb,
    }
 }
 
-void effectsL_Saturator__ctx_type_6_init(effectsL_Saturator__ctx_type_6 &_output_){
-   effectsL_Saturator__ctx_type_6 &_ctx = _output_;
+fix16_t effectsL_Saturator_tanh_wrapper(fix16_t x){
+   if(x > 0x40000 /* 4.000000 */){
+      return 0x10000 /* 1.000000 */;
+   }
+   if(x < -0x40000 /* -4.000000 */){
+      return -0x10000 /* -1.000000 */;
+   }
+   return effectsL_Saturator_tanh_table(x);
+}
+
+void effectsL_Saturator__ctx_type_7_init(effectsL_Saturator__ctx_type_7 &_output_){
+   effectsL_Saturator__ctx_type_7 &_ctx = _output_;
    _ctx.threshopp = 0x0 /* 0.000000 */;
    _ctx.threshinv = 0x0 /* 0.000000 */;
    _ctx.thresh = 0x0 /* 0.000000 */;
@@ -460,7 +470,7 @@ void effectsL_Saturator__ctx_type_6_init(effectsL_Saturator__ctx_type_6 &_output
    return ;
 }
 
-fix16_t effectsL_Saturator_process(effectsL_Saturator__ctx_type_6 &_ctx, fix16_t x){
+fix16_t effectsL_Saturator_process(effectsL_Saturator__ctx_type_7 &_ctx, fix16_t x){
    if((x == 0x0 /* 0.000000 */) || (_ctx.coeff == 0x0 /* 0.000000 */)){
       return 0x0 /* 0.000000 */;
    }
@@ -479,11 +489,11 @@ fix16_t effectsL_Saturator_process(effectsL_Saturator__ctx_type_6 &_ctx, fix16_t
          else
          {
             if(_ctx.thresh <= 0x0 /* 0.000000 */){
-               return effectsL_Saturator_tanh_table(x);
+               return effectsL_Saturator_tanh_wrapper(x);
             }
             else
             {
-               return (_ctx.thresh + fix_mul(_ctx.threshopp,effectsL_Saturator_tanh_table(fix_mul(_ctx.threshinv,(x + (- _ctx.thresh))))));
+               return (_ctx.thresh + fix_mul(_ctx.threshopp,effectsL_Saturator_tanh_wrapper(fix_mul(_ctx.threshinv,(x + (- _ctx.thresh))))));
             }
          }
       }
@@ -499,14 +509,14 @@ fix16_t effectsL_Saturator_process(effectsL_Saturator__ctx_type_6 &_ctx, fix16_t
             }
             else
             {
-               return (- (_ctx.thresh + fix_mul(_ctx.threshopp,effectsL_Saturator_tanh_table(fix_mul(_ctx.threshinv,((- _ctx.thresh) + (- x)))))));
+               return (- (_ctx.thresh + fix_mul(_ctx.threshopp,effectsL_Saturator_tanh_wrapper(fix_mul(_ctx.threshinv,((- _ctx.thresh) + (- x)))))));
             }
          }
       }
    }
 }
 
-void effectsL_Saturator_process_bufferTo(effectsL_Saturator__ctx_type_6 &_ctx, int nb, fix16_t (&input)[128], fix16_t (&oBuffer)[128]){
+void effectsL_Saturator_process_bufferTo(effectsL_Saturator__ctx_type_7 &_ctx, int nb, fix16_t (&input)[128], fix16_t (&oBuffer)[128]){
    nb = int_clip(nb,0,128);
    if(nb == 0){
       nb = 128;
@@ -563,7 +573,7 @@ void effectsL_Saturator_process_bufferTo(effectsL_Saturator__ctx_type_6 &_ctx, i
          if(_ctx.thresh <= 0x0 /* 0.000000 */){
             i = 0;
             while(i < nb){
-               oBuffer[i] = effectsL_Saturator_tanh_table(oBuffer[i]);
+               oBuffer[i] = effectsL_Saturator_tanh_wrapper(oBuffer[i]);
                i = (1 + i);
             }
          }
@@ -572,12 +582,12 @@ void effectsL_Saturator_process_bufferTo(effectsL_Saturator__ctx_type_6 &_ctx, i
             i = 0;
             while(i < nb){
                if(oBuffer[i] > _ctx.thresh){
-                  oBuffer[i] = (_ctx.thresh + fix_mul(_ctx.threshopp,effectsL_Saturator_tanh_table(fix_mul(_ctx.threshinv,(oBuffer[i] + (- _ctx.thresh))))));
+                  oBuffer[i] = (_ctx.thresh + fix_mul(_ctx.threshopp,effectsL_Saturator_tanh_wrapper(fix_mul(_ctx.threshinv,(oBuffer[i] + (- _ctx.thresh))))));
                }
                else
                {
                   if(oBuffer[i] < (- _ctx.thresh)){
-                     oBuffer[i] = (- (_ctx.thresh + fix_mul(_ctx.threshopp,effectsL_Saturator_tanh_table(fix_mul(_ctx.threshinv,((- _ctx.thresh) + (- oBuffer[i])))))));
+                     oBuffer[i] = (- (_ctx.thresh + fix_mul(_ctx.threshopp,effectsL_Saturator_tanh_wrapper(fix_mul(_ctx.threshinv,((- _ctx.thresh) + (- oBuffer[i])))))));
                   }
                }
                i = (1 + i);

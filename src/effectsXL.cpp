@@ -449,8 +449,18 @@ void effectsXL_CombFF_process_bufferTo(effectsXL_CombFF__ctx_type_0 &_ctx, int n
    }
 }
 
-void effectsXL_Saturator__ctx_type_6_init(effectsXL_Saturator__ctx_type_6 &_output_){
-   effectsXL_Saturator__ctx_type_6 &_ctx = _output_;
+fix16_t effectsXL_Saturator_tanh_wrapper(fix16_t x){
+   if(x > 0x40000 /* 4.000000 */){
+      return 0x10000 /* 1.000000 */;
+   }
+   if(x < -0x40000 /* -4.000000 */){
+      return -0x10000 /* -1.000000 */;
+   }
+   return effectsXL_Saturator_tanh_table(x);
+}
+
+void effectsXL_Saturator__ctx_type_7_init(effectsXL_Saturator__ctx_type_7 &_output_){
+   effectsXL_Saturator__ctx_type_7 &_ctx = _output_;
    _ctx.threshopp = 0x0 /* 0.000000 */;
    _ctx.threshinv = 0x0 /* 0.000000 */;
    _ctx.thresh = 0x0 /* 0.000000 */;
@@ -460,7 +470,7 @@ void effectsXL_Saturator__ctx_type_6_init(effectsXL_Saturator__ctx_type_6 &_outp
    return ;
 }
 
-fix16_t effectsXL_Saturator_process(effectsXL_Saturator__ctx_type_6 &_ctx, fix16_t x){
+fix16_t effectsXL_Saturator_process(effectsXL_Saturator__ctx_type_7 &_ctx, fix16_t x){
    if((x == 0x0 /* 0.000000 */) || (_ctx.coeff == 0x0 /* 0.000000 */)){
       return 0x0 /* 0.000000 */;
    }
@@ -479,11 +489,11 @@ fix16_t effectsXL_Saturator_process(effectsXL_Saturator__ctx_type_6 &_ctx, fix16
          else
          {
             if(_ctx.thresh <= 0x0 /* 0.000000 */){
-               return effectsXL_Saturator_tanh_table(x);
+               return effectsXL_Saturator_tanh_wrapper(x);
             }
             else
             {
-               return (_ctx.thresh + fix_mul(_ctx.threshopp,effectsXL_Saturator_tanh_table(fix_mul(_ctx.threshinv,(x + (- _ctx.thresh))))));
+               return (_ctx.thresh + fix_mul(_ctx.threshopp,effectsXL_Saturator_tanh_wrapper(fix_mul(_ctx.threshinv,(x + (- _ctx.thresh))))));
             }
          }
       }
@@ -499,14 +509,14 @@ fix16_t effectsXL_Saturator_process(effectsXL_Saturator__ctx_type_6 &_ctx, fix16
             }
             else
             {
-               return (- (_ctx.thresh + fix_mul(_ctx.threshopp,effectsXL_Saturator_tanh_table(fix_mul(_ctx.threshinv,((- _ctx.thresh) + (- x)))))));
+               return (- (_ctx.thresh + fix_mul(_ctx.threshopp,effectsXL_Saturator_tanh_wrapper(fix_mul(_ctx.threshinv,((- _ctx.thresh) + (- x)))))));
             }
          }
       }
    }
 }
 
-void effectsXL_Saturator_process_bufferTo(effectsXL_Saturator__ctx_type_6 &_ctx, int nb, fix16_t (&input)[128], fix16_t (&oBuffer)[128]){
+void effectsXL_Saturator_process_bufferTo(effectsXL_Saturator__ctx_type_7 &_ctx, int nb, fix16_t (&input)[128], fix16_t (&oBuffer)[128]){
    nb = int_clip(nb,0,128);
    if(nb == 0){
       nb = 128;
@@ -563,7 +573,7 @@ void effectsXL_Saturator_process_bufferTo(effectsXL_Saturator__ctx_type_6 &_ctx,
          if(_ctx.thresh <= 0x0 /* 0.000000 */){
             i = 0;
             while(i < nb){
-               oBuffer[i] = effectsXL_Saturator_tanh_table(oBuffer[i]);
+               oBuffer[i] = effectsXL_Saturator_tanh_wrapper(oBuffer[i]);
                i = (1 + i);
             }
          }
@@ -572,12 +582,12 @@ void effectsXL_Saturator_process_bufferTo(effectsXL_Saturator__ctx_type_6 &_ctx,
             i = 0;
             while(i < nb){
                if(oBuffer[i] > _ctx.thresh){
-                  oBuffer[i] = (_ctx.thresh + fix_mul(_ctx.threshopp,effectsXL_Saturator_tanh_table(fix_mul(_ctx.threshinv,(oBuffer[i] + (- _ctx.thresh))))));
+                  oBuffer[i] = (_ctx.thresh + fix_mul(_ctx.threshopp,effectsXL_Saturator_tanh_wrapper(fix_mul(_ctx.threshinv,(oBuffer[i] + (- _ctx.thresh))))));
                }
                else
                {
                   if(oBuffer[i] < (- _ctx.thresh)){
-                     oBuffer[i] = (- (_ctx.thresh + fix_mul(_ctx.threshopp,effectsXL_Saturator_tanh_table(fix_mul(_ctx.threshinv,((- _ctx.thresh) + (- oBuffer[i])))))));
+                     oBuffer[i] = (- (_ctx.thresh + fix_mul(_ctx.threshopp,effectsXL_Saturator_tanh_wrapper(fix_mul(_ctx.threshinv,((- _ctx.thresh) + (- oBuffer[i])))))));
                   }
                }
                i = (1 + i);
