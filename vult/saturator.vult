@@ -57,7 +57,7 @@ fun process(x: real): real {
   mem threshinv: real; // 1/(1.0 - thresh)
 
   // to save some computations
-  if (x == 0.0) {
+  if (x == 0.0 || coeff == 0.0) {
     return 0.0;
   }
   
@@ -98,61 +98,84 @@ fun process(x: real): real {
   }
 }
 
-
+// Note: no update of coeff or threshold will be taken into account while processing the buffer, to optimize a tiny bit
 and process_bufferTo(nb: int, input, oBuffer) {
   nb = clip(nb, 0, size(oBuffer));
   if (nb == 0) {
      nb = size(oBuffer);
   }
-  // essentially the same code as in process. 
-  val i = 0;
-  val x = 0.0;
-  val v = 0.0;
-  while (i < nb) {
-    x = input[i]; 
 
-    // to save some computations
-    if (x == 0.0 || coeff == 0.0) {
-      v = 0.0;
+  val i = 0;
+
+  // nothing to do
+  if (coeff == 0.0) {
+    i = 0;
+    while (i < nb) {
+      oBuffer[i] = 0.0;
+      i = i + 1;
     }
-    else {
-      if (coeff <> 1.0) {
-        x = x * coeff;
-      }
-      if (abs(x) <= thresh) {
-        v = x;
-      }
-      else {
-        // treat differently positive numbers
-        if (x > 0.0) {
-          // hard clipping
-          if (thresh >= 1.0) {
-            v = 1.0;
-          }
-          // tanh to soften the blow
-          else if (thresh <= 0.0) {
-            v = tanh_table(x);
-          }
-          // tanh only starting threshold
-          else {
-            v =  thresh + threshopp*tanh_table((x-thresh) * threshinv);
-          }
+  }
+  else {
+    // scale to perform
+    if (coeff <> 1.0) {
+      i = 0;
+      while (i < nb) {
+        if (input[i] == 0.0) {
+          oBuffer[i] = 0.0;
         }
         else {
-          if (thresh >= 1.0) {
-            v = -1.0;
-          }
-          else if (thresh <= 0.0) {
-            v = tanh_table(x);
-          }
-          else {
-            v = -(thresh + threshopp*tanh_table((-x-thresh) * threshinv));
-          }
+          oBuffer[i] = input[i] * coeff;
         }
+        i = i + 1;
       }
     }
-    oBuffer[i] = v;
-    i = i + 1;
+    // no scale, not sure this is much optimized here
+    else {
+      i = 0;
+      while (i < nb) {
+        oBuffer[i] = input[i];
+        i = i + 1;
+      }
+    }
+
+    // here hard clip if outside bounds
+    if (thresh >= 1.0) {
+      i = 0;
+      while (i < nb) {
+        if (oBuffer[i] > 1.0) {
+          oBuffer[i] = 1.0;
+        }
+        else if (oBuffer[i] < -1.0) {
+          oBuffer[i] = -1.0;
+        }
+        i = i + 1;
+      }
+    }
+
+    // soft clip i.e. tanh no matter what
+    else if (thresh <= 0.0) {
+      i = 0;
+      while (i < nb) {
+        oBuffer[i] = tanh_table(oBuffer[i]);
+        i = i + 1;
+      }
+    }
+
+    // soft clip if outside bounds
+    else {
+      i = 0;
+      while (i < nb) {
+        // positive value, above threshold
+        if (oBuffer[i] > thresh) {
+          oBuffer[i]  =  thresh + threshopp*tanh_table((oBuffer[i]-thresh) * threshinv);
+        }
+        // negative value, below threshold
+        else if (oBuffer[i] < -thresh) {
+          oBuffer[i] = -(thresh + threshopp*tanh_table((-oBuffer[i]-thresh) * threshinv));
+        }
+        i = i + 1;
+      }
+    }
   }
 }
 

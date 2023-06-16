@@ -461,7 +461,7 @@ void effects_Saturator__ctx_type_6_init(effects_Saturator__ctx_type_6 &_output_)
 }
 
 fix16_t effects_Saturator_process(effects_Saturator__ctx_type_6 &_ctx, fix16_t x){
-   if(x == 0x0 /* 0.000000 */){
+   if((x == 0x0 /* 0.000000 */) || (_ctx.coeff == 0x0 /* 0.000000 */)){
       return 0x0 /* 0.000000 */;
    }
    if(_ctx.coeff != 0x10000 /* 1.000000 */){
@@ -513,60 +513,77 @@ void effects_Saturator_process_bufferTo(effects_Saturator__ctx_type_6 &_ctx, int
    }
    int i;
    i = 0;
-   fix16_t x;
-   x = 0x0 /* 0.000000 */;
-   fix16_t v;
-   v = 0x0 /* 0.000000 */;
-   while(i < nb){
-      x = input[i];
-      if((x == 0x0 /* 0.000000 */) || (_ctx.coeff == 0x0 /* 0.000000 */)){
-         v = 0x0 /* 0.000000 */;
+   if(_ctx.coeff == 0x0 /* 0.000000 */){
+      i = 0;
+      while(i < nb){
+         oBuffer[i] = 0x0 /* 0.000000 */;
+         i = (1 + i);
       }
-      else
-      {
-         if(_ctx.coeff != 0x10000 /* 1.000000 */){
-            x = fix_mul(_ctx.coeff,x);
-         }
-         if(fix_abs(x) <= _ctx.thresh){
-            v = x;
-         }
-         else
-         {
-            if(x > 0x0 /* 0.000000 */){
-               if(_ctx.thresh >= 0x10000 /* 1.000000 */){
-                  v = 0x10000 /* 1.000000 */;
-               }
-               else
-               {
-                  if(_ctx.thresh <= 0x0 /* 0.000000 */){
-                     v = effects_Saturator_tanh_table(x);
-                  }
-                  else
-                  {
-                     v = (_ctx.thresh + fix_mul(_ctx.threshopp,effects_Saturator_tanh_table(fix_mul(_ctx.threshinv,(x + (- _ctx.thresh))))));
-                  }
-               }
+   }
+   else
+   {
+      if(_ctx.coeff != 0x10000 /* 1.000000 */){
+         i = 0;
+         while(i < nb){
+            if(input[i] == 0x0 /* 0.000000 */){
+               oBuffer[i] = 0x0 /* 0.000000 */;
             }
             else
             {
-               if(_ctx.thresh >= 0x10000 /* 1.000000 */){
-                  v = -0x10000 /* -1.000000 */;
+               oBuffer[i] = fix_mul(_ctx.coeff,input[i]);
+            }
+            i = (1 + i);
+         }
+      }
+      else
+      {
+         i = 0;
+         while(i < nb){
+            oBuffer[i] = input[i];
+            i = (1 + i);
+         }
+      }
+      if(_ctx.thresh >= 0x10000 /* 1.000000 */){
+         i = 0;
+         while(i < nb){
+            if(oBuffer[i] > 0x10000 /* 1.000000 */){
+               oBuffer[i] = 0x10000 /* 1.000000 */;
+            }
+            else
+            {
+               if(oBuffer[i] < -0x10000 /* -1.000000 */){
+                  oBuffer[i] = -0x10000 /* -1.000000 */;
+               }
+            }
+            i = (1 + i);
+         }
+      }
+      else
+      {
+         if(_ctx.thresh <= 0x0 /* 0.000000 */){
+            i = 0;
+            while(i < nb){
+               oBuffer[i] = effects_Saturator_tanh_table(oBuffer[i]);
+               i = (1 + i);
+            }
+         }
+         else
+         {
+            i = 0;
+            while(i < nb){
+               if(oBuffer[i] > _ctx.thresh){
+                  oBuffer[i] = (_ctx.thresh + fix_mul(_ctx.threshopp,effects_Saturator_tanh_table(fix_mul(_ctx.threshinv,(oBuffer[i] + (- _ctx.thresh))))));
                }
                else
                {
-                  if(_ctx.thresh <= 0x0 /* 0.000000 */){
-                     v = effects_Saturator_tanh_table(x);
-                  }
-                  else
-                  {
-                     v = (- (_ctx.thresh + fix_mul(_ctx.threshopp,effects_Saturator_tanh_table(fix_mul(_ctx.threshinv,((- _ctx.thresh) + (- x)))))));
+                  if(oBuffer[i] < (- _ctx.thresh)){
+                     oBuffer[i] = (- (_ctx.thresh + fix_mul(_ctx.threshopp,effects_Saturator_tanh_table(fix_mul(_ctx.threshinv,((- _ctx.thresh) + (- oBuffer[i])))))));
                   }
                }
+               i = (1 + i);
             }
          }
       }
-      oBuffer[i] = v;
-      i = (1 + i);
    }
 }
 
