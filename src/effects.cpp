@@ -505,7 +505,7 @@ fix16_t effects_Saturator_process(effects_Saturator__ctx_type_7 &_ctx, fix16_t x
          else
          {
             if(_ctx.thresh <= 0x0 /* 0.000000 */){
-               return effects_Saturator_tanh_table(x);
+               return effects_Saturator_tanh_wrapper(x);
             }
             else
             {

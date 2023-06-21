@@ -72,7 +72,7 @@ fun process(x: real): real {
         return -1.0;
       }
       else if (thresh <= 0.0) {
-        return tanh_table(x);
+        return tanh_wrapper(x);
       }
       else {
         return -(thresh + threshopp*tanh_wrapper((-x-thresh) * threshinv));
