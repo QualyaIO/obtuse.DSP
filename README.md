@@ -18,6 +18,12 @@ WARNING: Be wary where the struct are initialized to avoid problem with stack si
 - data: orig sound files and scripts used for wavetables and instruments
 - examples: Arduino sketch, 4 voices FM, 4 voices sampler, 4 voices drummer, reverb and filter controlled by MIDI
 
+# Changelog
+
+## v0.1.0 (2023-08-12)
+
+- first proper release
+
 # TODO
 
 Interface
