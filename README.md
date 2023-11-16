@@ -20,6 +20,10 @@ WARNING: Be wary where the struct are initialized to avoid problem with stack si
 
 # Changelog
 
+## v0.1.1 (current)
+
+- arp: fix return value, now indeed -1 if no notes
+
 ## v0.1.0 (2023-08-12)
 
 - first proper release

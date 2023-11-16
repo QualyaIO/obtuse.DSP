@@ -1031,6 +1031,9 @@ void utils_Arp_reset(utils_Arp__ctx_type_0 &_ctx){
 }
 
 int utils_Arp_process(utils_Arp__ctx_type_0 &_ctx){
+   if(_ctx.sequenceSize <= 0){
+      return (-1);
+   }
    int newNote;
    newNote = _ctx.notes[_ctx.playSequence[_ctx.step]];
    _ctx.step = (1 + _ctx.step);

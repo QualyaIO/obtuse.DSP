@@ -43,6 +43,10 @@ and process(): int {
   mem notes: array(int, 16);
   // type of arp (see setmode)
   mem mode: int;
+  // no notes, nothing to see here
+  if (sequenceSize <= 0) {
+    return -1;
+  }
   val newNote = notes[playSequence[step]];
   step = step + 1;
   // reset at the end of the sequence
