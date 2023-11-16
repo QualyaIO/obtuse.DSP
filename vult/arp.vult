@@ -130,7 +130,7 @@ and setNotes(newNotes: array(int, 16)) {
   val i = 0;
   val j = 0;
   while (i < size(newNotes)){
-    if (newNotes[i] > 0) {
+    if (newNotes[i] >= 0) {
       notes[j] = clip(newNotes[i], 0, 127);
       j = j + 1;
     }

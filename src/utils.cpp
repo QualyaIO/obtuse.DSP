@@ -1119,7 +1119,7 @@ void utils_Arp_setNotes(utils_Arp__ctx_type_0 &_ctx, int (&newNotes)[16]){
    int j;
    j = 0;
    while(i < 16){
-      if(newNotes[i] > 0){
+      if(newNotes[i] >= 0){
          _ctx.notes[j] = int_clip(newNotes[i],0,127);
          j = (1 + j);
       }
