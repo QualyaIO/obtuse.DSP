@@ -785,7 +785,10 @@ void synthFM_FM_process_bufferTo(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetab
    int nb_env;
    nb_env = nb;
    if(_ctx.env_decimation_factor > 1){
-      nb_env = ((_ctx.n + nb) / _ctx.env_decimation_factor);
+      nb_env = (nb / _ctx.env_decimation_factor);
+      if((nb % _ctx.env_decimation_factor) >= (_ctx.env_decimation_factor + (- (_ctx.n % _ctx.env_decimation_factor)))){
+         nb_env = (1 + nb_env);
+      }
    }
    if(nb_env <= 0){
       int i;
@@ -795,6 +798,7 @@ void synthFM_FM_process_bufferTo(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetab
          _ctx.buffer_carrier_env[i] = _ctx.carrier_env;
          i = (1 + i);
       }
+      _ctx.n = (_ctx.n + nb);
    }
    else
    {
@@ -812,26 +816,39 @@ void synthFM_FM_process_bufferTo(synthFM_FM__ctx_type_0 &_ctx, fix16_t (&wavetab
          _ctx.buffer_carrier_env[i] = fix_mul(_ctx.level,_ctx.buffer_carrier_env[i]);
          i = (1 + i);
       }
-      _ctx.n = ((_ctx.n + nb_env) % env_df);
-      _ctx.modulator_env = _ctx.buffer_modulator_env[((-1) + nb_env)];
-      _ctx.carrier_env = _ctx.buffer_carrier_env[((-1) + nb_env)];
+      _ctx.n = (_ctx.n + nb);
       if(nb_env < nb){
          i = nb;
          int i_env;
          i_env = nb_env;
          int n_rev;
-         n_rev = _ctx.n;
-         while((i > 1) && (i_env > 1)){
-            _ctx.buffer_modulator_env[((-1) + i)] = _ctx.buffer_modulator_env[((-1) + i_env)];
-            _ctx.buffer_carrier_env[((-1) + i)] = _ctx.buffer_carrier_env[((-1) + i_env)];
+         n_rev = (_ctx.n % env_df);
+         fix16_t modulator_env_rev;
+         modulator_env_rev = _ctx.buffer_modulator_env[((-1) + i_env)];
+         fix16_t carrier_env_rev;
+         carrier_env_rev = _ctx.buffer_carrier_env[((-1) + i_env)];
+         while(i > 1){
+            _ctx.buffer_modulator_env[((-1) + i)] = modulator_env_rev;
+            _ctx.buffer_carrier_env[((-1) + i)] = carrier_env_rev;
             i = ((-1) + i);
             n_rev = ((-1) + n_rev);
-            if(n_rev <= 0){
-               n_rev = env_df;
+            if(n_rev < 0){
+               n_rev = ((-1) + env_df);
                i_env = ((-1) + i_env);
+               if(i_env > 0){
+                  modulator_env_rev = _ctx.buffer_modulator_env[((-1) + i_env)];
+                  carrier_env_rev = _ctx.buffer_carrier_env[((-1) + i_env)];
+               }
+               else
+               {
+                  modulator_env_rev = _ctx.modulator_env;
+                  carrier_env_rev = _ctx.carrier_env;
+               }
             }
          }
       }
+      _ctx.modulator_env = _ctx.buffer_modulator_env[((-1) + nb)];
+      _ctx.carrier_env = _ctx.buffer_carrier_env[((-1) + nb)];
    }
    if(_ctx.env_carrier_idle){
       synthFM_OSC_resetPhase(_ctx.carrier);

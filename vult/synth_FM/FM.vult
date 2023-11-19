@@ -151,7 +151,11 @@ and process_bufferTo(wavetable_modulator, wavetable_carrier, nb: int, oBuffer) {
     val nb_env = nb;
     if (env_decimation_factor > 1) {
       // compute number of samples for this buffer's decimation
-      nb_env = (n + nb) / env_decimation_factor;
+      nb_env =  nb / env_decimation_factor;
+      // we might need one extra envelop if we don't have enough left from the previous one to fill the reminder
+      if (nb % env_decimation_factor >= env_decimation_factor - n % env_decimation_factor) {
+	nb_env = nb_env + 1;
+      }
     }
 
     // we should not update envelop, just copy over last values
@@ -163,6 +167,8 @@ and process_bufferTo(wavetable_modulator, wavetable_carrier, nb: int, oBuffer) {
 	buffer_carrier_env[i] = carrier_env;
 	i = i + 1;
       }
+      // update number iteration, synced with regular process
+      n = n + nb;
     }
     // retrieve envelopes
     else {
@@ -186,11 +192,9 @@ and process_bufferTo(wavetable_modulator, wavetable_carrier, nb: int, oBuffer) {
 	buffer_carrier_env[i] = buffer_carrier_env[i] * level;
 	i = i + 1;
       }
-      // update position in envelop
-      n = (n + nb_env) % env_df;
-      // update for next pass the last values
-      modulator_env = buffer_modulator_env[nb_env-1];
-      carrier_env = buffer_carrier_env[nb_env-1];
+
+      // update number of iterations  for next pass and backward pass coming right next
+      n = n + nb;
 	 
       // expand carrier envelop and retrieve to full version
       // FIXME: we update both envelopes, but we could select if only one is active
@@ -198,20 +202,37 @@ and process_bufferTo(wavetable_modulator, wavetable_carrier, nb: int, oBuffer) {
 	// going backward to use the same buffer
 	i = nb;
 	val i_env = nb_env;
-	// detecting envelop updates
-	val n_rev = n;
-	while (i > 1 && i_env > 1) {
-	  buffer_modulator_env[i-1] = buffer_modulator_env[i_env-1];
-	  buffer_carrier_env[i-1] = buffer_carrier_env[i_env-1];
+	// detecting envelop updates from reverse, only considering current decimation
+	val n_rev = n % env_df;
+	// keeping same value, from reverse
+	val modulator_env_rev = buffer_modulator_env[i_env-1];
+	val carrier_env_rev = buffer_carrier_env[i_env-1];
+	while (i > 1) {
+	  buffer_modulator_env[i-1] = modulator_env_rev;
+	  buffer_carrier_env[i-1] = carrier_env_rev;
 	  i = i - 1;
 	  n_rev = n_rev - 1;
 	  // reset counter to detect envelop change
-	  if (n_rev <= 0) {
-	    n_rev = env_df;
+	  if (n_rev < 0) {
+	    n_rev = env_df - 1;
 	    i_env = i_env - 1;
+	    if (i_env > 0) {
+	      modulator_env_rev = buffer_modulator_env[i_env-1];
+	      carrier_env_rev = buffer_carrier_env[i_env-1];
+	    }
+	    // near the beginning we take envelop from previous run
+	    else {
+	      modulator_env_rev = modulator_env;
+	      carrier_env_rev = carrier_env;
+	    }
 	  }
 	}
       }
+
+      // update for next pass the last values
+      modulator_env = buffer_modulator_env[nb-1];
+      carrier_env = buffer_carrier_env[nb-1];
+
     }
 
     // apply to carrier
