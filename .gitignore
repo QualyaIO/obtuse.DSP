@@ -1,0 +1,4 @@
+
+# leftovers from compilation when used elsewhere
+*.d
+*.o
