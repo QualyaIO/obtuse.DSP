@@ -997,6 +997,7 @@ void utils_Tonnetz_default(utils_Tonnetz__ctx_type_8 &_ctx){
 
 void utils_Arp__ctx_type_0_init(utils_Arp__ctx_type_0 &_output_){
    utils_Arp__ctx_type_0 &_ctx = _output_;
+   _ctx.stepPersist = false;
    _ctx.step = 0;
    _ctx.sequenceSize = 0;
    int_init_array(32,0,_ctx.sequence);
@@ -1011,7 +1012,7 @@ void utils_Arp__ctx_type_0_init(utils_Arp__ctx_type_0 &_output_){
    return ;
 }
 
-void utils_Arp_reset(utils_Arp__ctx_type_0 &_ctx){
+void utils_Arp_randomize(utils_Arp__ctx_type_0 &_ctx){
    if(_ctx.dirty || ((_ctx.pRandomize > 0x0 /* 0.000000 */) && (_ctx.pRandomNotes > 0x0 /* 0.000000 */) && (fix_random() <= _ctx.pRandomize))){
       int i;
       i = 0;
@@ -1026,7 +1027,6 @@ void utils_Arp_reset(utils_Arp__ctx_type_0 &_ctx){
          i = (1 + i);
       }
    }
-   _ctx.step = 0;
    _ctx.dirty = false;
 }
 
@@ -1034,12 +1034,13 @@ int utils_Arp_process(utils_Arp__ctx_type_0 &_ctx){
    if(_ctx.sequenceSize <= 0){
       return (-1);
    }
-   int newNote;
-   newNote = _ctx.notes[_ctx.playSequence[_ctx.step]];
    _ctx.step = (1 + _ctx.step);
-   if(_ctx.step >= _ctx.sequenceSize){
+   if(_ctx.step >= (1 + _ctx.sequenceSize)){
       utils_Arp_reset(_ctx);
+      _ctx.step = 1;
    }
+   int newNote;
+   newNote = _ctx.notes[_ctx.playSequence[((-1) + _ctx.step)]];
    return newNote;
 }
 
@@ -1110,7 +1111,13 @@ void utils_Arp__updateSequence(utils_Arp__ctx_type_0 &_ctx){
       i = (1 + i);
    }
    _ctx.dirty = true;
-   utils_Arp_reset(_ctx);
+   if(_ctx.stepPersist){
+      utils_Arp_randomize(_ctx);
+   }
+   else
+   {
+      utils_Arp_reset(_ctx);
+   }
 }
 
 void utils_Arp_setNotes(utils_Arp__ctx_type_0 &_ctx, int (&newNotes)[16]){

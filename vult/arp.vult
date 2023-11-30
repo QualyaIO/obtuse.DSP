@@ -1,8 +1,8 @@
 
 // arpeggiator
 
-// reset sequence to beginning -- and chance to update random notes, if any
-fun reset() {
+// chance to update random notes, if any
+fun randomize() {
   // how many active notes
   mem nbNotes: int;
   // notes index in the sequence (size of the sequence max)
@@ -13,8 +13,6 @@ fun reset() {
   mem sequenceSize;
   // flag set internally upon change which require randomization
   mem dirty;
-  // position in current sequence
-  mem step;
   // probability that each note of the sequence is randomly selected
   mem pRandomNotes;
   // proability to re-compute random notes upon new sequence (or reset)
@@ -33,8 +31,15 @@ fun reset() {
       i = i + 1;
     }
   }
-  step = 0;
   dirty = false;
+}
+
+// for outside: reset sequence to beginning -- and ask for randomization
+and reset() {
+  // position in current sequence
+  mem step;
+  _ = randomize();
+  step = 0;
 }
 
 // main function, return new note, -1 if none
@@ -47,18 +52,23 @@ and process(): int {
   if (sequenceSize <= 0) {
     return -1;
   }
-  val newNote = notes[playSequence[step]];
+  // reset at the end of the sequence + in case we tried to keep step number but shorter sequence happened
+  // note: increment and check beforehand to use only one test for both cases
   step = step + 1;
-  // reset at the end of the sequence
-  if (step >= sequenceSize) {
+  if (step >= sequenceSize + 1) {
     _ = reset();
+    step = 1;
   }
+  val newNote = notes[playSequence[step-1]];
   return newNote;
 }
 
 
 // recompute sequence array
 and _updateSequence() {
+  // should we try to keep step and current randomization upon changing notes
+  mem stepPersist: bool;
+
   // update number of active step in the sequence
   if (mode == 0 || mode == 1) {
     sequenceSize = nbNotes; 
@@ -119,9 +129,14 @@ and _updateSequence() {
     }
     i = i + 1;
   }
-  // re-init sequence, flag state changed
+  // only reset sequence or also reset step depending on option, or leave it to 
   dirty = true;
-  _ = reset();
+  if (stepPersist) {
+    _ = randomize();
+  }
+  else {
+    _ = reset();
+  }
 }
 
 // updates notes of the arp, expect increasing order of pitch 0..127. Notes below 0 will not be considered, above 127 will be clipped.
@@ -170,6 +185,11 @@ and setPRandomNotes(p: real) {
 // change probability that random notes would change upon new sequence
 and setPRandomize(p: real) {
   pRandomize = clip(p, 0.0, 1.0);
+}
+
+// should the step position persist upon sequence change between calls? (false by default)
+and setStepPersist(flag: bool) {
+  stepPersist = flag;
 }
 
 // get number of modes

@@ -24,6 +24,7 @@ WARNING: Be wary where the struct are initialized to avoid problem with stack si
 
 - arp: fix return value, now indeed -1 if no notes
 - arp: fix for notes with pitch 0.
+- arp: add option to keep step position between sequence change
 - FM: fix envelope which caused random noise in "bufferTo"
 
 ## v0.1.0 (2023-08-12)

@@ -498,6 +498,7 @@ static_inline void utils_Tonnetz_default_init(utils_Tonnetz__ctx_type_8 &_output
 void utils_Tonnetz_default(utils_Tonnetz__ctx_type_8 &_ctx);
 
 typedef struct utils_Arp__ctx_type_0 {
+   uint8_t stepPersist;
    int step;
    int sequenceSize;
    int sequence[32];
@@ -510,16 +511,28 @@ typedef struct utils_Arp__ctx_type_0 {
    uint8_t dirty;
 } utils_Arp__ctx_type_0;
 
-typedef utils_Arp__ctx_type_0 utils_Arp_reset_type;
+typedef utils_Arp__ctx_type_0 utils_Arp_randomize_type;
 
 void utils_Arp__ctx_type_0_init(utils_Arp__ctx_type_0 &_output_);
+
+static_inline void utils_Arp_randomize_init(utils_Arp__ctx_type_0 &_output_){
+   utils_Arp__ctx_type_0_init(_output_);
+   return ;
+}
+
+void utils_Arp_randomize(utils_Arp__ctx_type_0 &_ctx);
+
+typedef utils_Arp__ctx_type_0 utils_Arp_reset_type;
 
 static_inline void utils_Arp_reset_init(utils_Arp__ctx_type_0 &_output_){
    utils_Arp__ctx_type_0_init(_output_);
    return ;
 }
 
-void utils_Arp_reset(utils_Arp__ctx_type_0 &_ctx);
+static_inline void utils_Arp_reset(utils_Arp__ctx_type_0 &_ctx){
+   utils_Arp_randomize(_ctx);
+   _ctx.step = 0;
+}
 
 typedef utils_Arp__ctx_type_0 utils_Arp_process_type;
 
@@ -575,6 +588,17 @@ static_inline void utils_Arp_setPRandomize_init(utils_Arp__ctx_type_0 &_output_)
 
 static_inline void utils_Arp_setPRandomize(utils_Arp__ctx_type_0 &_ctx, fix16_t p){
    _ctx.pRandomize = fix_clip(p,0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
+};
+
+typedef utils_Arp__ctx_type_0 utils_Arp_setStepPersist_type;
+
+static_inline void utils_Arp_setStepPersist_init(utils_Arp__ctx_type_0 &_output_){
+   utils_Arp__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void utils_Arp_setStepPersist(utils_Arp__ctx_type_0 &_ctx, uint8_t flag){
+   _ctx.stepPersist = flag;
 };
 
 typedef utils_Arp__ctx_type_0 utils_Arp_getNbModes_type;
