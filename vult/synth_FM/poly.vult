@@ -230,7 +230,7 @@ and synthSetModulatorFeedback(ratio: real) {
 }
 
 // FM.setModulatorADSR()
-and synthSetModulatorADSR(a:real , d: real, s: real, r: real) {
+and synthSetModulatorADSR(a:real, d: real, s: real, r: real) {
   _ = voice0:FM.setModulatorADSR(a, d, s, r);
   _ = voice1:FM.setModulatorADSR(a, d, s, r);
   _ = voice2:FM.setModulatorADSR(a, d, s, r);
@@ -238,11 +238,19 @@ and synthSetModulatorADSR(a:real , d: real, s: real, r: real) {
 }
 
 // FM.setCarrierADSR()
-and synthSetCarrierADSR(a:real , d: real, s: real, r: real) {
+and synthSetCarrierADSR(a:real, d: real, s: real, r: real) {
   _ = voice0:FM.setCarrierADSR(a, d, s, r);
   _ = voice1:FM.setCarrierADSR(a, d, s, r);
   _ = voice2:FM.setCarrierADSR(a, d, s, r);
   _ = voice3:FM.setCarrierADSR(a, d, s, r);
+}
+
+// FM.setEnvDecimationFactor()
+and synthSetEnvDecimationFactor(newFactor: int) {
+  _ = voice0:FM.setEnvDecimationFactor(newFactor);
+  _ = voice1:FM.setEnvDecimationFactor(newFactor);
+  _ = voice2:FM.setEnvDecimationFactor(newFactor);
+  _ = voice3:FM.setEnvDecimationFactor(newFactor);
 }
 
 /* end parameters for synths */

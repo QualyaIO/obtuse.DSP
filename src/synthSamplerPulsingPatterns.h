@@ -886,6 +886,16 @@ static_inline void synthSamplerPulsingPatterns_Poly_synthSetCarrierADSR_init(syn
 static_inline void synthSamplerPulsingPatterns_Poly_synthSetCarrierADSR(synthSamplerPulsingPatterns_Poly__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
 }
 
+typedef synthSamplerPulsingPatterns_Poly__ctx_type_0 synthSamplerPulsingPatterns_Poly_synthSetEnvDecimationFactor_type;
+
+static_inline void synthSamplerPulsingPatterns_Poly_synthSetEnvDecimationFactor_init(synthSamplerPulsingPatterns_Poly__ctx_type_0 &_output_){
+   synthSamplerPulsingPatterns_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerPulsingPatterns_Poly_synthSetEnvDecimationFactor(synthSamplerPulsingPatterns_Poly__ctx_type_0 &_ctx, int newFactor){
+}
+
 typedef synthSamplerPulsingPatterns_Poly__ctx_type_0 synthSamplerPulsingPatterns_Poly_shouldLeftOvers_type;
 
 static_inline void synthSamplerPulsingPatterns_Poly_shouldLeftOvers_init(synthSamplerPulsingPatterns_Poly__ctx_type_0 &_output_){
@@ -1267,6 +1277,17 @@ static_inline void synthSamplerPulsingPatterns_Voice_synthSetCarrierADSR_init(sy
 
 static_inline void synthSamplerPulsingPatterns_Voice_synthSetCarrierADSR(synthSamplerPulsingPatterns_Voice__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
    synthSamplerPulsingPatterns_Poly_synthSetCarrierADSR(_ctx.poly,a,d,s,r);
+};
+
+typedef synthSamplerPulsingPatterns_Voice__ctx_type_0 synthSamplerPulsingPatterns_Voice_synthSetEnvDecimationFactor_type;
+
+static_inline void synthSamplerPulsingPatterns_Voice_synthSetEnvDecimationFactor_init(synthSamplerPulsingPatterns_Voice__ctx_type_0 &_output_){
+   synthSamplerPulsingPatterns_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerPulsingPatterns_Voice_synthSetEnvDecimationFactor(synthSamplerPulsingPatterns_Voice__ctx_type_0 &_ctx, int newFactor){
+   synthSamplerPulsingPatterns_Poly_synthSetEnvDecimationFactor(_ctx.poly,newFactor);
 };
 
 typedef synthSamplerPulsingPatterns_Voice__ctx_type_0 synthSamplerPulsingPatterns_Voice_default_type;

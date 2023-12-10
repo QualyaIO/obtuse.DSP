@@ -675,6 +675,16 @@ static_inline void synthDrummerBbox_Poly_synthSetCarrierADSR_init(synthDrummerBb
 static_inline void synthDrummerBbox_Poly_synthSetCarrierADSR(synthDrummerBbox_Poly__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
 }
 
+typedef synthDrummerBbox_Poly__ctx_type_0 synthDrummerBbox_Poly_synthSetEnvDecimationFactor_type;
+
+static_inline void synthDrummerBbox_Poly_synthSetEnvDecimationFactor_init(synthDrummerBbox_Poly__ctx_type_0 &_output_){
+   synthDrummerBbox_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummerBbox_Poly_synthSetEnvDecimationFactor(synthDrummerBbox_Poly__ctx_type_0 &_ctx, int newFactor){
+}
+
 typedef synthDrummerBbox_Poly__ctx_type_0 synthDrummerBbox_Poly_shouldLeftOvers_type;
 
 static_inline void synthDrummerBbox_Poly_shouldLeftOvers_init(synthDrummerBbox_Poly__ctx_type_0 &_output_){
@@ -1158,6 +1168,17 @@ static_inline void synthDrummerBbox_Voice_synthSetCarrierADSR_init(synthDrummerB
 
 static_inline void synthDrummerBbox_Voice_synthSetCarrierADSR(synthDrummerBbox_Voice__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
    synthDrummerBbox_Poly_synthSetCarrierADSR(_ctx.poly,a,d,s,r);
+};
+
+typedef synthDrummerBbox_Voice__ctx_type_0 synthDrummerBbox_Voice_synthSetEnvDecimationFactor_type;
+
+static_inline void synthDrummerBbox_Voice_synthSetEnvDecimationFactor_init(synthDrummerBbox_Voice__ctx_type_0 &_output_){
+   synthDrummerBbox_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthDrummerBbox_Voice_synthSetEnvDecimationFactor(synthDrummerBbox_Voice__ctx_type_0 &_ctx, int newFactor){
+   synthDrummerBbox_Poly_synthSetEnvDecimationFactor(_ctx.poly,newFactor);
 };
 
 typedef synthDrummerBbox_Voice__ctx_type_0 synthDrummerBbox_Voice_default_type;

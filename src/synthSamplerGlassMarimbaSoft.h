@@ -886,6 +886,16 @@ static_inline void synthSamplerGlassMarimbaSoft_Poly_synthSetCarrierADSR_init(sy
 static_inline void synthSamplerGlassMarimbaSoft_Poly_synthSetCarrierADSR(synthSamplerGlassMarimbaSoft_Poly__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
 }
 
+typedef synthSamplerGlassMarimbaSoft_Poly__ctx_type_0 synthSamplerGlassMarimbaSoft_Poly_synthSetEnvDecimationFactor_type;
+
+static_inline void synthSamplerGlassMarimbaSoft_Poly_synthSetEnvDecimationFactor_init(synthSamplerGlassMarimbaSoft_Poly__ctx_type_0 &_output_){
+   synthSamplerGlassMarimbaSoft_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerGlassMarimbaSoft_Poly_synthSetEnvDecimationFactor(synthSamplerGlassMarimbaSoft_Poly__ctx_type_0 &_ctx, int newFactor){
+}
+
 typedef synthSamplerGlassMarimbaSoft_Poly__ctx_type_0 synthSamplerGlassMarimbaSoft_Poly_shouldLeftOvers_type;
 
 static_inline void synthSamplerGlassMarimbaSoft_Poly_shouldLeftOvers_init(synthSamplerGlassMarimbaSoft_Poly__ctx_type_0 &_output_){
@@ -1267,6 +1277,17 @@ static_inline void synthSamplerGlassMarimbaSoft_Voice_synthSetCarrierADSR_init(s
 
 static_inline void synthSamplerGlassMarimbaSoft_Voice_synthSetCarrierADSR(synthSamplerGlassMarimbaSoft_Voice__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
    synthSamplerGlassMarimbaSoft_Poly_synthSetCarrierADSR(_ctx.poly,a,d,s,r);
+};
+
+typedef synthSamplerGlassMarimbaSoft_Voice__ctx_type_0 synthSamplerGlassMarimbaSoft_Voice_synthSetEnvDecimationFactor_type;
+
+static_inline void synthSamplerGlassMarimbaSoft_Voice_synthSetEnvDecimationFactor_init(synthSamplerGlassMarimbaSoft_Voice__ctx_type_0 &_output_){
+   synthSamplerGlassMarimbaSoft_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerGlassMarimbaSoft_Voice_synthSetEnvDecimationFactor(synthSamplerGlassMarimbaSoft_Voice__ctx_type_0 &_ctx, int newFactor){
+   synthSamplerGlassMarimbaSoft_Poly_synthSetEnvDecimationFactor(_ctx.poly,newFactor);
 };
 
 typedef synthSamplerGlassMarimbaSoft_Voice__ctx_type_0 synthSamplerGlassMarimbaSoft_Voice_default_type;

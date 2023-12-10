@@ -886,6 +886,16 @@ static_inline void synthSampler_Poly_synthSetCarrierADSR_init(synthSampler_Poly_
 static_inline void synthSampler_Poly_synthSetCarrierADSR(synthSampler_Poly__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
 }
 
+typedef synthSampler_Poly__ctx_type_0 synthSampler_Poly_synthSetEnvDecimationFactor_type;
+
+static_inline void synthSampler_Poly_synthSetEnvDecimationFactor_init(synthSampler_Poly__ctx_type_0 &_output_){
+   synthSampler_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSampler_Poly_synthSetEnvDecimationFactor(synthSampler_Poly__ctx_type_0 &_ctx, int newFactor){
+}
+
 typedef synthSampler_Poly__ctx_type_0 synthSampler_Poly_shouldLeftOvers_type;
 
 static_inline void synthSampler_Poly_shouldLeftOvers_init(synthSampler_Poly__ctx_type_0 &_output_){
@@ -1267,6 +1277,17 @@ static_inline void synthSampler_Voice_synthSetCarrierADSR_init(synthSampler_Voic
 
 static_inline void synthSampler_Voice_synthSetCarrierADSR(synthSampler_Voice__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
    synthSampler_Poly_synthSetCarrierADSR(_ctx.poly,a,d,s,r);
+};
+
+typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_synthSetEnvDecimationFactor_type;
+
+static_inline void synthSampler_Voice_synthSetEnvDecimationFactor_init(synthSampler_Voice__ctx_type_0 &_output_){
+   synthSampler_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSampler_Voice_synthSetEnvDecimationFactor(synthSampler_Voice__ctx_type_0 &_ctx, int newFactor){
+   synthSampler_Poly_synthSetEnvDecimationFactor(_ctx.poly,newFactor);
 };
 
 typedef synthSampler_Voice__ctx_type_0 synthSampler_Voice_default_type;

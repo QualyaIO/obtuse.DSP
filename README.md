@@ -26,6 +26,7 @@ WARNING: Be wary where the struct are initialized to avoid problem with stack si
 - arp: fix for notes with pitch 0.
 - arp: add option to keep step position between sequence change
 - FM: fix envelope which caused random noise in "bufferTo"
+- voice: add method to set decimation factor for FM
 
 ## v0.1.0 (2023-08-12)
 

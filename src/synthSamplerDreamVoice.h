@@ -886,6 +886,16 @@ static_inline void synthSamplerDreamVoice_Poly_synthSetCarrierADSR_init(synthSam
 static_inline void synthSamplerDreamVoice_Poly_synthSetCarrierADSR(synthSamplerDreamVoice_Poly__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
 }
 
+typedef synthSamplerDreamVoice_Poly__ctx_type_0 synthSamplerDreamVoice_Poly_synthSetEnvDecimationFactor_type;
+
+static_inline void synthSamplerDreamVoice_Poly_synthSetEnvDecimationFactor_init(synthSamplerDreamVoice_Poly__ctx_type_0 &_output_){
+   synthSamplerDreamVoice_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerDreamVoice_Poly_synthSetEnvDecimationFactor(synthSamplerDreamVoice_Poly__ctx_type_0 &_ctx, int newFactor){
+}
+
 typedef synthSamplerDreamVoice_Poly__ctx_type_0 synthSamplerDreamVoice_Poly_shouldLeftOvers_type;
 
 static_inline void synthSamplerDreamVoice_Poly_shouldLeftOvers_init(synthSamplerDreamVoice_Poly__ctx_type_0 &_output_){
@@ -1267,6 +1277,17 @@ static_inline void synthSamplerDreamVoice_Voice_synthSetCarrierADSR_init(synthSa
 
 static_inline void synthSamplerDreamVoice_Voice_synthSetCarrierADSR(synthSamplerDreamVoice_Voice__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
    synthSamplerDreamVoice_Poly_synthSetCarrierADSR(_ctx.poly,a,d,s,r);
+};
+
+typedef synthSamplerDreamVoice_Voice__ctx_type_0 synthSamplerDreamVoice_Voice_synthSetEnvDecimationFactor_type;
+
+static_inline void synthSamplerDreamVoice_Voice_synthSetEnvDecimationFactor_init(synthSamplerDreamVoice_Voice__ctx_type_0 &_output_){
+   synthSamplerDreamVoice_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerDreamVoice_Voice_synthSetEnvDecimationFactor(synthSamplerDreamVoice_Voice__ctx_type_0 &_ctx, int newFactor){
+   synthSamplerDreamVoice_Poly_synthSetEnvDecimationFactor(_ctx.poly,newFactor);
 };
 
 typedef synthSamplerDreamVoice_Voice__ctx_type_0 synthSamplerDreamVoice_Voice_default_type;

@@ -886,6 +886,16 @@ static_inline void synthSamplerBoesendorferGrandPiano_Poly_synthSetCarrierADSR_i
 static_inline void synthSamplerBoesendorferGrandPiano_Poly_synthSetCarrierADSR(synthSamplerBoesendorferGrandPiano_Poly__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
 }
 
+typedef synthSamplerBoesendorferGrandPiano_Poly__ctx_type_0 synthSamplerBoesendorferGrandPiano_Poly_synthSetEnvDecimationFactor_type;
+
+static_inline void synthSamplerBoesendorferGrandPiano_Poly_synthSetEnvDecimationFactor_init(synthSamplerBoesendorferGrandPiano_Poly__ctx_type_0 &_output_){
+   synthSamplerBoesendorferGrandPiano_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerBoesendorferGrandPiano_Poly_synthSetEnvDecimationFactor(synthSamplerBoesendorferGrandPiano_Poly__ctx_type_0 &_ctx, int newFactor){
+}
+
 typedef synthSamplerBoesendorferGrandPiano_Poly__ctx_type_0 synthSamplerBoesendorferGrandPiano_Poly_shouldLeftOvers_type;
 
 static_inline void synthSamplerBoesendorferGrandPiano_Poly_shouldLeftOvers_init(synthSamplerBoesendorferGrandPiano_Poly__ctx_type_0 &_output_){
@@ -1267,6 +1277,17 @@ static_inline void synthSamplerBoesendorferGrandPiano_Voice_synthSetCarrierADSR_
 
 static_inline void synthSamplerBoesendorferGrandPiano_Voice_synthSetCarrierADSR(synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
    synthSamplerBoesendorferGrandPiano_Poly_synthSetCarrierADSR(_ctx.poly,a,d,s,r);
+};
+
+typedef synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0 synthSamplerBoesendorferGrandPiano_Voice_synthSetEnvDecimationFactor_type;
+
+static_inline void synthSamplerBoesendorferGrandPiano_Voice_synthSetEnvDecimationFactor_init(synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0 &_output_){
+   synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerBoesendorferGrandPiano_Voice_synthSetEnvDecimationFactor(synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0 &_ctx, int newFactor){
+   synthSamplerBoesendorferGrandPiano_Poly_synthSetEnvDecimationFactor(_ctx.poly,newFactor);
 };
 
 typedef synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0 synthSamplerBoesendorferGrandPiano_Voice_default_type;

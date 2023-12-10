@@ -886,6 +886,16 @@ static_inline void synthSamplerClarinet_Poly_synthSetCarrierADSR_init(synthSampl
 static_inline void synthSamplerClarinet_Poly_synthSetCarrierADSR(synthSamplerClarinet_Poly__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
 }
 
+typedef synthSamplerClarinet_Poly__ctx_type_0 synthSamplerClarinet_Poly_synthSetEnvDecimationFactor_type;
+
+static_inline void synthSamplerClarinet_Poly_synthSetEnvDecimationFactor_init(synthSamplerClarinet_Poly__ctx_type_0 &_output_){
+   synthSamplerClarinet_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerClarinet_Poly_synthSetEnvDecimationFactor(synthSamplerClarinet_Poly__ctx_type_0 &_ctx, int newFactor){
+}
+
 typedef synthSamplerClarinet_Poly__ctx_type_0 synthSamplerClarinet_Poly_shouldLeftOvers_type;
 
 static_inline void synthSamplerClarinet_Poly_shouldLeftOvers_init(synthSamplerClarinet_Poly__ctx_type_0 &_output_){
@@ -1267,6 +1277,17 @@ static_inline void synthSamplerClarinet_Voice_synthSetCarrierADSR_init(synthSamp
 
 static_inline void synthSamplerClarinet_Voice_synthSetCarrierADSR(synthSamplerClarinet_Voice__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
    synthSamplerClarinet_Poly_synthSetCarrierADSR(_ctx.poly,a,d,s,r);
+};
+
+typedef synthSamplerClarinet_Voice__ctx_type_0 synthSamplerClarinet_Voice_synthSetEnvDecimationFactor_type;
+
+static_inline void synthSamplerClarinet_Voice_synthSetEnvDecimationFactor_init(synthSamplerClarinet_Voice__ctx_type_0 &_output_){
+   synthSamplerClarinet_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerClarinet_Voice_synthSetEnvDecimationFactor(synthSamplerClarinet_Voice__ctx_type_0 &_ctx, int newFactor){
+   synthSamplerClarinet_Poly_synthSetEnvDecimationFactor(_ctx.poly,newFactor);
 };
 
 typedef synthSamplerClarinet_Voice__ctx_type_0 synthSamplerClarinet_Voice_default_type;

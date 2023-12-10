@@ -886,6 +886,16 @@ static_inline void synthSamplerAuthenticStrings_Poly_synthSetCarrierADSR_init(sy
 static_inline void synthSamplerAuthenticStrings_Poly_synthSetCarrierADSR(synthSamplerAuthenticStrings_Poly__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
 }
 
+typedef synthSamplerAuthenticStrings_Poly__ctx_type_0 synthSamplerAuthenticStrings_Poly_synthSetEnvDecimationFactor_type;
+
+static_inline void synthSamplerAuthenticStrings_Poly_synthSetEnvDecimationFactor_init(synthSamplerAuthenticStrings_Poly__ctx_type_0 &_output_){
+   synthSamplerAuthenticStrings_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerAuthenticStrings_Poly_synthSetEnvDecimationFactor(synthSamplerAuthenticStrings_Poly__ctx_type_0 &_ctx, int newFactor){
+}
+
 typedef synthSamplerAuthenticStrings_Poly__ctx_type_0 synthSamplerAuthenticStrings_Poly_shouldLeftOvers_type;
 
 static_inline void synthSamplerAuthenticStrings_Poly_shouldLeftOvers_init(synthSamplerAuthenticStrings_Poly__ctx_type_0 &_output_){
@@ -1267,6 +1277,17 @@ static_inline void synthSamplerAuthenticStrings_Voice_synthSetCarrierADSR_init(s
 
 static_inline void synthSamplerAuthenticStrings_Voice_synthSetCarrierADSR(synthSamplerAuthenticStrings_Voice__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
    synthSamplerAuthenticStrings_Poly_synthSetCarrierADSR(_ctx.poly,a,d,s,r);
+};
+
+typedef synthSamplerAuthenticStrings_Voice__ctx_type_0 synthSamplerAuthenticStrings_Voice_synthSetEnvDecimationFactor_type;
+
+static_inline void synthSamplerAuthenticStrings_Voice_synthSetEnvDecimationFactor_init(synthSamplerAuthenticStrings_Voice__ctx_type_0 &_output_){
+   synthSamplerAuthenticStrings_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerAuthenticStrings_Voice_synthSetEnvDecimationFactor(synthSamplerAuthenticStrings_Voice__ctx_type_0 &_ctx, int newFactor){
+   synthSamplerAuthenticStrings_Poly_synthSetEnvDecimationFactor(_ctx.poly,newFactor);
 };
 
 typedef synthSamplerAuthenticStrings_Voice__ctx_type_0 synthSamplerAuthenticStrings_Voice_default_type;

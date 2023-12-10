@@ -886,6 +886,16 @@ static_inline void synthSamplerShootingStar_Poly_synthSetCarrierADSR_init(synthS
 static_inline void synthSamplerShootingStar_Poly_synthSetCarrierADSR(synthSamplerShootingStar_Poly__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
 }
 
+typedef synthSamplerShootingStar_Poly__ctx_type_0 synthSamplerShootingStar_Poly_synthSetEnvDecimationFactor_type;
+
+static_inline void synthSamplerShootingStar_Poly_synthSetEnvDecimationFactor_init(synthSamplerShootingStar_Poly__ctx_type_0 &_output_){
+   synthSamplerShootingStar_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerShootingStar_Poly_synthSetEnvDecimationFactor(synthSamplerShootingStar_Poly__ctx_type_0 &_ctx, int newFactor){
+}
+
 typedef synthSamplerShootingStar_Poly__ctx_type_0 synthSamplerShootingStar_Poly_shouldLeftOvers_type;
 
 static_inline void synthSamplerShootingStar_Poly_shouldLeftOvers_init(synthSamplerShootingStar_Poly__ctx_type_0 &_output_){
@@ -1267,6 +1277,17 @@ static_inline void synthSamplerShootingStar_Voice_synthSetCarrierADSR_init(synth
 
 static_inline void synthSamplerShootingStar_Voice_synthSetCarrierADSR(synthSamplerShootingStar_Voice__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
    synthSamplerShootingStar_Poly_synthSetCarrierADSR(_ctx.poly,a,d,s,r);
+};
+
+typedef synthSamplerShootingStar_Voice__ctx_type_0 synthSamplerShootingStar_Voice_synthSetEnvDecimationFactor_type;
+
+static_inline void synthSamplerShootingStar_Voice_synthSetEnvDecimationFactor_init(synthSamplerShootingStar_Voice__ctx_type_0 &_output_){
+   synthSamplerShootingStar_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerShootingStar_Voice_synthSetEnvDecimationFactor(synthSamplerShootingStar_Voice__ctx_type_0 &_ctx, int newFactor){
+   synthSamplerShootingStar_Poly_synthSetEnvDecimationFactor(_ctx.poly,newFactor);
 };
 
 typedef synthSamplerShootingStar_Voice__ctx_type_0 synthSamplerShootingStar_Voice_default_type;

@@ -886,6 +886,16 @@ static_inline void synthSamplerDrivenSynthLead_Poly_synthSetCarrierADSR_init(syn
 static_inline void synthSamplerDrivenSynthLead_Poly_synthSetCarrierADSR(synthSamplerDrivenSynthLead_Poly__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
 }
 
+typedef synthSamplerDrivenSynthLead_Poly__ctx_type_0 synthSamplerDrivenSynthLead_Poly_synthSetEnvDecimationFactor_type;
+
+static_inline void synthSamplerDrivenSynthLead_Poly_synthSetEnvDecimationFactor_init(synthSamplerDrivenSynthLead_Poly__ctx_type_0 &_output_){
+   synthSamplerDrivenSynthLead_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerDrivenSynthLead_Poly_synthSetEnvDecimationFactor(synthSamplerDrivenSynthLead_Poly__ctx_type_0 &_ctx, int newFactor){
+}
+
 typedef synthSamplerDrivenSynthLead_Poly__ctx_type_0 synthSamplerDrivenSynthLead_Poly_shouldLeftOvers_type;
 
 static_inline void synthSamplerDrivenSynthLead_Poly_shouldLeftOvers_init(synthSamplerDrivenSynthLead_Poly__ctx_type_0 &_output_){
@@ -1267,6 +1277,17 @@ static_inline void synthSamplerDrivenSynthLead_Voice_synthSetCarrierADSR_init(sy
 
 static_inline void synthSamplerDrivenSynthLead_Voice_synthSetCarrierADSR(synthSamplerDrivenSynthLead_Voice__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
    synthSamplerDrivenSynthLead_Poly_synthSetCarrierADSR(_ctx.poly,a,d,s,r);
+};
+
+typedef synthSamplerDrivenSynthLead_Voice__ctx_type_0 synthSamplerDrivenSynthLead_Voice_synthSetEnvDecimationFactor_type;
+
+static_inline void synthSamplerDrivenSynthLead_Voice_synthSetEnvDecimationFactor_init(synthSamplerDrivenSynthLead_Voice__ctx_type_0 &_output_){
+   synthSamplerDrivenSynthLead_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerDrivenSynthLead_Voice_synthSetEnvDecimationFactor(synthSamplerDrivenSynthLead_Voice__ctx_type_0 &_ctx, int newFactor){
+   synthSamplerDrivenSynthLead_Poly_synthSetEnvDecimationFactor(_ctx.poly,newFactor);
 };
 
 typedef synthSamplerDrivenSynthLead_Voice__ctx_type_0 synthSamplerDrivenSynthLead_Voice_default_type;

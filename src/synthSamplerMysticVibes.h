@@ -886,6 +886,16 @@ static_inline void synthSamplerMysticVibes_Poly_synthSetCarrierADSR_init(synthSa
 static_inline void synthSamplerMysticVibes_Poly_synthSetCarrierADSR(synthSamplerMysticVibes_Poly__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
 }
 
+typedef synthSamplerMysticVibes_Poly__ctx_type_0 synthSamplerMysticVibes_Poly_synthSetEnvDecimationFactor_type;
+
+static_inline void synthSamplerMysticVibes_Poly_synthSetEnvDecimationFactor_init(synthSamplerMysticVibes_Poly__ctx_type_0 &_output_){
+   synthSamplerMysticVibes_Poly__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerMysticVibes_Poly_synthSetEnvDecimationFactor(synthSamplerMysticVibes_Poly__ctx_type_0 &_ctx, int newFactor){
+}
+
 typedef synthSamplerMysticVibes_Poly__ctx_type_0 synthSamplerMysticVibes_Poly_shouldLeftOvers_type;
 
 static_inline void synthSamplerMysticVibes_Poly_shouldLeftOvers_init(synthSamplerMysticVibes_Poly__ctx_type_0 &_output_){
@@ -1267,6 +1277,17 @@ static_inline void synthSamplerMysticVibes_Voice_synthSetCarrierADSR_init(synthS
 
 static_inline void synthSamplerMysticVibes_Voice_synthSetCarrierADSR(synthSamplerMysticVibes_Voice__ctx_type_0 &_ctx, fix16_t a, fix16_t d, fix16_t s, fix16_t r){
    synthSamplerMysticVibes_Poly_synthSetCarrierADSR(_ctx.poly,a,d,s,r);
+};
+
+typedef synthSamplerMysticVibes_Voice__ctx_type_0 synthSamplerMysticVibes_Voice_synthSetEnvDecimationFactor_type;
+
+static_inline void synthSamplerMysticVibes_Voice_synthSetEnvDecimationFactor_init(synthSamplerMysticVibes_Voice__ctx_type_0 &_output_){
+   synthSamplerMysticVibes_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void synthSamplerMysticVibes_Voice_synthSetEnvDecimationFactor(synthSamplerMysticVibes_Voice__ctx_type_0 &_ctx, int newFactor){
+   synthSamplerMysticVibes_Poly_synthSetEnvDecimationFactor(_ctx.poly,newFactor);
 };
 
 typedef synthSamplerMysticVibes_Voice__ctx_type_0 synthSamplerMysticVibes_Voice_default_type;

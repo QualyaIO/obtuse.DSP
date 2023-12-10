@@ -175,11 +175,15 @@ and synthSetModulatorFeedback(ratio: real) {
 }
 
 // FM.setModulatorADSR()
-and synthSetModulatorADSR(a:real , d: real, s: real, r: real) {
+and synthSetModulatorADSR(a:real, d: real, s: real, r: real) {
 }
 
 // FM.setCarrierADSR()
-and synthSetCarrierADSR(a:real , d: real, s: real, r: real) {
+and synthSetCarrierADSR(a:real, d: real, s: real, r: real) {
+}
+
+// FM.setEnvDecimationFactor()
+and synthSetEnvDecimationFactor(newFactor: int) {
 }
 
 /* end parameters for synths */
