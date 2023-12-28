@@ -1,5 +1,5 @@
 
-// Allpass filter, i.e. feedfowrard + feedback comp filter (in the latter not only delay but also keep last output)
+// Allpass filter, i.e. feedfowrard + feedback comb filter (in the latter not only delay but also keep last output)
 // Output will be kept to -1..1 range
 
 fun process(sample: real) {
@@ -77,8 +77,8 @@ and getMaxDelayms() : real {
 and setDelay(newDelay: int) {
    mem fs;
    delay = clip(newDelay, 1, getMaxDelay());
-   // reset position in buffer
-   pos = 0;
+   // reset position in buffer if necessary
+   pos = pos % delay;
 }
 
 // change delay (in miliseconds). Will be caped at max buffersize -- check that with getMaxDelayms()

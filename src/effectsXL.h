@@ -87,7 +87,7 @@ static_inline void effectsXL_CombFB_setDelay_init(effectsXL_CombFB__ctx_type_0 &
 
 static_inline void effectsXL_CombFB_setDelay(effectsXL_CombFB__ctx_type_0 &_ctx, int newDelay){
    _ctx.delay = int_clip(newDelay,1,effectsXL_CombFB_getMaxDelay(_ctx));
-   _ctx.pos = 0;
+   _ctx.pos = (_ctx.pos % _ctx.delay);
 }
 
 typedef effectsXL_CombFB__ctx_type_0 effectsXL_CombFB_setDelayms_type;
@@ -228,7 +228,7 @@ static_inline void effectsXL_Allpass_setDelay_init(effectsXL_Allpass__ctx_type_0
 
 static_inline void effectsXL_Allpass_setDelay(effectsXL_Allpass__ctx_type_0 &_ctx, int newDelay){
    _ctx.delay = int_clip(newDelay,1,effectsXL_Allpass_getMaxDelay(_ctx));
-   _ctx.pos = 0;
+   _ctx.pos = (_ctx.pos % _ctx.delay);
 }
 
 typedef effectsXL_Allpass__ctx_type_0 effectsXL_Allpass_setDelayms_type;
@@ -773,7 +773,7 @@ static_inline void effectsXL_CombFF_setDelay_init(effectsXL_CombFF__ctx_type_0 &
 
 static_inline void effectsXL_CombFF_setDelay(effectsXL_CombFF__ctx_type_0 &_ctx, int newDelay){
    _ctx.delay = int_clip(newDelay,1,effectsXL_CombFF_getMaxDelay(_ctx));
-   _ctx.pos = 0;
+   _ctx.pos = (_ctx.pos % _ctx.delay);
 }
 
 typedef effectsXL_CombFF__ctx_type_0 effectsXL_CombFF_setDelayms_type;

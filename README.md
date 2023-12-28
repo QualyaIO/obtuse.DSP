@@ -27,6 +27,7 @@ WARNING: Be wary where the struct are initialized to avoid problem with stack si
 - arp: add option to keep step position between sequence change
 - FM: fix envelope which caused random noise in "bufferTo"
 - voice: add method to set decimation factor for FM
+- combFF, combFB, allpass: reduce artifacts when changing delay
 
 ## v0.1.0 (2023-08-12)
 
@@ -47,6 +48,7 @@ Fixes
 - SVF: not compute while disabled while avoiding noise upon start
 - combFB (and those using): output not guaranteed to be kept within -1..1
 - gate: velocity and channel not kept
+- combFB, combBB, allpass (hence reverb): eliminate artifacts upon change of delay
 
 Features
 
