@@ -1,7 +1,7 @@
 
 // handling wavetables and combinations thereof, to be passed-down to OSC
 
-// note that wavetable should be big enough to avoid fixed float limits upon later computations (let say at least 100). Too small and audio artifacts will occur (e.g. sine 2048 not so great) too big and CPU will take a hit. 4096 hears a good tradeoff
+// note that wavetable should be big enough to avoid fixed float limits upon later computations (let say at least 100). Too small and audio artifacts will occur (e.g. sine 2048 not so great) too big and CPU will take a hit. 4096 here is a good tradeoff
 
 // 0, 4  -> sine,
 external sin_wave(channel:int, index:int) : real @[wave(channels=1, file="sinus_4096.wav")];
@@ -19,7 +19,17 @@ external saw_wave_bl(channel:int, index:int) : real @[wave(channels=1, file="saw
 // 7 -> square band limited (30khz SR, 440hz note)
 external square_wave_bl(channel:int, index:int) : real @[wave(channels=1, file="square_bl_4096.wav")];
 
-// return value for selectes wavetable (first channel hard-coded), between [0..sample size[
+// used to allocate a wavetable array (sync size with below!)
+fun bufferWavetable(oBuff: array(real, 4096)) {
+}
+
+// to be synced with above!
+fun bufferSize() {
+  return 4096;
+}
+
+// return value for selected wavetable (first channel hard-coded), between [0..sample size[
+// TODO: implement an interpolated version, with a "real" index?
 fun getSample(wavetableIdx: int, index: int): real {
   // modulo will be taken care of by the generated code 
   val sample = 0.0;
@@ -51,9 +61,10 @@ fun getSample(wavetableIdx: int, index: int): real {
 }
 
 // return value for wavetable passed in parameter, between [0..wavetable size[
+// NOTE: wavetable will be interpolated
 fun getSampleFrom(wavetable, index: real): real {
    val idx1 = int(index);
-   val idx2 = int(index) + 1;
+   val idx2 = idx1 + 1;
    if (idx2 >= size(wavetable)) {
      idx2 = idx2 % size(wavetable);
      if (idx1 >= size(wavetable)) {
@@ -63,18 +74,17 @@ fun getSampleFrom(wavetable, index: real): real {
    return wavetable[idx1] + (wavetable[idx2] - wavetable[idx1]) * (index % 1.0);
 }
 
-
 // how many wavetables we have so far?
 fun getNbWavetables() {
   return 8;
 }
 
 // morph between two consecutive wavetables depending on index, copy to buffer. If value is above nb wavetable - 1, then it will morph again between last and first wavetable
-// phase: shift phase (of first wavetable) by this amount. 0..1 converted to 0 .. size(buffer)
-// Waring: wavetables will not be interpolated, if one is shorter than destination table, it will repeat, if larger then only a portion will be used.
+// phase: shift phase (of first wavetable) by this amount. 0..1 converted to 0 .. size(buffer). NOTE: phase shift is not interpolated (translates to a rounded number of samples), nor checked for 0..1 interval
+// WARNING: wavetables will not be interpolated, if one is shorter than destination table, it will repeat, if larger then only a portion will be used.
 fun morphTo(wavetableIdx: real, phase: real, buffer) {
   wavetableIdx = clip(wavetableIdx, 0.0, real(getNbWavetables()));
-  val phase_shift = int(real(size(buffer)) * phase);
+  val phase_shift: int = int(real(bufferSize()) * phase);
   val wavetable1 = int(floor(wavetableIdx));
   val wavetable2 = wavetable1 + 1;
   // loop morphing
@@ -86,6 +96,7 @@ fun morphTo(wavetableIdx: real, phase: real, buffer) {
     wavetable1 = 0;
   }
   val ratio = wavetableIdx % 1.0;
+
   val i = 0;
   val s1, s2;
   // weight between the two selected wavetables
@@ -95,16 +106,6 @@ fun morphTo(wavetableIdx: real, phase: real, buffer) {
     buffer[i] = s1 + ratio * (s2 - s1);
     i = i + 1;
   }
-}
-
-
-// used to allocate a wavetable array (sync size with below!)
-fun bufferWavetable(oBuff: array(real, 4096)) {
-}
-
-// to be synced with above!
-fun bufferSize() {
-  return 4096;
 }
 
 // retrieve a random morphed wavetable (also used as a hack to help vult infer morph() parameters type)

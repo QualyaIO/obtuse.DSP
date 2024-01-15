@@ -91,6 +91,13 @@ static_inline fix16_t synthFM_Wavetable_square_wave_bl(int channel, int index){
    return 0x0 /* 0.000000 */;
 }
 
+static_inline void synthFM_Wavetable_bufferWavetable(fix16_t (&oBuff)[4096]){
+}
+
+static_inline int synthFM_Wavetable_bufferSize(){
+   return 4096;
+};
+
 fix16_t synthFM_Wavetable_getSample(int wavetableIdx, int index);
 
 fix16_t synthFM_Wavetable_getSampleFrom(fix16_t (&wavetable)[4096], fix16_t index);
@@ -100,13 +107,6 @@ static_inline int synthFM_Wavetable_getNbWavetables(){
 };
 
 void synthFM_Wavetable_morphTo(fix16_t wavetableIdx, fix16_t phase, fix16_t (&buffer)[4096]);
-
-static_inline void synthFM_Wavetable_bufferWavetable(fix16_t (&oBuff)[4096]){
-}
-
-static_inline int synthFM_Wavetable_bufferSize(){
-   return 4096;
-};
 
 void synthFM_Wavetable_getRandomMorph(fix16_t (&oBuff)[4096]);
 

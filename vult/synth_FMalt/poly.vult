@@ -1,21 +1,19 @@
 
-// polyvoice FM. To be used with Voice
+// polyvoice FM, with on-the-fly wavetable. To be used with Voice
 
 // retrieve sample from a specific voice
 fun getSample(voice: int) {
-   mem wavetable_modulator;
-   mem wavetable_carrier;
    if (voice == 0) {
-        return voice0:FM.process(wavetable_modulator, wavetable_carrier);
+        return voice0:FMalt.process();
    }
    else if (voice == 1) {
-        return voice1:FM.process(wavetable_modulator, wavetable_carrier);
+        return voice1:FMalt.process();
    }
    else if (voice == 2) {
-        return voice2:FM.process(wavetable_modulator, wavetable_carrier);
+        return voice2:FMalt.process();
    }
    else if (voice == 3) {
-        return voice3:FM.process(wavetable_modulator, wavetable_carrier);
+        return voice3:FMalt.process();
    }
    return 0.0;
 }
@@ -23,16 +21,16 @@ fun getSample(voice: int) {
 // run buffer for specified voice (buffered version of getSample), filling specified buffer
 and runVoice(voice: int, nb: int, buff) {
        if (voice == 0) {
-           _ = voice0:FM.process_bufferTo(wavetable_modulator, wavetable_carrier, nb, buff);
+           _ = voice0:FMalt.process_bufferTo(nb, buff);
        }
        else if (voice == 1) {
-           _ = voice1:FM.process_bufferTo(wavetable_modulator, wavetable_carrier, nb, buff);
+           _ = voice1:FMalt.process_bufferTo(nb, buff);
        }
        else if (voice == 2) {
-           _ = voice2:FM.process_bufferTo(wavetable_modulator, wavetable_carrier, nb, buff);
+           _ = voice2:FMalt.process_bufferTo(nb, buff);
        }
        else if (voice == 3) {
-           _ = voice3:FM.process_bufferTo(wavetable_modulator, wavetable_carrier, nb, buff);
+           _ = voice3:FMalt.process_bufferTo(nb, buff);
        }
 }
 
@@ -41,16 +39,16 @@ and runVoice(voice: int, nb: int, buff) {
 and sendNoteOn(voice:int, note:int, velocity: int, channel:int) {
        // a tad tedious, as many context as we handle voices, and test all possible synth
        if (voice == 0) {
-           _ = voice0:FM.noteOn(note, velocity, channel);
+           _ = voice0:FMalt.noteOn(note, velocity, channel);
        }
        else if (voice == 1) {
-           _ = voice1:FM.noteOn(note, velocity, channel);
+           _ = voice1:FMalt.noteOn(note, velocity, channel);
        }
        else if (voice == 2) {
-           _ = voice2:FM.noteOn(note, velocity, channel);
+           _ = voice2:FMalt.noteOn(note, velocity, channel);
        }
        else if (voice == 3) {
-           _ = voice3:FM.noteOn(note, velocity, channel);
+           _ = voice3:FMalt.noteOn(note, velocity, channel);
        }
 }
 
@@ -60,25 +58,25 @@ and sendNoteOn(voice:int, note:int, velocity: int, channel:int) {
 and sendNoteOff(voice:int, note:int, channel:int) {
        // a tad tedious, as many context as we handle voices, and test all possible synth
        if (voice == 0) {
-           _ = voice0:FM.noteOff(note, channel);
+           _ = voice0:FMalt.noteOff(note, channel);
        }
        else if (voice == 1) {
-           _ = voice1:FM.noteOff(note, channel);
+           _ = voice1:FMalt.noteOff(note, channel);
        }
        else if (voice == 2) {
-           _ = voice2:FM.noteOff(note, channel);
+           _ = voice2:FMalt.noteOff(note, channel);
        }
        else if (voice == 3) {
-           _ = voice3:FM.noteOff(note, channel);
+           _ = voice3:FMalt.noteOff(note, channel);
        }
 }
 
 // change sampling rate for current synth
 and setSamplerate(fs:real) {
-    _ = voice0:FM.setSamplerate(fs);
-    _ = voice1:FM.setSamplerate(fs);
-    _ = voice2:FM.setSamplerate(fs);
-    _ = voice3:FM.setSamplerate(fs);
+    _ = voice0:FMalt.setSamplerate(fs);
+    _ = voice1:FMalt.setSamplerate(fs);
+    _ = voice2:FMalt.setSamplerate(fs);
+    _ = voice3:FMalt.setSamplerate(fs);
 }
 
 /* getter/setter passed down to synth, if supported */
@@ -86,18 +84,18 @@ and setSamplerate(fs:real) {
 // information about current sustain (keep gate until released)
 // Note: do call setSustain(off) at some point to release notes!
 and synthSetSustain(flag: bool) {
-  _ = voice0:FM.setSustain(flag);
-  _ = voice1:FM.setSustain(flag);
-  _ = voice2:FM.setSustain(flag);
-  _ = voice3:FM.setSustain(flag);
+  _ = voice0:FMalt.setSustain(flag);
+  _ = voice1:FMalt.setSustain(flag);
+  _ = voice2:FMalt.setSustain(flag);
+  _ = voice3:FMalt.setSustain(flag);
 }
 
 // apply pitch bend of +/- seminotes
 and synthPitchBend(semitones: real) {
-  _ = voice0:FM.pitchBend(semitones);
-  _ = voice1:FM.pitchBend(semitones);
-  _ = voice2:FM.pitchBend(semitones);
-  _ = voice3:FM.pitchBend(semitones);
+  _ = voice0:FMalt.pitchBend(semitones);
+  _ = voice1:FMalt.pitchBend(semitones);
+  _ = voice2:FMalt.pitchBend(semitones);
+  _ = voice3:FMalt.pitchBend(semitones);
 }
 
 // Sampler.setLoop()
@@ -140,11 +138,14 @@ and synthGetNbWavetables():int {
 // destined to FM modulator oscillator
 and synthSetModulatorWavetable(wavetableIdx: real) {
   mem lastModulatorWavetablePhaseIdx;
-  // only update if necessary, costly
+  // only update if necessary, (slightly) costly
   mem initModulatorWavetable;
   mem lastModulatorWavetableIdx;
   if (not(initModulatorWavetable) || wavetableIdx <> lastModulatorWavetableIdx) {
-    Wavetable.morphTo(wavetableIdx, lastModulatorWavetablePhaseIdx, wavetable_modulator); 
+    _ = voice0:FMalt.setModulatorWavetable(wavetableIdx);
+    _ = voice1:FMalt.setModulatorWavetable(wavetableIdx);
+    _ = voice2:FMalt.setModulatorWavetable(wavetableIdx);
+    _ = voice3:FMalt.setModulatorWavetable(wavetableIdx);
     lastModulatorWavetableIdx = wavetableIdx;
     initModulatorWavetable = true;
   }
@@ -152,9 +153,12 @@ and synthSetModulatorWavetable(wavetableIdx: real) {
 
 and synthSetModulatorWavetablePhase(phaseIdx: real) {
   // NB: not clamping phase so that it could be used at our advantage whene there is a diff between buffer size and wavetable size
-  // only update if necessary, costly
+  // only update if necessary
   if (phaseIdx <> lastModulatorWavetablePhaseIdx) {
-    Wavetable.morphTo(lastModulatorWavetableIdx, phaseIdx, wavetable_modulator); 
+    _ = voice0:FMalt.setModulatorWavetablePhase(phaseIdx);
+    _ = voice1:FMalt.setModulatorWavetablePhase(phaseIdx);
+    _ = voice2:FMalt.setModulatorWavetablePhase(phaseIdx);
+    _ = voice3:FMalt.setModulatorWavetablePhase(phaseIdx);
     lastModulatorWavetablePhaseIdx = phaseIdx;
   }
 }
@@ -162,94 +166,100 @@ and synthSetModulatorWavetablePhase(phaseIdx: real) {
 // destined to FM carrier oscillator
 and synthSetCarrierWavetable(wavetableIdx: real) {
   mem lastCarrierWavetablePhaseIdx;
-  // only update if necessary, costly
+  // only update if necessary, (slightly) costly
   mem initCarrierWavetable;
   mem lastCarrierWavetableIdx;
   if (not(initCarrierWavetable) || wavetableIdx <> lastCarrierWavetableIdx) {
-    Wavetable.morphTo(wavetableIdx, lastCarrierWavetablePhaseIdx, wavetable_carrier); 
+    _ = voice0:FMalt.setCarrierWavetable(wavetableIdx);
+    _ = voice1:FMalt.setCarrierWavetable(wavetableIdx);
+    _ = voice2:FMalt.setCarrierWavetable(wavetableIdx);
+    _ = voice3:FMalt.setCarrierWavetable(wavetableIdx);
     lastCarrierWavetableIdx = wavetableIdx;
     initCarrierWavetable = true;
   }
 }
 
 and synthSetCarrierWavetablePhase(phaseIdx: real) {
-  // only update if necessary, costly
+  // only update if necessary
   if (phaseIdx <> lastCarrierWavetablePhaseIdx) {
-    Wavetable.morphTo(lastCarrierWavetableIdx, phaseIdx, wavetable_carrier); 
+    _ = voice0:FMalt.setCarrierWavetablePhase(phaseIdx);
+    _ = voice1:FMalt.setCarrierWavetablePhase(phaseIdx);
+    _ = voice2:FMalt.setCarrierWavetablePhase(phaseIdx);
+    _ = voice3:FMalt.setCarrierWavetablePhase(phaseIdx);
     lastCarrierWavetablePhaseIdx = phaseIdx;
   }
 }
 
 // FM.setModulatorRatio()
 and synthSetModulatorRatio(ratio: real) {
-  _ = voice0:FM.setModulatorRatio(ratio);
-  _ = voice1:FM.setModulatorRatio(ratio);
-  _ = voice2:FM.setModulatorRatio(ratio);
-  _ = voice3:FM.setModulatorRatio(ratio);
+  _ = voice0:FMalt.setModulatorRatio(ratio);
+  _ = voice1:FMalt.setModulatorRatio(ratio);
+  _ = voice2:FMalt.setModulatorRatio(ratio);
+  _ = voice3:FMalt.setModulatorRatio(ratio);
 }
 
 // FM.setCarrierRatio()
 and synthSetCarrierRatio(ratio: real) {
-  _ = voice0:FM.setCarrierRatio(ratio);
-  _ = voice1:FM.setCarrierRatio(ratio);
-  _ = voice2:FM.setCarrierRatio(ratio);
-  _ = voice3:FM.setCarrierRatio(ratio);
+  _ = voice0:FMalt.setCarrierRatio(ratio);
+  _ = voice1:FMalt.setCarrierRatio(ratio);
+  _ = voice2:FMalt.setCarrierRatio(ratio);
+  _ = voice3:FMalt.setCarrierRatio(ratio);
 }
 
 // FM.setModulatorLevel()
 and synthSetModulatorLevel(level: real) {
-  _ = voice0:FM.setModulatorLevel(level);
-  _ = voice1:FM.setModulatorLevel(level);
-  _ = voice2:FM.setModulatorLevel(level);
-  _ = voice3:FM.setModulatorLevel(level);
+  _ = voice0:FMalt.setModulatorLevel(level);
+  _ = voice1:FMalt.setModulatorLevel(level);
+  _ = voice2:FMalt.setModulatorLevel(level);
+  _ = voice3:FMalt.setModulatorLevel(level);
 }
 
 // FM.setModulatorTargetLevel()
 and synthSetModulatorTargetLevel(targetLevel: bool) {
-  _ = voice0:FM.setModulatorTargetLevel(targetLevel);
-  _ = voice1:FM.setModulatorTargetLevel(targetLevel);
-  _ = voice2:FM.setModulatorTargetLevel(targetLevel);
-  _ = voice3:FM.setModulatorTargetLevel(targetLevel);
+  _ = voice0:FMalt.setModulatorTargetLevel(targetLevel);
+  _ = voice1:FMalt.setModulatorTargetLevel(targetLevel);
+  _ = voice2:FMalt.setModulatorTargetLevel(targetLevel);
+  _ = voice3:FMalt.setModulatorTargetLevel(targetLevel);
 }
 
 // FM.setModulatorPhaseShift
 and synthSetModulatorPhaseShift(ratio: real) {
-  _ = voice0:FM.setModulatorPhaseShift(ratio);
-  _ = voice1:FM.setModulatorPhaseShift(ratio);
-  _ = voice2:FM.setModulatorPhaseShift(ratio);
-  _ = voice3:FM.setModulatorPhaseShift(ratio);
+  _ = voice0:FMalt.setModulatorPhaseShift(ratio);
+  _ = voice1:FMalt.setModulatorPhaseShift(ratio);
+  _ = voice2:FMalt.setModulatorPhaseShift(ratio);
+  _ = voice3:FMalt.setModulatorPhaseShift(ratio);
 }
 
 // FM.setModulatorFeedback()
 and synthSetModulatorFeedback(ratio: real) {
-  _ = voice0:FM.setModulatorFeedback(ratio);
-  _ = voice1:FM.setModulatorFeedback(ratio);
-  _ = voice2:FM.setModulatorFeedback(ratio);
-  _ = voice3:FM.setModulatorFeedback(ratio);
+  _ = voice0:FMalt.setModulatorFeedback(ratio);
+  _ = voice1:FMalt.setModulatorFeedback(ratio);
+  _ = voice2:FMalt.setModulatorFeedback(ratio);
+  _ = voice3:FMalt.setModulatorFeedback(ratio);
 }
 
 // FM.setModulatorADSR()
 and synthSetModulatorADSR(a:real, d: real, s: real, r: real) {
-  _ = voice0:FM.setModulatorADSR(a, d, s, r);
-  _ = voice1:FM.setModulatorADSR(a, d, s, r);
-  _ = voice2:FM.setModulatorADSR(a, d, s, r);
-  _ = voice3:FM.setModulatorADSR(a, d, s, r);
+  _ = voice0:FMalt.setModulatorADSR(a, d, s, r);
+  _ = voice1:FMalt.setModulatorADSR(a, d, s, r);
+  _ = voice2:FMalt.setModulatorADSR(a, d, s, r);
+  _ = voice3:FMalt.setModulatorADSR(a, d, s, r);
 }
 
 // FM.setCarrierADSR()
 and synthSetCarrierADSR(a:real, d: real, s: real, r: real) {
-  _ = voice0:FM.setCarrierADSR(a, d, s, r);
-  _ = voice1:FM.setCarrierADSR(a, d, s, r);
-  _ = voice2:FM.setCarrierADSR(a, d, s, r);
-  _ = voice3:FM.setCarrierADSR(a, d, s, r);
+  _ = voice0:FMalt.setCarrierADSR(a, d, s, r);
+  _ = voice1:FMalt.setCarrierADSR(a, d, s, r);
+  _ = voice2:FMalt.setCarrierADSR(a, d, s, r);
+  _ = voice3:FMalt.setCarrierADSR(a, d, s, r);
 }
 
 // FM.setEnvDecimationFactor()
 and synthSetEnvDecimationFactor(newFactor: int) {
-  _ = voice0:FM.setEnvDecimationFactor(newFactor);
-  _ = voice1:FM.setEnvDecimationFactor(newFactor);
-  _ = voice2:FM.setEnvDecimationFactor(newFactor);
-  _ = voice3:FM.setEnvDecimationFactor(newFactor);
+  _ = voice0:FMalt.setEnvDecimationFactor(newFactor);
+  _ = voice1:FMalt.setEnvDecimationFactor(newFactor);
+  _ = voice2:FMalt.setEnvDecimationFactor(newFactor);
+  _ = voice3:FMalt.setEnvDecimationFactor(newFactor);
 }
 
 /* end parameters for synths */
@@ -262,21 +272,19 @@ and shouldLeftOvers(): bool {
 
 and default() @[init] {
   should_leftovers = false;
-  Wavetable.bufferWavetable(wavetable_modulator);
-  Wavetable.bufferWavetable(wavetable_carrier);
   initModulatorWavetable = false;
   initCarrierWavetable = false;
   // default to sine
   _ = synthSetModulatorWavetable(0.0);
   _ = synthSetCarrierWavetable(0.0);
-  _ = voice0:FM.default();
-  _ = voice0:FM.setPoly(true);
-  _ = voice1:FM.default();
-  _ = voice1:FM.setPoly(true);
-  _ = voice2:FM.default();
-  _ = voice2:FM.setPoly(true);
-  _ = voice3:FM.default();
-  _ = voice3:FM.setPoly(true);
+  _ = voice0:FMalt.default();
+  _ = voice0:FMalt.setPoly(true);
+  _ = voice1:FMalt.default();
+  _ = voice1:FMalt.setPoly(true);
+  _ = voice2:FMalt.default();
+  _ = voice2:FMalt.setPoly(true);
+  _ = voice3:FMalt.default();
+  _ = voice3:FMalt.setPoly(true);
 }
 
 // to let vult find above the good buffer size

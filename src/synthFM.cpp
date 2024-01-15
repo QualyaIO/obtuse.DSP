@@ -39,7 +39,7 @@ fix16_t synthFM_Wavetable_getSampleFrom(fix16_t (&wavetable)[4096], fix16_t inde
    int idx1;
    idx1 = fix_to_int(index);
    int idx2;
-   idx2 = (1 + fix_to_int(index));
+   idx2 = (1 + idx1);
    if(idx2 >= 4096){
       idx2 = (idx2 % 4096);
       if(idx1 >= 4096){

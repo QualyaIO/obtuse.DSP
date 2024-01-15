@@ -1,10 +1,26 @@
-// oscillator, using waveables, to be passed as parameter for flexibility
-// TODO: duplicate code here as well between process and process_buffer (and "simpler" versions! for sake of efficiency)
+// oscillator, using this time index of Wavetable to save on RAM (at the cost of CPU). 
+// NOTE: code even more duplicated from OSC.vult... and also some from Wavetable to speedup computations
 
+
+// helper function to morph between wavetable1 and wavetable2 with selected phase_shift (in number of samples here) and wavetable_ratio between them (0: full first wavetable, 1 full second) and retrieve (interpolated) sample "index"
+fun getSampleMorph(wavetable1: int, wavetable2: int, wavetable_ratio: real, phase_shift: int, index: real): real {
+   // pick actual indices and ratio between them
+   val idx1: int = int(index);
+   val idx2: int = idx1 + 1;
+   // retrieve samples from both wavetables -- we reproduced the fact that Wavetable.getMorph() does not interpolate for phase shift
+   val w1_s1: real = Wavetable.getSample(wavetable1, idx1 + phase_shift);
+   val w1_s2: real = Wavetable.getSample(wavetable1, idx2 + phase_shift);
+   val w2_s1: real = Wavetable.getSample(wavetable2, idx1);
+   val w2_s2: real = Wavetable.getSample(wavetable2, idx2);
+   // morph between wavetables for first then second sample
+   val s1 = w1_s1 + wavetable_ratio * (w2_s1 - w1_s1);
+   val s2 = w1_s2 + wavetable_ratio * (w2_s2 - w1_s2);
+   // interpolate between samples
+   return s1 + (s2 - s1) * (index % 1.0);
+}
 
 // non-buffered version
-// wavetable: array containing samples to retrieve
-fun process(wavetable) {
+fun process() {
    // audio sampling rate
    mem fs: real;
    // sinus frequency
@@ -17,14 +33,22 @@ fun process(wavetable) {
    mem step: real;
    // absolutely needs init to set that, converted to real to speedup
    mem rsize: real;
+   // phase shift of the first wavetable, used upon interpolation. Amount: 0..1
+   mem wavetable_phase_shift: int;
+   // will morph beween first and second wavetable
+   mem wavetable1: int;
+   mem wavetable2: int;
+   // ratio between first and second wavetable
+   mem wavetable_ratio: real;
 
    // advance time, keep range in check here to maximize precision
    phase = phase + step;
    while (phase > rsize) {
       phase = phase - rsize;
    }
+
    // let others take care of modulo
-   return Wavetable.getSampleFrom(wavetable, phase_base + phase);
+   return getSampleMorph(wavetable1, wavetable2, wavetable_ratio, wavetable_phase_shift, phase_base + phase);
 }
 
 
@@ -38,7 +62,7 @@ fun process(wavetable) {
 // shift_level: if we should *actually* shift level instead of phase
 // oBuffer: output buffer to copy data to
 // FIXME: not check for phase_bases size, only use phase_shift, no option to by-pass
-and process_bufferTo(wavetable, nb: int, env, phase_shift, phase_env, phase_shift_level: real, shift_level: bool, oBuffer) {
+and process_bufferTo(nb: int, env, phase_shift, phase_env, phase_shift_level: real, shift_level: bool, oBuffer) {
    nb = clip(nb, 0, size(oBuffer));
    if (nb == 0) {
       nb = size(oBuffer);
@@ -62,7 +86,7 @@ and process_bufferTo(wavetable, nb: int, env, phase_shift, phase_env, phase_shif
            phase = phase - rsize;
         }
         // phase shift from -1..1 to 0..1, and don't change if there is no modulation 
-        oBuffer[i] = Wavetable.getSampleFrom(wavetable, phase) * env[i] * (1.0 - (phase_shift[i] + phase_env[i]) * level_shift_coeff);
+        oBuffer[i] = getSampleMorph(wavetable1, wavetable2, wavetable_ratio, wavetable_phase_shift, phase) * env[i] * (1.0 - (phase_shift[i] + phase_env[i]) * level_shift_coeff);
         i = i + 1;
      }
    }
@@ -72,15 +96,15 @@ and process_bufferTo(wavetable, nb: int, env, phase_shift, phase_env, phase_shif
         phase = phase + step;
         while (phase > rsize) {
            phase = phase - rsize;
-        }
-        oBuffer[i] = Wavetable.getSampleFrom(wavetable, max_phase + phase_range * phase_shift[i] + phase) * env[i];
+        } 
+        oBuffer[i] = getSampleMorph(wavetable1, wavetable2, wavetable_ratio, wavetable_phase_shift, max_phase + phase_range * phase_shift[i] + phase) * env[i];
         i = i + 1;
      }
    }
 }
 
 // without phase this one
-and process_bufferTo_simple(wavetable, nb: int, env, oBuffer) {
+and process_bufferTo_simple(nb: int, env, oBuffer) {
    nb = clip(nb, 0, size(oBuffer));
    if (nb == 0) {
       nb = size(oBuffer);
@@ -95,13 +119,13 @@ and process_bufferTo_simple(wavetable, nb: int, env, oBuffer) {
          phase = phase - rsize;
       }
       // loop in sample
-      oBuffer[i] = Wavetable.getSampleFrom(wavetable, phase_base + phase) * env[i];
+      oBuffer[i] = getSampleMorph(wavetable1, wavetable2, wavetable_ratio, wavetable_phase_shift, phase_base + phase) * env[i];
       i = i + 1;
    }
 }
 
 // with feedback on phase rather than modulation. Note that only here is kept state of last value to apply feedback, do not alternate with other methods.,
-and process_bufferTo_feedback(wavetable, nb: int, env, feedback: real, oBuffer) {
+and process_bufferTo_feedback(nb: int, env, feedback: real, oBuffer) {
    nb = clip(nb, 0, size(oBuffer));
    if (nb == 0) {
       nb = size(oBuffer);
@@ -122,7 +146,7 @@ and process_bufferTo_feedback(wavetable, nb: int, env, feedback: real, oBuffer) 
          phase = phase - rsize;
       }
       // loop in sample
-      last_val_feedback = Wavetable.getSampleFrom(wavetable, phase_base + max_phase + phase_range * last_val_feedback + phase) * env[i];
+      last_val_feedback = getSampleMorph(wavetable1, wavetable2, wavetable_ratio, wavetable_phase_shift, phase_base + max_phase + phase_range * last_val_feedback + phase) * env[i];
       oBuffer[i] = last_val_feedback;
       i = i + 1;
    }
@@ -130,7 +154,7 @@ and process_bufferTo_feedback(wavetable, nb: int, env, feedback: real, oBuffer) 
 
 
 // without envelop nor phase this one
-and process_bufferTo_simplest(wavetable, nb: int, oBuffer) {
+and process_bufferTo_simplest(nb: int, oBuffer) {
    nb = clip(nb, 0, size(oBuffer));
    if (nb == 0) {
       nb = size(oBuffer);
@@ -145,7 +169,7 @@ and process_bufferTo_simplest(wavetable, nb: int, oBuffer) {
          phase = phase - rsize;
       }
       // loop in sample
-      oBuffer[i] = Wavetable.getSampleFrom(wavetable, phase_base + phase);
+      oBuffer[i] = getSampleMorph(wavetable1, wavetable2, wavetable_ratio, wavetable_phase_shift, phase_base + phase);
       i = i + 1;
    }
 }
@@ -174,6 +198,30 @@ and setFrequency(newFreq:real) {
 and setPhase(newPhase: real) {
    phase_base = newPhase;
 }
+
+// setting the phase shift of the first wavetable compared to the second for morphed one. value 0..1
+and setWavetablePhase(phaseRatio: real) {
+   // NOTE: we do not enforce for 0..1 interval as in Wavetable.morphTo()
+   wavetable_phase_shift = int(rsize * phaseRatio);
+}
+
+// select a wavetable within banks, with the possibility to morph between two adjacent ones
+and setWavetable(wavetableIdx: real) {
+   // slight duplication to speedup, to sync with code in Wavetable.morphTo() for consistent behavior
+   wavetableIdx = clip(wavetableIdx, 0.0, real(Wavetable.getNbWavetables()));
+   wavetable1 = int(floor(wavetableIdx));
+   wavetable2 = wavetable1 + 1;
+   // loop morphing
+   if (wavetable2 >= Wavetable.getNbWavetables()) {
+      wavetable2 = 0;
+   }
+   // 100% back to first wavetable at max
+   if (wavetable1 >= Wavetable.getNbWavetables()) {
+      wavetable1 = 0;
+   }
+   wavetable_ratio = wavetableIdx % 1.0;
+}
+
 // reset both base phase and current phase, typically used upon new note. Also reset value used for feedback.
 and resetPhase() {
    phase = 0.0;
@@ -192,14 +240,17 @@ and default() @[init] {
    _ = setSamplerate(44.1);
    // default frequency (in kHz)
    _ = setFrequency(0.440);
+   // explicitly select pure sine as first wave
+   _ = setWavetable(0.0);
+   _ = setWavetablePhase(0.0);
 }
 
 // to let vult find above the good buffer size
-fun dummy(wavetable) {
+fun dummy() {
    val buff;
    Buffer.buffer(buff);
-   _ = process_bufferTo(wavetable, 0, buff, buff, buff, 0.0, false, buff);
-   _ = process_bufferTo_simple(wavetable, 0, buff, buff);
-   _ = process_bufferTo_feedback(wavetable, 0, buff, 0.0, buff);
-   _ = process_bufferTo_simplest(wavetable, 0, buff);
+   _ = process_bufferTo(0, buff, buff, buff, 0.0, false, buff);
+   _ = process_bufferTo_simple(0, buff, buff);
+   _ = process_bufferTo_feedback(0, buff, 0.0, buff);
+   _ = process_bufferTo_simplest(0, buff);
 }
