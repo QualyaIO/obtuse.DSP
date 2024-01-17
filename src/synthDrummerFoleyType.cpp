@@ -7,11 +7,11 @@ void synthDrummerFoleyType_DrummerWrapper_getSlicesStart(int (&_output_)[12]){
    {
       _array_1[0] = 0;
       _array_1[1] = 14900;
-      _array_1[2] = 60700;
-      _array_1[3] = 69100;
-      _array_1[4] = 83350;
-      _array_1[5] = 30100;
-      _array_1[6] = 49700;
+      _array_1[2] = 69100;
+      _array_1[3] = 83350;
+      _array_1[4] = 30100;
+      _array_1[5] = 49700;
+      _array_1[6] = 60700;
       _array_1[7] = 91100;
       _array_1[8] = 107700;
       _array_1[9] = 22150;
@@ -224,11 +224,11 @@ void synthDrummerFoleyType_Drummer_default(synthDrummerFoleyType_Drummer__ctx_ty
    {
       kit_slices_start[0] = 0;
       kit_slices_start[1] = 14900;
-      kit_slices_start[2] = 60700;
-      kit_slices_start[3] = 69100;
-      kit_slices_start[4] = 83350;
-      kit_slices_start[5] = 30100;
-      kit_slices_start[6] = 49700;
+      kit_slices_start[2] = 69100;
+      kit_slices_start[3] = 83350;
+      kit_slices_start[4] = 30100;
+      kit_slices_start[5] = 49700;
+      kit_slices_start[6] = 60700;
       kit_slices_start[7] = 91100;
       kit_slices_start[8] = 107700;
       kit_slices_start[9] = 22150;

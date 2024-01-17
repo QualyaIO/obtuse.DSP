@@ -23,18 +23,17 @@ fun getSlicesStart(): array(int, 12) {
           0,      // kick
           11500,  // higher kick
           83600,  // medium tom
-          78100,  // high tom
-          22000,  // snare
+          50400,  // high tom
           26000,  // rimshot
-          50400,  // conga
-          46550,  // lower clave
-          45600,  // clave
+          22000,  // snare
+          78100,  // low clave
+          46550,  // medium clave
+          45600,  // high clave
           49000,  // hi-hat
           61000,  // open hi-hat
           28800   // clap
           ];
 }
-  //return [0, 11500, 22000, 26000, 28800, 45600, 46550, 49000, 50400, 61000, 78100, 83600];
 
 // stop indices of each sample (inclusive)
 fun getSlicesEnd(): array(int, 12) {
@@ -42,12 +41,12 @@ fun getSlicesEnd(): array(int, 12) {
            10000,  // kick
            21500,  // higher kick
            107000, // medium tom
-           83500,  // high tom
-           25500,  // snare
+           60000,  // high tom
            28500,  // rimshot
-           60000,  // conga
-           46500,  // clave
-           48550,  // lower clave
+           25500,  // snare
+           83500,  // low clave
+           48550,  // medium clave
+           46500,  // high clave
            50100,  // hi-hat
            78000,  // open hi-hat
            45500   // clap

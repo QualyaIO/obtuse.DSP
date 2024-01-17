@@ -26,8 +26,8 @@ fun getSlicesStart(): array(int, 12) {
           14850, // high tom
           48000, // low snare
           57200, // high snare
-          85000, // low conga
-          94500, // high conga
+          94500, // low conga
+          85000, // high conga
           43900, // clave
           66600, // hi-hat
           68900, // open hi-hat
@@ -44,8 +44,8 @@ fun getSlicesEnd(): array(int, 12) {
           26800,  // high tom
           56900,  // low snare
           66000,  // high snare
-          94000,  // low conga
-          103500, // high conga
+          103500, // low conga
+          94000,  // high conga
           47950,  // clave
           68500,  // hi-hat
           72400,  // open hi-hat

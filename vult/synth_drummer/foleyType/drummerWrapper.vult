@@ -22,11 +22,11 @@ fun getSlicesStart(): array(int, 12) {
   return [
           0,      // kick
           14900,  // higher kick
-          60700,  // rimshot
           69100,  // tom
           83350,  // higher tom
           30100,  // snare
           49700,  // higher snare
+          60700,  // rimshot
           91100,  // clave
           107700, // higher clave
           22150,  // hi-hat
