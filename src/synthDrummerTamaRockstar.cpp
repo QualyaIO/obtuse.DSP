@@ -5,18 +5,18 @@
 void synthDrummerTamaRockstar_DrummerWrapper_getSlicesStart(int (&_output_)[12]){
    int _array_1[12];
    {
-      _array_1[0] = 0;
-      _array_1[1] = 3250;
-      _array_1[2] = 28000;
-      _array_1[3] = 31175;
-      _array_1[4] = 41306;
-      _array_1[5] = 48495;
-      _array_1[6] = 62018;
-      _array_1[7] = 65600;
-      _array_1[8] = 79848;
-      _array_1[9] = 82334;
-      _array_1[10] = 90270;
-      _array_1[11] = 92625;
+      _array_1[0] = 41306;
+      _array_1[1] = 48495;
+      _array_1[2] = 31175;
+      _array_1[3] = 82334;
+      _array_1[4] = 92625;
+      _array_1[5] = 90270;
+      _array_1[6] = 79848;
+      _array_1[7] = 62018;
+      _array_1[8] = 0;
+      _array_1[9] = 28000;
+      _array_1[10] = 65600;
+      _array_1[11] = 3250;
    }
    int_copy_array(12,_output_,_array_1);
    return ;
@@ -25,18 +25,18 @@ void synthDrummerTamaRockstar_DrummerWrapper_getSlicesStart(int (&_output_)[12])
 void synthDrummerTamaRockstar_DrummerWrapper_getSlicesEnd(int (&_output_)[12]){
    int _array_1[12];
    {
-      _array_1[0] = 3220;
-      _array_1[1] = 27700;
-      _array_1[2] = 31174;
-      _array_1[3] = 41304;
-      _array_1[4] = 48494;
-      _array_1[5] = 62017;
-      _array_1[6] = 65450;
-      _array_1[7] = 79847;
-      _array_1[8] = 82333;
-      _array_1[9] = 90257;
-      _array_1[10] = 92615;
-      _array_1[11] = 97290;
+      _array_1[0] = 48494;
+      _array_1[1] = 62017;
+      _array_1[2] = 41304;
+      _array_1[3] = 90257;
+      _array_1[4] = 97290;
+      _array_1[5] = 92615;
+      _array_1[6] = 82333;
+      _array_1[7] = 65450;
+      _array_1[8] = 3220;
+      _array_1[9] = 31174;
+      _array_1[10] = 79847;
+      _array_1[11] = 27700;
    }
    int_copy_array(12,_output_,_array_1);
    return ;
@@ -222,33 +222,33 @@ void synthDrummerTamaRockstar_Drummer_default(synthDrummerTamaRockstar_Drummer__
    synthDrummerTamaRockstar_Drummer_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    int kit_slices_start[12];
    {
-      kit_slices_start[0] = 0;
-      kit_slices_start[1] = 3250;
-      kit_slices_start[2] = 28000;
-      kit_slices_start[3] = 31175;
-      kit_slices_start[4] = 41306;
-      kit_slices_start[5] = 48495;
-      kit_slices_start[6] = 62018;
-      kit_slices_start[7] = 65600;
-      kit_slices_start[8] = 79848;
-      kit_slices_start[9] = 82334;
-      kit_slices_start[10] = 90270;
-      kit_slices_start[11] = 92625;
+      kit_slices_start[0] = 41306;
+      kit_slices_start[1] = 48495;
+      kit_slices_start[2] = 31175;
+      kit_slices_start[3] = 82334;
+      kit_slices_start[4] = 92625;
+      kit_slices_start[5] = 90270;
+      kit_slices_start[6] = 79848;
+      kit_slices_start[7] = 62018;
+      kit_slices_start[8] = 0;
+      kit_slices_start[9] = 28000;
+      kit_slices_start[10] = 65600;
+      kit_slices_start[11] = 3250;
    }
    int kit_slices_end[12];
    {
-      kit_slices_end[0] = 3220;
-      kit_slices_end[1] = 27700;
-      kit_slices_end[2] = 31174;
-      kit_slices_end[3] = 41304;
-      kit_slices_end[4] = 48494;
-      kit_slices_end[5] = 62017;
-      kit_slices_end[6] = 65450;
-      kit_slices_end[7] = 79847;
-      kit_slices_end[8] = 82333;
-      kit_slices_end[9] = 90257;
-      kit_slices_end[10] = 92615;
-      kit_slices_end[11] = 97290;
+      kit_slices_end[0] = 48494;
+      kit_slices_end[1] = 62017;
+      kit_slices_end[2] = 41304;
+      kit_slices_end[3] = 90257;
+      kit_slices_end[4] = 97290;
+      kit_slices_end[5] = 92615;
+      kit_slices_end[6] = 82333;
+      kit_slices_end[7] = 65450;
+      kit_slices_end[8] = 3220;
+      kit_slices_end[9] = 31174;
+      kit_slices_end[10] = 79847;
+      kit_slices_end[11] = 27700;
    }
    synthDrummerTamaRockstar_Drummer_setSlices(_ctx,kit_slices_start,kit_slices_end);
    synthDrummerTamaRockstar_Buffer_buffer(_ctx.buffer_o);

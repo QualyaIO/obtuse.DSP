@@ -5,18 +5,18 @@
 void synthDrummerBbox_DrummerWrapper_getSlicesStart(int (&_output_)[12]){
    int _array_1[12];
    {
-      _array_1[0] = 0;
-      _array_1[1] = 3000;
+      _array_1[0] = 3000;
+      _array_1[1] = 63270;
       _array_1[2] = 11260;
-      _array_1[3] = 22200;
-      _array_1[4] = 29400;
-      _array_1[5] = 38250;
-      _array_1[6] = 47700;
-      _array_1[7] = 51500;
-      _array_1[8] = 55300;
-      _array_1[9] = 63270;
-      _array_1[10] = 72470;
-      _array_1[11] = 79210;
+      _array_1[3] = 38250;
+      _array_1[4] = 72470;
+      _array_1[5] = 79210;
+      _array_1[6] = 0;
+      _array_1[7] = 47700;
+      _array_1[8] = 22200;
+      _array_1[9] = 51500;
+      _array_1[10] = 55300;
+      _array_1[11] = 29400;
    }
    int_copy_array(12,_output_,_array_1);
    return ;
@@ -25,18 +25,18 @@ void synthDrummerBbox_DrummerWrapper_getSlicesStart(int (&_output_)[12]){
 void synthDrummerBbox_DrummerWrapper_getSlicesEnd(int (&_output_)[12]){
    int _array_1[12];
    {
-      _array_1[0] = 2750;
-      _array_1[1] = 11150;
+      _array_1[0] = 11150;
+      _array_1[1] = 72465;
       _array_1[2] = 22000;
-      _array_1[3] = 29100;
-      _array_1[4] = 38100;
-      _array_1[5] = 47000;
-      _array_1[6] = 51300;
-      _array_1[7] = 55100;
-      _array_1[8] = 63256;
-      _array_1[9] = 72465;
-      _array_1[10] = 79200;
-      _array_1[11] = 86200;
+      _array_1[3] = 47000;
+      _array_1[4] = 79200;
+      _array_1[5] = 86200;
+      _array_1[6] = 2750;
+      _array_1[7] = 51300;
+      _array_1[8] = 29100;
+      _array_1[9] = 55100;
+      _array_1[10] = 63256;
+      _array_1[11] = 38100;
    }
    int_copy_array(12,_output_,_array_1);
    return ;
@@ -222,33 +222,33 @@ void synthDrummerBbox_Drummer_default(synthDrummerBbox_Drummer__ctx_type_0 &_ctx
    synthDrummerBbox_Drummer_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    int kit_slices_start[12];
    {
-      kit_slices_start[0] = 0;
-      kit_slices_start[1] = 3000;
+      kit_slices_start[0] = 3000;
+      kit_slices_start[1] = 63270;
       kit_slices_start[2] = 11260;
-      kit_slices_start[3] = 22200;
-      kit_slices_start[4] = 29400;
-      kit_slices_start[5] = 38250;
-      kit_slices_start[6] = 47700;
-      kit_slices_start[7] = 51500;
-      kit_slices_start[8] = 55300;
-      kit_slices_start[9] = 63270;
-      kit_slices_start[10] = 72470;
-      kit_slices_start[11] = 79210;
+      kit_slices_start[3] = 38250;
+      kit_slices_start[4] = 72470;
+      kit_slices_start[5] = 79210;
+      kit_slices_start[6] = 0;
+      kit_slices_start[7] = 47700;
+      kit_slices_start[8] = 22200;
+      kit_slices_start[9] = 51500;
+      kit_slices_start[10] = 55300;
+      kit_slices_start[11] = 29400;
    }
    int kit_slices_end[12];
    {
-      kit_slices_end[0] = 2750;
-      kit_slices_end[1] = 11150;
+      kit_slices_end[0] = 11150;
+      kit_slices_end[1] = 72465;
       kit_slices_end[2] = 22000;
-      kit_slices_end[3] = 29100;
-      kit_slices_end[4] = 38100;
-      kit_slices_end[5] = 47000;
-      kit_slices_end[6] = 51300;
-      kit_slices_end[7] = 55100;
-      kit_slices_end[8] = 63256;
-      kit_slices_end[9] = 72465;
-      kit_slices_end[10] = 79200;
-      kit_slices_end[11] = 86200;
+      kit_slices_end[3] = 47000;
+      kit_slices_end[4] = 79200;
+      kit_slices_end[5] = 86200;
+      kit_slices_end[6] = 2750;
+      kit_slices_end[7] = 51300;
+      kit_slices_end[8] = 29100;
+      kit_slices_end[9] = 55100;
+      kit_slices_end[10] = 63256;
+      kit_slices_end[11] = 38100;
    }
    synthDrummerBbox_Drummer_setSlices(_ctx,kit_slices_start,kit_slices_end);
    synthDrummerBbox_Buffer_buffer(_ctx.buffer_o);

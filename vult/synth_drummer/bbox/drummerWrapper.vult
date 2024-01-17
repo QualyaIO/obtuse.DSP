@@ -19,10 +19,36 @@ fun getSampleFs(): real {
 
 // start indices of each sample (inclusive)
 fun getSlicesStart(): array(int, 12) {
-  return [0, 3000, 11260, 22200, 29400, 38250, 47700, 51500, 55300, 63270, 72470, 79210];
+  return [
+          3000,   // kick
+          63270,  // real kick
+          11260,  // lower tom
+          38250,  // tom
+          72470,  // real tom
+          79210,  // real higher tom
+          0,      // snare
+          47700,  // higher snare
+          22200,  // rimshot
+          51500,  // hi-hat
+          55300,  // open hi-hat
+          29400   // cymbal
+          ];
 }
 
 // stop indices of each sample (inclusive)
 fun getSlicesEnd(): array(int, 12) {
-  return [2750, 11150, 22000, 29100, 38100, 47000, 51300, 55100, 63256, 72465, 79200, 86200];
+  return [
+          11150, // kick
+          72465, // real kick
+          22000, // lower tom
+          47000, // tom
+          79200, // real tom
+          86200, // real higher tom
+          2750,  // snare
+          51300, // higher snare
+          29100, // rimshot
+          55100, // hi-hat
+          63256, // open hi-hat
+          38100  // cymbal
+          ];
 }
