@@ -105,7 +105,7 @@ fix16_t synthDrummerBbox_Drummer_process(synthDrummerBbox_Drummer__ctx_type_0 &_
       }
       int idx;
       idx = (_ctx.posBase + fix_to_int(_ctx.pos));
-      if((idx >= _ctx.size) || (idx >= _ctx.slices_end[_ctx.slice])){
+      if((idx >= ((-1) + _ctx.size)) || (idx >= ((-1) + _ctx.slices_end[_ctx.slice]))){
          _ctx.slice = (-1);
          _ctx.posBase = 0;
          _ctx.pos = 0x0 /* 0.000000 */;
@@ -146,7 +146,7 @@ void synthDrummerBbox_Drummer_process_bufferTo(synthDrummerBbox_Drummer__ctx_typ
          }
          int idx;
          idx = (_ctx.posBase + fix_to_int(_ctx.pos));
-         if((idx >= _ctx.size) || (idx >= _ctx.slices_end[_ctx.slice])){
+         if((idx >= ((-1) + _ctx.size)) || (idx >= ((-1) + _ctx.slices_end[_ctx.slice]))){
             _ctx.slice = (-1);
             _ctx.posBase = 0;
             _ctx.pos = 0x0 /* 0.000000 */;

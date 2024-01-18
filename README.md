@@ -29,7 +29,9 @@ WARNING: Be wary where the struct are initialized to avoid problem with stack si
 - voice: add method to set decimation factor for FM
 - combFF, combFB, allpass: reduce artifacts when changing delay
 - adding FMalt and OSCalt, with on-the-fly wavetables -- CPU over memory
-- [BREAKING] drums: re-order samples to be more consistent
+- [BREAKING] drummer: re-order samples to be more consistent
+- sampler, drummer: fix out-of-bound of one sample
+- [BREAKING] sampler: set loop points for some samples
 
 ## v0.1.0 (2023-08-12)
 

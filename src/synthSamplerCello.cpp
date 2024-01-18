@@ -158,7 +158,7 @@ fix16_t synthSamplerCello_Sampler_process(synthSamplerCello_Sampler__ctx_type_0 
       }
       int idx;
       idx = (_ctx.posBase + fix_to_int(_ctx.pos));
-      if(idx >= _ctx.size){
+      if(idx >= ((-1) + _ctx.size)){
          _ctx.state = 0;
          _ctx.posBase = 0;
          _ctx.pos = 0x0 /* 0.000000 */;
@@ -234,7 +234,7 @@ void synthSamplerCello_Sampler_process_bufferTo(synthSamplerCello_Sampler__ctx_t
             _ctx.pos = (-0x4000000 /* -1024.000000 */ + _ctx.pos);
          }
          idx = (_ctx.posBase + fix_to_int(_ctx.pos));
-         if(idx > _ctx.size){
+         if(idx >= ((-1) + _ctx.size)){
             _ctx.state = 0;
             _ctx.posBase = 0;
             _ctx.pos = 0x0 /* 0.000000 */;
@@ -393,11 +393,11 @@ void synthSamplerCello_Sampler_default(synthSamplerCello_Sampler__ctx_type_0 &_c
    _ctx.crossfade = false;
    _ctx.sampleFs = 0x1e0000 /* 30.000000 */;
    _ctx.sampleNote = 60;
-   if(false){
+   if(true){
       int lS;
-      lS = (-1);
+      lS = 36744;
       int lE;
-      lE = (-1);
+      lE = 37317;
       if((lS >= 0) && (lE < _ctx.size) && (lE >= lS)){
          synthSamplerCello_Sampler_setLoop(_ctx,true);
          synthSamplerCello_Sampler_setLoopStart(_ctx,lS);

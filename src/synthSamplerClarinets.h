@@ -139,15 +139,15 @@ static_inline int synthSamplerClarinets_SampleWrapper_getSampleNote(){
 };
 
 static_inline uint8_t synthSamplerClarinets_SampleWrapper_isSampleLoop(){
-   return false;
+   return true;
 };
 
 static_inline int synthSamplerClarinets_SampleWrapper_getSampleLoopStart(){
-   return (-1);
+   return 15401;
 };
 
 static_inline int synthSamplerClarinets_SampleWrapper_getSampleLoopEnd(){
-   return (-1);
+   return 15630;
 };
 
 typedef struct synthSamplerClarinets_Notes__ctx_type_0 {

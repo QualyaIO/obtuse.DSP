@@ -158,7 +158,7 @@ fix16_t synthSamplerClarinets_Sampler_process(synthSamplerClarinets_Sampler__ctx
       }
       int idx;
       idx = (_ctx.posBase + fix_to_int(_ctx.pos));
-      if(idx >= _ctx.size){
+      if(idx >= ((-1) + _ctx.size)){
          _ctx.state = 0;
          _ctx.posBase = 0;
          _ctx.pos = 0x0 /* 0.000000 */;
@@ -234,7 +234,7 @@ void synthSamplerClarinets_Sampler_process_bufferTo(synthSamplerClarinets_Sample
             _ctx.pos = (-0x4000000 /* -1024.000000 */ + _ctx.pos);
          }
          idx = (_ctx.posBase + fix_to_int(_ctx.pos));
-         if(idx > _ctx.size){
+         if(idx >= ((-1) + _ctx.size)){
             _ctx.state = 0;
             _ctx.posBase = 0;
             _ctx.pos = 0x0 /* 0.000000 */;
@@ -393,11 +393,11 @@ void synthSamplerClarinets_Sampler_default(synthSamplerClarinets_Sampler__ctx_ty
    _ctx.crossfade = false;
    _ctx.sampleFs = 0x1e0000 /* 30.000000 */;
    _ctx.sampleNote = 60;
-   if(false){
+   if(true){
       int lS;
-      lS = (-1);
+      lS = 15401;
       int lE;
-      lE = (-1);
+      lE = 15630;
       if((lS >= 0) && (lE < _ctx.size) && (lE >= lS)){
          synthSamplerClarinets_Sampler_setLoop(_ctx,true);
          synthSamplerClarinets_Sampler_setLoopStart(_ctx,lS);

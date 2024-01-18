@@ -139,15 +139,15 @@ static_inline int synthSamplerCello_SampleWrapper_getSampleNote(){
 };
 
 static_inline uint8_t synthSamplerCello_SampleWrapper_isSampleLoop(){
-   return false;
+   return true;
 };
 
 static_inline int synthSamplerCello_SampleWrapper_getSampleLoopStart(){
-   return (-1);
+   return 36744;
 };
 
 static_inline int synthSamplerCello_SampleWrapper_getSampleLoopEnd(){
-   return (-1);
+   return 37317;
 };
 
 typedef struct synthSamplerCello_Notes__ctx_type_0 {

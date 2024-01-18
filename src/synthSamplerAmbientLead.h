@@ -139,15 +139,15 @@ static_inline int synthSamplerAmbientLead_SampleWrapper_getSampleNote(){
 };
 
 static_inline uint8_t synthSamplerAmbientLead_SampleWrapper_isSampleLoop(){
-   return false;
+   return true;
 };
 
 static_inline int synthSamplerAmbientLead_SampleWrapper_getSampleLoopStart(){
-   return (-1);
+   return 13127;
 };
 
 static_inline int synthSamplerAmbientLead_SampleWrapper_getSampleLoopEnd(){
-   return (-1);
+   return 13585;
 };
 
 typedef struct synthSamplerAmbientLead_Notes__ctx_type_0 {
