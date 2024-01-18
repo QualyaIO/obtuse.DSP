@@ -88,8 +88,8 @@ and process() {
     }
     val idx = posBase + int(pos);
 
-    // will stop and reset note once reach the end
-    if (idx >= size) {
+    // will stop and reset note once reach the end -- one sample early due to interpolation
+    if (idx >= size - 1) {
       state = 0;
       posBase = 0;
       pos = 0.0;
@@ -176,8 +176,8 @@ and process_bufferTo(nb: int, oBuffer) {
       }
       idx = posBase + int(pos);
   
-      // will stop and reset note once reach the end
-      if (idx > size) {
+      // will stop and reset note once reach the end -- one sample early due to interpolation
+      if (idx >= size - 1) {
         state = 0;
         posBase = 0;
         pos = 0.0;

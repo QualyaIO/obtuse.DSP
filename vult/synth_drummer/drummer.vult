@@ -87,8 +87,8 @@ and process() {
     }
 
     val idx = posBase + int(pos);
-    // will stop and reset note once reach the end of file or end of sample
-    if (idx >= size || idx >= slices_end[slice]) {
+    // will stop and reset note once reach the end of file or end of sample -- one sample early due to interpolation
+    if (idx >= size - 1 || idx >= slices_end[slice] - 1) {
       slice = -1;
       posBase = 0;
       pos = 0.0;
@@ -140,8 +140,8 @@ and process_bufferTo(nb: int, oBuffer) {
       }
   
       val idx = posBase + int(pos);
-      // will stop and reset note once reach the end of file or end of sample
-      if (idx >= size || idx >= slices_end[slice]) {
+      // will stop and reset note once reach the end of file or end of sample -- one sample early due to interpolation
+      if (idx >= size - 1 || idx >= slices_end[slice] - 1) {
         slice = -1;
         posBase = 0;
         pos = 0.0;
