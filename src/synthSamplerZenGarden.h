@@ -139,15 +139,15 @@ static_inline int synthSamplerZenGarden_SampleWrapper_getSampleNote(){
 };
 
 static_inline uint8_t synthSamplerZenGarden_SampleWrapper_isSampleLoop(){
-   return false;
+   return true;
 };
 
 static_inline int synthSamplerZenGarden_SampleWrapper_getSampleLoopStart(){
-   return (-1);
+   return 7507;
 };
 
 static_inline int synthSamplerZenGarden_SampleWrapper_getSampleLoopEnd(){
-   return (-1);
+   return 20620;
 };
 
 typedef struct synthSamplerZenGarden_Notes__ctx_type_0 {

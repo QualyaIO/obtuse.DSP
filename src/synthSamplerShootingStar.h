@@ -139,15 +139,15 @@ static_inline int synthSamplerShootingStar_SampleWrapper_getSampleNote(){
 };
 
 static_inline uint8_t synthSamplerShootingStar_SampleWrapper_isSampleLoop(){
-   return false;
+   return true;
 };
 
 static_inline int synthSamplerShootingStar_SampleWrapper_getSampleLoopStart(){
-   return (-1);
+   return 7779;
 };
 
 static_inline int synthSamplerShootingStar_SampleWrapper_getSampleLoopEnd(){
-   return (-1);
+   return 8236;
 };
 
 typedef struct synthSamplerShootingStar_Notes__ctx_type_0 {

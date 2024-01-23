@@ -139,15 +139,15 @@ static_inline int synthSamplerVocalCluster_SampleWrapper_getSampleNote(){
 };
 
 static_inline uint8_t synthSamplerVocalCluster_SampleWrapper_isSampleLoop(){
-   return false;
+   return true;
 };
 
 static_inline int synthSamplerVocalCluster_SampleWrapper_getSampleLoopStart(){
-   return (-1);
+   return 17243;
 };
 
 static_inline int synthSamplerVocalCluster_SampleWrapper_getSampleLoopEnd(){
-   return (-1);
+   return 39496;
 };
 
 typedef struct synthSamplerVocalCluster_Notes__ctx_type_0 {

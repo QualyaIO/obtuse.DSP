@@ -393,11 +393,11 @@ void synthSamplerClassicSuitcaseMk1_Sampler_default(synthSamplerClassicSuitcaseM
    _ctx.crossfade = false;
    _ctx.sampleFs = 0x1e0000 /* 30.000000 */;
    _ctx.sampleNote = 60;
-   if(false){
+   if(true){
       int lS;
-      lS = (-1);
+      lS = 7691;
       int lE;
-      lE = (-1);
+      lE = 8263;
       if((lS >= 0) && (lE < _ctx.size) && (lE >= lS)){
          synthSamplerClassicSuitcaseMk1_Sampler_setLoop(_ctx,true);
          synthSamplerClassicSuitcaseMk1_Sampler_setLoopStart(_ctx,lS);

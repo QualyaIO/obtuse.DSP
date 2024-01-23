@@ -393,11 +393,11 @@ void synthSamplerTranquility_Sampler_default(synthSamplerTranquility_Sampler__ct
    _ctx.crossfade = false;
    _ctx.sampleFs = 0x1e0000 /* 30.000000 */;
    _ctx.sampleNote = 60;
-   if(false){
+   if(true){
       int lS;
-      lS = (-1);
+      lS = 17092;
       int lE;
-      lE = (-1);
+      lE = 53680;
       if((lS >= 0) && (lE < _ctx.size) && (lE >= lS)){
          synthSamplerTranquility_Sampler_setLoop(_ctx,true);
          synthSamplerTranquility_Sampler_setLoopStart(_ctx,lS);

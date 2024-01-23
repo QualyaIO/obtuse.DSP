@@ -139,15 +139,15 @@ static_inline int synthSamplerJapaneseShakuhachiFlute_SampleWrapper_getSampleNot
 };
 
 static_inline uint8_t synthSamplerJapaneseShakuhachiFlute_SampleWrapper_isSampleLoop(){
-   return false;
+   return true;
 };
 
 static_inline int synthSamplerJapaneseShakuhachiFlute_SampleWrapper_getSampleLoopStart(){
-   return (-1);
+   return 16756;
 };
 
 static_inline int synthSamplerJapaneseShakuhachiFlute_SampleWrapper_getSampleLoopEnd(){
-   return (-1);
+   return 29843;
 };
 
 typedef struct synthSamplerJapaneseShakuhachiFlute_Notes__ctx_type_0 {

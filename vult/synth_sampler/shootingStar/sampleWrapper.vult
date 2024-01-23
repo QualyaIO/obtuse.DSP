@@ -25,14 +25,14 @@ fun getSampleNote(): int {
 // if looping should be enabled
 
 fun isSampleLoop(): bool {
-  return false;
+  return true;
 }
 
 // start and end shoul be within size
 fun getSampleLoopStart(): int {
-  return -1;
+  return 7779;
 }
 
 fun getSampleLoopEnd(): int {
-  return -1;
+  return 8236;
 }

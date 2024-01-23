@@ -393,11 +393,11 @@ void synthSamplerPulsingPatterns_Sampler_default(synthSamplerPulsingPatterns_Sam
    _ctx.crossfade = false;
    _ctx.sampleFs = 0x1e0000 /* 30.000000 */;
    _ctx.sampleNote = 60;
-   if(false){
+   if(true){
       int lS;
-      lS = (-1);
+      lS = 7488;
       int lE;
-      lE = (-1);
+      lE = 51621;
       if((lS >= 0) && (lE < _ctx.size) && (lE >= lS)){
          synthSamplerPulsingPatterns_Sampler_setLoop(_ctx,true);
          synthSamplerPulsingPatterns_Sampler_setLoopStart(_ctx,lS);

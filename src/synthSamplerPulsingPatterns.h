@@ -139,15 +139,15 @@ static_inline int synthSamplerPulsingPatterns_SampleWrapper_getSampleNote(){
 };
 
 static_inline uint8_t synthSamplerPulsingPatterns_SampleWrapper_isSampleLoop(){
-   return false;
+   return true;
 };
 
 static_inline int synthSamplerPulsingPatterns_SampleWrapper_getSampleLoopStart(){
-   return (-1);
+   return 7488;
 };
 
 static_inline int synthSamplerPulsingPatterns_SampleWrapper_getSampleLoopEnd(){
-   return (-1);
+   return 51621;
 };
 
 typedef struct synthSamplerPulsingPatterns_Notes__ctx_type_0 {

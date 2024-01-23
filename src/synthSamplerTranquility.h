@@ -139,15 +139,15 @@ static_inline int synthSamplerTranquility_SampleWrapper_getSampleNote(){
 };
 
 static_inline uint8_t synthSamplerTranquility_SampleWrapper_isSampleLoop(){
-   return false;
+   return true;
 };
 
 static_inline int synthSamplerTranquility_SampleWrapper_getSampleLoopStart(){
-   return (-1);
+   return 17092;
 };
 
 static_inline int synthSamplerTranquility_SampleWrapper_getSampleLoopEnd(){
-   return (-1);
+   return 53680;
 };
 
 typedef struct synthSamplerTranquility_Notes__ctx_type_0 {

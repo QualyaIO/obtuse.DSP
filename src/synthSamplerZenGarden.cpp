@@ -393,11 +393,11 @@ void synthSamplerZenGarden_Sampler_default(synthSamplerZenGarden_Sampler__ctx_ty
    _ctx.crossfade = false;
    _ctx.sampleFs = 0x1e0000 /* 30.000000 */;
    _ctx.sampleNote = 60;
-   if(false){
+   if(true){
       int lS;
-      lS = (-1);
+      lS = 7507;
       int lE;
-      lE = (-1);
+      lE = 20620;
       if((lS >= 0) && (lE < _ctx.size) && (lE >= lS)){
          synthSamplerZenGarden_Sampler_setLoop(_ctx,true);
          synthSamplerZenGarden_Sampler_setLoopStart(_ctx,lS);

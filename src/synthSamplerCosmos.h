@@ -139,15 +139,15 @@ static_inline int synthSamplerCosmos_SampleWrapper_getSampleNote(){
 };
 
 static_inline uint8_t synthSamplerCosmos_SampleWrapper_isSampleLoop(){
-   return false;
+   return true;
 };
 
 static_inline int synthSamplerCosmos_SampleWrapper_getSampleLoopStart(){
-   return (-1);
+   return 22228;
 };
 
 static_inline int synthSamplerCosmos_SampleWrapper_getSampleLoopEnd(){
-   return (-1);
+   return 75633;
 };
 
 typedef struct synthSamplerCosmos_Notes__ctx_type_0 {

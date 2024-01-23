@@ -393,11 +393,11 @@ void synthSamplerTimeWarp_Sampler_default(synthSamplerTimeWarp_Sampler__ctx_type
    _ctx.crossfade = false;
    _ctx.sampleFs = 0x1e0000 /* 30.000000 */;
    _ctx.sampleNote = 60;
-   if(false){
+   if(true){
       int lS;
-      lS = (-1);
+      lS = 1404;
       int lE;
-      lE = (-1);
+      lE = 1518;
       if((lS >= 0) && (lE < _ctx.size) && (lE >= lS)){
          synthSamplerTimeWarp_Sampler_setLoop(_ctx,true);
          synthSamplerTimeWarp_Sampler_setLoopStart(_ctx,lS);

@@ -393,11 +393,11 @@ void synthSamplerCosmos_Sampler_default(synthSamplerCosmos_Sampler__ctx_type_0 &
    _ctx.crossfade = false;
    _ctx.sampleFs = 0x1e0000 /* 30.000000 */;
    _ctx.sampleNote = 60;
-   if(false){
+   if(true){
       int lS;
-      lS = (-1);
+      lS = 22228;
       int lE;
-      lE = (-1);
+      lE = 75633;
       if((lS >= 0) && (lE < _ctx.size) && (lE >= lS)){
          synthSamplerCosmos_Sampler_setLoop(_ctx,true);
          synthSamplerCosmos_Sampler_setLoopStart(_ctx,lS);

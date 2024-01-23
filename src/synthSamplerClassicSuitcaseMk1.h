@@ -139,15 +139,15 @@ static_inline int synthSamplerClassicSuitcaseMk1_SampleWrapper_getSampleNote(){
 };
 
 static_inline uint8_t synthSamplerClassicSuitcaseMk1_SampleWrapper_isSampleLoop(){
-   return false;
+   return true;
 };
 
 static_inline int synthSamplerClassicSuitcaseMk1_SampleWrapper_getSampleLoopStart(){
-   return (-1);
+   return 7691;
 };
 
 static_inline int synthSamplerClassicSuitcaseMk1_SampleWrapper_getSampleLoopEnd(){
-   return (-1);
+   return 8263;
 };
 
 typedef struct synthSamplerClassicSuitcaseMk1_Notes__ctx_type_0 {
