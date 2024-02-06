@@ -225,39 +225,39 @@ static_inline void utils_Gate_default(utils_Gate__ctx_type_2 &_ctx){
    utils_Gate_setDuration(_ctx,0x3333 /* 0.200000 */);
 };
 
-static_inline fix16_t utils_Tonnetz_logBase_raw_c0(int index){
-   return utils_Tonnetz_logBase_c0[index];
+static_inline fix16_t utils_Chord_logBase_raw_c0(int index){
+   return utils_Chord_logBase_c0[index];
 };
 
-static_inline fix16_t utils_Tonnetz_logBase_raw_c1(int index){
-   return utils_Tonnetz_logBase_c1[index];
+static_inline fix16_t utils_Chord_logBase_raw_c1(int index){
+   return utils_Chord_logBase_c1[index];
 };
 
-static_inline fix16_t utils_Tonnetz_logBase_raw_c2(int index){
-   return utils_Tonnetz_logBase_c2[index];
+static_inline fix16_t utils_Chord_logBase_raw_c2(int index){
+   return utils_Chord_logBase_c2[index];
 };
 
-static_inline fix16_t utils_Tonnetz_logBase(fix16_t x){
+static_inline fix16_t utils_Chord_logBase(fix16_t x){
    int index;
    index = int_clip(fix_to_int(fix_mul(0x21ec5 /* 2.120200 */,(-0x1999 /* -0.100000 */ + x))),0,127);
-   return (fix_wrap_array(utils_Tonnetz_logBase_c0)[index] + fix_mul(x,(fix_wrap_array(utils_Tonnetz_logBase_c1)[index] + fix_mul(x,fix_wrap_array(utils_Tonnetz_logBase_c2)[index]))));
+   return (fix_wrap_array(utils_Chord_logBase_c0)[index] + fix_mul(x,(fix_wrap_array(utils_Chord_logBase_c1)[index] + fix_mul(x,fix_wrap_array(utils_Chord_logBase_c2)[index]))));
 }
 
-static_inline fix16_t utils_Tonnetz_spow(fix16_t base, fix16_t x){
-   return fix_exp(fix_mul(x,utils_Tonnetz_logBase(base)));
+static_inline fix16_t utils_Chord_spow(fix16_t base, fix16_t x){
+   return fix_exp(fix_mul(x,utils_Chord_logBase(base)));
 };
 
-static_inline fix16_t utils_Tonnetz_beta(fix16_t x, fix16_t b){
-   return fix_clip((0x10000 /* 1.000000 */ + (- utils_Tonnetz_spow((0x10000 /* 1.000000 */ + (- x)),b))),0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
+static_inline fix16_t utils_Chord_beta(fix16_t x, fix16_t b){
+   return fix_clip((0x10000 /* 1.000000 */ + (- utils_Chord_spow((0x10000 /* 1.000000 */ + (- x)),b))),0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
 };
 
-void utils_Tonnetz_getScale(int id, uint8_t (&_output_)[12]);
+void utils_Chord_getScale(int id, uint8_t (&_output_)[12]);
 
-void utils_Tonnetz_getChord(int chord, int (&_output_)[3]);
+void utils_Chord_getChord(int chord, int (&_output_)[3]);
 
-void utils_Tonnetz_getChordInversion(int chord, int inversion, int (&_output_)[3]);
+void utils_Chord_getChordInversion(int chord, int inversion, int (&_output_)[3]);
 
-typedef struct utils_Tonnetz__ctx_type_8 {
+typedef struct utils_Chord__ctx_type_8 {
    int shifts[11];
    int shift;
    int scaleId;
@@ -272,230 +272,230 @@ typedef struct utils_Tonnetz__ctx_type_8 {
    fix16_t chords[6];
    fix16_t chordSpread;
    int chord;
-} utils_Tonnetz__ctx_type_8;
+} utils_Chord__ctx_type_8;
 
-typedef utils_Tonnetz__ctx_type_8 utils_Tonnetz_isChordInShift_type;
+typedef utils_Chord__ctx_type_8 utils_Chord_isChordInShift_type;
 
-void utils_Tonnetz__ctx_type_8_init(utils_Tonnetz__ctx_type_8 &_output_);
+void utils_Chord__ctx_type_8_init(utils_Chord__ctx_type_8 &_output_);
 
-static_inline void utils_Tonnetz_isChordInShift_init(utils_Tonnetz__ctx_type_8 &_output_){
-   utils_Tonnetz__ctx_type_8_init(_output_);
+static_inline void utils_Chord_isChordInShift_init(utils_Chord__ctx_type_8 &_output_){
+   utils_Chord__ctx_type_8_init(_output_);
    return ;
 }
 
-uint8_t utils_Tonnetz_isChordInShift(utils_Tonnetz__ctx_type_8 &_ctx, int checkChord, int checkShift);
+uint8_t utils_Chord_isChordInShift(utils_Chord__ctx_type_8 &_ctx, int checkChord, int checkShift);
 
-typedef utils_Tonnetz__ctx_type_8 utils_Tonnetz_drawChord_type;
+typedef utils_Chord__ctx_type_8 utils_Chord_drawChord_type;
 
-static_inline void utils_Tonnetz_drawChord_init(utils_Tonnetz__ctx_type_8 &_output_){
-   utils_Tonnetz__ctx_type_8_init(_output_);
+static_inline void utils_Chord_drawChord_init(utils_Chord__ctx_type_8 &_output_){
+   utils_Chord__ctx_type_8_init(_output_);
    return ;
 }
 
-int utils_Tonnetz_drawChord(utils_Tonnetz__ctx_type_8 &_ctx, uint8_t lookAround);
+int utils_Chord_drawChord(utils_Chord__ctx_type_8 &_ctx, uint8_t lookAround);
 
-typedef utils_Tonnetz__ctx_type_8 utils_Tonnetz_drawInversion_type;
+typedef utils_Chord__ctx_type_8 utils_Chord_drawInversion_type;
 
-static_inline void utils_Tonnetz_drawInversion_init(utils_Tonnetz__ctx_type_8 &_output_){
-   utils_Tonnetz__ctx_type_8_init(_output_);
+static_inline void utils_Chord_drawInversion_init(utils_Chord__ctx_type_8 &_output_){
+   utils_Chord__ctx_type_8_init(_output_);
    return ;
 }
 
-int utils_Tonnetz_drawInversion(utils_Tonnetz__ctx_type_8 &_ctx);
+int utils_Chord_drawInversion(utils_Chord__ctx_type_8 &_ctx);
 
-typedef utils_Tonnetz__ctx_type_8 utils_Tonnetz_process_type;
+typedef utils_Chord__ctx_type_8 utils_Chord_process_type;
 
-static_inline void utils_Tonnetz_process_init(utils_Tonnetz__ctx_type_8 &_output_){
-   utils_Tonnetz__ctx_type_8_init(_output_);
+static_inline void utils_Chord_process_init(utils_Chord__ctx_type_8 &_output_){
+   utils_Chord__ctx_type_8_init(_output_);
    return ;
 }
 
-void utils_Tonnetz_process(utils_Tonnetz__ctx_type_8 &_ctx);
+void utils_Chord_process(utils_Chord__ctx_type_8 &_ctx);
 
-typedef utils_Tonnetz__ctx_type_8 utils_Tonnetz_process_ret_0_type;
+typedef utils_Chord__ctx_type_8 utils_Chord_process_ret_0_type;
 
-static_inline void utils_Tonnetz_process_ret_0_init(utils_Tonnetz__ctx_type_8 &_output_){
-   utils_Tonnetz__ctx_type_8_init(_output_);
+static_inline void utils_Chord_process_ret_0_init(utils_Chord__ctx_type_8 &_output_){
+   utils_Chord__ctx_type_8_init(_output_);
    return ;
 }
 
-static_inline int utils_Tonnetz_process_ret_0(utils_Tonnetz__ctx_type_8 &_ctx){
+static_inline int utils_Chord_process_ret_0(utils_Chord__ctx_type_8 &_ctx){
    return _ctx.process_ret_0;
 };
 
-typedef utils_Tonnetz__ctx_type_8 utils_Tonnetz_process_ret_1_type;
+typedef utils_Chord__ctx_type_8 utils_Chord_process_ret_1_type;
 
-static_inline void utils_Tonnetz_process_ret_1_init(utils_Tonnetz__ctx_type_8 &_output_){
-   utils_Tonnetz__ctx_type_8_init(_output_);
+static_inline void utils_Chord_process_ret_1_init(utils_Chord__ctx_type_8 &_output_){
+   utils_Chord__ctx_type_8_init(_output_);
    return ;
 }
 
-static_inline int utils_Tonnetz_process_ret_1(utils_Tonnetz__ctx_type_8 &_ctx){
+static_inline int utils_Chord_process_ret_1(utils_Chord__ctx_type_8 &_ctx){
    return _ctx.process_ret_1;
 };
 
-typedef utils_Tonnetz__ctx_type_8 utils_Tonnetz_process_ret_2_type;
+typedef utils_Chord__ctx_type_8 utils_Chord_process_ret_2_type;
 
-static_inline void utils_Tonnetz_process_ret_2_init(utils_Tonnetz__ctx_type_8 &_output_){
-   utils_Tonnetz__ctx_type_8_init(_output_);
+static_inline void utils_Chord_process_ret_2_init(utils_Chord__ctx_type_8 &_output_){
+   utils_Chord__ctx_type_8_init(_output_);
    return ;
 }
 
-static_inline int utils_Tonnetz_process_ret_2(utils_Tonnetz__ctx_type_8 &_ctx){
+static_inline int utils_Chord_process_ret_2(utils_Chord__ctx_type_8 &_ctx){
    return _ctx.process_ret_2;
 };
 
-typedef utils_Tonnetz__ctx_type_8 utils_Tonnetz_reset_type;
+typedef utils_Chord__ctx_type_8 utils_Chord_reset_type;
 
-static_inline void utils_Tonnetz_reset_init(utils_Tonnetz__ctx_type_8 &_output_){
-   utils_Tonnetz__ctx_type_8_init(_output_);
+static_inline void utils_Chord_reset_init(utils_Chord__ctx_type_8 &_output_){
+   utils_Chord__ctx_type_8_init(_output_);
    return ;
 }
 
-void utils_Tonnetz_reset(utils_Tonnetz__ctx_type_8 &_ctx);
+void utils_Chord_reset(utils_Chord__ctx_type_8 &_ctx);
 
-typedef utils_Tonnetz__ctx_type_8 utils_Tonnetz_setScale_type;
+typedef utils_Chord__ctx_type_8 utils_Chord_setScale_type;
 
-static_inline void utils_Tonnetz_setScale_init(utils_Tonnetz__ctx_type_8 &_output_){
-   utils_Tonnetz__ctx_type_8_init(_output_);
+static_inline void utils_Chord_setScale_init(utils_Chord__ctx_type_8 &_output_){
+   utils_Chord__ctx_type_8_init(_output_);
    return ;
 }
 
-void utils_Tonnetz_setScale(utils_Tonnetz__ctx_type_8 &_ctx, int id);
+void utils_Chord_setScale(utils_Chord__ctx_type_8 &_ctx, int id);
 
-typedef utils_Tonnetz__ctx_type_8 utils_Tonnetz_setRoot_type;
+typedef utils_Chord__ctx_type_8 utils_Chord_setRoot_type;
 
-static_inline void utils_Tonnetz_setRoot_init(utils_Tonnetz__ctx_type_8 &_output_){
-   utils_Tonnetz__ctx_type_8_init(_output_);
+static_inline void utils_Chord_setRoot_init(utils_Chord__ctx_type_8 &_output_){
+   utils_Chord__ctx_type_8_init(_output_);
    return ;
 }
 
-static_inline void utils_Tonnetz_setRoot(utils_Tonnetz__ctx_type_8 &_ctx, int note){
+static_inline void utils_Chord_setRoot(utils_Chord__ctx_type_8 &_ctx, int note){
    note = int_clip(note,0,127);
    if(_ctx.root != note){
       _ctx.root = note;
    }
 }
 
-typedef utils_Tonnetz__ctx_type_8 utils_Tonnetz__updateChords_type;
+typedef utils_Chord__ctx_type_8 utils_Chord__updateChords_type;
 
-static_inline void utils_Tonnetz__updateChords_init(utils_Tonnetz__ctx_type_8 &_output_){
-   utils_Tonnetz__ctx_type_8_init(_output_);
+static_inline void utils_Chord__updateChords_init(utils_Chord__ctx_type_8 &_output_){
+   utils_Chord__ctx_type_8_init(_output_);
    return ;
 }
 
-void utils_Tonnetz__updateChords(utils_Tonnetz__ctx_type_8 &_ctx, fix16_t bParam);
+void utils_Chord__updateChords(utils_Chord__ctx_type_8 &_ctx, fix16_t bParam);
 
-typedef utils_Tonnetz__ctx_type_8 utils_Tonnetz__updateInversions_type;
+typedef utils_Chord__ctx_type_8 utils_Chord__updateInversions_type;
 
-static_inline void utils_Tonnetz__updateInversions_init(utils_Tonnetz__ctx_type_8 &_output_){
-   utils_Tonnetz__ctx_type_8_init(_output_);
+static_inline void utils_Chord__updateInversions_init(utils_Chord__ctx_type_8 &_output_){
+   utils_Chord__ctx_type_8_init(_output_);
    return ;
 }
 
-void utils_Tonnetz__updateInversions(utils_Tonnetz__ctx_type_8 &_ctx, fix16_t bParam);
+void utils_Chord__updateInversions(utils_Chord__ctx_type_8 &_ctx, fix16_t bParam);
 
-typedef utils_Tonnetz__ctx_type_8 utils_Tonnetz_setChord_type;
+typedef utils_Chord__ctx_type_8 utils_Chord_setChord_type;
 
-static_inline void utils_Tonnetz_setChord_init(utils_Tonnetz__ctx_type_8 &_output_){
-   utils_Tonnetz__ctx_type_8_init(_output_);
+static_inline void utils_Chord_setChord_init(utils_Chord__ctx_type_8 &_output_){
+   utils_Chord__ctx_type_8_init(_output_);
    return ;
 }
 
-static_inline void utils_Tonnetz_setChord(utils_Tonnetz__ctx_type_8 &_ctx, int newChord){
+static_inline void utils_Chord_setChord(utils_Chord__ctx_type_8 &_ctx, int newChord){
    _ctx.chord = int_clip(newChord,0,5);
 };
 
-typedef utils_Tonnetz__ctx_type_8 utils_Tonnetz_setChordSpread_type;
+typedef utils_Chord__ctx_type_8 utils_Chord_setChordSpread_type;
 
-static_inline void utils_Tonnetz_setChordSpread_init(utils_Tonnetz__ctx_type_8 &_output_){
-   utils_Tonnetz__ctx_type_8_init(_output_);
+static_inline void utils_Chord_setChordSpread_init(utils_Chord__ctx_type_8 &_output_){
+   utils_Chord__ctx_type_8_init(_output_);
    return ;
 }
 
-void utils_Tonnetz_setChordSpread(utils_Tonnetz__ctx_type_8 &_ctx, fix16_t newSpread);
+void utils_Chord_setChordSpread(utils_Chord__ctx_type_8 &_ctx, fix16_t newSpread);
 
-typedef utils_Tonnetz__ctx_type_8 utils_Tonnetz_setInversionSpread_type;
+typedef utils_Chord__ctx_type_8 utils_Chord_setInversionSpread_type;
 
-static_inline void utils_Tonnetz_setInversionSpread_init(utils_Tonnetz__ctx_type_8 &_output_){
-   utils_Tonnetz__ctx_type_8_init(_output_);
+static_inline void utils_Chord_setInversionSpread_init(utils_Chord__ctx_type_8 &_output_){
+   utils_Chord__ctx_type_8_init(_output_);
    return ;
 }
 
-void utils_Tonnetz_setInversionSpread(utils_Tonnetz__ctx_type_8 &_ctx, fix16_t newSpread);
+void utils_Chord_setInversionSpread(utils_Chord__ctx_type_8 &_ctx, fix16_t newSpread);
 
-typedef utils_Tonnetz__ctx_type_8 utils_Tonnetz_getChordP_type;
+typedef utils_Chord__ctx_type_8 utils_Chord_getChordP_type;
 
-static_inline void utils_Tonnetz_getChordP_init(utils_Tonnetz__ctx_type_8 &_output_){
-   utils_Tonnetz__ctx_type_8_init(_output_);
+static_inline void utils_Chord_getChordP_init(utils_Chord__ctx_type_8 &_output_){
+   utils_Chord__ctx_type_8_init(_output_);
    return ;
 }
 
-fix16_t utils_Tonnetz_getChordP(utils_Tonnetz__ctx_type_8 &_ctx, int chordId);
+fix16_t utils_Chord_getChordP(utils_Chord__ctx_type_8 &_ctx, int chordId);
 
-typedef utils_Tonnetz__ctx_type_8 utils_Tonnetz_getNbChords_type;
+typedef utils_Chord__ctx_type_8 utils_Chord_getNbChords_type;
 
-static_inline void utils_Tonnetz_getNbChords_init(utils_Tonnetz__ctx_type_8 &_output_){
-   utils_Tonnetz__ctx_type_8_init(_output_);
+static_inline void utils_Chord_getNbChords_init(utils_Chord__ctx_type_8 &_output_){
+   utils_Chord__ctx_type_8_init(_output_);
    return ;
 }
 
-static_inline int utils_Tonnetz_getNbChords(utils_Tonnetz__ctx_type_8 &_ctx){
+static_inline int utils_Chord_getNbChords(utils_Chord__ctx_type_8 &_ctx){
    return 6;
 };
 
-typedef utils_Tonnetz__ctx_type_8 utils_Tonnetz_getScaleId_type;
+typedef utils_Chord__ctx_type_8 utils_Chord_getScaleId_type;
 
-static_inline void utils_Tonnetz_getScaleId_init(utils_Tonnetz__ctx_type_8 &_output_){
-   utils_Tonnetz__ctx_type_8_init(_output_);
+static_inline void utils_Chord_getScaleId_init(utils_Chord__ctx_type_8 &_output_){
+   utils_Chord__ctx_type_8_init(_output_);
    return ;
 }
 
-static_inline int utils_Tonnetz_getScaleId(utils_Tonnetz__ctx_type_8 &_ctx){
+static_inline int utils_Chord_getScaleId(utils_Chord__ctx_type_8 &_ctx){
    return _ctx.scaleId;
 };
 
-typedef utils_Tonnetz__ctx_type_8 utils_Tonnetz_getNbScales_type;
+typedef utils_Chord__ctx_type_8 utils_Chord_getNbScales_type;
 
-static_inline void utils_Tonnetz_getNbScales_init(utils_Tonnetz__ctx_type_8 &_output_){
-   utils_Tonnetz__ctx_type_8_init(_output_);
+static_inline void utils_Chord_getNbScales_init(utils_Chord__ctx_type_8 &_output_){
+   utils_Chord__ctx_type_8_init(_output_);
    return ;
 }
 
-static_inline int utils_Tonnetz_getNbScales(utils_Tonnetz__ctx_type_8 &_ctx){
+static_inline int utils_Chord_getNbScales(utils_Chord__ctx_type_8 &_ctx){
    return 20;
 };
 
-typedef utils_Tonnetz__ctx_type_8 utils_Tonnetz_getRoot_type;
+typedef utils_Chord__ctx_type_8 utils_Chord_getRoot_type;
 
-static_inline void utils_Tonnetz_getRoot_init(utils_Tonnetz__ctx_type_8 &_output_){
-   utils_Tonnetz__ctx_type_8_init(_output_);
+static_inline void utils_Chord_getRoot_init(utils_Chord__ctx_type_8 &_output_){
+   utils_Chord__ctx_type_8_init(_output_);
    return ;
 }
 
-static_inline int utils_Tonnetz_getRoot(utils_Tonnetz__ctx_type_8 &_ctx){
+static_inline int utils_Chord_getRoot(utils_Chord__ctx_type_8 &_ctx){
    return _ctx.root;
 };
 
-typedef utils_Tonnetz__ctx_type_8 utils_Tonnetz_setJump_type;
+typedef utils_Chord__ctx_type_8 utils_Chord_setJump_type;
 
-static_inline void utils_Tonnetz_setJump_init(utils_Tonnetz__ctx_type_8 &_output_){
-   utils_Tonnetz__ctx_type_8_init(_output_);
+static_inline void utils_Chord_setJump_init(utils_Chord__ctx_type_8 &_output_){
+   utils_Chord__ctx_type_8_init(_output_);
    return ;
 }
 
-static_inline void utils_Tonnetz_setJump(utils_Tonnetz__ctx_type_8 &_ctx, fix16_t p){
+static_inline void utils_Chord_setJump(utils_Chord__ctx_type_8 &_ctx, fix16_t p){
    _ctx.pJump = fix_clip(p,0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
 };
 
-typedef utils_Tonnetz__ctx_type_8 utils_Tonnetz_default_type;
+typedef utils_Chord__ctx_type_8 utils_Chord_default_type;
 
-static_inline void utils_Tonnetz_default_init(utils_Tonnetz__ctx_type_8 &_output_){
-   utils_Tonnetz__ctx_type_8_init(_output_);
+static_inline void utils_Chord_default_init(utils_Chord__ctx_type_8 &_output_){
+   utils_Chord__ctx_type_8_init(_output_);
    return ;
 }
 
-void utils_Tonnetz_default(utils_Tonnetz__ctx_type_8 &_ctx);
+void utils_Chord_default(utils_Chord__ctx_type_8 &_ctx);
 
 typedef struct utils_Arp__ctx_type_0 {
    uint8_t stepPersist;

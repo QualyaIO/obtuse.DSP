@@ -32,6 +32,7 @@ WARNING: Be wary where the struct are initialized to avoid problem with stack si
 - [BREAKING] drummer: re-order samples to be more consistent
 - sampler, drummer: fix out-of-bound of one sample
 - [BREAKING] sampler: set loop points for some samples (plus fix clicks)
+- [BREAKING] renaming "tonnetz" util to "chord"
 
 ## v0.1.0 (2023-08-12)
 
@@ -56,7 +57,6 @@ Fixes
 
 Features
 
-- sampler: add back to toubidou
 - velocity: not only linear? save for monophonic?
 - tremolo (e.g. at Voice level)
 - also folding for wavetable?
