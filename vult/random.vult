@@ -1,0 +1,32 @@
+
+// homemade simplistic rand() from its manpage excerpt code, for separate seed
+// FIXME: not super efficient nor maybe accurate
+
+// specify seed. To be called 
+fun setSeed(seed: int) {
+  mem next = seed;
+}
+
+// retrieve new intereg random
+and irandom(): int {
+  /* RAND_MAX assumed to be 32767 */
+  next = next * 1103515245 + 12345;
+  // wary of % for negative numbers in C
+  // TODO: here we alter source material because we cannot use nor cast unsigned int, check up to which point the sequence is altered
+  val tmp = next/65536;
+  if (tmp < 0) {
+    tmp = -tmp;
+  }
+  return tmp % (32768);
+}
+
+and random(): real {
+  return real(irandom()) / 32767.0;
+}
+
+
+// fixed as per algo, mimic older implementations
+and getRandMax() {
+  return 32767;
+}
+

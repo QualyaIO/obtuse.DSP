@@ -165,14 +165,6 @@ uint8_t utils_Gate_noteOn(utils_Gate__ctx_type_2 &_ctx, int note, int velocity, 
    return newNote;
 }
 
-void utils_Random__ctx_type_0_init(utils_Random__ctx_type_0 &_output_){
-   utils_Random__ctx_type_0 &_ctx = _output_;
-   _ctx.randmax = 0;
-   _ctx.next = 0;
-   
-   return ;
-}
-
 int utils_Random_irandom(utils_Random__ctx_type_0 &_ctx){
    _ctx.next = (12345 + (1103515245 * _ctx.next));
    int tmp;
@@ -180,7 +172,7 @@ int utils_Random_irandom(utils_Random__ctx_type_0 &_ctx){
    if(tmp < 0){
       tmp = (- tmp);
    }
-   return (tmp % (1 + _ctx.randmax));
+   return (tmp % 32768);
 }
 
 void utils_Chord_getScale(int id, uint8_t (&_output_)[12]){

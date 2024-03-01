@@ -15,13 +15,17 @@ typedef struct synthFMalt__tuple___real_real_real_real__ {
 } synthFMalt__tuple___real_real_real_real__;
 
 typedef struct synthFMalt_Random__ctx_type_0 {
-   int randmax;
    int next;
 } synthFMalt_Random__ctx_type_0;
 
 typedef synthFMalt_Random__ctx_type_0 synthFMalt_Random_setSeed_type;
 
-void synthFMalt_Random__ctx_type_0_init(synthFMalt_Random__ctx_type_0 &_output_);
+static_inline void synthFMalt_Random__ctx_type_0_init(synthFMalt_Random__ctx_type_0 &_output_){
+   synthFMalt_Random__ctx_type_0 &_ctx = _output_;
+   _ctx.next = 0;
+   
+   return ;
+}
 
 static_inline void synthFMalt_Random_setSeed_init(synthFMalt_Random__ctx_type_0 &_output_){
    synthFMalt_Random__ctx_type_0_init(_output_);
@@ -30,8 +34,7 @@ static_inline void synthFMalt_Random_setSeed_init(synthFMalt_Random__ctx_type_0 
 
 static_inline void synthFMalt_Random_setSeed(synthFMalt_Random__ctx_type_0 &_ctx, int seed){
    _ctx.next = seed;
-   _ctx.randmax = 32767;
-}
+};
 
 typedef synthFMalt_Random__ctx_type_0 synthFMalt_Random_irandom_type;
 
@@ -50,7 +53,7 @@ static_inline void synthFMalt_Random_random_init(synthFMalt_Random__ctx_type_0 &
 }
 
 static_inline fix16_t synthFMalt_Random_random(synthFMalt_Random__ctx_type_0 &_ctx){
-   return fix_div(int_to_fix(synthFMalt_Random_irandom(_ctx)),int_to_fix(_ctx.randmax));
+   return fix_mul(0x2 /* 0.000031 */,int_to_fix(synthFMalt_Random_irandom(_ctx)));
 };
 
 typedef synthFMalt_Random__ctx_type_0 synthFMalt_Random_getRandMax_type;
@@ -61,7 +64,7 @@ static_inline void synthFMalt_Random_getRandMax_init(synthFMalt_Random__ctx_type
 }
 
 static_inline int synthFMalt_Random_getRandMax(synthFMalt_Random__ctx_type_0 &_ctx){
-   return _ctx.randmax;
+   return 32767;
 };
 
 static_inline int synthFMalt_Wavetable_sin_wave_samples(){
