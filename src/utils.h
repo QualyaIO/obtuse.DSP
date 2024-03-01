@@ -225,6 +225,56 @@ static_inline void utils_Gate_default(utils_Gate__ctx_type_2 &_ctx){
    utils_Gate_setDuration(_ctx,0x3333 /* 0.200000 */);
 };
 
+typedef struct utils_Random__ctx_type_0 {
+   int randmax;
+   int next;
+} utils_Random__ctx_type_0;
+
+typedef utils_Random__ctx_type_0 utils_Random_setSeed_type;
+
+void utils_Random__ctx_type_0_init(utils_Random__ctx_type_0 &_output_);
+
+static_inline void utils_Random_setSeed_init(utils_Random__ctx_type_0 &_output_){
+   utils_Random__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void utils_Random_setSeed(utils_Random__ctx_type_0 &_ctx, int seed){
+   _ctx.next = seed;
+   _ctx.randmax = 32767;
+}
+
+typedef utils_Random__ctx_type_0 utils_Random_irandom_type;
+
+static_inline void utils_Random_irandom_init(utils_Random__ctx_type_0 &_output_){
+   utils_Random__ctx_type_0_init(_output_);
+   return ;
+}
+
+int utils_Random_irandom(utils_Random__ctx_type_0 &_ctx);
+
+typedef utils_Random__ctx_type_0 utils_Random_random_type;
+
+static_inline void utils_Random_random_init(utils_Random__ctx_type_0 &_output_){
+   utils_Random__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline fix16_t utils_Random_random(utils_Random__ctx_type_0 &_ctx){
+   return fix_div(int_to_fix(utils_Random_irandom(_ctx)),int_to_fix(_ctx.randmax));
+};
+
+typedef utils_Random__ctx_type_0 utils_Random_getRandMax_type;
+
+static_inline void utils_Random_getRandMax_init(utils_Random__ctx_type_0 &_output_){
+   utils_Random__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int utils_Random_getRandMax(utils_Random__ctx_type_0 &_ctx){
+   return _ctx.randmax;
+};
+
 static_inline fix16_t utils_Chord_logBase_raw_c0(int index){
    return utils_Chord_logBase_c0[index];
 };
@@ -263,6 +313,7 @@ typedef struct utils_Chord__ctx_type_8 {
    int scaleId;
    uint8_t scale[12];
    int root;
+   utils_Random__ctx_type_0 rando;
    int process_ret_2;
    int process_ret_1;
    int process_ret_0;
@@ -488,6 +539,17 @@ static_inline void utils_Chord_setJump(utils_Chord__ctx_type_8 &_ctx, fix16_t p)
    _ctx.pJump = fix_clip(p,0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
 };
 
+typedef utils_Chord__ctx_type_8 utils_Chord_setSeed_type;
+
+static_inline void utils_Chord_setSeed_init(utils_Chord__ctx_type_8 &_output_){
+   utils_Chord__ctx_type_8_init(_output_);
+   return ;
+}
+
+static_inline void utils_Chord_setSeed(utils_Chord__ctx_type_8 &_ctx, int seed){
+   utils_Random_setSeed(_ctx.rando,seed);
+};
+
 typedef utils_Chord__ctx_type_8 utils_Chord_default_type;
 
 static_inline void utils_Chord_default_init(utils_Chord__ctx_type_8 &_output_){
@@ -502,6 +564,7 @@ typedef struct utils_Arp__ctx_type_0 {
    int step;
    int sequenceSize;
    int sequence[32];
+   utils_Random__ctx_type_0 rando;
    int playSequence[32];
    fix16_t pRandomize;
    fix16_t pRandomNotes;
@@ -645,10 +708,22 @@ static_inline int utils_Arp_getSequenceSize(utils_Arp__ctx_type_0 &_ctx){
    return _ctx.sequenceSize;
 };
 
+typedef utils_Arp__ctx_type_0 utils_Arp_setSeed_type;
+
+static_inline void utils_Arp_setSeed_init(utils_Arp__ctx_type_0 &_output_){
+   utils_Arp__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void utils_Arp_setSeed(utils_Arp__ctx_type_0 &_ctx, int seed){
+   utils_Random_setSeed(_ctx.rando,seed);
+};
+
 typedef struct utils_Trigg__ctx_type_0 {
    uint8_t triggers[128];
    int ticks;
    int shift;
+   utils_Random__ctx_type_0 rando;
    fix16_t ptriggers[128];
    int position;
    int n;
@@ -824,6 +899,17 @@ static_inline void utils_Trigg_setPosition_init(utils_Trigg__ctx_type_0 &_output
 
 static_inline void utils_Trigg_setPosition(utils_Trigg__ctx_type_0 &_ctx, int newPosition){
    _ctx.position = int_clip(newPosition,0,128);
+};
+
+typedef utils_Trigg__ctx_type_0 utils_Trigg_setSeed_type;
+
+static_inline void utils_Trigg_setSeed_init(utils_Trigg__ctx_type_0 &_output_){
+   utils_Trigg__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline void utils_Trigg_setSeed(utils_Trigg__ctx_type_0 &_ctx, int seed){
+   utils_Random_setSeed(_ctx.rando,seed);
 };
 
 typedef utils_Trigg__ctx_type_0 utils_Trigg_default_type;

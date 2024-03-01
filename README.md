@@ -34,6 +34,7 @@ WARNING: Be wary where the struct are initialized to avoid problem with stack si
 - [BREAKING] sampler: set loop points for some samples (plus fix clicks)
 - [BREAKING] renaming "tonnetz" util to "chord"
 - [BREAKING] sampler: rename "clarinets" to "softClarinet"
+- arp, chord, trigg: using dedicated random generator, ability to set seed
 
 ## v0.1.0 (2023-08-12)
 

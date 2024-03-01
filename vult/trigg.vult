@@ -17,12 +17,12 @@ fun _refresh() {
    mem dirty : bool;
 
    // we are about to change loop
-   if (dirty || evolve > 0.0 && random()  <= evolve) {
+   if (dirty || evolve > 0.0 && rando:Random.random()  <= evolve) {
       val i = 0;
       while (i < size(triggers) && i < length) {
          // chance that we alter this step
-         if (dirty || magnitude > 0.0 && random() <= magnitude) {
-            triggers[i] = ptriggers[i] > 0.0 && random() <= ptriggers[i];
+         if (dirty || magnitude > 0.0 && rando:Random.random() <= magnitude) {
+            triggers[i] = ptriggers[i] > 0.0 && rando:Random.random() <= ptriggers[i];
          }
          i = i + 1;
       }
@@ -290,6 +290,10 @@ and setDensity(newDensity : real) {
 // starting position of the loop, can be used to shift accentuation when balance is set
 and setPosition(newPosition : int) {
    position = clip(newPosition, 0, size(triggers));
+}
+
+and setSeed(seed: int) {
+  _ = rando:Random.setSeed(seed);
 }
 
 and default() @[init] {

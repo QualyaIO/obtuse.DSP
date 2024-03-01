@@ -371,7 +371,7 @@ and drawChord(lookAround: bool) : int {
   // we got at least one chord, go through to select
   if (curcumTP > 0.0) {
     // select chord -- scaling draw to max proba
-    val pChord = random() * tChords[size(tChords) - 1];
+    val pChord = rando:Random.random() * tChords[size(tChords) - 1];
     // scroll chords to select
     i = 0;
     while (i < size(chords) && pChord > tChords[i]) {
@@ -391,7 +391,7 @@ and drawInversion(): int {
   // inversion probabilities (none, fist, second)
   mem inversions: array(real, 3);
   // draw and find which inversion it is
-  val pInversion  = random();
+  val pInversion  = rando:Random.random();
   val i = 0;
   while (i < size(inversions) && pInversion > inversions[i]) {
     i = i + 1;
@@ -423,7 +423,7 @@ and process() {
   val notes : array(int, 3);
   
   // should we jump?
-  if (random() < pJump) {
+  if (rando:Random.random() < pJump) {
     // select chord among current shift and those around
     selectedChord = drawChord(true);
     // list somehow duplicated from drawChord(), to sync
@@ -457,7 +457,7 @@ and process() {
     }
     
     // shift becoem random among those shifts, not forgetting to recall current shift
-    shift  = (shift + selectedShifts[irandom() % nbShifts]) % 12;
+    shift  = (shift + selectedShifts[rando:Random.irandom() % nbShifts]) % 12;
 
     // if the actual shift is root, then discard past shifts
     if (shift == 0) {
@@ -745,6 +745,10 @@ and getRoot(): int {
 
 and setJump(p: real) {
   pJump = clip(p, 0.0, 1.0);
+}
+
+and setSeed(seed: int) {
+  _ = rando:Random.setSeed(seed);
 }
 
 and default() @[init] {

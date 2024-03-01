@@ -19,11 +19,11 @@ fun randomize() {
   mem pRandomize;
 
   // recompute actual sequence to be played if state changed or randomized
-  if (dirty || (pRandomize > 0.0 && pRandomNotes > 0.0 && random() <= pRandomize)) {
+  if (dirty || (pRandomize > 0.0 && pRandomNotes > 0.0 && rando:Random.random() <= pRandomize)) {
     val i = 0;
     while (i < sequenceSize) {
-      if (pRandomNotes > 0.0 && random() <= pRandomNotes) {
-        playSequence[i] = irandom() % nbNotes; 
+      if (pRandomNotes > 0.0 && rando:Random.random() <= pRandomNotes) {
+        playSequence[i] = rando:Random.irandom() % nbNotes; 
       }
       else {
         playSequence[i] = sequence[i];
@@ -210,4 +210,9 @@ and getMaxNbNotes() : int {
 // length of current sequence
 and getSequenceSize() : int {
   return sequenceSize;
+}
+
+// pass a seed for the random number generator
+and setSeed(seed: int) {
+  _ = rando:Random.setSeed(seed);
 }

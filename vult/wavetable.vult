@@ -112,9 +112,9 @@ fun morphTo(wavetableIdx: real, phase: real, buffer) {
 fun getRandomMorph(oBuff) {
   val basetable = 0;
   if (getNbWavetables() > 1) {
-    basetable = irandom() % (getNbWavetables() - 1);
+    basetable = rando:Random.irandom() % (getNbWavetables() - 1);
   }
-  val wavetableIdx = real(basetable) + random();
+  val wavetableIdx = real(basetable) + rando:Random.random();
   bufferWavetable(oBuff);
   morphTo(wavetableIdx, 0.0, oBuff);
 }
@@ -125,7 +125,7 @@ fun getRandRandomMorph(oBuff) {
   getRandomMorph(oBuff);
   val idx = 0;
   if (size(oBuff) > 0) {
-    idx = irandom() % size(oBuff);
+    idx = Random.irandom() % size(oBuff);
   }
   return getSampleFrom(oBuff, real(idx));
 }
