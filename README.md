@@ -20,7 +20,7 @@ WARNING: Be wary where the struct are initialized to avoid problem with stack si
 
 # Changelog
 
-## v0.1.1 (current)
+## v0.2.0 (current)
 
 - arp: fix return value, now indeed -1 if no notes
 - arp: fix for notes with pitch 0.
