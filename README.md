@@ -1,13 +1,19 @@
 
-Audio DSP and synthesis engine using Vult. This version is aimed at and tested with RP2040
+_Self-contained generative music with limited resources._
 
-Here expects `vultc -ccode voice.vult reverb.vult -real fixed -o engine ` (won't bother fixing progmem issues right now). Note: `-mac` option at times when tables are used.
+Audio DSP and synthesis engine using Vult.
+
+Obtuse proposes various synths, effects and ways to generate rhythms, melodies or chords. It leverages on Vult transpiler and by default the code uses fixed floats, for MCU without floating-point unit. The library should be rather efficient, while maintaining hi-fi audio quality. One specificity is to let users explore beforehand its capabilities and prototype the audioscape via tools familiar to musicians -- check associated repositories for audio plugins wrappers or VCV Rack modules.
+
+
+This version is aimed at and tested with RP2040. The library can be used as-is but you are welcomed to transpile again the vult code if you need to tune the output for other platforms. To do so, start with  `make_vult.sh` to transpile all files. This script is used set some specific optimizations, for example to guard against stack overflow, and to avoid too much code duplication. Note: the script requires bash >= 4.
+
 
 Tested with vult from commit `8167652f1fbc475f18cb5fecc2f8276e51a70238`. Note that vultin.h from vult was adapted to speed-up computation with fixed float (`fix_mul`).
 
-In case arduino template is used: `sed -i 's/pgm_read_word/pgm_read_dword/g' engine.*` (or whatever files using progmem)
 
-For now, use `make_vult.sh` to transpile all files -- and set some specific optimization for RP2040 (note: script needs bash >= 4).
+For other MCUs it might be advisable to tap into progmem. In case arduino template is used: `sed -i 's/pgm_read_word/pgm_read_dword/g' engine.*` (or whatever files using progmem)
+
 
 WARNING: Be wary where the struct are initialized to avoid problem with stack size, e.g. prefer in the body of the program, especially when large buffer are involved (effectsL or XL).
 
