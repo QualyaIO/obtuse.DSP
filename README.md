@@ -23,7 +23,7 @@ Features:
   - gate: define length of incoming notes, handles polyphony 
 
 
-This version is originally aimed at and tested with RP2040. The library can be used as-is but you are welcomed to transpile again the vult code if you need to tune the output for other platforms or if you want to modify the engine. To do so, start with  `make_vult.sh` to transpile all files. This script is used set some specific optimizations, for example to guard against stack overflows, and to avoid too much code duplication. Note: the script requires bash >= 4.
+This version is originally aimed at and tested with RP2040. The library can be used as-is but you are welcomed to transpile again the vult code if you need to tune the output for other platforms or if you want to modify the engine -- add new samples, waveforms, voices, and so on. To do so, start with  `make_vult.sh` to transpile all files. This script is used set some specific optimizations, for example to guard against stack overflows, and to avoid too much code duplication. Note: the script requires bash >= 4.
 
 
 Tested with vult from commit [8167652f1fbc475f18cb5fecc2f8276e51a70238](https://github.com/vult-dsp/vult/commit/8167652f1fbc475f18cb5fecc2f8276e51a70238). Note that vultin.h from vult was adapted to speed-up computation with fixed float (`fix_mul`).
