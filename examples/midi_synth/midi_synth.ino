@@ -1,9 +1,10 @@
 
-// WARNING: need this bit to fix issues with vult template, not retrieving 32bit otherwise -- but only workes with fixed version, for real leplace with pgm_read_float
-//#define pgm_read_word(addr) pgm_read_dword(addr)
+// This example is meant to run on a Pico (rp2040 based), using arduino-pico core, with MIDI input and i2s output.
+// Tested with arduino-pico 3.3.0 and Arduino IDE 1.8.19 with obtuse 0.2.0
+// MIDI input: using https://github.com/FortySevenEffects/arduino_midi_library (tested 5.0.2)
+// select Adafruit TinyUSB stack, "Fast" optimization advised.
 
-
-/*** Vult ***/
+/*** Obtuse DSP ***/
 
 #include "effects.h"
 #include "synthFM.h"
@@ -14,16 +15,12 @@
 synthFM_Voice_process_type contextv0;
 synthSampler_Voice_process_type contextv1;
 synthDrummer_Voice_process_type contextboom;
-// for tests
-synthFM_OSC_process_type context_osc;
-synthFM_FM_process_type context_fm;
 // another for the filter
 effects_Reverb_process_type context_reverb;
-//effects_Ladder_process_type context_ladder;
 effects_SVF_process_type context_svf;
 
-// sync with vult code
-#define BUFFER_SIZE 256
+// to sync with vult code
+#define BUFFER_SIZE 128
 
 // output buf
 int16_t buff[BUFFER_SIZE];
@@ -112,7 +109,7 @@ int buffer_switch_time = 0;
 
 void setup() {
 
-  // set CPU speed for a good ratio with 256*fs, with a sampling rate set as 40000 in mozzi_config for me now
+  // set CPU speed for a good ratio with 256*fs
   //set_sys_clock_khz(102400, true);
   set_sys_clock_khz(153600, true); // this one for 30000hz
 
@@ -199,23 +196,11 @@ void setup() {
   synthDrummer_Voice_default(contextboom);
   synthDrummer_Voice_setSamplerate(contextboom, float_to_fix(sampleRate / (float)1000));
   synthDrummer_Voice_setNormalize(contextboom, false);
-  // mostly kept for debug
-  synthFM_OSC_default(context_osc);
-  synthFM_OSC_setSamplerate(context_osc, float_to_fix(sampleRate / (float)1000));
-  synthFM_FM_default(context_fm);
-  synthFM_FM_setSamplerate(context_fm, float_to_fix(sampleRate / (float)1000));
   // Effect
   effects_Reverb_default(context_reverb);
   effects_Reverb_setSamplerate(context_reverb, float_to_fix(sampleRate / (float)1000));
   effects_Reverb_setReverbTime(context_reverb, float_to_fix(10.0));
   effects_Reverb_setDelayms(context_reverb, float_to_fix(50.0));
-  /*
-    effects_Ladder_default(context_ladder);
-    effects_Ladder_setSamplerate(context_ladder, float_to_fix(sampleRate / (float)1000));
-    effects_Ladder_setCutOff(context_ladder, float_to_fix(1.0));
-    effects_Ladder_setResonance(context_ladder, float_to_fix(1.0));
-    effects_Ladder_setEstimationMethod(context_ladder, 0);
-  */
   effects_SVF_default(context_svf);
   effects_SVF_setSamplerate(context_svf, float_to_fix(sampleRate / (float)1000));
   // by default, disable
@@ -241,7 +226,6 @@ void loop() {
       synthFM_Voice_noteOn(contextv0, current_note, 0, 0);
       synthSampler_Voice_noteOn(contextv1, 127 - current_note, 0, 1);
 
-      //synthFM_OSC_setFrequency(context_osc, Util_noteToFrequency(current_note));
       midi_tick = millis();
       gate = true;
     }
@@ -261,10 +245,6 @@ void loop() {
       dsp_tick = micros();
       dsp_cycle_tick = rp2040.getCycleCount();
 
-      // returned float should be between -1 and 1 (should we checkit ?)
-      //fix16_t raw = synthFM_FM_process(context_fm);
-      //fix16_t raw = synthFM_OSC_process(context_osc);
-
       fix16_t raw0 = synthFM_Voice_process(contextv0);
       fix16_t raw1 = synthSampler_Voice_process(contextv1);
       fix16_t raw2 = synthDrummer_Voice_process(contextboom);
@@ -272,8 +252,7 @@ void loop() {
       // mix voices -- scaling will occur afterward
       //fix16_t raw = 0.5 * raw0 + 0.5 * raw1 + 0.5 * raw2;
       fix16_t raw = raw0 + raw1 + raw2;
-      // add ladder effect -- reduce volume to avoid saturation
-      //fix16_t rawf = effects_Ladder_process(context_ladder, raw * 0.1);
+      // add SVF effect -- reduce volume to avoid saturation
       fix16_t rawf = effects_SVF_process(context_svf, raw);
       // add reverb
       fix16_t val = effects_Reverb_process(context_reverb, rawf);
@@ -296,20 +275,14 @@ void loop() {
       dsp_tick = micros();
       dsp_cycle_tick = rp2040.getCycleCount();
 
-      //synthFM_OSC_process_bufferTo_simplest(context_osc, BUFFER_SIZE, raw_buff);
-      //synthFM_FM_process_bufferTo(context_fm, BUFFER_SIZE, raw_buff);
-      synthFM_Voice_process_bufferTo_alt(contextv0, BUFFER_SIZE, raw0_buff);
-      synthSampler_Voice_process_bufferTo_alt(contextv1, BUFFER_SIZE, raw1_buff);
-      synthDrummer_Voice_process_bufferTo_alt(contextboom, BUFFER_SIZE, raw2_buff);
+      synthFM_Voice_process_bufferTo(contextv0, BUFFER_SIZE, raw0_buff);
+      synthSampler_Voice_process_bufferTo(contextv1, BUFFER_SIZE, raw1_buff);
+      synthDrummer_Voice_process_bufferTo(contextboom, BUFFER_SIZE, raw2_buff);
       // mix -- scaling will occur on all voices at once
       for (size_t i = 0; i < BUFFER_SIZE; i++) {
-        // reduce for ladder
-        //raw_buff[i] = (raw0_buff[i] + raw1_buff[i] + raw2_buff[i]) * 0.1;
         raw_buff[i] = (raw0_buff[i] + raw1_buff[i] + raw2_buff[i]);
       }
-      // apply ladder and then reverb
-      // add effect
-      // effects_Ladder_process_bufferTo(context_ladder, BUFFER_SIZE, raw_buff, filter_buff);
+      // apply SVF and then reverb
       effects_SVF_process_bufferTo(context_svf, BUFFER_SIZE, raw_buff, filter_buff);
       effects_Reverb_process_bufferTo(context_reverb, BUFFER_SIZE, filter_buff, reverb_buff);
       // two times to better compare with classical situation
@@ -383,8 +356,6 @@ void handleNoteOn(byte channel, byte pitch, byte velocity)
 
   Sprint(" velocity = ");
   Sprintln(velocity);
-  //synthFM_OSC_setFrequency(context_osc, Util_noteToFrequency(pitch));
-  //synthFM_FM_noteOn(context_fm, pitch, 0, 0);
 
   // FM by default, sampler on channel 2, drums on channel 3
   if (channel == 3) {
@@ -408,8 +379,6 @@ void handleNoteOff(byte channel, byte pitch, byte velocity)
 
   Sprint(" velocity = ");
   Sprintln(velocity);
-  //synthFM_OSC_setFrequency(context_osc, Util_noteToFrequency(1));
-  //synthFM_FM_noteOff(context_fm, pitch, 0);
   if (channel == 3) {
     synthDrummer_Voice_noteOff(contextboom, pitch, channel);
   }
@@ -433,17 +402,9 @@ void handleCC(byte channel, byte cc, byte value) {
   }
   float ratio = value / 127.0;
   switch (cc) {
-    // effect depends on active filter
-    // ladder cuttoff, from 0 to nyquist (in kHz)
     // SVF freq, from 0 to nyquist (in kHz)
     case 62:
       {
-        /*
-          float cut = ratio * (sampleRate / 2000.0);
-          Sprint("Setting ladder cutoff to: ");
-          Sprintln(cut);
-          effects_Ladder_setCutOff(context_ladder, float_to_fix(cut));
-        */
         float freq = ratio * (sampleRate / 2000.0);
         Sprint("Setting SVF freq to: ");
         Sprintln(freq);
@@ -451,16 +412,9 @@ void handleCC(byte channel, byte cc, byte value) {
       }
       break;
 
-    // Ladder: resonance from 0 to 3
     // SVF: Q from 0 to ... 5?
     case 63:
       {
-        /*
-          float res = (ratio) * 3.0;
-          Sprint("Setting ladder resonance cutoff to: ");
-          Sprintln(res);
-          effects_Ladder_setResonance(context_ladder, float_to_fix(res));
-        */
         float q = ratio * 3.0;
         Sprint("Setting SVF Q to: ");
         Sprintln(q);
