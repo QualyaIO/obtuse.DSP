@@ -1,8 +1,8 @@
 
-// This example is meant to run on a Pico (rp2040 based), using arduino-pico core, with MIDI input and i2s output.
+// This example is meant to run on a Pico (rp2040 based), using arduino-pico core, with MIDI input and PWM output
 // Tested with arduino-pico 3.3.0 and Arduino IDE 1.8.19 with obtuse 0.2.0
 // MIDI input: using https://github.com/FortySevenEffects/arduino_midi_library (tested 5.0.2)
-// select Adafruit TinyUSB stack, "Fast" optimization advised.
+// select Adafruit TinyUSB stack, "Fast" optimization advised
 
 /*** Obtuse DSP ***/
 
@@ -11,15 +11,16 @@
 #include "synthSampler.h"
 #include "synthDrummer.h"
 
-// context for synth used in vult, used to handle internal states
+// contexts in obtuse, used to handle internal states
 synthFM_Voice_process_type contextv0;
 synthSampler_Voice_process_type contextv1;
 synthDrummer_Voice_process_type contextboom;
-// another for the filter
+// another round for the filters
 effects_Reverb_process_type context_reverb;
 effects_SVF_process_type context_svf;
 
-// to sync with vult code
+// we will be using the buffered processes for each synth
+// to sync with obtuse's vult code
 #define BUFFER_SIZE 128
 
 // output buf
@@ -59,30 +60,18 @@ bool gate = false;
 long midi_msg_tick = 0;
 float midi_msg_freq = 4;
 
-/*** SGTL ***/
+/*** Audio output ***/
 
-#include <I2S.h>
-#include "MCLK.h"
-#include "control_sgtl5000.h"
+// Note: you might switch to I2S with little change in the code for optimum quality
 
-// instanciate SGTL
-AudioControlSGTL5000 sgtl;
+#include <PWMAudio.h>
 
+// instanciate audio output, in mono
+#define PWMOUT 18
+PWMAudio audioOut(PWMOUT, false);
 
-// Create the I2S port using a PIO state machine
-I2S i2s(OUTPUT);
-// MCLK clock with PIO as well
-MCLK mclk;
-
-// GPIO pin numbers
-#define pBCLK 20
-#define pWS (pBCLK+1)
-#define pDOUT 22
-#define pMCLK 18 // pin 24
-
-const int sampleRate =  30000; //16000; // minimum for UDA1334A
-const int mclkMultiplier = 256; // typical for many DAC
-
+// 30khz audio, tradeoff between quality and CPU load
+const int sampleRate =  30000;
 
 /*** Misc ***/
 
@@ -101,21 +90,14 @@ long debug_cycle_tick;
 long dsp_cycle_count;
 long dsp_cycle_tick;
 
-// for testing we will alternate between both versions of algo
-bool buffer_version = true;
-unsigned long switch_tick;
-// in ms, how often we switch between boht versions. 0 to disable
-int buffer_switch_time = 0;
-
 void setup() {
 
-  // set CPU speed for a good ratio with 256*fs
-  //set_sys_clock_khz(102400, true);
+  // overclkock for audio DSP, also set CPU speed for a good ratio with 256*fs in case we switch to I2S with MCLK
   set_sys_clock_khz(153600, true); // this one for 30000hz
 
   /* MIDI */
-  // not working?
-  usb_midi.setStringDescriptor("Vult_FM");
+  // setting device name not working? Come back with later aurduino-pico core.
+  usb_midi.setStringDescriptor("ObtuseMIDISynth");
 
   // Initialize MIDI, and listen to all MIDI channels
   // This will also call usb_midi's begin()
@@ -136,51 +118,19 @@ void setup() {
   delay(1000);
   Serial.println("Let us go");
 
-  /* SGTL */
-  // sart MCLK
-  mclk.setPin(pMCLK);
-  if (!mclk.begin(sampleRate, mclkMultiplier)) {
-    while (1) {
-      Serial.println("Failed to initialize MCLK!");
-      delay(1000);
-    }
-  }
+  /* Audio */
 
-  // inrcease buffers from default 8 buffers of 16 values
+  // configure sample rate
+  audioOut.setFrequency(sampleRate);
+  // increase buffers from default 8 buffers of 16 values
   // here we want enough for our buffer, x2 because two channels, and one more to be not blocking... and one more just in case
-  i2s.setBuffers(66, 16);
-  i2s.setBCLK(pBCLK);
-  i2s.setDATA(pDOUT);
-  i2s.setBitsPerSample(16); // instead of 16 to get expected clock for bclk ?
-  delay(100);
-  // start I2S at the sample rate with 16-bits per sample
-  if (!i2s.begin(sampleRate)) {
-    while (1) {
-      Serial.println("Failed to initialize I2S!");
-      delay(100);
-    }
-  }
-  Serial.println("i2s initialized");
-  delay(100);
-
-  // start audio card
-  if (!sgtl.enable()) {
-    while (1) {
-      Serial.println("Failed to initialize SGTL!");
-      delay(100);
-    }
-  }
-  Serial.println("sgtl initialized");
+  audioOut.setBuffers(66, 16);
+  audioOut.begin();
 
   delay(100);
   Serial.println("setup ok");
 
-  Serial.print("volume: ");
-  Serial.println(sgtl.volume(0.5));
-
-  delay(1000);
-
-  /* Vult */
+  /* Obtuse DSP */
   // Init FM, then pass sample rate, not forgetting to convert passed parameters to fixed (of course...)
   synthFM_Voice_default(contextv0);
   synthFM_Voice_setSamplerate(contextv0, float_to_fix(sampleRate / (float)1000));
@@ -239,71 +189,42 @@ void loop() {
     }
   }
 
-  if (!buffer_version) {
-    // buffers hard-coded of size 16 in I2S (unless i2s.setBuffers() is called), make sure there are at least two samples above that free in the audio circular buffer (of buffers)
-    while (i2s.availableForWrite() > 17) {
-      dsp_tick = micros();
-      dsp_cycle_tick = rp2040.getCycleCount();
+  // buffers hard-coded of size 16 (unless setBuffers() is called), with mono output we need as much as one buffer available
+  // Make sure there are at least two samples above that free in the audio circular buffer (of buffers)
+  // Note: the returned value of availableForWrite() changed across arduino-pico releases, here consider number of bytes
+  while (audioOut.availableForWrite() > BUFFER_SIZE + 17  ) {
+    // process buffer
+    dsp_tick = micros();
+    dsp_cycle_tick = rp2040.getCycleCount();
 
-      fix16_t raw0 = synthFM_Voice_process(contextv0);
-      fix16_t raw1 = synthSampler_Voice_process(contextv1);
-      fix16_t raw2 = synthDrummer_Voice_process(contextboom);
-
-      // mix voices -- scaling will occur afterward
-      //fix16_t raw = 0.5 * raw0 + 0.5 * raw1 + 0.5 * raw2;
-      fix16_t raw = raw0 + raw1 + raw2;
-      // add SVF effect -- reduce volume to avoid saturation
-      fix16_t rawf = effects_SVF_process(context_svf, raw);
-      // add reverb
-      fix16_t val = effects_Reverb_process(context_reverb, rawf);
-      // wet / dry
-      //fix16_t out = 0.5 * raw + 0.5 * val;
-      fix16_t out = rawf + val;
-      // shortcut, instead of fixed_to_float * 32767, *almost* the same
-      //int16_t out16 =  out / 2 - (out >> 16);
-      int16_t out16 =  out / 10 - (out >> 16);
-
-      dsp_cycle_count += rp2040.getCycleCount() - dsp_cycle_tick;
-      dsp_time += micros() - dsp_tick;
-      i2s.write16(out16, out16);
-
+    synthFM_Voice_process_bufferTo(contextv0, BUFFER_SIZE, raw0_buff);
+    synthSampler_Voice_process_bufferTo(contextv1, BUFFER_SIZE, raw1_buff);
+    synthDrummer_Voice_process_bufferTo(contextboom, BUFFER_SIZE, raw2_buff);
+    // mix -- scaling will occur on all voices at once
+    for (size_t i = 0; i < BUFFER_SIZE; i++) {
+      raw_buff[i] = (raw0_buff[i] + raw1_buff[i] + raw2_buff[i]);
     }
-  } else {
-    //  buffers hard-coded of size 16 in I2S (unless i2s.setBuffers() is called), make sure there are at least two samples above that free in the audio circular buffer (of buffers)
-    while (i2s.availableForWrite() > (BUFFER_SIZE) * 2 + 17  ) {
-      // process buffer
-      dsp_tick = micros();
-      dsp_cycle_tick = rp2040.getCycleCount();
+    // apply SVF and then reverb
+    effects_SVF_process_bufferTo(context_svf, BUFFER_SIZE, raw_buff, filter_buff);
+    effects_Reverb_process_bufferTo(context_reverb, BUFFER_SIZE, filter_buff, reverb_buff);
+    // two times to better compare with classical situation
+    fix16_t out;
+    for (size_t i = 0; i < BUFFER_SIZE; i++) {
+      // wet / dry
+      //out = 0.5 * raw_buff[i] + 0.5 * reverb_buff[i];
+      out = filter_buff[i] + reverb_buff[i];
+      // returned float should be between -1 and 1 (should we checkit ?)
+      // shortcut, instead of fixed_to_float * 32767, *almost* the same and vastly improve perf with buffered version (???)
+      //buff[i] = out / 2 - ( out >> 16);
+      // now scale-down at the very end
+      buff[i] = out / 10 - ( out >> 16);
+    }
 
-      synthFM_Voice_process_bufferTo(contextv0, BUFFER_SIZE, raw0_buff);
-      synthSampler_Voice_process_bufferTo(contextv1, BUFFER_SIZE, raw1_buff);
-      synthDrummer_Voice_process_bufferTo(contextboom, BUFFER_SIZE, raw2_buff);
-      // mix -- scaling will occur on all voices at once
-      for (size_t i = 0; i < BUFFER_SIZE; i++) {
-        raw_buff[i] = (raw0_buff[i] + raw1_buff[i] + raw2_buff[i]);
-      }
-      // apply SVF and then reverb
-      effects_SVF_process_bufferTo(context_svf, BUFFER_SIZE, raw_buff, filter_buff);
-      effects_Reverb_process_bufferTo(context_reverb, BUFFER_SIZE, filter_buff, reverb_buff);
-      // two times to better compare with classical situation
-      fix16_t out;
-      for (size_t i = 0; i < BUFFER_SIZE; i++) {
-        // wet / dry
-        //out = 0.5 * raw_buff[i] + 0.5 * reverb_buff[i];
-        out = filter_buff[i] + reverb_buff[i];
-        // returned float should be between -1 and 1 (should we checkit ?)
-        // shortcut, instead of fixed_to_float * 32767, *almost* the same and vastly improve perf with buffered version (???)
-        //buff[i] = out / 2 - ( out >> 16);
-        // now scale-down at the very end
-        buff[i] = out / 10 - ( out >> 16);
-      }
+    dsp_cycle_count += rp2040.getCycleCount() - dsp_cycle_tick;
+    dsp_time += micros() - dsp_tick;
 
-      dsp_cycle_count += rp2040.getCycleCount() - dsp_cycle_tick;
-      dsp_time += micros() - dsp_tick;
-
-      for (int i = 0; i < BUFFER_SIZE; i++) {
-        i2s.write16(buff[i], buff[i]);
-      }
+    for (int i = 0; i < BUFFER_SIZE; i++) {
+      audioOut.write(buff[i]);
     }
   }
 
@@ -321,9 +242,7 @@ void loop() {
   if (newTick - tick >= 1000000) {
     unsigned long cycle_count = rp2040.getCycleCount() -  debug_cycle_tick;
     float dsp_cycle_ratio = (float) dsp_cycle_count / cycle_count;
-    Serial.print("Running strong! Buffer: ");
-    Serial.print(buffer_version);
-    Serial.print(". DSP time (useconds): ");
+    Serial.print("Running strong! DSP time (useconds): ");
     Serial.print(dsp_time);
     Serial.print(" ("); Serial.print((float)dsp_time / (newTick - tick)); Serial.println("% CPU)");
     Serial.print("CPU cycles ratio: "); Serial.print(dsp_cycle_ratio); Serial.print(" (count: "); Serial.print(dsp_cycle_count); Serial.println(")");
@@ -332,14 +251,6 @@ void loop() {
     tick += 1000000;
     dsp_cycle_count = 0;
     debug_cycle_tick = rp2040.getCycleCount();
-  }
-
-  // for testing, switching between buffer version
-  if (buffer_switch_time > 0 and millis() - switch_tick >= buffer_switch_time) {
-    buffer_version = !buffer_version;
-    Serial.print("Switch to buffer: ");
-    Serial.println(buffer_version);
-    switch_tick = millis();
   }
 
 }
