@@ -18,6 +18,7 @@ synthDrummer_Voice_process_type contextboom;
 // another round for the filters
 effects_Reverb_process_type context_reverb;
 effects_SVF_process_type context_svf;
+effects_Saturator_process_type context_saturator;
 
 // we will be using the buffered processes for each synth
 // to sync with obtuse's vult code
@@ -31,7 +32,7 @@ fix16_t raw1_buff[BUFFER_SIZE];
 fix16_t raw2_buff[BUFFER_SIZE];
 // mixer
 fix16_t raw_buff[BUFFER_SIZE];
-// efect
+// effects
 fix16_t filter_buff[BUFFER_SIZE];
 fix16_t reverb_buff[BUFFER_SIZE];
 
@@ -155,8 +156,12 @@ void setup() {
   effects_SVF_setSamplerate(context_svf, float_to_fix(sampleRate / (float)1000));
   // by default, disable
   effects_SVF_setFreq(context_svf, float_to_fix(sampleRate / (float)2000));
-  effects_SVF_setQ(context_svf, float_to_fix(0.0));
+  effects_SVF_setQ(context_svf, float_to_fix(0.1));
   effects_SVF_setType(context_svf, 0);
+  // saturator will mostly be used to limit output level
+  effects_Saturator_default(context_saturator);
+  // halve input since we will add all voices
+  effects_Saturator_setCoeff(context_saturator, float_to_fix(0.5));
 }
 
 void loop() {
@@ -207,17 +212,21 @@ void loop() {
     // apply SVF and then reverb
     effects_SVF_process_bufferTo(context_svf, BUFFER_SIZE, raw_buff, filter_buff);
     effects_Reverb_process_bufferTo(context_reverb, BUFFER_SIZE, filter_buff, reverb_buff);
-    // two times to better compare with classical situation
+    // 50% wet / dry for reverb, re-use buffer
+    for (size_t i = 0; i < BUFFER_SIZE; i++) {
+      raw_buff[i] = filter_buff[i] + reverb_buff[i];
+    }
+    // limit output level, again re-use buffer
+    effects_Saturator_process_bufferTo(context_saturator, BUFFER_SIZE, raw_buff, filter_buff);
+
+    // convert obtuse buffer to output buffer
     fix16_t out;
     for (size_t i = 0; i < BUFFER_SIZE; i++) {
-      // wet / dry
-      //out = 0.5 * raw_buff[i] + 0.5 * reverb_buff[i];
-      out = filter_buff[i] + reverb_buff[i];
-      // returned float should be between -1 and 1 (should we checkit ?)
-      // shortcut, instead of fixed_to_float * 32767, *almost* the same and vastly improve perf with buffered version (???)
-      //buff[i] = out / 2 - ( out >> 16);
-      // now scale-down at the very end
-      buff[i] = out / 10 - ( out >> 16);
+      out = filter_buff[i];
+      // returned float should be between -1 and 1, enforced with saturator
+      // shortcut, instead of fixed_to_float * 32767, *almost* the same and vastly improve perf with buffered version
+      // Note: could use a greater divider instead to scale-down values as a crude way to avoid saturation, instead of ad-hoc Saturator
+      buff[i] = out / 2 - ( out >> 16);
     }
 
     dsp_cycle_count += rp2040.getCycleCount() - dsp_cycle_tick;
@@ -254,6 +263,8 @@ void loop() {
   }
 
 }
+
+/*** MIDI callbacks ***/
 
 // channel: 1..16
 void handleNoteOn(byte channel, byte pitch, byte velocity)
