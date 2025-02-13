@@ -28,7 +28,7 @@ const int sampleRate =  30000;
 /*** Misc ***/
 
 // counter for debug
-long int tick = 0;
+unsigned long int tick = 0;
 
 // computing time spent on DSP
 unsigned long dsp_tick = 0;
@@ -74,7 +74,7 @@ void loop() {
       // shortcut, instead of fixed_to_float * 32767, *almost* the same and vastly improve perf with buffered version
       // Note: use a greater divider than 2 to scale-down values as a crude way to avoid saturation, instead of ad-hoc Saturator
       buff[i] = out / 4 - ( out >> 16);
-    }*/
+      }*/
 
     dsp_time += millis() - dsp_tick;
     dsp_samples += BUFFER_SIZE;
@@ -83,10 +83,11 @@ void loop() {
     /*for (int i = 0; i < BUFFER_SIZE; i++) {
       audioOut.write(buff[i]);
       }*/
+
   }
 
   // debug
-  int newTick = millis();
+  unsigned long int newTick = millis();
   if (newTick - tick >= 1000) {
     Serial.print("Running strong! DSP time (miliseconds): ");
     Serial.print(dsp_time);
