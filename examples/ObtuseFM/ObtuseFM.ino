@@ -28,7 +28,7 @@ const int sampleRate =  30000;
 /*** Misc ***/
 
 // counter for debug
-int tick = 0;
+long int tick = 0;
 
 // computing time spent on DSP
 unsigned long dsp_tick;
@@ -57,10 +57,11 @@ void loop() {
   static int dummy = 0;
   dummy++;
   while (dummy >= BUFFER_SIZE ) {
+
     dummy -= BUFFER_SIZE;
-    
+
     // process buffer
-    dsp_tick = micros();
+    dsp_tick = millis();
 
     synthFMalt_OSCalt_process_bufferTo_simplest(contextv0, BUFFER_SIZE, raw_buff);
 
@@ -74,7 +75,7 @@ void loop() {
       buff[i] = out / 4 - ( out >> 16);
     }
 
-    dsp_time += micros() - dsp_tick;
+    dsp_time += millis() - dsp_tick;
 
     // do ouput
     /*for (int i = 0; i < BUFFER_SIZE; i++) {
@@ -83,13 +84,13 @@ void loop() {
   }
 
   // debug
-  int newTick = micros();
-  if (newTick - tick >= 1000000) {
+  int newTick = millis();
+  if (newTick - tick >= 1000) {
     Serial.print("Running strong! DSP time (useconds): ");
     Serial.print(dsp_time);
     Serial.print(" ("); Serial.print((float)dsp_time / (newTick - tick)); Serial.println("% CPU)");
     dsp_time = 0;
-    tick += 1000000;
+    tick += 1000;
   }
 
 }

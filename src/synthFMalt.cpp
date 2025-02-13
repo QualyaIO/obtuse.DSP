@@ -31,46 +31,37 @@ fix16_t synthFMalt_Wavetable_getSample(int wavetableIdx, int index){
       case 4:
          sample = synthFMalt_Wavetable_sin_wave(0,index);
       break;
-      case 5:
-         sample = synthFMalt_Wavetable_tri_wave_bl(0,index);
-      break;
-      case 6:
-         sample = synthFMalt_Wavetable_saw_wave_bl(0,index);
-      break;
-      case 7:
-         sample = synthFMalt_Wavetable_square_wave_bl(0,index);
-      break;
     
    }
    return sample;
 }
 
-fix16_t synthFMalt_Wavetable_getSampleFrom(fix16_t (&wavetable)[4096], fix16_t index){
+fix16_t synthFMalt_Wavetable_getSampleFrom(fix16_t (&wavetable)[512], fix16_t index){
    int idx1;
    idx1 = fix_to_int(index);
    int idx2;
    idx2 = (1 + idx1);
-   if(idx2 >= 4096){
-      idx2 = (idx2 % 4096);
-      if(idx1 >= 4096){
-         idx1 = (idx1 % 4096);
+   if(idx2 >= 512){
+      idx2 = (idx2 % 512);
+      if(idx1 >= 512){
+         idx1 = (idx1 % 512);
       }
    }
-   return (wavetable[idx1] + fix_mul((index % 0x10000 /* 1.000000 */),(wavetable[idx2] + (- wavetable[idx1]))));
+   return (pgm_read_word_near(wavetable + idx1) + fix_mul((index % 0x10000 /* 1.000000 */),(pgm_read_word_near(wavetable + idx2) + (- pgm_read_word_near(wavetable + idx1)))));
 }
 
-void synthFMalt_Wavetable_morphTo(fix16_t wavetableIdx, fix16_t phase, fix16_t (&buffer)[4096]){
-   wavetableIdx = fix_clip(wavetableIdx,0x0 /* 0.000000 */,0x80000 /* 8.000000 */);
+void synthFMalt_Wavetable_morphTo(fix16_t wavetableIdx, fix16_t phase, fix16_t (&buffer)[512]){
+   wavetableIdx = fix_clip(wavetableIdx,0x0 /* 0.000000 */,0x40000 /* 4.000000 */);
    int phase_shift;
-   phase_shift = fix_to_int((phase << 12));
+   phase_shift = fix_to_int((phase << 9));
    int wavetable1;
    wavetable1 = fix_to_int(fix_floor(wavetableIdx));
    int wavetable2;
    wavetable2 = (1 + wavetable1);
-   if(wavetable2 >= 8){
+   if(wavetable2 >= 4){
       wavetable2 = 0;
    }
-   if(wavetable1 >= 8){
+   if(wavetable1 >= 4){
       wavetable1 = 0;
    }
    fix16_t ratio;
@@ -79,7 +70,7 @@ void synthFMalt_Wavetable_morphTo(fix16_t wavetableIdx, fix16_t phase, fix16_t (
    i = 0;
    fix16_t s1;
    fix16_t s2;
-   while(i < 4096){
+   while(i < 512){
       s1 = synthFMalt_Wavetable_getSample(wavetable1,(i + phase_shift));
       s2 = synthFMalt_Wavetable_getSample(wavetable2,i);
       buffer[i] = (s1 + fix_mul(ratio,(s2 + (- s1))));
@@ -87,11 +78,11 @@ void synthFMalt_Wavetable_morphTo(fix16_t wavetableIdx, fix16_t phase, fix16_t (
    }
 }
 
-void synthFMalt_Wavetable_getRandomMorph(synthFMalt_Wavetable__ctx_type_20 &_ctx, fix16_t (&oBuff)[4096]){
+void synthFMalt_Wavetable_getRandomMorph(synthFMalt_Wavetable__ctx_type_14 &_ctx, fix16_t (&oBuff)[512]){
    int basetable;
    basetable = 0;
-   if(8 > 1){
-      basetable = (synthFMalt_Random_irandom(_ctx.rando) % 7);
+   if(4 > 1){
+      basetable = (synthFMalt_Random_irandom(_ctx.rando) % 3);
    }
    fix16_t wavetableIdx;
    wavetableIdx = (synthFMalt_Random_random(_ctx.rando) + int_to_fix(basetable));
@@ -99,20 +90,20 @@ void synthFMalt_Wavetable_getRandomMorph(synthFMalt_Wavetable__ctx_type_20 &_ctx
    synthFMalt_Wavetable_morphTo(wavetableIdx,0x0 /* 0.000000 */,oBuff);
 }
 
-void synthFMalt_Wavetable__ctx_type_21_init(synthFMalt_Wavetable__ctx_type_21 &_output_){
-   synthFMalt_Wavetable__ctx_type_21 &_ctx = _output_;
+void synthFMalt_Wavetable__ctx_type_15_init(synthFMalt_Wavetable__ctx_type_15 &_output_){
+   synthFMalt_Wavetable__ctx_type_15 &_ctx = _output_;
    synthFMalt_Random__ctx_type_0_init(_ctx._inst345);
-   synthFMalt_Wavetable__ctx_type_20_init(_ctx._inst1c8);
+   synthFMalt_Wavetable__ctx_type_14_init(_ctx._inst1c8);
    
    return ;
 }
 
-fix16_t synthFMalt_Wavetable_getRandRandomMorph(synthFMalt_Wavetable__ctx_type_21 &_ctx, fix16_t (&oBuff)[4096]){
+fix16_t synthFMalt_Wavetable_getRandRandomMorph(synthFMalt_Wavetable__ctx_type_15 &_ctx, fix16_t (&oBuff)[512]){
    synthFMalt_Wavetable_getRandomMorph(_ctx._inst1c8,oBuff);
    int idx;
    idx = 0;
-   if(4096 > 0){
-      idx = (synthFMalt_Random_irandom(_ctx._inst345) % 4096);
+   if(512 > 0){
+      idx = (synthFMalt_Random_irandom(_ctx._inst345) % 512);
    }
    return synthFMalt_Wavetable_getSampleFrom(oBuff,int_to_fix(idx));
 }
@@ -184,7 +175,7 @@ void synthFMalt_OSCalt_process_bufferTo(synthFMalt_OSCalt__ctx_type_1 &_ctx, int
          while(_ctx.phase > _ctx.rsize){
             _ctx.phase = (_ctx.phase + (- _ctx.rsize));
          }
-         oBuffer[i] = fix_mul(fix_mul(env[i],synthFMalt_OSCalt_getSampleMorph(_ctx.wavetable1,_ctx.wavetable2,_ctx.wavetable_ratio,_ctx.wavetable_phase_shift,_ctx.phase)),(0x10000 /* 1.000000 */ + (- fix_mul(level_shift_coeff,(phase_env[i] + phase_shift[i])))));
+         oBuffer[i] = fix_mul(fix_mul(pgm_read_word_near(env + i),synthFMalt_OSCalt_getSampleMorph(_ctx.wavetable1,_ctx.wavetable2,_ctx.wavetable_ratio,_ctx.wavetable_phase_shift,_ctx.phase)),(0x10000 /* 1.000000 */ + (- fix_mul(level_shift_coeff,(pgm_read_word_near(phase_env + i) + pgm_read_word_near(phase_shift + i))))));
          i = (1 + i);
       }
    }
@@ -195,7 +186,7 @@ void synthFMalt_OSCalt_process_bufferTo(synthFMalt_OSCalt__ctx_type_1 &_ctx, int
          while(_ctx.phase > _ctx.rsize){
             _ctx.phase = (_ctx.phase + (- _ctx.rsize));
          }
-         oBuffer[i] = fix_mul(env[i],synthFMalt_OSCalt_getSampleMorph(_ctx.wavetable1,_ctx.wavetable2,_ctx.wavetable_ratio,_ctx.wavetable_phase_shift,(_ctx.phase + max_phase + fix_mul(phase_range,phase_shift[i]))));
+         oBuffer[i] = fix_mul(pgm_read_word_near(env + i),synthFMalt_OSCalt_getSampleMorph(_ctx.wavetable1,_ctx.wavetable2,_ctx.wavetable_ratio,_ctx.wavetable_phase_shift,(_ctx.phase + max_phase + fix_mul(phase_range,pgm_read_word_near(phase_shift + i)))));
          i = (1 + i);
       }
    }
@@ -213,7 +204,7 @@ void synthFMalt_OSCalt_process_bufferTo_simple(synthFMalt_OSCalt__ctx_type_1 &_c
       while(_ctx.phase > _ctx.rsize){
          _ctx.phase = (_ctx.phase + (- _ctx.rsize));
       }
-      oBuffer[i] = fix_mul(env[i],synthFMalt_OSCalt_getSampleMorph(_ctx.wavetable1,_ctx.wavetable2,_ctx.wavetable_ratio,_ctx.wavetable_phase_shift,(_ctx.phase + _ctx.phase_base)));
+      oBuffer[i] = fix_mul(pgm_read_word_near(env + i),synthFMalt_OSCalt_getSampleMorph(_ctx.wavetable1,_ctx.wavetable2,_ctx.wavetable_ratio,_ctx.wavetable_phase_shift,(_ctx.phase + _ctx.phase_base)));
       i = (1 + i);
    }
 }
@@ -234,7 +225,7 @@ void synthFMalt_OSCalt_process_bufferTo_feedback(synthFMalt_OSCalt__ctx_type_1 &
       while(_ctx.phase > _ctx.rsize){
          _ctx.phase = (_ctx.phase + (- _ctx.rsize));
       }
-      _ctx.last_val_feedback = fix_mul(env[i],synthFMalt_OSCalt_getSampleMorph(_ctx.wavetable1,_ctx.wavetable2,_ctx.wavetable_ratio,_ctx.wavetable_phase_shift,(_ctx.phase + _ctx.phase_base + max_phase + fix_mul(_ctx.last_val_feedback,phase_range))));
+      _ctx.last_val_feedback = fix_mul(pgm_read_word_near(env + i),synthFMalt_OSCalt_getSampleMorph(_ctx.wavetable1,_ctx.wavetable2,_ctx.wavetable_ratio,_ctx.wavetable_phase_shift,(_ctx.phase + _ctx.phase_base + max_phase + fix_mul(_ctx.last_val_feedback,phase_range))));
       oBuffer[i] = _ctx.last_val_feedback;
       i = (1 + i);
    }
@@ -266,20 +257,20 @@ void synthFMalt_OSCalt_setSamplerate(synthFMalt_OSCalt__ctx_type_1 &_ctx, fix16_
 }
 
 void synthFMalt_OSCalt_setWavetable(synthFMalt_OSCalt__ctx_type_1 &_ctx, fix16_t wavetableIdx){
-   wavetableIdx = fix_clip(wavetableIdx,0x0 /* 0.000000 */,0x80000 /* 8.000000 */);
+   wavetableIdx = fix_clip(wavetableIdx,0x0 /* 0.000000 */,0x40000 /* 4.000000 */);
    _ctx.wavetable1 = fix_to_int(fix_floor(wavetableIdx));
    _ctx.wavetable2 = (1 + _ctx.wavetable1);
-   if(_ctx.wavetable2 >= 8){
+   if(_ctx.wavetable2 >= 4){
       _ctx.wavetable2 = 0;
    }
-   if(_ctx.wavetable1 >= 8){
+   if(_ctx.wavetable1 >= 4){
       _ctx.wavetable1 = 0;
    }
    _ctx.wavetable_ratio = (wavetableIdx % 0x10000 /* 1.000000 */);
 }
 
 void synthFMalt_OSCalt_default(synthFMalt_OSCalt__ctx_type_1 &_ctx){
-   _ctx.rsize = 0x10000000 /* 4096.000000 */;
+   _ctx.rsize = 0x2000000 /* 512.000000 */;
    synthFMalt_OSCalt_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    synthFMalt_OSCalt_setFrequency(_ctx,0x70a3 /* 0.440000 */);
    synthFMalt_OSCalt_setWavetable(_ctx,0x0 /* 0.000000 */);
@@ -321,7 +312,7 @@ int synthFMalt_Notes_firstNote(synthFMalt_Notes__ctx_type_0 &_ctx){
    int first_played;
    first_played = 0;
    if(_ctx.nb_notes > 0){
-      first_played = _ctx.last_notes[0];
+      first_played = pgm_read_word_near(_ctx.last_notes + 0);
    }
    return first_played;
 }
@@ -330,14 +321,14 @@ int synthFMalt_Notes_lastNote(synthFMalt_Notes__ctx_type_0 &_ctx){
    int last_played;
    last_played = 0;
    if(_ctx.nb_notes > 0){
-      last_played = _ctx.last_notes[((-1) + _ctx.nb_notes)];
+      last_played = pgm_read_word_near(_ctx.last_notes + ((-1) + _ctx.nb_notes));
    }
    return last_played;
 }
 
 uint8_t synthFMalt_Notes_noteOff(synthFMalt_Notes__ctx_type_0 &_ctx, int note, int channel){
    note = int_clip(note,0,127);
-   if(_ctx.notes[note] > 0){
+   if(pgm_read_word_near(_ctx.notes + note) > 0){
       if(_ctx.poly){
          _ctx.notes[note] = 0;
          _ctx.nb_notes = 0;
@@ -345,17 +336,17 @@ uint8_t synthFMalt_Notes_noteOff(synthFMalt_Notes__ctx_type_0 &_ctx, int note, i
       else
       {
          int i;
-         i = ((-1) + _ctx.notes[note]);
+         i = ((-1) + pgm_read_word_near(_ctx.notes + note));
          while(i < _ctx.nb_notes){
             if(i < 127){
-               _ctx.last_notes[i] = _ctx.last_notes[(1 + i)];
+               _ctx.last_notes[i] = pgm_read_word_near(_ctx.last_notes + (1 + i));
             }
             else
             {
                _ctx.last_notes[i] = 0;
             }
-            if(_ctx.last_notes[i] > 0){
-               _ctx.notes[((-1) + _ctx.last_notes[i])] = (1 + i);
+            if(pgm_read_word_near(_ctx.last_notes + i) > 0){
+               _ctx.notes[((-1) + pgm_read_word_near(_ctx.last_notes + i))] = (1 + i);
             }
             i = (1 + i);
          }
@@ -373,7 +364,7 @@ uint8_t synthFMalt_Notes_noteOff(synthFMalt_Notes__ctx_type_0 &_ctx, int note, i
 uint8_t synthFMalt_Notes_noteOn(synthFMalt_Notes__ctx_type_0 &_ctx, int note, int velocity, int channel){
    note = int_clip(note,0,127);
    uint8_t isNew;
-   isNew = (_ctx.notes[note] <= 0);
+   isNew = (pgm_read_word_near(_ctx.notes + note) <= 0);
    if(_ctx.allowDuplicates || isNew){
       if(bool_not(_ctx.poly)){
          if(bool_not(isNew)){
@@ -878,7 +869,7 @@ void synthFMalt_FMalt_process_bufferTo(synthFMalt_FMalt__ctx_type_0 &_ctx, int n
                _ctx.level = _ctx.target_level;
             }
          }
-         _ctx.buffer_carrier_env[i] = fix_mul(_ctx.level,_ctx.buffer_carrier_env[i]);
+         _ctx.buffer_carrier_env[i] = fix_mul(_ctx.level,pgm_read_word_near(_ctx.buffer_carrier_env + i));
          i = (1 + i);
       }
       _ctx.n = (_ctx.n + nb);
@@ -889,9 +880,9 @@ void synthFMalt_FMalt_process_bufferTo(synthFMalt_FMalt__ctx_type_0 &_ctx, int n
          int n_rev;
          n_rev = (_ctx.n % env_df);
          fix16_t modulator_env_rev;
-         modulator_env_rev = _ctx.buffer_modulator_env[((-1) + i_env)];
+         modulator_env_rev = pgm_read_word_near(_ctx.buffer_modulator_env + ((-1) + i_env));
          fix16_t carrier_env_rev;
-         carrier_env_rev = _ctx.buffer_carrier_env[((-1) + i_env)];
+         carrier_env_rev = pgm_read_word_near(_ctx.buffer_carrier_env + ((-1) + i_env));
          while(i > 1){
             _ctx.buffer_modulator_env[((-1) + i)] = modulator_env_rev;
             _ctx.buffer_carrier_env[((-1) + i)] = carrier_env_rev;
@@ -901,8 +892,8 @@ void synthFMalt_FMalt_process_bufferTo(synthFMalt_FMalt__ctx_type_0 &_ctx, int n
                n_rev = ((-1) + env_df);
                i_env = ((-1) + i_env);
                if(i_env > 0){
-                  modulator_env_rev = _ctx.buffer_modulator_env[((-1) + i_env)];
-                  carrier_env_rev = _ctx.buffer_carrier_env[((-1) + i_env)];
+                  modulator_env_rev = pgm_read_word_near(_ctx.buffer_modulator_env + ((-1) + i_env));
+                  carrier_env_rev = pgm_read_word_near(_ctx.buffer_carrier_env + ((-1) + i_env));
                }
                else
                {
@@ -912,8 +903,8 @@ void synthFMalt_FMalt_process_bufferTo(synthFMalt_FMalt__ctx_type_0 &_ctx, int n
             }
          }
       }
-      _ctx.modulator_env = _ctx.buffer_modulator_env[((-1) + nb)];
-      _ctx.carrier_env = _ctx.buffer_carrier_env[((-1) + nb)];
+      _ctx.modulator_env = pgm_read_word_near(_ctx.buffer_modulator_env + ((-1) + nb));
+      _ctx.carrier_env = pgm_read_word_near(_ctx.buffer_carrier_env + ((-1) + nb));
    }
    if(_ctx.env_carrier_idle){
       synthFMalt_OSCalt_resetPhase(_ctx.carrier);
@@ -1193,7 +1184,7 @@ fix16_t synthFMalt_Voice_process(synthFMalt_Voice__ctx_type_0 &_ctx){
    i = 0;
    while(i < _ctx.number_voices){
       _ctx.last_values[i] = synthFMalt_Poly_getSample(_ctx.poly,i);
-      value = (value + _ctx.last_values[i]);
+      value = (value + pgm_read_word_near(_ctx.last_values + i));
       i = (1 + i);
    }
    if(_ctx.leftovers != 0x0 /* 0.000000 */){
@@ -1219,11 +1210,11 @@ void synthFMalt_Voice_process_bufferTo(synthFMalt_Voice__ctx_type_0 &_ctx, int n
       synthFMalt_Poly_runVoice(_ctx.poly,v,nb,_ctx.buffer_v0);
       i = 0;
       while(i < nb){
-         oBuffer[i] = _ctx.buffer_v0[i];
+         oBuffer[i] = pgm_read_word_near(_ctx.buffer_v0 + i);
          i = (1 + i);
       }
       if(nb > 0){
-         _ctx.last_values[v] = _ctx.buffer_v0[((-1) + nb)];
+         _ctx.last_values[v] = pgm_read_word_near(_ctx.buffer_v0 + ((-1) + nb));
       }
       v = (1 + v);
    }
@@ -1231,24 +1222,24 @@ void synthFMalt_Voice_process_bufferTo(synthFMalt_Voice__ctx_type_0 &_ctx, int n
       synthFMalt_Poly_runVoice(_ctx.poly,v,nb,_ctx.buffer_v0);
       i = 0;
       while(i < nb){
-         oBuffer[i] = (_ctx.buffer_v0[i] + oBuffer[i]);
+         oBuffer[i] = (pgm_read_word_near(_ctx.buffer_v0 + i) + pgm_read_word_near(oBuffer + i));
          i = (1 + i);
       }
       if(nb > 0){
-         _ctx.last_values[v] = _ctx.buffer_v0[((-1) + nb)];
+         _ctx.last_values[v] = pgm_read_word_near(_ctx.buffer_v0 + ((-1) + nb));
       }
       v = (1 + v);
    }
    i = 0;
    while((_ctx.leftovers != 0x0 /* 0.000000 */) && (i < nb)){
       _ctx.leftovers = fix_mul(_ctx.leftovers,_ctx.leftovers_decay);
-      oBuffer[i] = (_ctx.leftovers + oBuffer[i]);
+      oBuffer[i] = (_ctx.leftovers + pgm_read_word_near(oBuffer + i));
       i = (1 + i);
    }
    if(_ctx.normalize){
       i = 0;
       while(i < nb){
-         oBuffer[i] = fix_mul(_ctx.voices_ratio,oBuffer[i]);
+         oBuffer[i] = fix_mul(_ctx.voices_ratio,pgm_read_word_near(oBuffer + i));
          i = (1 + i);
       }
    }
@@ -1257,7 +1248,7 @@ void synthFMalt_Voice_process_bufferTo(synthFMalt_Voice__ctx_type_0 &_ctx, int n
 void synthFMalt_Voice_noteOff(synthFMalt_Voice__ctx_type_0 &_ctx, int note, int channel){
    note = int_clip(note,0,127);
    int v;
-   v = _ctx.notes[note];
+   v = pgm_read_word_near(_ctx.notes + note);
    if((v > 0) && (v <= 4)){
       if(synthFMalt_Notes_noteOff(_ctx.voicesactive,((-1) + v),0)){
          synthFMalt_Poly_sendNoteOff(_ctx.poly,((-1) + v),note,channel);
@@ -1274,7 +1265,7 @@ void synthFMalt_Voice_noteOn(synthFMalt_Voice__ctx_type_0 &_ctx, int note, int v
    note = int_clip(note,0,127);
    velocity = int_clip(velocity,0,127);
    int v;
-   v = _ctx.notes[note];
+   v = pgm_read_word_near(_ctx.notes + note);
    if((v > 0) && (v <= _ctx.number_voices)){
       if(bool_not((synthFMalt_Notes_noteOff(_ctx.voicesactive,((-1) + v),0) && synthFMalt_Notes_noteOn(_ctx.voicesinactive,((-1) + v),127,0) && synthFMalt_Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && synthFMalt_Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)))){
          _ctx.notes[note] = 0;
@@ -1284,7 +1275,7 @@ void synthFMalt_Voice_noteOn(synthFMalt_Voice__ctx_type_0 &_ctx, int note, int v
    }
    else
    {
-      if(_ctx.reuse && (v < 0) && ((- v) <= _ctx.number_voices) && (_ctx.voices[((-1) + (- v))] == (- (1 + note))) && (_ctx.notes[note] == v)){
+      if(_ctx.reuse && (v < 0) && ((- v) <= _ctx.number_voices) && (pgm_read_word_near(_ctx.voices + ((-1) + (- v))) == (- (1 + note))) && (pgm_read_word_near(_ctx.notes + note) == v)){
          v = (- v);
          if(bool_not((synthFMalt_Notes_noteOff(_ctx.voicesinactive,((-1) + v),0) && synthFMalt_Notes_noteOn(_ctx.voicesactive,((-1) + v),127,0)))){
             _ctx.notes[note] = 0;
@@ -1299,7 +1290,7 @@ void synthFMalt_Voice_noteOn(synthFMalt_Voice__ctx_type_0 &_ctx, int note, int v
             int active_v;
             active_v = synthFMalt_Notes_firstNote(_ctx.voicesactive);
             if(active_v > 0){
-               synthFMalt_Voice_noteOff(_ctx,_ctx.voices[((-1) + active_v)],0);
+               synthFMalt_Voice_noteOff(_ctx,pgm_read_word_near(_ctx.voices + ((-1) + active_v)),0);
             }
          }
          v = synthFMalt_Notes_firstNote(_ctx.voicesinactive);
@@ -1316,7 +1307,7 @@ void synthFMalt_Voice_noteOn(synthFMalt_Voice__ctx_type_0 &_ctx, int note, int v
    }
    if(v > 0){
       if(synthFMalt_Poly_shouldLeftOvers(_ctx.poly)){
-         _ctx.leftovers = (_ctx.leftovers + _ctx.last_values[((-1) + v)]);
+         _ctx.leftovers = (_ctx.leftovers + pgm_read_word_near(_ctx.last_values + ((-1) + v)));
       }
       synthFMalt_Poly_sendNoteOn(_ctx.poly,((-1) + v),note,velocity,channel);
       _ctx.notes[note] = v;
@@ -1330,7 +1321,7 @@ void synthFMalt_Voice_setNbVoices(synthFMalt_Voice__ctx_type_0 &_ctx, int nbvoic
    int i;
    i = synthFMalt_Notes_nbNotes(_ctx.voicesactive);
    while((i > nbvoices) && (i > 0)){
-      synthFMalt_Voice_noteOff(_ctx,_ctx.voices[((-1) + i)],0);
+      synthFMalt_Voice_noteOff(_ctx,pgm_read_word_near(_ctx.voices + ((-1) + i)),0);
       synthFMalt_Notes_noteOff(_ctx.voicesinactive,((-1) + i),0);
       i = ((-1) + i);
    }

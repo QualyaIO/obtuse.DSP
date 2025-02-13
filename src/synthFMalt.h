@@ -68,134 +68,101 @@ static_inline int synthFMalt_Random_getRandMax(synthFMalt_Random__ctx_type_0 &_c
 };
 
 static_inline int synthFMalt_Wavetable_sin_wave_samples(){
-   return 4096;
+   return 512;
 };
 
 static_inline fix16_t synthFMalt_Wavetable_sin_wave(int channel, int index){
    if(channel == 0){
-      return fix_wrap_array(synthFMalt_Wavetable_sin_wave_chan_0)[(index % 4096)];
+      return pgm_read_word_near(fix_wrap_array(synthFMalt_Wavetable_sin_wave_chan_0) + (index % 512));
    }
    return 0x0 /* 0.000000 */;
 }
 
 static_inline int synthFMalt_Wavetable_tri_wave_samples(){
-   return 4096;
+   return 512;
 };
 
 static_inline fix16_t synthFMalt_Wavetable_tri_wave(int channel, int index){
    if(channel == 0){
-      return fix_wrap_array(synthFMalt_Wavetable_tri_wave_chan_0)[(index % 4096)];
+      return pgm_read_word_near(fix_wrap_array(synthFMalt_Wavetable_tri_wave_chan_0) + (index % 512));
    }
    return 0x0 /* 0.000000 */;
 }
 
 static_inline int synthFMalt_Wavetable_saw_wave_samples(){
-   return 4096;
+   return 512;
 };
 
 static_inline fix16_t synthFMalt_Wavetable_saw_wave(int channel, int index){
    if(channel == 0){
-      return fix_wrap_array(synthFMalt_Wavetable_saw_wave_chan_0)[(index % 4096)];
+      return pgm_read_word_near(fix_wrap_array(synthFMalt_Wavetable_saw_wave_chan_0) + (index % 512));
    }
    return 0x0 /* 0.000000 */;
 }
 
 static_inline int synthFMalt_Wavetable_square_wave_samples(){
-   return 4096;
+   return 512;
 };
 
 static_inline fix16_t synthFMalt_Wavetable_square_wave(int channel, int index){
    if(channel == 0){
-      return fix_wrap_array(synthFMalt_Wavetable_square_wave_chan_0)[(index % 4096)];
+      return pgm_read_word_near(fix_wrap_array(synthFMalt_Wavetable_square_wave_chan_0) + (index % 512));
    }
    return 0x0 /* 0.000000 */;
 }
 
-static_inline int synthFMalt_Wavetable_tri_wave_bl_samples(){
-   return 4096;
-};
-
-static_inline fix16_t synthFMalt_Wavetable_tri_wave_bl(int channel, int index){
-   if(channel == 0){
-      return fix_wrap_array(synthFMalt_Wavetable_tri_wave_bl_chan_0)[(index % 4096)];
-   }
-   return 0x0 /* 0.000000 */;
-}
-
-static_inline int synthFMalt_Wavetable_saw_wave_bl_samples(){
-   return 4096;
-};
-
-static_inline fix16_t synthFMalt_Wavetable_saw_wave_bl(int channel, int index){
-   if(channel == 0){
-      return fix_wrap_array(synthFMalt_Wavetable_saw_wave_bl_chan_0)[(index % 4096)];
-   }
-   return 0x0 /* 0.000000 */;
-}
-
-static_inline int synthFMalt_Wavetable_square_wave_bl_samples(){
-   return 4096;
-};
-
-static_inline fix16_t synthFMalt_Wavetable_square_wave_bl(int channel, int index){
-   if(channel == 0){
-      return fix_wrap_array(synthFMalt_Wavetable_square_wave_bl_chan_0)[(index % 4096)];
-   }
-   return 0x0 /* 0.000000 */;
-}
-
-static_inline void synthFMalt_Wavetable_bufferWavetable(fix16_t (&oBuff)[4096]){
+static_inline void synthFMalt_Wavetable_bufferWavetable(fix16_t (&oBuff)[512]){
 }
 
 static_inline int synthFMalt_Wavetable_bufferSize(){
-   return 4096;
+   return 512;
 };
 
 fix16_t synthFMalt_Wavetable_getSample(int wavetableIdx, int index);
 
-fix16_t synthFMalt_Wavetable_getSampleFrom(fix16_t (&wavetable)[4096], fix16_t index);
+fix16_t synthFMalt_Wavetable_getSampleFrom(fix16_t (&wavetable)[512], fix16_t index);
 
 static_inline int synthFMalt_Wavetable_getNbWavetables(){
-   return 8;
+   return 4;
 };
 
-void synthFMalt_Wavetable_morphTo(fix16_t wavetableIdx, fix16_t phase, fix16_t (&buffer)[4096]);
+void synthFMalt_Wavetable_morphTo(fix16_t wavetableIdx, fix16_t phase, fix16_t (&buffer)[512]);
 
-typedef struct synthFMalt_Wavetable__ctx_type_20 {
+typedef struct synthFMalt_Wavetable__ctx_type_14 {
    synthFMalt_Random__ctx_type_0 rando;
-} synthFMalt_Wavetable__ctx_type_20;
+} synthFMalt_Wavetable__ctx_type_14;
 
-typedef synthFMalt_Wavetable__ctx_type_20 synthFMalt_Wavetable_getRandomMorph_type;
+typedef synthFMalt_Wavetable__ctx_type_14 synthFMalt_Wavetable_getRandomMorph_type;
 
-static_inline void synthFMalt_Wavetable__ctx_type_20_init(synthFMalt_Wavetable__ctx_type_20 &_output_){
-   synthFMalt_Wavetable__ctx_type_20 &_ctx = _output_;
+static_inline void synthFMalt_Wavetable__ctx_type_14_init(synthFMalt_Wavetable__ctx_type_14 &_output_){
+   synthFMalt_Wavetable__ctx_type_14 &_ctx = _output_;
    synthFMalt_Random__ctx_type_0_init(_ctx.rando);
    
    return ;
 }
 
-static_inline void synthFMalt_Wavetable_getRandomMorph_init(synthFMalt_Wavetable__ctx_type_20 &_output_){
-   synthFMalt_Wavetable__ctx_type_20_init(_output_);
+static_inline void synthFMalt_Wavetable_getRandomMorph_init(synthFMalt_Wavetable__ctx_type_14 &_output_){
+   synthFMalt_Wavetable__ctx_type_14_init(_output_);
    return ;
 }
 
-void synthFMalt_Wavetable_getRandomMorph(synthFMalt_Wavetable__ctx_type_20 &_ctx, fix16_t (&oBuff)[4096]);
+void synthFMalt_Wavetable_getRandomMorph(synthFMalt_Wavetable__ctx_type_14 &_ctx, fix16_t (&oBuff)[512]);
 
-typedef struct synthFMalt_Wavetable__ctx_type_21 {
+typedef struct synthFMalt_Wavetable__ctx_type_15 {
    synthFMalt_Random__ctx_type_0 _inst345;
-   synthFMalt_Wavetable__ctx_type_20 _inst1c8;
-} synthFMalt_Wavetable__ctx_type_21;
+   synthFMalt_Wavetable__ctx_type_14 _inst1c8;
+} synthFMalt_Wavetable__ctx_type_15;
 
-typedef synthFMalt_Wavetable__ctx_type_21 synthFMalt_Wavetable_getRandRandomMorph_type;
+typedef synthFMalt_Wavetable__ctx_type_15 synthFMalt_Wavetable_getRandRandomMorph_type;
 
-void synthFMalt_Wavetable__ctx_type_21_init(synthFMalt_Wavetable__ctx_type_21 &_output_);
+void synthFMalt_Wavetable__ctx_type_15_init(synthFMalt_Wavetable__ctx_type_15 &_output_);
 
-static_inline void synthFMalt_Wavetable_getRandRandomMorph_init(synthFMalt_Wavetable__ctx_type_21 &_output_){
-   synthFMalt_Wavetable__ctx_type_21_init(_output_);
+static_inline void synthFMalt_Wavetable_getRandRandomMorph_init(synthFMalt_Wavetable__ctx_type_15 &_output_){
+   synthFMalt_Wavetable__ctx_type_15_init(_output_);
    return ;
 }
 
-fix16_t synthFMalt_Wavetable_getRandRandomMorph(synthFMalt_Wavetable__ctx_type_21 &_ctx, fix16_t (&oBuff)[4096]);
+fix16_t synthFMalt_Wavetable_getRandRandomMorph(synthFMalt_Wavetable__ctx_type_15 &_ctx, fix16_t (&oBuff)[512]);
 
 static_inline fix16_t synthFMalt_Util_noteToFrequency(int note){
    return fix_mul(0x217 /* 0.008176 */,fix_exp(fix_mul(0xec9 /* 0.057762 */,int_to_fix(note))));
@@ -1553,7 +1520,7 @@ static_inline void synthFMalt_Poly_synthGetNbWavetables_init(synthFMalt_Poly__ct
 }
 
 static_inline int synthFMalt_Poly_synthGetNbWavetables(synthFMalt_Poly__ctx_type_0 &_ctx){
-   return 8;
+   return 4;
 };
 
 typedef synthFMalt_Poly__ctx_type_0 synthFMalt_Poly_synthSetModulatorWavetable_type;
