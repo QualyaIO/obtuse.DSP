@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Generate FM synth with on-the-fly wavetable"
-vultc -ccode vult/voice.vult -template arduino -real fixed -i vult/wavetable_small -i vult/synth_FMalt -i vult/buffer_medium -o src/synthFMalt -output-prefix synthFMalt_
+vultc -ccode vult/voice.vult -template arduino -real fixed -i vult/wavetable_small -i vult/synth_FMalt -i vult/buffer_small -o src/synthFMalt -output-prefix synthFMalt_
 
 
 echo "Hack init"

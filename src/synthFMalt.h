@@ -268,10 +268,10 @@ static_inline fix16_t synthFMalt_Util_velocityToLevel(int velocity){
    return fix_mul(0x204 /* 0.007874 */,int_to_fix(velocity));
 }
 
-static_inline void synthFMalt_Buffer_buffer(fix16_t (&oBuff)[128]){
+static_inline void synthFMalt_Buffer_buffer(fix16_t (&oBuff)[32]){
 }
 
-void synthFMalt_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
+void synthFMalt_Buffer_buffer_large(fix16_t (&oBuff)[512]);
 
 fix16_t synthFMalt_OSCalt_getSampleMorph(int wavetable1, int wavetable2, fix16_t wavetable_ratio, int phase_shift, fix16_t index);
 
@@ -314,7 +314,7 @@ static_inline void synthFMalt_OSCalt_process_bufferTo_init(synthFMalt_OSCalt__ct
    return ;
 }
 
-void synthFMalt_OSCalt_process_bufferTo(synthFMalt_OSCalt__ctx_type_1 &_ctx, int nb, fix16_t (&env)[128], fix16_t (&phase_shift)[128], fix16_t (&phase_env)[128], fix16_t phase_shift_level, uint8_t shift_level, fix16_t (&oBuffer)[128]);
+void synthFMalt_OSCalt_process_bufferTo(synthFMalt_OSCalt__ctx_type_1 &_ctx, int nb, fix16_t (&env)[32], fix16_t (&phase_shift)[32], fix16_t (&phase_env)[32], fix16_t phase_shift_level, uint8_t shift_level, fix16_t (&oBuffer)[32]);
 
 typedef synthFMalt_OSCalt__ctx_type_1 synthFMalt_OSCalt_process_bufferTo_simple_type;
 
@@ -323,7 +323,7 @@ static_inline void synthFMalt_OSCalt_process_bufferTo_simple_init(synthFMalt_OSC
    return ;
 }
 
-void synthFMalt_OSCalt_process_bufferTo_simple(synthFMalt_OSCalt__ctx_type_1 &_ctx, int nb, fix16_t (&env)[128], fix16_t (&oBuffer)[128]);
+void synthFMalt_OSCalt_process_bufferTo_simple(synthFMalt_OSCalt__ctx_type_1 &_ctx, int nb, fix16_t (&env)[32], fix16_t (&oBuffer)[32]);
 
 typedef synthFMalt_OSCalt__ctx_type_1 synthFMalt_OSCalt_process_bufferTo_feedback_type;
 
@@ -332,7 +332,7 @@ static_inline void synthFMalt_OSCalt_process_bufferTo_feedback_init(synthFMalt_O
    return ;
 }
 
-void synthFMalt_OSCalt_process_bufferTo_feedback(synthFMalt_OSCalt__ctx_type_1 &_ctx, int nb, fix16_t (&env)[128], fix16_t feedback, fix16_t (&oBuffer)[128]);
+void synthFMalt_OSCalt_process_bufferTo_feedback(synthFMalt_OSCalt__ctx_type_1 &_ctx, int nb, fix16_t (&env)[32], fix16_t feedback, fix16_t (&oBuffer)[32]);
 
 typedef synthFMalt_OSCalt__ctx_type_1 synthFMalt_OSCalt_process_bufferTo_simplest_type;
 
@@ -341,7 +341,7 @@ static_inline void synthFMalt_OSCalt_process_bufferTo_simplest_init(synthFMalt_O
    return ;
 }
 
-void synthFMalt_OSCalt_process_bufferTo_simplest(synthFMalt_OSCalt__ctx_type_1 &_ctx, int nb, fix16_t (&oBuffer)[128]);
+void synthFMalt_OSCalt_process_bufferTo_simplest(synthFMalt_OSCalt__ctx_type_1 &_ctx, int nb, fix16_t (&oBuffer)[32]);
 
 typedef synthFMalt_OSCalt__ctx_type_1 synthFMalt_OSCalt_updateStep_type;
 
@@ -895,7 +895,7 @@ static_inline void synthFMalt_ADSR_process_bufferTo_init(synthFMalt_ADSR__ctx_ty
    return ;
 }
 
-uint8_t synthFMalt_ADSR_process_bufferTo(synthFMalt_ADSR__ctx_type_10 &_ctx, uint8_t bgate, int nb, fix16_t (&oBuffer)[128]);
+uint8_t synthFMalt_ADSR_process_bufferTo(synthFMalt_ADSR__ctx_type_10 &_ctx, uint8_t bgate, int nb, fix16_t (&oBuffer)[32]);
 
 typedef synthFMalt_ADSR__ctx_type_10 synthFMalt_ADSR_updateSteps_type;
 
@@ -972,7 +972,7 @@ static_inline void synthFMalt_ADSR_dummy_init(synthFMalt_ADSR__ctx_type_11 &_out
 }
 
 static_inline void synthFMalt_ADSR_dummy(synthFMalt_ADSR__ctx_type_11 &_ctx){
-   fix16_t buff[128];
+   fix16_t buff[32];
    synthFMalt_Buffer_buffer(buff);
    synthFMalt_ADSR_process_bufferTo(_ctx._inst182,false,0,buff);
 }
@@ -1011,9 +1011,9 @@ typedef struct synthFMalt_FMalt__ctx_type_0 {
    fix16_t carrier_env;
    fix16_t carrierRatio;
    synthFMalt_OSCalt__ctx_type_1 carrier;
-   fix16_t buffer_modulator_env[128];
-   fix16_t buffer_modulator[128];
-   fix16_t buffer_carrier_env[128];
+   fix16_t buffer_modulator_env[32];
+   fix16_t buffer_modulator[32];
+   fix16_t buffer_carrier_env[32];
    fix16_t bend;
 } synthFMalt_FMalt__ctx_type_0;
 
@@ -1035,7 +1035,7 @@ static_inline void synthFMalt_FMalt_process_bufferTo_init(synthFMalt_FMalt__ctx_
    return ;
 }
 
-void synthFMalt_FMalt_process_bufferTo(synthFMalt_FMalt__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]);
+void synthFMalt_FMalt_process_bufferTo(synthFMalt_FMalt__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[32]);
 
 typedef synthFMalt_FMalt__ctx_type_0 synthFMalt_FMalt__updateLevelStep_type;
 
@@ -1328,7 +1328,7 @@ static_inline void synthFMalt_Poly_runVoice_init(synthFMalt_Poly__ctx_type_0 &_o
    return ;
 }
 
-static_inline void synthFMalt_Poly_runVoice(synthFMalt_Poly__ctx_type_0 &_ctx, int voice, int nb, fix16_t (&buff)[128]){
+static_inline void synthFMalt_Poly_runVoice(synthFMalt_Poly__ctx_type_0 &_ctx, int voice, int nb, fix16_t (&buff)[32]){
    switch(voice) {
       case 0:
          synthFMalt_FMalt_process_bufferTo(_ctx.voice0,nb,buff);
@@ -1724,7 +1724,7 @@ static_inline void synthFMalt_Poly_dummy_init(synthFMalt_Poly__ctx_type_1 &_outp
 }
 
 static_inline void synthFMalt_Poly_dummy(synthFMalt_Poly__ctx_type_1 &_ctx){
-   fix16_t buff[128];
+   fix16_t buff[32];
    synthFMalt_Buffer_buffer(buff);
    synthFMalt_Poly_runVoice(_ctx._inst179,0,0,buff);
 }
@@ -1745,7 +1745,7 @@ typedef struct synthFMalt_Voice__ctx_type_0 {
    int last_velocities[4];
    fix16_t last_values[4];
    fix16_t fs;
-   fix16_t buffer_v0[128];
+   fix16_t buffer_v0[32];
 } synthFMalt_Voice__ctx_type_0;
 
 typedef synthFMalt_Voice__ctx_type_0 synthFMalt_Voice_process_type;
@@ -1766,7 +1766,7 @@ static_inline void synthFMalt_Voice_process_bufferTo_init(synthFMalt_Voice__ctx_
    return ;
 }
 
-void synthFMalt_Voice_process_bufferTo(synthFMalt_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]);
+void synthFMalt_Voice_process_bufferTo(synthFMalt_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[32]);
 
 typedef synthFMalt_Voice__ctx_type_0 synthFMalt_Voice_setReuse_type;
 
@@ -2107,7 +2107,7 @@ static_inline void synthFMalt_Voice_dummy_init(synthFMalt_Voice__ctx_type_1 &_ou
 }
 
 static_inline void synthFMalt_Voice_dummy(synthFMalt_Voice__ctx_type_1 &_ctx){
-   fix16_t buff[128];
+   fix16_t buff[32];
    synthFMalt_Buffer_buffer(buff);
    synthFMalt_Voice_process_bufferTo(_ctx._inst1b9,0,buff);
 }

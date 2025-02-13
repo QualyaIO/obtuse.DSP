@@ -108,10 +108,10 @@ fix16_t synthFMalt_Wavetable_getRandRandomMorph(synthFMalt_Wavetable__ctx_type_1
    return synthFMalt_Wavetable_getSampleFrom(oBuff,int_to_fix(idx));
 }
 
-void synthFMalt_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
+void synthFMalt_Buffer_buffer_large(fix16_t (&oBuff)[512]){
    int i;
    i = 0;
-   while(i < 2048){
+   while(i < 512){
       oBuff[i] = 0x0 /* 0.000000 */;
       i = (1 + i);
    }
@@ -156,10 +156,10 @@ void synthFMalt_OSCalt__ctx_type_1_init(synthFMalt_OSCalt__ctx_type_1 &_output_)
    return ;
 }
 
-void synthFMalt_OSCalt_process_bufferTo(synthFMalt_OSCalt__ctx_type_1 &_ctx, int nb, fix16_t (&env)[128], fix16_t (&phase_shift)[128], fix16_t (&phase_env)[128], fix16_t phase_shift_level, uint8_t shift_level, fix16_t (&oBuffer)[128]){
-   nb = int_clip(nb,0,128);
+void synthFMalt_OSCalt_process_bufferTo(synthFMalt_OSCalt__ctx_type_1 &_ctx, int nb, fix16_t (&env)[32], fix16_t (&phase_shift)[32], fix16_t (&phase_env)[32], fix16_t phase_shift_level, uint8_t shift_level, fix16_t (&oBuffer)[32]){
+   nb = int_clip(nb,0,32);
    if(nb == 0){
-      nb = 128;
+      nb = 32;
    }
    fix16_t max_phase;
    max_phase = (_ctx.rsize << 1);
@@ -192,10 +192,10 @@ void synthFMalt_OSCalt_process_bufferTo(synthFMalt_OSCalt__ctx_type_1 &_ctx, int
    }
 }
 
-void synthFMalt_OSCalt_process_bufferTo_simple(synthFMalt_OSCalt__ctx_type_1 &_ctx, int nb, fix16_t (&env)[128], fix16_t (&oBuffer)[128]){
-   nb = int_clip(nb,0,128);
+void synthFMalt_OSCalt_process_bufferTo_simple(synthFMalt_OSCalt__ctx_type_1 &_ctx, int nb, fix16_t (&env)[32], fix16_t (&oBuffer)[32]){
+   nb = int_clip(nb,0,32);
    if(nb == 0){
-      nb = 128;
+      nb = 32;
    }
    int i;
    i = 0;
@@ -209,10 +209,10 @@ void synthFMalt_OSCalt_process_bufferTo_simple(synthFMalt_OSCalt__ctx_type_1 &_c
    }
 }
 
-void synthFMalt_OSCalt_process_bufferTo_feedback(synthFMalt_OSCalt__ctx_type_1 &_ctx, int nb, fix16_t (&env)[128], fix16_t feedback, fix16_t (&oBuffer)[128]){
-   nb = int_clip(nb,0,128);
+void synthFMalt_OSCalt_process_bufferTo_feedback(synthFMalt_OSCalt__ctx_type_1 &_ctx, int nb, fix16_t (&env)[32], fix16_t feedback, fix16_t (&oBuffer)[32]){
+   nb = int_clip(nb,0,32);
    if(nb == 0){
-      nb = 128;
+      nb = 32;
    }
    fix16_t max_phase;
    max_phase = (_ctx.rsize << 1);
@@ -231,10 +231,10 @@ void synthFMalt_OSCalt_process_bufferTo_feedback(synthFMalt_OSCalt__ctx_type_1 &
    }
 }
 
-void synthFMalt_OSCalt_process_bufferTo_simplest(synthFMalt_OSCalt__ctx_type_1 &_ctx, int nb, fix16_t (&oBuffer)[128]){
-   nb = int_clip(nb,0,128);
+void synthFMalt_OSCalt_process_bufferTo_simplest(synthFMalt_OSCalt__ctx_type_1 &_ctx, int nb, fix16_t (&oBuffer)[32]){
+   nb = int_clip(nb,0,32);
    if(nb == 0){
-      nb = 128;
+      nb = 32;
    }
    int i;
    i = 0;
@@ -288,7 +288,7 @@ void synthFMalt_OSCalt__ctx_type_2_init(synthFMalt_OSCalt__ctx_type_2 &_output_)
 }
 
 void synthFMalt_OSCalt_dummy(synthFMalt_OSCalt__ctx_type_2 &_ctx){
-   fix16_t buff[128];
+   fix16_t buff[32];
    synthFMalt_Buffer_buffer(buff);
    synthFMalt_OSCalt_process_bufferTo(_ctx._inst149,0,buff,buff,buff,0x0 /* 0.000000 */,false,buff);
    synthFMalt_OSCalt_process_bufferTo_simple(_ctx._inst218,0,buff,buff);
@@ -598,10 +598,10 @@ fix16_t synthFMalt_ADSR_process(synthFMalt_ADSR__ctx_type_10 &_ctx, uint8_t bgat
    return fix_clip(fix_mul(_ctx.out,scale_i),0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
 }
 
-uint8_t synthFMalt_ADSR_process_bufferTo(synthFMalt_ADSR__ctx_type_10 &_ctx, uint8_t bgate, int nb, fix16_t (&oBuffer)[128]){
-   nb = int_clip(nb,0,128);
+uint8_t synthFMalt_ADSR_process_bufferTo(synthFMalt_ADSR__ctx_type_10 &_ctx, uint8_t bgate, int nb, fix16_t (&oBuffer)[32]){
+   nb = int_clip(nb,0,32);
    if(nb == 0){
-      nb = 128;
+      nb = 32;
    }
    fix16_t scale;
    scale = 0x3e80000 /* 1000.000000 */;
@@ -747,9 +747,9 @@ void synthFMalt_FMalt__ctx_type_0_init(synthFMalt_FMalt__ctx_type_0 &_output_){
    _ctx.carrier_env = 0x0 /* 0.000000 */;
    _ctx.carrierRatio = 0x0 /* 0.000000 */;
    synthFMalt_OSCalt__ctx_type_1_init(_ctx.carrier);
-   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_modulator_env);
-   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_modulator);
-   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_carrier_env);
+   fix_init_array(32,0x0 /* 0.000000 */,_ctx.buffer_modulator_env);
+   fix_init_array(32,0x0 /* 0.000000 */,_ctx.buffer_modulator);
+   fix_init_array(32,0x0 /* 0.000000 */,_ctx.buffer_carrier_env);
    _ctx.bend = 0x0 /* 0.000000 */;
    synthFMalt_FMalt_default(_ctx);
    
@@ -828,10 +828,10 @@ fix16_t synthFMalt_FMalt_process(synthFMalt_FMalt__ctx_type_0 &_ctx){
    return carrier_val;
 }
 
-void synthFMalt_FMalt_process_bufferTo(synthFMalt_FMalt__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]){
-   nb = int_clip(nb,0,128);
+void synthFMalt_FMalt_process_bufferTo(synthFMalt_FMalt__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[32]){
+   nb = int_clip(nb,0,32);
    if(nb == 0){
-      nb = 128;
+      nb = 32;
    }
    int env_df;
    env_df = _ctx.env_decimation_factor;
@@ -1171,7 +1171,7 @@ void synthFMalt_Voice__ctx_type_0_init(synthFMalt_Voice__ctx_type_0 &_output_){
    int_init_array(4,0,_ctx.last_velocities);
    fix_init_array(4,0x0 /* 0.000000 */,_ctx.last_values);
    _ctx.fs = 0x0 /* 0.000000 */;
-   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_v0);
+   fix_init_array(32,0x0 /* 0.000000 */,_ctx.buffer_v0);
    synthFMalt_Voice_default(_ctx);
    
    return ;
@@ -1197,10 +1197,10 @@ fix16_t synthFMalt_Voice_process(synthFMalt_Voice__ctx_type_0 &_ctx){
    return value;
 }
 
-void synthFMalt_Voice_process_bufferTo(synthFMalt_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]){
-   nb = int_clip(nb,0,128);
+void synthFMalt_Voice_process_bufferTo(synthFMalt_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[32]){
+   nb = int_clip(nb,0,32);
    if(nb == 0){
-      nb = 128;
+      nb = 32;
    }
    int v;
    v = 0;

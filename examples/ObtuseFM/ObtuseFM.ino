@@ -9,11 +9,11 @@
 
 
 // contexts in obtuse, used to handle internal states
-synthFMalt_OSCalt_process_type contextv0;
+synthFMalt_FMalt_process_type contextv0;
 
 // we will be using the buffered processes for each synth
 // to sync with obtuse's vult code
-#define BUFFER_SIZE 128
+#define BUFFER_SIZE 32
 
 // output buf
 int16_t buff[BUFFER_SIZE];
@@ -31,8 +31,9 @@ const int sampleRate =  30000;
 long int tick = 0;
 
 // computing time spent on DSP
-unsigned long dsp_tick;
-unsigned long dsp_time;
+unsigned long dsp_tick = 0;
+unsigned long dsp_time = 0;
+unsigned long dsp_samples = 0;
 
 void setup() {
   Serial.begin(115200);
@@ -43,8 +44,8 @@ void setup() {
 
   /* Obtuse DSP */
   // Init FM, then pass sample rate, not forgetting to convert passed parameters to fixed (of course...)
-  synthFMalt_OSCalt_default(contextv0);
-  synthFMalt_OSCalt_setSamplerate(contextv0, float_to_fix(sampleRate / (float)1000));
+  synthFMalt_FMalt_default(contextv0);
+  //synthFMalt_Voice_setSamplerate(contextv0, float_to_fix(sampleRate / (float)1000));
   // speed-up to get rid of normalization across multiple voices, might saturate signal though
   //synthFM_Voice_setNormalize(contextv0, false);
 }
@@ -63,19 +64,20 @@ void loop() {
     // process buffer
     dsp_tick = millis();
 
-    synthFMalt_OSCalt_process_bufferTo_simplest(contextv0, BUFFER_SIZE, raw_buff);
+    synthFMalt_FMalt_process_bufferTo(contextv0, BUFFER_SIZE, raw_buff);
 
     // convert obtuse buffer to output buffer
     fix16_t out;
-    for (size_t i = 0; i < BUFFER_SIZE; i++) {
+    /*for (size_t i = 0; i < BUFFER_SIZE; i++) {
       out = raw_buff[i];
       // returned float should be between -1 and 1, enforced with saturator
       // shortcut, instead of fixed_to_float * 32767, *almost* the same and vastly improve perf with buffered version
       // Note: use a greater divider than 2 to scale-down values as a crude way to avoid saturation, instead of ad-hoc Saturator
       buff[i] = out / 4 - ( out >> 16);
-    }
+    }*/
 
     dsp_time += millis() - dsp_tick;
+    dsp_samples += BUFFER_SIZE;
 
     // do ouput
     /*for (int i = 0; i < BUFFER_SIZE; i++) {
@@ -86,10 +88,13 @@ void loop() {
   // debug
   int newTick = millis();
   if (newTick - tick >= 1000) {
-    Serial.print("Running strong! DSP time (useconds): ");
+    Serial.print("Running strong! DSP time (miliseconds): ");
     Serial.print(dsp_time);
-    Serial.print(" ("); Serial.print((float)dsp_time / (newTick - tick)); Serial.println("% CPU)");
+    Serial.print(" ("); Serial.print((float)dsp_time / (newTick - tick)); Serial.print("% CPU)");
+    Serial.print(" -- "); Serial.print(dsp_samples); Serial.println(" samples");
+
     dsp_time = 0;
+    dsp_samples = 0;
     tick += 1000;
   }
 
