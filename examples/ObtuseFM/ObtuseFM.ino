@@ -7,7 +7,6 @@
 
 #include "synthFMalt.h"
 
-
 // contexts in obtuse, used to handle internal states
 synthFMalt_FMalt_process_type contextv0;
 
@@ -15,8 +14,6 @@ synthFMalt_FMalt_process_type contextv0;
 // to sync with obtuse's vult code
 #define BUFFER_SIZE 32
 
-// output buf
-int16_t buff[BUFFER_SIZE];
 // voices
 fix16_t raw_buff[BUFFER_SIZE];
 
@@ -28,7 +25,7 @@ bool playing = false;
 #include <AutoAnalogAudio.h>
 AutoAnalog aaAudio;
 
-// 30khz audio, tradeoff between quality and CPU load
+// tradeoff between quality and CPU load
 const int sampleRate =  1000;
 
 // the library has its own buffer size, we will need to fil
@@ -76,28 +73,27 @@ void loop() {
   // process next buffer
   dsp_tick = millis();
   synthFMalt_FMalt_process_bufferTo(contextv0, commonBufferSize, raw_buff);
-  fix16_t out;
   for (size_t i = 0; i < commonBufferSize; i++) {
-    // from fixed float -1..1 to byte centered around 127. Can probably be improved
-    aaAudio.dacBuffer[i] = raw_buff[i] >> 8 + 127;
+    // from fixed float -1..1 to byte centered around 128. Can probably be improved
+    aaAudio.dacBuffer[i] = (raw_buff[i] >> 8) + 128;
   }
 
   dsp_time += millis() - dsp_tick;
-  dsp_samples += BUFFER_SIZE;
+  dsp_samples += commonBufferSize;
 
   // debug, and autoplay
   unsigned long int newTick = millis();
   if (newTick - tick >= 1000) {
     Serial.print("Running strong! DSP time (miliseconds): ");
     Serial.print(dsp_time);
-    Serial.print(" ("); Serial.print((float)dsp_time / (newTick - tick)); Serial.print("% CPU)");
+    Serial.print(" ("); Serial.print((float)dsp_time / (newTick - tick)); Serial.println("% CPU)");
     Serial.print(" -- "); Serial.print(dsp_samples); Serial.println(" samples");
     dsp_time = 0;
     dsp_samples = 0;
     tick += 1000;
 
     if (!playing) {
-      synthFMalt_FMalt_noteOn(contextv0, 60, 1, 127);
+      synthFMalt_FMalt_noteOn(contextv0, 60, 127, 1);
       Serial.println("Note On");
     }
     else {
