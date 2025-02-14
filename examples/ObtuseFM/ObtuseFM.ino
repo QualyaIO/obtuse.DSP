@@ -1,7 +1,7 @@
 
 // This example is meant to run on a Uno with PWM output
-// Tested Arduino IDE 1.8.19 with obtuse 0.2.0
-
+// Tested with Arduino IDE 1.8.19, AutoAnalogAudio 1.53.0 and obtuse 0.2.0
+// NOTE: AutoAnalogAudio hard-code PWM output to pin 9
 
 /*** Obtuse DSP ***/
 
@@ -20,10 +20,25 @@ int16_t buff[BUFFER_SIZE];
 // voices
 fix16_t raw_buff[BUFFER_SIZE];
 
+// auto playing notes
+bool playing = false;
+
 /*** Audio output ***/
 
+#include <AutoAnalogAudio.h>
+AutoAnalog aaAudio;
+
 // 30khz audio, tradeoff between quality and CPU load
-const int sampleRate =  30000;
+const int sampleRate =  1000;
+
+// the library has its own buffer size, we will need to fil
+const int commonBufferSize = min(MAX_BUFFER_SIZE, BUFFER_SIZE);
+
+//Link the DAC ISR/IRQ to the library. Called by the MCU when DAC is ready for data
+void DACC_Handler(void) {
+  aaAudio.dacHandler();
+}
+
 
 /*** Misc ***/
 
@@ -41,62 +56,55 @@ void setup() {
   Serial.println("Let us go");
 
   /* Audio */
+  // disable input, enable PWM output (hard-coded pin 9)
+  aaAudio.begin(0, 1);
+  // fixed samplerate, blocking calls to pace output
+  aaAudio.autoAdjust = 0;
+  // set samplerate, explicitely mono
+  aaAudio.setSampleRate(sampleRate, false);
 
   /* Obtuse DSP */
   // Init FM, then pass sample rate, not forgetting to convert passed parameters to fixed (of course...)
   synthFMalt_FMalt_default(contextv0);
-  //synthFMalt_Voice_setSamplerate(contextv0, float_to_fix(sampleRate / (float)1000));
-  // speed-up to get rid of normalization across multiple voices, might saturate signal though
-  //synthFM_Voice_setNormalize(contextv0, false);
+  synthFMalt_FMalt_setSamplerate(contextv0, float_to_fix(sampleRate / (float)1000));
 }
 
 void loop() {
-  // buffers hard-coded of size 16 (unless setBuffers() is called), with mono output we need as much as one buffer available
-  // Make sure there are at least two samples above that free in the audio circular buffer (of buffers)
-  // Note: the returned value of availableForWrite() changed across arduino-pico releases, here consider number of bytes
-  //while (audioOut.availableForWrite() > BUFFER_SIZE + 17  ) {
-  static int dummy = 0;
-  dummy++;
-  while (dummy >= BUFFER_SIZE ) {
 
-    dummy -= BUFFER_SIZE;
-
-    // process buffer
-    dsp_tick = millis();
-
-    synthFMalt_FMalt_process_bufferTo(contextv0, BUFFER_SIZE, raw_buff);
-
-    // convert obtuse buffer to output buffer
-    fix16_t out;
-    /*for (size_t i = 0; i < BUFFER_SIZE; i++) {
-      out = raw_buff[i];
-      // returned float should be between -1 and 1, enforced with saturator
-      // shortcut, instead of fixed_to_float * 32767, *almost* the same and vastly improve perf with buffered version
-      // Note: use a greater divider than 2 to scale-down values as a crude way to avoid saturation, instead of ad-hoc Saturator
-      buff[i] = out / 4 - ( out >> 16);
-      }*/
-
-    dsp_time += millis() - dsp_tick;
-    dsp_samples += BUFFER_SIZE;
-
-    // do ouput
-    /*for (int i = 0; i < BUFFER_SIZE; i++) {
-      audioOut.write(buff[i]);
-      }*/
-
+  // wait for buffer to be free, we use firt pin and limit to common buffer size between DSP and audio output
+  aaAudio.feedDAC(0, commonBufferSize);
+  // process next buffer
+  dsp_tick = millis();
+  synthFMalt_FMalt_process_bufferTo(contextv0, commonBufferSize, raw_buff);
+  fix16_t out;
+  for (size_t i = 0; i < commonBufferSize; i++) {
+    // from fixed float -1..1 to byte centered around 127. Can probably be improved
+    aaAudio.dacBuffer[i] = raw_buff[i] >> 8 + 127;
   }
 
-  // debug
+  dsp_time += millis() - dsp_tick;
+  dsp_samples += BUFFER_SIZE;
+
+  // debug, and autoplay
   unsigned long int newTick = millis();
   if (newTick - tick >= 1000) {
     Serial.print("Running strong! DSP time (miliseconds): ");
     Serial.print(dsp_time);
     Serial.print(" ("); Serial.print((float)dsp_time / (newTick - tick)); Serial.print("% CPU)");
     Serial.print(" -- "); Serial.print(dsp_samples); Serial.println(" samples");
-
     dsp_time = 0;
     dsp_samples = 0;
     tick += 1000;
+
+    if (!playing) {
+      synthFMalt_FMalt_noteOn(contextv0, 60, 1, 127);
+      Serial.println("Note On");
+    }
+    else {
+      synthFMalt_FMalt_noteOff(contextv0, 60, 1);
+      Serial.println("Note Off");
+    }
+    playing = !playing;
   }
 
 }
