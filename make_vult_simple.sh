@@ -25,3 +25,7 @@ if [ "$INIT_STRUCT_COUNT" = "$INIT_SET_COUNT" ] ; then
 else
     echo "ABORT: mismatch between struct ($INIT_STRUCT_COUNT) and affectation ($INIT_SET_COUNT) count."
 fi
+
+# fix progmem-related code to work with the 32bit variables we have
+echo "Hack pgm_read_word to pgm_read_dword"
+sed -i 's/pgm_read_word/pgm_read_dword/g' src/*

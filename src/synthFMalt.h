@@ -73,7 +73,7 @@ static_inline int synthFMalt_Wavetable_sin_wave_samples(){
 
 static_inline fix16_t synthFMalt_Wavetable_sin_wave(int channel, int index){
    if(channel == 0){
-      return pgm_read_word_near(fix_wrap_array(synthFMalt_Wavetable_sin_wave_chan_0) + (index % 512));
+      return pgm_read_dword_near(fix_wrap_array(synthFMalt_Wavetable_sin_wave_chan_0) + (index % 512));
    }
    return 0x0 /* 0.000000 */;
 }
@@ -84,7 +84,7 @@ static_inline int synthFMalt_Wavetable_tri_wave_samples(){
 
 static_inline fix16_t synthFMalt_Wavetable_tri_wave(int channel, int index){
    if(channel == 0){
-      return pgm_read_word_near(fix_wrap_array(synthFMalt_Wavetable_tri_wave_chan_0) + (index % 512));
+      return pgm_read_dword_near(fix_wrap_array(synthFMalt_Wavetable_tri_wave_chan_0) + (index % 512));
    }
    return 0x0 /* 0.000000 */;
 }
@@ -95,7 +95,7 @@ static_inline int synthFMalt_Wavetable_saw_wave_samples(){
 
 static_inline fix16_t synthFMalt_Wavetable_saw_wave(int channel, int index){
    if(channel == 0){
-      return pgm_read_word_near(fix_wrap_array(synthFMalt_Wavetable_saw_wave_chan_0) + (index % 512));
+      return pgm_read_dword_near(fix_wrap_array(synthFMalt_Wavetable_saw_wave_chan_0) + (index % 512));
    }
    return 0x0 /* 0.000000 */;
 }
@@ -106,7 +106,7 @@ static_inline int synthFMalt_Wavetable_square_wave_samples(){
 
 static_inline fix16_t synthFMalt_Wavetable_square_wave(int channel, int index){
    if(channel == 0){
-      return pgm_read_word_near(fix_wrap_array(synthFMalt_Wavetable_square_wave_chan_0) + (index % 512));
+      return pgm_read_dword_near(fix_wrap_array(synthFMalt_Wavetable_square_wave_chan_0) + (index % 512));
    }
    return 0x0 /* 0.000000 */;
 }
