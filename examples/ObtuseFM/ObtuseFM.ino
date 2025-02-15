@@ -26,7 +26,8 @@ bool playing = false;
 AutoAnalog aaAudio;
 
 // tradeoff between quality and CPU load
-const int sampleRate =  1000;
+// for reference, barely runs at 1500hz on UNO, i.e. useless there
+const int sampleRate = 1500;
 
 // the library has its own buffer size, we will need to fil
 const int commonBufferSize = min(MAX_BUFFER_SIZE, BUFFER_SIZE);
@@ -84,21 +85,20 @@ void loop() {
   // debug, and autoplay
   unsigned long int newTick = millis();
   if (newTick - tick >= 1000) {
-    Serial.print("Running strong! DSP time (miliseconds): ");
+    Serial.print(F("Running strong! DSP time (miliseconds): "));
     Serial.print(dsp_time);
-    Serial.print(" ("); Serial.print((float)dsp_time / (newTick - tick)); Serial.println("% CPU)");
-    Serial.print(" -- "); Serial.print(dsp_samples); Serial.println(" samples");
+    Serial.print(F(" (")); Serial.print((float)dsp_time / (newTick - tick)); Serial.println(F("% CPU)"));
+    Serial.print(F(" -- ")); Serial.print(dsp_samples); Serial.println(F(" samples"));
     dsp_time = 0;
     dsp_samples = 0;
     tick += 1000;
-
     if (!playing) {
-      synthFMalt_FMalt_noteOn(contextv0, 60, 127, 1);
-      Serial.println("Note On");
+      synthFMalt_FMalt_noteOn(contextv0, 40, 127, 1);
+      Serial.println(F("Note On"));
     }
     else {
-      synthFMalt_FMalt_noteOff(contextv0, 60, 1);
-      Serial.println("Note Off");
+      synthFMalt_FMalt_noteOff(contextv0, 40, 1);
+      Serial.println(F("Note Off"));
     }
     playing = !playing;
   }

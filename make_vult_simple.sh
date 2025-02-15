@@ -29,3 +29,5 @@ fi
 # fix progmem-related code to work with the 32bit variables we have
 echo "Hack pgm_read_word to pgm_read_dword"
 sed -i 's/pgm_read_word/pgm_read_dword/g' src/*
+
+echo "FIXME: actually some more hack are involved, as the "arduino" template wrongly put pgm_read_word for *all* arrays. Actually as it happens (and it might change upon code revision) only the .h files should be generated with the arduino template, the cpp should be generated without this template.".
