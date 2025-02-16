@@ -139,8 +139,14 @@ def bl_square(t, fs, duty=0.5):
 
 
 if __name__ == "__main__":
+    import sys
     from numpy import linspace
     import numpy as np
+    # fetch the one argument, duration of wavefile
+    if len(sys.argv) > 1 and int(sys.argv[1]) > 0:
+        length = int(sys.argv[1])
+    else:
+        length = 4096
 
     # target sampling rate
     sr = 30000
@@ -148,8 +154,6 @@ if __name__ == "__main__":
     f = 440 # Hz
     # how many periods we should have
     per = 1
-    # duration of wavefile
-    length = 4096
     t = linspace(0, 1, num = length, endpoint = False)
 
     # cutoff freq (or really, number of harmonics?)

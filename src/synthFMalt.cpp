@@ -28,9 +28,6 @@ fix16_t synthFMalt_Wavetable_getSample(int wavetableIdx, int index){
       case 3:
          sample = synthFMalt_Wavetable_square_wave(0,index);
       break;
-      case 4:
-         sample = synthFMalt_Wavetable_sin_wave(0,index);
-      break;
     
    }
    return sample;

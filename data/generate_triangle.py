@@ -1,10 +1,17 @@
  #!/usr/bin/env python3
 
-# generating a not much complicated triangle wave
+# generating a not much complicated triangle wave. One optional command line argument: number of samples (default. 4096)
+
+import sys
 import numpy as np
 from scipy.io import wavfile
 
-size = 4096
+# fetch the one argument
+if len(sys.argv) > 1 and int(sys.argv[1]) > 0:
+    size = int(sys.argv[1])
+else:
+    size = 4096
+
 data = np.zeros((size,))
 
 data1 = np.linspace(-1.0, 1.0, int(size/2))
@@ -23,4 +30,4 @@ print("Lenght of wavetable: %f, min vale: %f, max val: %f" % (len(data16), np.mi
 print(np.min(data))
 print(np.max(data))
 
-wavfile.write('triangle.wav', 4096, data.astype(np.int16))
+wavfile.write('triangle.wav', size, data.astype(np.int16))

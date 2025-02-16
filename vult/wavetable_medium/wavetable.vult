@@ -3,7 +3,7 @@
 
 // note that wavetable should be big enough to avoid fixed float limits upon later computations (let say at least 100). Too small and audio artifacts will occur (e.g. sine 2048 not so great) too big and CPU will take a hit. 4096 here is a good tradeoff
 
-// 0, 4  -> sine,
+// 0,8 -> sine,
 external sin_wave(channel:int, index:int) : real @[wave(channels=1, file="sinus_4096.wav")];
 // 1 -> triangle
 external tri_wave(channel:int, index:int) : real @[wave(channels=1, file="triangle_4096.wav")];

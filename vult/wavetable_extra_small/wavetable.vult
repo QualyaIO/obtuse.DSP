@@ -4,21 +4,21 @@
 // note that wavetable should be big enough to avoid fixed float limits upon later computations (let say at least 100). Too small and audio artifacts will occur (e.g. sine 2048 not so great) too big and CPU will take a hit. 4096 here is a good tradeoff
 
 // 0, 4  -> sine,
-external sin_wave(channel:int, index:int) : real @[wave(channels=1, file="sinus_512.wav")];
+external sin_wave(channel:int, index:int) : real @[wave(channels=1, file="sinus_128.wav")];
 // 1 -> triangle
-external tri_wave(channel:int, index:int) : real @[wave(channels=1, file="triangle_512.wav")];
+external tri_wave(channel:int, index:int) : real @[wave(channels=1, file="triangle_128.wav")];
 // 2 -> sawtooth
-external saw_wave(channel:int, index:int) : real @[wave(channels=1, file="sawtooth_512.wav")];
+external saw_wave(channel:int, index:int) : real @[wave(channels=1, file="sawtooth_128.wav")];
 // 3 -> square
-external square_wave(channel:int, index:int) : real @[wave(channels=1, file="square_512.wav")];
+external square_wave(channel:int, index:int) : real @[wave(channels=1, file="square_128.wav")];
 
 // used to allocate a wavetable array (sync size with below!)
-fun bufferWavetable(oBuff: array(real, 512)) {
+fun bufferWavetable(oBuff: array(real, 128)) {
 }
 
 // to be synced with above!
 fun bufferSize() {
-  return 512;
+  return 128;
 }
 
 // return value for selected wavetable (first channel hard-coded), between [0..sample size[
