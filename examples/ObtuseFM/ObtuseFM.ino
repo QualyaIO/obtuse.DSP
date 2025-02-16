@@ -5,10 +5,10 @@
 
 /*** Obtuse DSP ***/
 
-// FM with a version less heavy on memory but more heavy on CPU (each sample is fetched from wavetables instead of computing wavetable once per "morph").
-#include "synthFMalt.h"
+#include "Obtuse.h"
 
 // contexts in obtuse, used to handle internal states
+// FM with a version less heavy on memory but more heavy on CPU (each sample is fetched from wavetables instead of computing wavetable once per "morph").
 synthFMalt_FMalt_process_type contextv0;
 
 // we will be using the buffered processes for each synth
