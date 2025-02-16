@@ -257,6 +257,14 @@ static_inline void synthSamplerBoesendorferGrandPiano_Buffer_buffer(fix16_t (&oB
 
 void synthSamplerBoesendorferGrandPiano_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
+static_inline int synthSamplerBoesendorferGrandPiano_Buffer_bufferSize(){
+   return 128;
+};
+
+static_inline int synthSamplerBoesendorferGrandPiano_Buffer_bufferLargeSize(){
+   return 2048;
+};
+
 typedef struct synthSamplerBoesendorferGrandPiano_Sampler__ctx_type_0 {
    uint8_t sustaining;
    uint8_t sustain;

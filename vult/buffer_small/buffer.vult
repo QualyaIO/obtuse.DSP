@@ -14,3 +14,11 @@ fun buffer_large(oBuff: array(real, 512)) {
 	i = i + 1;
     }
 }
+
+// to be synced with above!
+fun bufferSize() {
+  return 32;
+}
+fun bufferLargeSize() {
+  return 512;
+}

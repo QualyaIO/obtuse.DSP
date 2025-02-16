@@ -257,6 +257,14 @@ static_inline void synthSamplerJapaneseShakuhachiFlute_Buffer_buffer(fix16_t (&o
 
 void synthSamplerJapaneseShakuhachiFlute_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
+static_inline int synthSamplerJapaneseShakuhachiFlute_Buffer_bufferSize(){
+   return 128;
+};
+
+static_inline int synthSamplerJapaneseShakuhachiFlute_Buffer_bufferLargeSize(){
+   return 2048;
+};
+
 typedef struct synthSamplerJapaneseShakuhachiFlute_Sampler__ctx_type_0 {
    uint8_t sustaining;
    uint8_t sustain;

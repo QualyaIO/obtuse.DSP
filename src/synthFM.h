@@ -306,6 +306,14 @@ static_inline void synthFM_Buffer_buffer(fix16_t (&oBuff)[128]){
 
 void synthFM_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
+static_inline int synthFM_Buffer_bufferSize(){
+   return 128;
+};
+
+static_inline int synthFM_Buffer_bufferLargeSize(){
+   return 2048;
+};
+
 typedef struct synthFM_OSC__ctx_type_0 {
    fix16_t stepRatio;
    fix16_t step;

@@ -257,6 +257,14 @@ static_inline void synthSamplerAuthenticStrings_Buffer_buffer(fix16_t (&oBuff)[1
 
 void synthSamplerAuthenticStrings_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
+static_inline int synthSamplerAuthenticStrings_Buffer_bufferSize(){
+   return 128;
+};
+
+static_inline int synthSamplerAuthenticStrings_Buffer_bufferLargeSize(){
+   return 2048;
+};
+
 typedef struct synthSamplerAuthenticStrings_Sampler__ctx_type_0 {
    uint8_t sustaining;
    uint8_t sustain;

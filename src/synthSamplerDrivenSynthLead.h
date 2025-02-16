@@ -257,6 +257,14 @@ static_inline void synthSamplerDrivenSynthLead_Buffer_buffer(fix16_t (&oBuff)[12
 
 void synthSamplerDrivenSynthLead_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
+static_inline int synthSamplerDrivenSynthLead_Buffer_bufferSize(){
+   return 128;
+};
+
+static_inline int synthSamplerDrivenSynthLead_Buffer_bufferLargeSize(){
+   return 2048;
+};
+
 typedef struct synthSamplerDrivenSynthLead_Sampler__ctx_type_0 {
    uint8_t sustaining;
    uint8_t sustain;

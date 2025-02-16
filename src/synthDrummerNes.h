@@ -143,6 +143,14 @@ static_inline void synthDrummerNes_Buffer_buffer(fix16_t (&oBuff)[128]){
 
 void synthDrummerNes_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
+static_inline int synthDrummerNes_Buffer_bufferSize(){
+   return 128;
+};
+
+static_inline int synthDrummerNes_Buffer_bufferLargeSize(){
+   return 2048;
+};
+
 typedef struct synthDrummerNes_Drummer__ctx_type_0 {
    fix16_t step;
    int slices_start[12];

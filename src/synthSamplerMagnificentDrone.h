@@ -257,6 +257,14 @@ static_inline void synthSamplerMagnificentDrone_Buffer_buffer(fix16_t (&oBuff)[1
 
 void synthSamplerMagnificentDrone_Buffer_buffer_large(fix16_t (&oBuff)[2048]);
 
+static_inline int synthSamplerMagnificentDrone_Buffer_bufferSize(){
+   return 128;
+};
+
+static_inline int synthSamplerMagnificentDrone_Buffer_bufferLargeSize(){
+   return 2048;
+};
+
 typedef struct synthSamplerMagnificentDrone_Sampler__ctx_type_0 {
    uint8_t sustaining;
    uint8_t sustain;

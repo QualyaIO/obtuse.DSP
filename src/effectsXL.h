@@ -12,6 +12,14 @@ static_inline void effectsXL_Buffer_buffer(fix16_t (&oBuff)[128]){
 
 void effectsXL_Buffer_buffer_large(fix16_t (&oBuff)[16384]);
 
+static_inline int effectsXL_Buffer_bufferSize(){
+   return 128;
+};
+
+static_inline int effectsXL_Buffer_bufferLargeSize(){
+   return 16384;
+};
+
 typedef struct effectsXL_CombFB__ctx_type_0 {
    fix16_t scale;
    int pos;
