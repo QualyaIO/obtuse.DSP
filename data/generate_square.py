@@ -1,10 +1,18 @@
  #!/usr/bin/env python3
 
-# generating a super complicated square wave (low 1/4, high 1/2, low 1/4)
+# generating a super complicated square wave (low 1/4, high 1/2, low 1/4). One optional command line argument: number of samples (default. 4096)
+
+import sys
 import numpy as np
 from scipy.io import wavfile
 
-size = 4096
+# fetch the one argument
+if len(sys.argv) > 1 and int(sys.argv[1]) > 0:
+    size = int(sys.argv[1])
+else:
+    size = 4096
+
+
 data = np.zeros((size,))
 
 for i in range(size):
@@ -20,4 +28,4 @@ print("Lenght of wavetable: %f, min vale: %f, max val: %f" % (len(data16), np.mi
 print(np.min(data))
 print(np.max(data))
 
-wavfile.write('square.wav', 4096, data.astype(np.int16))
+wavfile.write('square.wav', size, data.astype(np.int16))

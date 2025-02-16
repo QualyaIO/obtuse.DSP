@@ -1,0 +1,16 @@
+
+// allocate an audio buffer
+// note: if > 999 should manually set to 0
+fun buffer(oBuff: array(real, 32)) {
+}
+
+// allocate an audio buffer, this one for things like effects. Be wary of memory consumption -- and most probably avoid to put in PROGMEM in MCU
+// Note: used in reverb, which needs at least 1123 samples for default values
+fun buffer_large(oBuff: array(real, 512)) {
+    // arrays >= 1000 must be manually zeroed
+    val i = 0;
+    while(i < size(oBuff)) {
+        oBuff[i] = 0.0;
+	i = i + 1;
+    }
+}

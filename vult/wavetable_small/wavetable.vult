@@ -1,31 +1,24 @@
 
-// handling wavetables and combinations thereof, to be passed-down to OSC
+// handling wavetables and combinations thereof, to be passed-down to OSC. Version with limited wavetable size to fit in a UNO
 
 // note that wavetable should be big enough to avoid fixed float limits upon later computations (let say at least 100). Too small and audio artifacts will occur (e.g. sine 2048 not so great) too big and CPU will take a hit. 4096 here is a good tradeoff
 
 // 0, 4  -> sine,
-external sin_wave(channel:int, index:int) : real @[wave(channels=1, file="sinus_4096.wav")];
+external sin_wave(channel:int, index:int) : real @[wave(channels=1, file="sinus_512.wav")];
 // 1 -> triangle
-external tri_wave(channel:int, index:int) : real @[wave(channels=1, file="triangle_4096.wav")];
+external tri_wave(channel:int, index:int) : real @[wave(channels=1, file="triangle_512.wav")];
 // 2 -> sawtooth
-external saw_wave(channel:int, index:int) : real @[wave(channels=1, file="sawtooth_4096.wav")];
+external saw_wave(channel:int, index:int) : real @[wave(channels=1, file="sawtooth_512.wav")];
 // 3 -> square
-external square_wave(channel:int, index:int) : real @[wave(channels=1, file="square_4096.wav")];
-// 4 -> back to sine
-// 5 -> triangle band limited (30khz SR, 440hz note)
-external tri_wave_bl(channel:int, index:int) : real @[wave(channels=1, file="triangle_bl_4096.wav")];
-// 6 -> sawtooth band limited (30khz SR, 440hz note)
-external saw_wave_bl(channel:int, index:int) : real @[wave(channels=1, file="sawtooth_bl_4096.wav")];
-// 7 -> square band limited (30khz SR, 440hz note)
-external square_wave_bl(channel:int, index:int) : real @[wave(channels=1, file="square_bl_4096.wav")];
+external square_wave(channel:int, index:int) : real @[wave(channels=1, file="square_512.wav")];
 
 // used to allocate a wavetable array (sync size with below!)
-fun bufferWavetable(oBuff: array(real, 4096)) {
+fun bufferWavetable(oBuff: array(real, 512)) {
 }
 
 // to be synced with above!
 fun bufferSize() {
-  return 4096;
+  return 512;
 }
 
 // return value for selected wavetable (first channel hard-coded), between [0..sample size[
@@ -44,18 +37,6 @@ fun getSample(wavetableIdx: int, index: int): real {
   }
   else if (wavetableIdx == 3) {
      sample = square_wave(0, index);
-  }
-  else if (wavetableIdx == 4) {
-     sample = sin_wave(0, index);
-  }
-  else if (wavetableIdx == 5) {
-     sample = tri_wave_bl(0, index);
-  }
-  else if (wavetableIdx == 6) {
-     sample = saw_wave_bl(0, index);
-  }
-  else if (wavetableIdx == 7) {
-     sample = square_wave_bl(0, index);
   }
   return sample;
 }
@@ -76,7 +57,7 @@ fun getSampleFrom(wavetable, index: real): real {
 
 // how many wavetables we have so far?
 fun getNbWavetables() {
-  return 8;
+  return 4;
 }
 
 // morph between two consecutive wavetables depending on index, copy to buffer. If value is above nb wavetable - 1, then it will morph again between last and first wavetable

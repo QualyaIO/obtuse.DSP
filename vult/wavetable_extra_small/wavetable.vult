@@ -1,0 +1,112 @@
+
+// handling wavetables and combinations thereof, to be passed-down to OSC. Version with limited wavetable size to fit in a UNO
+
+// note that wavetable should be big enough to avoid fixed float limits upon later computations (let say at least 100). Too small and audio artifacts will occur (e.g. sine 2048 not so great) too big and CPU will take a hit. 4096 here is a good tradeoff
+
+// 0, 4  -> sine,
+external sin_wave(channel:int, index:int) : real @[wave(channels=1, file="sinus_128.wav")];
+// 1 -> triangle
+external tri_wave(channel:int, index:int) : real @[wave(channels=1, file="triangle_128.wav")];
+// 2 -> sawtooth
+external saw_wave(channel:int, index:int) : real @[wave(channels=1, file="sawtooth_128.wav")];
+// 3 -> square
+external square_wave(channel:int, index:int) : real @[wave(channels=1, file="square_128.wav")];
+
+// used to allocate a wavetable array (sync size with below!)
+fun bufferWavetable(oBuff: array(real, 128)) {
+}
+
+// to be synced with above!
+fun bufferSize() {
+  return 128;
+}
+
+// return value for selected wavetable (first channel hard-coded), between [0..sample size[
+// TODO: implement an interpolated version, with a "real" index?
+fun getSample(wavetableIdx: int, index: int): real {
+  // modulo will be taken care of by the generated code 
+  val sample = 0.0;
+  if (wavetableIdx == 0) {
+     sample = sin_wave(0, index);
+  }
+  else if (wavetableIdx == 1) {
+     sample = tri_wave(0, index);
+  }
+  else if (wavetableIdx == 2) {
+     sample = saw_wave(0, index);
+  }
+  else if (wavetableIdx == 3) {
+     sample = square_wave(0, index);
+  }
+  return sample;
+}
+
+// return value for wavetable passed in parameter, between [0..wavetable size[
+// NOTE: wavetable will be interpolated
+fun getSampleFrom(wavetable, index: real): real {
+   val idx1 = int(index);
+   val idx2 = idx1 + 1;
+   if (idx2 >= size(wavetable)) {
+     idx2 = idx2 % size(wavetable);
+     if (idx1 >= size(wavetable)) {
+       idx1 = idx1 % size(wavetable);
+     }
+   }
+   return wavetable[idx1] + (wavetable[idx2] - wavetable[idx1]) * (index % 1.0);
+}
+
+// how many wavetables we have so far?
+fun getNbWavetables() {
+  return 4;
+}
+
+// morph between two consecutive wavetables depending on index, copy to buffer. If value is above nb wavetable - 1, then it will morph again between last and first wavetable
+// phase: shift phase (of first wavetable) by this amount. 0..1 converted to 0 .. size(buffer). NOTE: phase shift is not interpolated (translates to a rounded number of samples), nor checked for 0..1 interval
+// WARNING: wavetables will not be interpolated, if one is shorter than destination table, it will repeat, if larger then only a portion will be used.
+fun morphTo(wavetableIdx: real, phase: real, buffer) {
+  wavetableIdx = clip(wavetableIdx, 0.0, real(getNbWavetables()));
+  val phase_shift: int = int(real(bufferSize()) * phase);
+  val wavetable1 = int(floor(wavetableIdx));
+  val wavetable2 = wavetable1 + 1;
+  // loop morphing
+  if (wavetable2 >= getNbWavetables()) {
+    wavetable2 = 0;
+  }
+  // 100% back to first wavetable at max
+  if (wavetable1 >= getNbWavetables()) {
+    wavetable1 = 0;
+  }
+  val ratio = wavetableIdx % 1.0;
+
+  val i = 0;
+  val s1, s2;
+  // weight between the two selected wavetables
+  while (i < size(buffer)) {
+    s1 = getSample(wavetable1, i + phase_shift);
+    s2 = getSample(wavetable2, i);
+    buffer[i] = s1 + ratio * (s2 - s1);
+    i = i + 1;
+  }
+}
+
+// retrieve a random morphed wavetable (also used as a hack to help vult infer morph() parameters type)
+fun getRandomMorph(oBuff) {
+  val basetable = 0;
+  if (getNbWavetables() > 1) {
+    basetable = rando:Random.irandom() % (getNbWavetables() - 1);
+  }
+  val wavetableIdx = real(basetable) + rando:Random.random();
+  bufferWavetable(oBuff);
+  morphTo(wavetableIdx, 0.0, oBuff);
+}
+
+// really to please vult transpiler, get a random sample from a randomly morphed wavetable
+// wavetable buffer must be passed to avoid stack overflow (beware, it will be overwritten each call)
+fun getRandRandomMorph(oBuff) {
+  getRandomMorph(oBuff);
+  val idx = 0;
+  if (size(oBuff) > 0) {
+    idx = Random.irandom() % size(oBuff);
+  }
+  return getSampleFrom(oBuff, real(idx));
+}

@@ -1,14 +1,14 @@
 #!/bin/bash
 
 echo "Generate FM synth"
-vultc -ccode vult/voice.vult -real fixed -i vult/synth_FM -i vult/buffer_medium -o src/synthFM -output-prefix synthFM_
+vultc -ccode vult/voice.vult -real fixed -i vult/wavetable_medium -i vult/synth_FM -i vult/buffer_medium -o src/synthFM -output-prefix synthFM_
 
 # not needed anymore nor desirable since the morphed wavetables will be in RAM anyway
 #echo "(setting wavetables to RAM)"
 #sed -i 's/static const fix16_t/static const fix16_t __not_in_flash("vult")/g' synthFM.tables.h
 
 echo "Generate FM synth with on-the-fly wavetable"
-vultc -ccode vult/voice.vult -real fixed -i vult/synth_FMalt -i vult/buffer_medium -o src/synthFMalt -output-prefix synthFMalt_
+vultc -ccode vult/voice.vult -real fixed -i vult/wavetable_medium -i vult/synth_FMalt -i vult/buffer_medium -o src/synthFMalt -output-prefix synthFMalt_
 
 # loop all instruments in the sampler, retrieve id
 for i in `ls -d ./vult/synth_sampler/*/ | cut -f4 -d'/'`; do
