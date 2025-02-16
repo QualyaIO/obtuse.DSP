@@ -1,10 +1,11 @@
 
-// This example is meant to run on a Uno with PWM output
+// This example is meant to run on a Uno with PWM or DAC output depending on boards
 // Tested with Arduino IDE 1.8.19, AutoAnalogAudio 1.53.0 and obtuse 0.2.0
-// NOTE: AutoAnalogAudio hard-code PWM output to pin 9
+// NOTE: AutoAnalogAudio hard-codes pins; PWM output on pin 9 on AVR (e.g. Uno), or first DAC for boards with a real one.
 
 /*** Obtuse DSP ***/
 
+// FM with a version less heavy on memory but more heavy on CPU (each sample is fetched from wavetables instead of computing wavetable once per "morph").
 #include "synthFMalt.h"
 
 // contexts in obtuse, used to handle internal states
@@ -12,7 +13,7 @@ synthFMalt_FMalt_process_type contextv0;
 
 // we will be using the buffered processes for each synth
 // to sync with obtuse's vult code
-#define BUFFER_SIZE 32
+#define BUFFER_SIZE 128
 
 // voices
 fix16_t raw_buff[BUFFER_SIZE];
@@ -26,8 +27,9 @@ bool playing = false;
 AutoAnalog aaAudio;
 
 // tradeoff between quality and CPU load
-// for reference, barely runs at 1500hz on UNO, i.e. useless there
-const int sampleRate = 1500;
+// On Uno (AVR) this example can barely run at 1500hz, unusable
+// On Due (SAM) 16050 will incur around 20% CPU load with FM mono
+const int sampleRate = 16050;
 
 // the library has its own buffer size, we will need to fil
 const int commonBufferSize = min(MAX_BUFFER_SIZE, BUFFER_SIZE);
@@ -54,7 +56,7 @@ void setup() {
   Serial.println("Let us go");
 
   /* Audio */
-  // disable input, enable PWM output (hard-coded pin 9)
+  // disable input, enable output (either PWM on hard-coded pin 9 or first DAC pin on boards with those)
   aaAudio.begin(0, 1);
   // fixed samplerate, blocking calls to pace output
   aaAudio.autoAdjust = 0;
@@ -102,5 +104,4 @@ void loop() {
     }
     playing = !playing;
   }
-
 }

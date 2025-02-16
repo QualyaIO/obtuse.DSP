@@ -28,37 +28,49 @@ fix16_t synthFMalt_Wavetable_getSample(int wavetableIdx, int index){
       case 3:
          sample = synthFMalt_Wavetable_square_wave(0,index);
       break;
+      case 4:
+         sample = synthFMalt_Wavetable_sin_wave(0,index);
+      break;
+      case 5:
+         sample = synthFMalt_Wavetable_tri_wave_bl(0,index);
+      break;
+      case 6:
+         sample = synthFMalt_Wavetable_saw_wave_bl(0,index);
+      break;
+      case 7:
+         sample = synthFMalt_Wavetable_square_wave_bl(0,index);
+      break;
     
    }
    return sample;
 }
 
-fix16_t synthFMalt_Wavetable_getSampleFrom(fix16_t (&wavetable)[512], fix16_t index){
+fix16_t synthFMalt_Wavetable_getSampleFrom(fix16_t (&wavetable)[4096], fix16_t index){
    int idx1;
    idx1 = fix_to_int(index);
    int idx2;
    idx2 = (1 + idx1);
-   if(idx2 >= 512){
-      idx2 = (idx2 % 512);
-      if(idx1 >= 512){
-         idx1 = (idx1 % 512);
+   if(idx2 >= 4096){
+      idx2 = (idx2 % 4096);
+      if(idx1 >= 4096){
+         idx1 = (idx1 % 4096);
       }
    }
    return (wavetable[idx1] + fix_mul((index % 0x10000 /* 1.000000 */),(wavetable[idx2] + (- wavetable[idx1]))));
 }
 
-void synthFMalt_Wavetable_morphTo(fix16_t wavetableIdx, fix16_t phase, fix16_t (&buffer)[512]){
-   wavetableIdx = fix_clip(wavetableIdx,0x0 /* 0.000000 */,0x40000 /* 4.000000 */);
+void synthFMalt_Wavetable_morphTo(fix16_t wavetableIdx, fix16_t phase, fix16_t (&buffer)[4096]){
+   wavetableIdx = fix_clip(wavetableIdx,0x0 /* 0.000000 */,0x80000 /* 8.000000 */);
    int phase_shift;
-   phase_shift = fix_to_int((phase << 9));
+   phase_shift = fix_to_int((phase << 12));
    int wavetable1;
    wavetable1 = fix_to_int(fix_floor(wavetableIdx));
    int wavetable2;
    wavetable2 = (1 + wavetable1);
-   if(wavetable2 >= 4){
+   if(wavetable2 >= 8){
       wavetable2 = 0;
    }
-   if(wavetable1 >= 4){
+   if(wavetable1 >= 8){
       wavetable1 = 0;
    }
    fix16_t ratio;
@@ -67,7 +79,7 @@ void synthFMalt_Wavetable_morphTo(fix16_t wavetableIdx, fix16_t phase, fix16_t (
    i = 0;
    fix16_t s1;
    fix16_t s2;
-   while(i < 512){
+   while(i < 4096){
       s1 = synthFMalt_Wavetable_getSample(wavetable1,(i + phase_shift));
       s2 = synthFMalt_Wavetable_getSample(wavetable2,i);
       buffer[i] = (s1 + fix_mul(ratio,(s2 + (- s1))));
@@ -75,11 +87,11 @@ void synthFMalt_Wavetable_morphTo(fix16_t wavetableIdx, fix16_t phase, fix16_t (
    }
 }
 
-void synthFMalt_Wavetable_getRandomMorph(synthFMalt_Wavetable__ctx_type_14 &_ctx, fix16_t (&oBuff)[512]){
+void synthFMalt_Wavetable_getRandomMorph(synthFMalt_Wavetable__ctx_type_20 &_ctx, fix16_t (&oBuff)[4096]){
    int basetable;
    basetable = 0;
-   if(4 > 1){
-      basetable = (synthFMalt_Random_irandom(_ctx.rando) % 3);
+   if(8 > 1){
+      basetable = (synthFMalt_Random_irandom(_ctx.rando) % 7);
    }
    fix16_t wavetableIdx;
    wavetableIdx = (synthFMalt_Random_random(_ctx.rando) + int_to_fix(basetable));
@@ -87,28 +99,28 @@ void synthFMalt_Wavetable_getRandomMorph(synthFMalt_Wavetable__ctx_type_14 &_ctx
    synthFMalt_Wavetable_morphTo(wavetableIdx,0x0 /* 0.000000 */,oBuff);
 }
 
-void synthFMalt_Wavetable__ctx_type_15_init(synthFMalt_Wavetable__ctx_type_15 &_output_){
-   synthFMalt_Wavetable__ctx_type_15 &_ctx = _output_;
+void synthFMalt_Wavetable__ctx_type_21_init(synthFMalt_Wavetable__ctx_type_21 &_output_){
+   synthFMalt_Wavetable__ctx_type_21 &_ctx = _output_;
    synthFMalt_Random__ctx_type_0_init(_ctx._inst345);
-   synthFMalt_Wavetable__ctx_type_14_init(_ctx._inst1c8);
+   synthFMalt_Wavetable__ctx_type_20_init(_ctx._inst1c8);
    
    return ;
 }
 
-fix16_t synthFMalt_Wavetable_getRandRandomMorph(synthFMalt_Wavetable__ctx_type_15 &_ctx, fix16_t (&oBuff)[512]){
+fix16_t synthFMalt_Wavetable_getRandRandomMorph(synthFMalt_Wavetable__ctx_type_21 &_ctx, fix16_t (&oBuff)[4096]){
    synthFMalt_Wavetable_getRandomMorph(_ctx._inst1c8,oBuff);
    int idx;
    idx = 0;
-   if(512 > 0){
-      idx = (synthFMalt_Random_irandom(_ctx._inst345) % 512);
+   if(4096 > 0){
+      idx = (synthFMalt_Random_irandom(_ctx._inst345) % 4096);
    }
    return synthFMalt_Wavetable_getSampleFrom(oBuff,int_to_fix(idx));
 }
 
-void synthFMalt_Buffer_buffer_large(fix16_t (&oBuff)[512]){
+void synthFMalt_Buffer_buffer_large(fix16_t (&oBuff)[2048]){
    int i;
    i = 0;
-   while(i < 512){
+   while(i < 2048){
       oBuff[i] = 0x0 /* 0.000000 */;
       i = (1 + i);
    }
@@ -153,10 +165,10 @@ void synthFMalt_OSCalt__ctx_type_1_init(synthFMalt_OSCalt__ctx_type_1 &_output_)
    return ;
 }
 
-void synthFMalt_OSCalt_process_bufferTo(synthFMalt_OSCalt__ctx_type_1 &_ctx, int nb, fix16_t (&env)[32], fix16_t (&phase_shift)[32], fix16_t (&phase_env)[32], fix16_t phase_shift_level, uint8_t shift_level, fix16_t (&oBuffer)[32]){
-   nb = int_clip(nb,0,32);
+void synthFMalt_OSCalt_process_bufferTo(synthFMalt_OSCalt__ctx_type_1 &_ctx, int nb, fix16_t (&env)[128], fix16_t (&phase_shift)[128], fix16_t (&phase_env)[128], fix16_t phase_shift_level, uint8_t shift_level, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 32;
+      nb = 128;
    }
    fix16_t max_phase;
    max_phase = (_ctx.rsize << 1);
@@ -189,10 +201,10 @@ void synthFMalt_OSCalt_process_bufferTo(synthFMalt_OSCalt__ctx_type_1 &_ctx, int
    }
 }
 
-void synthFMalt_OSCalt_process_bufferTo_simple(synthFMalt_OSCalt__ctx_type_1 &_ctx, int nb, fix16_t (&env)[32], fix16_t (&oBuffer)[32]){
-   nb = int_clip(nb,0,32);
+void synthFMalt_OSCalt_process_bufferTo_simple(synthFMalt_OSCalt__ctx_type_1 &_ctx, int nb, fix16_t (&env)[128], fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 32;
+      nb = 128;
    }
    int i;
    i = 0;
@@ -206,10 +218,10 @@ void synthFMalt_OSCalt_process_bufferTo_simple(synthFMalt_OSCalt__ctx_type_1 &_c
    }
 }
 
-void synthFMalt_OSCalt_process_bufferTo_feedback(synthFMalt_OSCalt__ctx_type_1 &_ctx, int nb, fix16_t (&env)[32], fix16_t feedback, fix16_t (&oBuffer)[32]){
-   nb = int_clip(nb,0,32);
+void synthFMalt_OSCalt_process_bufferTo_feedback(synthFMalt_OSCalt__ctx_type_1 &_ctx, int nb, fix16_t (&env)[128], fix16_t feedback, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 32;
+      nb = 128;
    }
    fix16_t max_phase;
    max_phase = (_ctx.rsize << 1);
@@ -228,10 +240,10 @@ void synthFMalt_OSCalt_process_bufferTo_feedback(synthFMalt_OSCalt__ctx_type_1 &
    }
 }
 
-void synthFMalt_OSCalt_process_bufferTo_simplest(synthFMalt_OSCalt__ctx_type_1 &_ctx, int nb, fix16_t (&oBuffer)[32]){
-   nb = int_clip(nb,0,32);
+void synthFMalt_OSCalt_process_bufferTo_simplest(synthFMalt_OSCalt__ctx_type_1 &_ctx, int nb, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 32;
+      nb = 128;
    }
    int i;
    i = 0;
@@ -254,20 +266,20 @@ void synthFMalt_OSCalt_setSamplerate(synthFMalt_OSCalt__ctx_type_1 &_ctx, fix16_
 }
 
 void synthFMalt_OSCalt_setWavetable(synthFMalt_OSCalt__ctx_type_1 &_ctx, fix16_t wavetableIdx){
-   wavetableIdx = fix_clip(wavetableIdx,0x0 /* 0.000000 */,0x40000 /* 4.000000 */);
+   wavetableIdx = fix_clip(wavetableIdx,0x0 /* 0.000000 */,0x80000 /* 8.000000 */);
    _ctx.wavetable1 = fix_to_int(fix_floor(wavetableIdx));
    _ctx.wavetable2 = (1 + _ctx.wavetable1);
-   if(_ctx.wavetable2 >= 4){
+   if(_ctx.wavetable2 >= 8){
       _ctx.wavetable2 = 0;
    }
-   if(_ctx.wavetable1 >= 4){
+   if(_ctx.wavetable1 >= 8){
       _ctx.wavetable1 = 0;
    }
    _ctx.wavetable_ratio = (wavetableIdx % 0x10000 /* 1.000000 */);
 }
 
 void synthFMalt_OSCalt_default(synthFMalt_OSCalt__ctx_type_1 &_ctx){
-   _ctx.rsize = 0x2000000 /* 512.000000 */;
+   _ctx.rsize = 0x10000000 /* 4096.000000 */;
    synthFMalt_OSCalt_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
    synthFMalt_OSCalt_setFrequency(_ctx,0x70a3 /* 0.440000 */);
    synthFMalt_OSCalt_setWavetable(_ctx,0x0 /* 0.000000 */);
@@ -285,7 +297,7 @@ void synthFMalt_OSCalt__ctx_type_2_init(synthFMalt_OSCalt__ctx_type_2 &_output_)
 }
 
 void synthFMalt_OSCalt_dummy(synthFMalt_OSCalt__ctx_type_2 &_ctx){
-   fix16_t buff[32];
+   fix16_t buff[128];
    synthFMalt_Buffer_buffer(buff);
    synthFMalt_OSCalt_process_bufferTo(_ctx._inst149,0,buff,buff,buff,0x0 /* 0.000000 */,false,buff);
    synthFMalt_OSCalt_process_bufferTo_simple(_ctx._inst218,0,buff,buff);
@@ -595,10 +607,10 @@ fix16_t synthFMalt_ADSR_process(synthFMalt_ADSR__ctx_type_10 &_ctx, uint8_t bgat
    return fix_clip(fix_mul(_ctx.out,scale_i),0x0 /* 0.000000 */,0x10000 /* 1.000000 */);
 }
 
-uint8_t synthFMalt_ADSR_process_bufferTo(synthFMalt_ADSR__ctx_type_10 &_ctx, uint8_t bgate, int nb, fix16_t (&oBuffer)[32]){
-   nb = int_clip(nb,0,32);
+uint8_t synthFMalt_ADSR_process_bufferTo(synthFMalt_ADSR__ctx_type_10 &_ctx, uint8_t bgate, int nb, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 32;
+      nb = 128;
    }
    fix16_t scale;
    scale = 0x3e80000 /* 1000.000000 */;
@@ -744,9 +756,9 @@ void synthFMalt_FMalt__ctx_type_0_init(synthFMalt_FMalt__ctx_type_0 &_output_){
    _ctx.carrier_env = 0x0 /* 0.000000 */;
    _ctx.carrierRatio = 0x0 /* 0.000000 */;
    synthFMalt_OSCalt__ctx_type_1_init(_ctx.carrier);
-   fix_init_array(32,0x0 /* 0.000000 */,_ctx.buffer_modulator_env);
-   fix_init_array(32,0x0 /* 0.000000 */,_ctx.buffer_modulator);
-   fix_init_array(32,0x0 /* 0.000000 */,_ctx.buffer_carrier_env);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_modulator_env);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_modulator);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_carrier_env);
    _ctx.bend = 0x0 /* 0.000000 */;
    synthFMalt_FMalt_default(_ctx);
    
@@ -825,10 +837,10 @@ fix16_t synthFMalt_FMalt_process(synthFMalt_FMalt__ctx_type_0 &_ctx){
    return carrier_val;
 }
 
-void synthFMalt_FMalt_process_bufferTo(synthFMalt_FMalt__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[32]){
-   nb = int_clip(nb,0,32);
+void synthFMalt_FMalt_process_bufferTo(synthFMalt_FMalt__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 32;
+      nb = 128;
    }
    int env_df;
    env_df = _ctx.env_decimation_factor;
@@ -1168,7 +1180,7 @@ void synthFMalt_Voice__ctx_type_0_init(synthFMalt_Voice__ctx_type_0 &_output_){
    int_init_array(4,0,_ctx.last_velocities);
    fix_init_array(4,0x0 /* 0.000000 */,_ctx.last_values);
    _ctx.fs = 0x0 /* 0.000000 */;
-   fix_init_array(32,0x0 /* 0.000000 */,_ctx.buffer_v0);
+   fix_init_array(128,0x0 /* 0.000000 */,_ctx.buffer_v0);
    synthFMalt_Voice_default(_ctx);
    
    return ;
@@ -1194,10 +1206,10 @@ fix16_t synthFMalt_Voice_process(synthFMalt_Voice__ctx_type_0 &_ctx){
    return value;
 }
 
-void synthFMalt_Voice_process_bufferTo(synthFMalt_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[32]){
-   nb = int_clip(nb,0,32);
+void synthFMalt_Voice_process_bufferTo(synthFMalt_Voice__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]){
+   nb = int_clip(nb,0,128);
    if(nb == 0){
-      nb = 32;
+      nb = 128;
    }
    int v;
    v = 0;
