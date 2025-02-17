@@ -1,7 +1,7 @@
 
 _Self-contained generative music with limited resources._
 
-Obtuse is an audio DSP and synthesis engine. It proposes various synths, effects and ways to generate rhythms, melodies or chords. Obtuse leverages on [Vult](https://github.com/vult-dsp/vult) transpiler and by default the code uses fixed floats, for MCU without floating-point unit. The library should be rather efficient, while maintaining hi-fi audio quality. 
+Obtuse is an audio DSP and synthesis engine. It proposes various synths, effects and ways to generate rhythms, melodies or chords. Obtuse leverages on [Vult](https://github.com/vult-dsp/vult) transpiler and by default the code uses fixed floats, for MCU without floating-point unit. The library should be rather efficient, while maintaining hi-fi audio quality (16 bit precision).
 
 While the library is originally meant for the Arduino ecosystem, it can be used outside it, with no external dependencies. One specificity of the project is to let users explore beforehand its capabilities and prototype the audioscape on desktop, via tools familiar to musicians -- check associated repositories for [audio plugins wrappers](https://github.com/QualyaIO/obtuse.DPF) or [VCV Rack modules](https://github.com/QualyaIO/obtuse.VCV).
 
@@ -29,6 +29,8 @@ Tested with vult v0.4.15. Note that vultin.h from vult was adapted to speed-up c
 
 While it is feasible to use the library on 8-bit MCUs, e.g. AVR, the performance will be so low and the memory constraints so high that the synths will barely run (e.g. 1500hz sampling rate for a monophonic FM synth on Arduino UNO, without much RAM left). If you still want to go down this road, you might need to only keep the most lightweight files, i.e. FM "alt" synth and utils. Indeed, Arduino will compile the whole library when you first compile for a new board, and the structs used in some parts (e.g. samplers or effects) will raise an error due to their size. To reduce memory footprint you can use smaller buffers and wavetables (include `buffer_small` and `wavetable_small` while transpiling), and switch to PROGMEM to store wavetables. For the latter the "arduino" template can be used with vult (`-template arduino` option), although there will be two issues. First, the wrong function is employed to read back arrays with 32bit variables (`pgm_read_word` instead of `pgm_read_dword`), in which case a command such as `sed -i 's/pgm_read_word/pgm_read_dword/g' src/*` can fix it. Second, the template wrongly puts `pgm_read_word` for accessing *all* arrays, even those that are not constant and not put in PROGMEM. Fortunately, this can be mitigated in some instances, e.g. for FM synth only the .h files should be generated with the arduino template, and the cpp should be generated without template. The bottom line of this paragraph: for AVR or similar architecture you might be better off using a library best suited for 8-bit processors.
 
+Some tuning can be performed depending on the target architecture. For example for RP2040 the code will speed-up if frequent memory accesses are made from RAM rather than flash (especially on some boards, depending on the flash chip used). In this specific case FMalt could benefit from a decorator `sed -i 's/static const fix16_t/static const fix16_t __not_in_flash("vult")/g' src/synthFMalt.tables.h`.
+
 Check the included examples to get used to how the code works. Notably, instead of using objects for each unit we have a struct holding states, passed around the functions performing the computations. This is an artifact of the vult transpilation, kept as-is because wrappers would incur supplementary function calls. WARNING: Be wary where the structs are initialized to avoid problem with stack size, e.g. prefer in the body of the program, especially when large buffer are involved (effectsL or XL).
 
 More examples of how to use the library (generative music, play back MIDI files, ...) can be found in a separate repository: https://github.com/QualyaIO/obtuse.audioscene
@@ -42,7 +44,7 @@ More examples of how to use the library (generative music, play back MIDI files,
 
 # Changelog
 
-## v0.2.0 (current)
+## v0.2.0 (2025-02-17)
 
 - arp: fix return value, now indeed -1 if no notes
 - arp: fix for notes with pitch 0.
@@ -100,3 +102,7 @@ Vult
 - at this time Vult transpiles init function in such a way that stack overflow can happen due to unnecessary temp variable and absence of NRVO (Named Return Value Optimization) by the compiler. There is currently a hack in the `make_vult.sh` script to circumvent that, it'd better fixed upstream.
 - arrays >= 1000 are not initialized automatically to 0, hence the Buffer wrapper is even more useful for those large buffers
 - test code with real floats
+
+# Licence
+
+This code is released under the [GNU/AGPL3 Licence](https://www.gnu.org/licenses/agpl-3.0.html). 
