@@ -1,4 +1,6 @@
 
+// One of the simplest example, playing one octave note by note on a FM synth.
+
 // This example is meant to run on a Uno with PWM or DAC output depending on boards
 // Tested with Arduino IDE 1.8.19, AutoAnalogAudio 1.53.0 and obtuse 0.2.0
 // NOTE: AutoAnalogAudio hard-codes pins; PWM output on pin 9 on AVR (e.g. Uno), or first DAC for boards with a real one.
@@ -9,7 +11,7 @@
 
 // contexts in obtuse, used to handle internal states
 // FM with a version less heavy on memory but more heavy on CPU (each sample is fetched from wavetables instead of computing wavetable once per "morph").
-synthFMalt_FMalt_process_type contextv0;
+synthFMalt_FMalt_process_type context_fm;
 
 // we will be using the buffered processes for each synth
 // to sync with obtuse's vult code
@@ -21,6 +23,10 @@ fix16_t raw_buff[BUFFER_SIZE];
 // auto playing notes
 bool playing = false;
 
+// starting note and current note for the octave
+const int rootNote = 40;
+int curNote = rootNote;
+
 /*** Audio output ***/
 
 #include <AutoAnalogAudio.h>
@@ -28,7 +34,7 @@ AutoAnalog aaAudio;
 
 // tradeoff between quality and CPU load
 // On Uno (AVR) this example can barely run at 1500hz, unusable
-// On Due (SAM) 16050 will incur around 20% CPU load with FM mono
+// On Due (SAM) 16050 will incur around 24% CPU load with FM mono
 const int sampleRate = 16050;
 
 // the library has its own buffer size, we will need to fil
@@ -65,8 +71,11 @@ void setup() {
 
   /* Obtuse DSP */
   // Init FM, then pass sample rate, not forgetting to convert passed parameters to fixed (of course...)
-  synthFMalt_FMalt_default(contextv0);
-  synthFMalt_FMalt_setSamplerate(contextv0, float_to_fix(sampleRate / (float)1000));
+  synthFMalt_FMalt_default(context_fm);
+  synthFMalt_FMalt_setSamplerate(context_fm, float_to_fix(sampleRate / (float)1000));
+  // shaping the envelope for a more pleasing sound
+  synthFMalt_FMalt_setModulatorADSR(context_fm, float_to_fix(0.1), float_to_fix(0.01), float_to_fix(0.60), float_to_fix(0.29));
+  synthFMalt_FMalt_setCarrierADSR(context_fm, float_to_fix(0.1), float_to_fix(0.01), float_to_fix(0.75), float_to_fix(0.3));
 }
 
 void loop() {
@@ -75,7 +84,7 @@ void loop() {
   aaAudio.feedDAC(0, commonBufferSize);
   // process next buffer
   dsp_tick = millis();
-  synthFMalt_FMalt_process_bufferTo(contextv0, commonBufferSize, raw_buff);
+  synthFMalt_FMalt_process_bufferTo(context_fm, commonBufferSize, raw_buff);
   for (size_t i = 0; i < commonBufferSize; i++) {
     // from fixed float -1..1 to byte centered around 128. Can probably be improved
     aaAudio.dacBuffer[i] = (raw_buff[i] >> 8) + 128;
@@ -87,20 +96,25 @@ void loop() {
   // debug, and autoplay
   unsigned long int newTick = millis();
   if (newTick - tick >= 1000) {
-    Serial.print(F("Running strong! DSP time (miliseconds): "));
+    Serial.print("Running strong! DSP time (miliseconds): ");
     Serial.print(dsp_time);
-    Serial.print(F(" (")); Serial.print((float)dsp_time / (newTick - tick)); Serial.println(F("% CPU)"));
-    Serial.print(F(" -- ")); Serial.print(dsp_samples); Serial.println(F(" samples"));
+    Serial.print(" ("); Serial.print((float)dsp_time / (newTick - tick)); Serial.println("% CPU)");
+    Serial.print(" -- "); Serial.print(dsp_samples); Serial.println(" samples");
     dsp_time = 0;
     dsp_samples = 0;
     tick += 1000;
     if (!playing) {
-      synthFMalt_FMalt_noteOn(contextv0, 40, 127, 1);
-      Serial.println(F("Note On"));
+      synthFMalt_FMalt_noteOn(context_fm, curNote, 127, 1);
+      Serial.print("Note On: "); Serial.println(curNote);
     }
     else {
-      synthFMalt_FMalt_noteOff(contextv0, 40, 1);
-      Serial.println(F("Note Off"));
+      synthFMalt_FMalt_noteOff(context_fm, curNote, 1);
+      Serial.print("Note Off: "); Serial.println(curNote);
+      // note going up for one octave
+      curNote++;
+      if (curNote >= rootNote + 12) {
+        curNote = rootNote;
+      }
     }
     playing = !playing;
   }
