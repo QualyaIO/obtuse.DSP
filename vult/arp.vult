@@ -43,9 +43,13 @@ and reset() {
 }
 
 // main function, return new note, -1 if none
+// call getVel to retrieve afterward velocity of returned note
 and process(): int {
   // up to 16 notes in the arp. 0..127, -1 if inactive
   mem notes: array(int, 16);
+  // velocity corresponding to the note number held in notes[] (values will not be reset between notes)
+  // size 128 because the outside world will ask about a MIDI note number
+  mem velocities: array(int, 128);
   // type of arp (see setmode)
   mem mode: int;
   // no notes, nothing to see here
@@ -63,6 +67,17 @@ and process(): int {
   return newNote;
 }
 
+// retrieve the velocity of a note given by process()
+// note: note to fetch velocity from
+// if given ouside 0..127, will default to max velocity (127)
+and getVel(note: int): int {
+   val velocity = 127;
+   if (note >= 0 && note < size(velocities)) {
+     velocity = velocities[note];
+   }
+   // safeguard until the end
+   return clip(velocity, 0, 127);
+}
 
 // recompute sequence array
 and _updateSequence() {
@@ -139,14 +154,16 @@ and _updateSequence() {
   }
 }
 
-// updates notes of the arp, expect increasing order of pitch 0..127. Notes below 0 will not be considered, above 127 will be clipped.
-// will reset sequence if the number of notes changes, otherwise left untouched
-and setNotes(newNotes: array(int, 16)) {
+// alternative to setNotes to also save velocity
+// note: velocity clipped between 0..127,
+and setNotesVel(newNotes: array(int, 16), newVelocities: array(int, 16)) {
+  // got to duplicate because we cannot get to inner state of setNotes
   val i = 0;
   val j = 0;
   while (i < size(newNotes)){
     if (newNotes[i] >= 0) {
       notes[j] = clip(newNotes[i], 0, 127);
+      velocities[notes[j]] = clip(newVelocities[i], 0, 127);
       j = j + 1;
     }
     i = i + 1;
@@ -156,6 +173,14 @@ and setNotes(newNotes: array(int, 16)) {
     nbNotes = j;
     _ = _updateSequence();
   }
+}
+
+// updates notes of the arp, expect increasing order of pitch 0..127. Notes below 0 will not be considered, above 127 will be clipped.
+// will reset sequence if the number of notes changes, otherwise left untouched
+// note: velocity set to 127 with this method
+and setNotes(newNotes: array(int, 16)) {
+  val newVelocities = [127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127, 127];
+  _ = setNotesVel(newNotes, newVelocities);
 }
 
 // changing type of sequence -- resetting sequence if changed

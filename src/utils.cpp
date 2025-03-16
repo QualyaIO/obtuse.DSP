@@ -1019,6 +1019,7 @@ void utils_Chord_default(utils_Chord__ctx_type_8 &_ctx){
 
 void utils_Arp__ctx_type_0_init(utils_Arp__ctx_type_0 &_output_){
    utils_Arp__ctx_type_0 &_ctx = _output_;
+   int_init_array(128,0,_ctx.velocities);
    _ctx.stepPersist = false;
    _ctx.step = 0;
    _ctx.sequenceSize = 0;
@@ -1065,6 +1066,15 @@ int utils_Arp_process(utils_Arp__ctx_type_0 &_ctx){
    int newNote;
    newNote = _ctx.notes[_ctx.playSequence[((-1) + _ctx.step)]];
    return newNote;
+}
+
+int utils_Arp_getVel(utils_Arp__ctx_type_0 &_ctx, int note){
+   int velocity;
+   velocity = 127;
+   if((note >= 0) && (note < 128)){
+      velocity = _ctx.velocities[note];
+   }
+   return int_clip(velocity,0,127);
 }
 
 void utils_Arp__updateSequence(utils_Arp__ctx_type_0 &_ctx){
@@ -1143,7 +1153,7 @@ void utils_Arp__updateSequence(utils_Arp__ctx_type_0 &_ctx){
    }
 }
 
-void utils_Arp_setNotes(utils_Arp__ctx_type_0 &_ctx, int (&newNotes)[16]){
+void utils_Arp_setNotesVel(utils_Arp__ctx_type_0 &_ctx, int (&newNotes)[16], int (&newVelocities)[16]){
    int i;
    i = 0;
    int j;
@@ -1151,6 +1161,7 @@ void utils_Arp_setNotes(utils_Arp__ctx_type_0 &_ctx, int (&newNotes)[16]){
    while(i < 16){
       if(newNotes[i] >= 0){
          _ctx.notes[j] = int_clip(newNotes[i],0,127);
+         _ctx.velocities[_ctx.notes[j]] = int_clip(newVelocities[i],0,127);
          j = (1 + j);
       }
       i = (1 + i);
@@ -1159,6 +1170,29 @@ void utils_Arp_setNotes(utils_Arp__ctx_type_0 &_ctx, int (&newNotes)[16]){
       _ctx.nbNotes = j;
       utils_Arp__updateSequence(_ctx);
    }
+}
+
+void utils_Arp_setNotes(utils_Arp__ctx_type_0 &_ctx, int (&newNotes)[16]){
+   int newVelocities[16];
+   {
+      newVelocities[0] = 127;
+      newVelocities[1] = 127;
+      newVelocities[2] = 127;
+      newVelocities[3] = 127;
+      newVelocities[4] = 127;
+      newVelocities[5] = 127;
+      newVelocities[6] = 127;
+      newVelocities[7] = 127;
+      newVelocities[8] = 127;
+      newVelocities[9] = 127;
+      newVelocities[10] = 127;
+      newVelocities[11] = 127;
+      newVelocities[12] = 127;
+      newVelocities[13] = 127;
+      newVelocities[14] = 127;
+      newVelocities[15] = 127;
+   }
+   utils_Arp_setNotesVel(_ctx,newNotes,newVelocities);
 }
 
 void utils_Arp_setMode(utils_Arp__ctx_type_0 &_ctx, int newMode){

@@ -46,7 +46,7 @@ More examples of how to use the library (generative music, play back MIDI files,
 
 ## v0.2.1 (current)
 
-- gate: adding `getVel()` to retrieve velocity
+- arp, gate: adding `getVel()` to retrieve velocity
 
 ## v0.2.0 (2025-02-17)
 

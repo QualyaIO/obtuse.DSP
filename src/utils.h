@@ -573,6 +573,7 @@ static_inline void utils_Chord_default_init(utils_Chord__ctx_type_8 &_output_){
 void utils_Chord_default(utils_Chord__ctx_type_8 &_ctx);
 
 typedef struct utils_Arp__ctx_type_0 {
+   int velocities[128];
    uint8_t stepPersist;
    int step;
    int sequenceSize;
@@ -619,6 +620,15 @@ static_inline void utils_Arp_process_init(utils_Arp__ctx_type_0 &_output_){
 
 int utils_Arp_process(utils_Arp__ctx_type_0 &_ctx);
 
+typedef utils_Arp__ctx_type_0 utils_Arp_getVel_type;
+
+static_inline void utils_Arp_getVel_init(utils_Arp__ctx_type_0 &_output_){
+   utils_Arp__ctx_type_0_init(_output_);
+   return ;
+}
+
+int utils_Arp_getVel(utils_Arp__ctx_type_0 &_ctx, int note);
+
 typedef utils_Arp__ctx_type_0 utils_Arp__updateSequence_type;
 
 static_inline void utils_Arp__updateSequence_init(utils_Arp__ctx_type_0 &_output_){
@@ -627,6 +637,15 @@ static_inline void utils_Arp__updateSequence_init(utils_Arp__ctx_type_0 &_output
 }
 
 void utils_Arp__updateSequence(utils_Arp__ctx_type_0 &_ctx);
+
+typedef utils_Arp__ctx_type_0 utils_Arp_setNotesVel_type;
+
+static_inline void utils_Arp_setNotesVel_init(utils_Arp__ctx_type_0 &_output_){
+   utils_Arp__ctx_type_0_init(_output_);
+   return ;
+}
+
+void utils_Arp_setNotesVel(utils_Arp__ctx_type_0 &_ctx, int (&newNotes)[16], int (&newVelocities)[16]);
 
 typedef utils_Arp__ctx_type_0 utils_Arp_setNotes_type;
 
