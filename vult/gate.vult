@@ -1,8 +1,8 @@
 
 // a gate handling polyphony
-// FIXME: does not keep velocity or channel info
+// FIXME: does not keep channel info
 
-// should call setTime(), noteOn(), gate(), getNoteOff() and process until empty, getNoteOn() and process until empty.
+// should call setTime(), noteOn(), process(), getNoteOff() and process until empty, getNoteOn() (and, optionally, getVel()) and process until empty.
 
 // compare two times stored as seconds and fraction of seconds
 // return 1 if time2 > time 1, -1 if time2 < time 1, 0 if time2 == time1
@@ -140,8 +140,10 @@ fun process() {
    // two arrays because we store the two parts of the time (FIXME: very cumbersome)
    mem notesS: array(int, 128);
    mem notesFract: array(real, 128);
+   // corresponding velocity (values will not be reset between notes)
+   mem velocities: array(int, 128);
    // contexts used:
-   // - notesActive:list, notes currently active (during ate)
+   // - notesActive:list, notes currently active (during gate)
    // - notesOn: list, notes which needs to be played by outside
    // - notesOff:list, the ones to turn off
    // how long the gate, in seconds
@@ -189,8 +191,8 @@ and setTime(newTimeS: int, newTimeFract: real) {
 }
 
 // activate note
-// Warning: does not take into account velocity or channel
-// Warning: take for granted that getNoteOn() was already processed in a previous loop, otherwise we might hit full capacity of the corresponding list
+// Warning: does not take into account channel
+// Warning: take for granted that getNoteOn() or getNoteOnVel() were already processed in a previous loop, otherwise we might hit full capacity of the corresponding list
 // return false if the note was already triggered -- in which case it will extend the gate
 and noteOn(note:int, velocity:int, channel:int): bool {
    note = clip(note, 0, 127);
@@ -204,9 +206,10 @@ and noteOn(note:int, velocity:int, channel:int): bool {
    else {
      _ = notesActive:deleteValue(note);
    }
-   // update timestamp anyhow
+   // update timestamp and velocity anyhow
    notesS[note] = timeS;
    notesFract[note] = timeFract;
+   velocities[note] = clip(velocity, 0, 127);
    // add to list of notes to process, both for gate and outside world
    _ = notesActive:push(note);
    return newNote;
@@ -228,6 +231,18 @@ and getNoteOff(): int {
 // return next note to turn on, -1 if nothing left.
 and getNoteOn(): int {
    return notesOn:pop();
+}
+
+// retrieve the velocity corresponding to a note. should be called right after getNoteOn with its return value.
+// note: note to fetch velocity from
+// if given ouside 0..127, will default to max velocity (127)
+and getVel(note: int): int {
+   val velocity = 127;
+   if (note >= 0 && note < size(velocities)) {
+     velocity = velocities[note];
+   }
+   // safeguard until the end
+   return clip(velocity, 0, 127);
 }
 
 // set gate length, in seconds (minimum duration of 1ms, clip to it)

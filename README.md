@@ -44,6 +44,10 @@ More examples of how to use the library (generative music, play back MIDI files,
 
 # Changelog
 
+## v0.2.1 (current)
+
+- gate: adding `getVel()` to retrieve velocity
+
 ## v0.2.0 (2025-02-17)
 
 - arp: fix return value, now indeed -1 if no notes
@@ -82,7 +86,7 @@ Fixes
 - OSC > 4096 can prevent modulation, adjust max phase depending on size to avoid hitting fixed float limit during computations
 - SVF: not compute while disabled while avoiding noise upon start
 - combFB (and those using): output not guaranteed to be kept within -1..1
-- gate: velocity and channel not kept
+- gate: channel not kept
 - combFB, combBB, allpass (hence reverb): eliminate artifacts upon change of delay
 
 Features

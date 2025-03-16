@@ -125,6 +125,7 @@ static_inline uint8_t utils_Gate_deleteValue(utils_Gate__ctx_type_1 &_ctx, int v
 }
 
 typedef struct utils_Gate__ctx_type_2 {
+   int velocities[128];
    int timeS;
    fix16_t timeFract;
    int notesS[128];
@@ -202,6 +203,15 @@ static_inline void utils_Gate_getNoteOn_init(utils_Gate__ctx_type_2 &_output_){
 static_inline int utils_Gate_getNoteOn(utils_Gate__ctx_type_2 &_ctx){
    return utils_Gate_pop(_ctx.notesOn);
 };
+
+typedef utils_Gate__ctx_type_2 utils_Gate_getVel_type;
+
+static_inline void utils_Gate_getVel_init(utils_Gate__ctx_type_2 &_output_){
+   utils_Gate__ctx_type_2_init(_output_);
+   return ;
+}
+
+int utils_Gate_getVel(utils_Gate__ctx_type_2 &_ctx, int note);
 
 typedef utils_Gate__ctx_type_2 utils_Gate_setDuration_type;
 

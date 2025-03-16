@@ -105,6 +105,7 @@ int utils_Gate_search(utils_Gate__ctx_type_1 &_ctx, int value){
 
 void utils_Gate__ctx_type_2_init(utils_Gate__ctx_type_2 &_output_){
    utils_Gate__ctx_type_2 &_ctx = _output_;
+   int_init_array(128,0,_ctx.velocities);
    _ctx.timeS = 0;
    _ctx.timeFract = 0x0 /* 0.000000 */;
    int_init_array(128,0,_ctx.notesS);
@@ -161,8 +162,18 @@ uint8_t utils_Gate_noteOn(utils_Gate__ctx_type_2 &_ctx, int note, int velocity, 
    }
    _ctx.notesS[note] = _ctx.timeS;
    _ctx.notesFract[note] = _ctx.timeFract;
+   _ctx.velocities[note] = int_clip(velocity,0,127);
    utils_Gate_push(_ctx.notesActive,note);
    return newNote;
+}
+
+int utils_Gate_getVel(utils_Gate__ctx_type_2 &_ctx, int note){
+   int velocity;
+   velocity = 127;
+   if((note >= 0) && (note < 128)){
+      velocity = _ctx.velocities[note];
+   }
+   return int_clip(velocity,0,127);
 }
 
 int utils_Random_irandom(utils_Random__ctx_type_0 &_ctx){
