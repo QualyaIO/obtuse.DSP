@@ -27,6 +27,7 @@
 #include "synthDrummerTamaRockstar.h"
 
 // sampler synths
+#include "synthSampler.h"
 #include "synthSamplerAmbientLead.h"
 #include "synthSamplerAuthenticStrings.h"
 #include "synthSamplerBoesendorferGrandPiano.h"

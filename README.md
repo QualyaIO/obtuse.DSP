@@ -44,6 +44,10 @@ More examples of how to use the library (generative music, play back MIDI files,
 
 # Changelog
 
+## current
+
+- HOTFIX: forgot default synthSampler in Obtuse.h
+
 ## v0.2.1 (2025-03-17)
 
 - arp, gate: adding `getVel()` to retrieve velocity
