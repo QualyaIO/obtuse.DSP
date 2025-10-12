@@ -104,6 +104,7 @@ Features
 - gate: accommodate several noteOn (option to send duplicate noteOn ?)
 - synth: in case of monophonic option to retrigger for each note (already change velocity)?
 - synth: implement sostenuto pedal?
+- synth: implement panic (note off all active notes)?
 
 Vult
 
