@@ -885,25 +885,32 @@ static_inline void synthFMalt_ADSR_getMinRelease_init(synthFMalt_ADSR__ctx_type_
 fix16_t synthFMalt_ADSR_getMinRelease(synthFMalt_ADSR__ctx_type_9 &_ctx);
 
 typedef struct synthFMalt_ADSR__ctx_type_10 {
+   fix16_t target_level;
    fix16_t target;
    fix16_t step;
    int state;
    fix16_t s;
    uint8_t retrigger;
+   fix16_t real_fs;
    fix16_t r_step;
    fix16_t r;
    fix16_t out;
+   int n;
+   fix16_t level_step_ref;
+   fix16_t level_step;
+   fix16_t level;
    fix16_t fs;
+   int env_decimation_factor;
    fix16_t d_step;
    fix16_t d;
    fix16_t a_target;
    fix16_t a_step;
    fix16_t a;
-   synthFMalt_ADSR__ctx_type_5 _inst38d6;
-   synthFMalt_ADSR__ctx_type_0 _inst3773;
-   synthFMalt_ADSR__ctx_type_5 _inst33d6;
-   synthFMalt_Util__ctx_type_2 _inst1851;
-   synthFMalt_Util__ctx_type_2 _inst151;
+   synthFMalt_ADSR__ctx_type_5 _inst52d6;
+   synthFMalt_ADSR__ctx_type_0 _inst5173;
+   synthFMalt_ADSR__ctx_type_5 _inst39d6;
+   synthFMalt_Util__ctx_type_2 _inst251;
+   synthFMalt_Util__ctx_type_2 _inst2051;
    synthFMalt_ADSR__ctx_type_9 _inst12c;
 } synthFMalt_ADSR__ctx_type_10;
 
@@ -947,6 +954,17 @@ static_inline void synthFMalt_ADSR_updateSteps_init(synthFMalt_ADSR__ctx_type_10
 
 void synthFMalt_ADSR_updateSteps(synthFMalt_ADSR__ctx_type_10 &_ctx);
 
+typedef synthFMalt_ADSR__ctx_type_10 synthFMalt_ADSR_updateLevelStep_type;
+
+static_inline void synthFMalt_ADSR_updateLevelStep_init(synthFMalt_ADSR__ctx_type_10 &_output_){
+   synthFMalt_ADSR__ctx_type_10_init(_output_);
+   return ;
+}
+
+static_inline void synthFMalt_ADSR_updateLevelStep(synthFMalt_ADSR__ctx_type_10 &_ctx){
+   _ctx.level_step_ref = fix_div(0x10000 /* 1.000000 */,fix_mul(0x30000 /* 3.000000 */,_ctx.fs));
+};
+
 typedef synthFMalt_ADSR__ctx_type_10 synthFMalt_ADSR_setSamplerate_type;
 
 static_inline void synthFMalt_ADSR_setSamplerate_init(synthFMalt_ADSR__ctx_type_10 &_output_){
@@ -954,12 +972,28 @@ static_inline void synthFMalt_ADSR_setSamplerate_init(synthFMalt_ADSR__ctx_type_
    return ;
 }
 
-static_inline void synthFMalt_ADSR_setSamplerate(synthFMalt_ADSR__ctx_type_10 &_ctx, fix16_t newFs){
-   if(newFs > 0x0 /* 0.000000 */){
-      _ctx.fs = newFs;
-   }
-   synthFMalt_ADSR_updateSteps(_ctx);
+void synthFMalt_ADSR_setSamplerate(synthFMalt_ADSR__ctx_type_10 &_ctx, fix16_t newFs);
+
+typedef synthFMalt_ADSR__ctx_type_10 synthFMalt_ADSR_setDecimationFactor_type;
+
+static_inline void synthFMalt_ADSR_setDecimationFactor_init(synthFMalt_ADSR__ctx_type_10 &_output_){
+   synthFMalt_ADSR__ctx_type_10_init(_output_);
+   return ;
 }
+
+static_inline void synthFMalt_ADSR_setDecimationFactor(synthFMalt_ADSR__ctx_type_10 &_ctx, int newFactor){
+   _ctx.env_decimation_factor = int_clip(newFactor,1,1000);
+   synthFMalt_ADSR_setSamplerate(_ctx,_ctx.real_fs);
+}
+
+typedef synthFMalt_ADSR__ctx_type_10 synthFMalt_ADSR_setLevel_type;
+
+static_inline void synthFMalt_ADSR_setLevel_init(synthFMalt_ADSR__ctx_type_10 &_output_){
+   synthFMalt_ADSR__ctx_type_10_init(_output_);
+   return ;
+}
+
+void synthFMalt_ADSR_setLevel(synthFMalt_ADSR__ctx_type_10 &_ctx, fix16_t newLevel);
 
 typedef synthFMalt_ADSR__ctx_type_10 synthFMalt_ADSR_config_type;
 
@@ -988,11 +1022,7 @@ static_inline void synthFMalt_ADSR_default_init(synthFMalt_ADSR__ctx_type_10 &_o
    return ;
 }
 
-static_inline void synthFMalt_ADSR_default(synthFMalt_ADSR__ctx_type_10 &_ctx){
-   _ctx.a_target = 0x10000 /* 1.000000 */;
-   synthFMalt_ADSR_setSamplerate(_ctx,0x2c1999 /* 44.100000 */);
-   synthFMalt_ADSR_config(_ctx,0x0 /* 0.000000 */,0x0 /* 0.000000 */,0x8000 /* 0.500000 */,0x0 /* 0.000000 */);
-}
+void synthFMalt_ADSR_default(synthFMalt_ADSR__ctx_type_10 &_ctx);
 
 typedef struct synthFMalt_ADSR__ctx_type_11 {
    synthFMalt_ADSR__ctx_type_10 _inst182;

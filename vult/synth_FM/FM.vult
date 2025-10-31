@@ -7,6 +7,7 @@
 
 
 // giving wavetables to be used by both oscilator (tedious but this way we save on memory and copy in case of polyphony)
+// NOTE: equivalent buffered version split between here and OSC
 fun process(wavetable_modulator, wavetable_carrier) {
     // audio sampling rate
     mem fs: real;
@@ -22,8 +23,7 @@ fun process(wavetable_modulator, wavetable_carrier) {
     mem modulator_max_phase: real;
     mem modulator_phase_range: real;
 
-    // reduce cost of envelopes, only computes once in a while
-    mem env_decimation_factor;
+    // ADSR for envelopes
     mem carrier_env;
     mem modulator_env;
     // do we have any envelope?
@@ -32,15 +32,6 @@ fun process(wavetable_modulator, wavetable_carrier) {
     mem env_carrier_idle: bool;
     // if we should modulate sound level instead of phase
     mem modulator_target_level: bool;
-    // level of the synth, applied to envelop, current one and the one to target
-    mem level: real;
-    mem target_level: real;
-    // step to apply between levels, ref and actual
-    mem level_step_ref: real;
-    mem level_step: real;
-    // number of iteration of this loop, for decimation
-    mem n;
-
     //  current gate
     mem gate : bool;
     // sustain pedal held or not
@@ -48,30 +39,11 @@ fun process(wavetable_modulator, wavetable_carrier) {
     // there is actually something to sustain
     mem sustaining: bool;
 
-    n = n + 1;
-    val update_env:bool = true;
-    if (env_decimation_factor > 0) {
-       update_env = n % env_decimation_factor == 0;
-    }
-
     // output value -- need to be explicitely initialized otherwise migth be random (?) producing audible clicks
     val carrier_val = 0.0;
     // retrieve envelopes -- both, to make sure that modulator gets updated
-    if (update_env) {
-       // smooth level change
-       if (level <> target_level) {
-	 level = level + level_step;
-	 // reached target
-	 if (
-	     (level_step > 0.0 && level > target_level) ||
-	     (level_step < 0.0 && level < target_level)
-	     ) {
-	   level = target_level;
-	 }
-       }
-       carrier_env = carrieradsr:ADSR.process(gate || sustaining) * level;
-       modulator_env = modulatoradsr:ADSR.process(gate || sustaining);
-    }
+    carrier_env = carrieradsr:ADSR.process(gate || sustaining);
+    modulator_env = modulatoradsr:ADSR.process(gate || sustaining);
 
     env_carrier_idle = carrier_env <= 0.0;
     env_modulator_idle = modulator_env <= 0.0;
@@ -142,98 +114,13 @@ and process_bufferTo(wavetable_modulator, wavetable_carrier, nb: int, oBuffer) {
     mem buffer_carrier_env;
     mem buffer_modulator_env;
 
-    // sanitize env decimation
-    val env_df = env_decimation_factor;
-    if (env_df < 1) {
-      env_df = 1;
-    }
-    
-    val nb_env = nb;
-    if (env_decimation_factor > 1) {
-      // compute number of samples for this buffer's decimation
-      nb_env =  nb / env_decimation_factor;
-      // we might need one extra envelop if we don't have enough left from the previous one to fill the reminder
-      if (nb % env_decimation_factor >= env_decimation_factor - n % env_decimation_factor) {
-	nb_env = nb_env + 1;
-      }
-    }
-
-    // we should not update envelop, just copy over last values
-    if (nb_env <= 0) {
-      val i = 0;
-      while (i < nb) {
-	// note: last env_(carrier/modulator)_idle will be also kept
-	buffer_modulator_env[i] = modulator_env;
-	buffer_carrier_env[i] = carrier_env;
-	i = i + 1;
-      }
-      // update number iteration, synced with regular process
-      n = n + nb;
-    }
     // retrieve envelopes
-    else {
-      env_carrier_idle = carrieradsr:ADSR.process_bufferTo(gate || sustaining, nb_env, buffer_carrier_env);
-      env_modulator_idle = modulatoradsr:ADSR.process_bufferTo(gate || sustaining, nb_env, buffer_modulator_env);
-      // apply level to carrier
-      // TODO: skip that if carrier idle?
-      val i = 0;
-      while (i < nb_env) {
-	// smooth level change
-	if (level <> target_level) {
-	  level = level + level_step;
-	  // reached target
-	  if (
-	      (level_step > 0.0 && level > target_level) ||
-	      (level_step < 0.0 && level < target_level)
-	      ) {
-	       level = target_level;
-	  }
-	}
-	buffer_carrier_env[i] = buffer_carrier_env[i] * level;
-	i = i + 1;
-      }
+    env_carrier_idle = carrieradsr:ADSR.process_bufferTo(gate || sustaining, nb, buffer_carrier_env);
+    env_modulator_idle = modulatoradsr:ADSR.process_bufferTo(gate || sustaining, nb, buffer_modulator_env);
 
-      // update number of iterations  for next pass and backward pass coming right next
-      n = n + nb;
-	 
-      // expand carrier envelop and retrieve to full version
-      // FIXME: we update both envelopes, but we could select if only one is active
-      if (nb_env < nb) {
-	// going backward to use the same buffer
-	i = nb;
-	val i_env = nb_env;
-	// detecting envelop updates from reverse, only considering current decimation
-	val n_rev = n % env_df;
-	// keeping same value, from reverse
-	val modulator_env_rev = buffer_modulator_env[i_env-1];
-	val carrier_env_rev = buffer_carrier_env[i_env-1];
-	while (i > 1) {
-	  buffer_modulator_env[i-1] = modulator_env_rev;
-	  buffer_carrier_env[i-1] = carrier_env_rev;
-	  i = i - 1;
-	  n_rev = n_rev - 1;
-	  // reset counter to detect envelop change
-	  if (n_rev < 0) {
-	    n_rev = env_df - 1;
-	    i_env = i_env - 1;
-	    if (i_env > 0) {
-	      modulator_env_rev = buffer_modulator_env[i_env-1];
-	      carrier_env_rev = buffer_carrier_env[i_env-1];
-	    }
-	    // near the beginning we take envelop from previous run
-	    else {
-	      modulator_env_rev = modulator_env;
-	      carrier_env_rev = carrier_env;
-	    }
-	  }
-	}
-      }
-
-      // update for next pass the last values
-      modulator_env = buffer_modulator_env[nb-1];
-      carrier_env = buffer_carrier_env[nb-1];
-
-    }
+    // to sync with process, update for next pass the last values
+    modulator_env = buffer_modulator_env[nb-1];
+    carrier_env = buffer_carrier_env[nb-1];
 
     // apply to carrier
     if (env_carrier_idle) {
@@ -273,22 +160,13 @@ and process_bufferTo(wavetable_modulator, wavetable_carrier, nb: int, oBuffer) {
       _ = carrier:OSC.process_bufferTo(wavetable_carrier, nb, buffer_carrier_env, buffer_modulator, buffer_modulator_env,  modulator_level, modulator_target_level, oBuffer);
     }
 }
-// to be called internally, for smoothing changes in levels
-and _updateLevelStep() {
-  // expects to go from 0 to 1 between levels in 3ms to avoid clicks -- albeit could counter lower attack in ADSR
-  // TODO: leave that as on option ?
-  level_step_ref = 1.0/(fs * 3.0);
-  // might probably overflow at high factor...
-  if (env_decimation_factor > 0) {
-    level_step_ref = level_step_ref * real(env_decimation_factor);
-  }
-}
+
 // tradeoff between perfs (high decimation) and having smooth ADSR (no decimation)
-// number should be a divisor of sample rate. Clip to max 1000, already well big enough (probably artifacts going beyond 5)
-and setEnvDecimationFactor(newFactor: int) {
-  env_decimation_factor = clip(newFactor, 0, 1000);
-  _ = _updateLevelStep();
+and setEnvDecimationFactor(factor: int) {
+  _ = carrieradsr:ADSR.setDecimationFactor(factor);
+  _ = modulatoradsr:ADSR.setDecimationFactor(factor);
 }
+
 and setSamplerate(newFs:real) {
    if (newFs > 0.0) {
       fs = newFs;
@@ -296,30 +174,15 @@ and setSamplerate(newFs:real) {
    _ = carrier:OSC.setSamplerate(fs);
    _ = modulator:OSC.setSamplerate(fs);
 
-    // config for ADSR
-    val ADSR_fs = fs;
-    if (env_decimation_factor > 0) {
-       ADSR_fs = fs / real(env_decimation_factor);
-    }
-    _ = carrieradsr:ADSR.setSamplerate(ADSR_fs);
-    _ = modulatoradsr:ADSR.setSamplerate(ADSR_fs);
-
-    _ = _updateLevelStep();
+   _ = carrieradsr:ADSR.setSamplerate(fs);
+   _ = modulatoradsr:ADSR.setSamplerate(fs);
 }
 // set level of the output [0..1] (applied on the envelop)
 // interpolate between levels
-and setLevel(newLevel: real) {
-  target_level = clip(newLevel, 0.0, 1.0);
-  if (target_level < level) {
-    level_step = -level_step_ref;
-  } else {
-    level_step = level_step_ref;
-  }
-  // difference too tiny, just jump to level
-  if (abs(target_level - level) <= level_step_ref) {
-    level = target_level;
-  }
+and setLevel(level: real) {
+  _ = carrieradsr:ADSR.setLevel(level);
 }
+
 // ratio for each operator. Keep in mind the max effective frequency, below samplingrate/2!
 // negative values: used a fixed frequency (in kHz) instead of a ratio (in which case the effect will be immediate)
 and setCarrierRatio(ratio: real) {

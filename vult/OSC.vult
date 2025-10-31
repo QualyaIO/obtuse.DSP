@@ -38,6 +38,7 @@ fun process(wavetable) {
 // shift_level: if we should *actually* shift level instead of phase
 // oBuffer: output buffer to copy data to
 // FIXME: not check for phase_bases size, only use phase_shift, no option to by-pass
+// NOTE: equivalent non-buffered version resides in FM (since uses two wavetables)
 and process_bufferTo(wavetable, nb: int, env, phase_shift, phase_env, phase_shift_level: real, shift_level: bool, oBuffer) {
    nb = clip(nb, 0, size(oBuffer));
    if (nb == 0) {

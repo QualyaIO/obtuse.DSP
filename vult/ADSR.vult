@@ -82,12 +82,28 @@ and process(bgate:bool) {
    mem target: real;
    // target for attack, just in case it could be changed at some point
    mem  a_target;
+   // can force to retrigger from outside, e.g. several note on
+   mem retrigger;
+   // can apply a level to the envelop, current one and the one to target
+   mem level: real;
+   mem target_level: real;
+   // step to apply between levels, ref and actual
+   mem level_step_ref: real;
+   mem level_step: real;
+   // reduce cost of envelopes, only computes once in a while
+   mem env_decimation_factor;
+   // number of iteration of this loop, for decimation
+   mem n;
    // internal output and target x 1000 to deal with fixed point precision (also corresponds to the fact that samplerate is in kHz)
    val scale = 1000.0;
    // ...faster to multiply by 1/1000...
    val scale_i = 0.001;
-   // can force to retrigger from outside, e.g. several note on
-   mem retrigger;
+   
+   n = n + 1;
+   // stop right there if not time to update
+   if (env_decimation_factor > 1 && n % env_decimation_factor <> 0) {
+     return clip((out * scale_i)*level, 0.0, 1.0);
+   }
 
    // new gate, goto attack
    if(Util.edge(bgate) || retrigger) {
@@ -97,6 +113,18 @@ and process(bgate:bool) {
       retrigger = false;
    }
 
+   // smooth level change
+   if (level <> target_level) {
+     level = level + level_step;
+     // reached target
+     if (
+	 (level_step > 0.0 && level > target_level) ||
+	 (level_step < 0.0 && level < target_level)
+	 ) {
+       level = target_level;
+     }
+   }
+     
    // idle, really nothing to do 
    if(state == 0) {
      out = 0.0;
@@ -157,101 +185,120 @@ and process(bgate:bool) {
       }
    }
 
-   return clip(out * scale_i, 0.0, 1.0);
+   return clip((out * scale_i) * level, 0.0, 1.0);
 }
 
 
 // one gate for the whole buffer at the moment
-// return
+// return idle state: true if envelope finished
 and process_bufferTo(bgate:bool, nb:int, oBuffer): bool {
-   nb = clip(nb, 0, size(oBuffer));
-   if (nb == 0) {
-      nb = size(oBuffer);
-   }
-
-   // internal output and target x 1000 to deal with fixed point precision (also corresponds to the fact that samplerate is in kHz)
-   val scale = 1000.0;
-   // ...faster to multiply by 1/1000...
-   val scale_i = 0.001;
-   val idle = true;
-
-   val i = 0;
-   while (i < nb) {
-
-      // new gate, goto attack
-     if(Util.edge(bgate) || retrigger) {
-         state = 1;
-         target = a_target * scale;
-         step = a_step;
-	 retrigger = false;
+  nb = clip(nb, 0, size(oBuffer));
+  if (nb == 0) {
+    nb = size(oBuffer);
+  }
+  
+  // internal output and target x 1000 to deal with fixed point precision (also corresponds to the fact that samplerate is in kHz)
+  val scale = 1000.0;
+  // ...faster to multiply by 1/1000...
+  val scale_i = 0.001;
+  val idle = true;
+  
+  val i = 0;
+  
+  // new gate, goto attack
+  // NOTE: compared to process() we check gate no matter decimation
+  if(Util.edge(bgate) || retrigger) {
+    state = 1;
+    target = a_target * scale;
+    step = a_step;
+    retrigger = false;
+  }
+  
+  while (i < nb) {
+    
+    n = n + 1;
+    // only update if needed
+    if (env_decimation_factor <= 1 || n % env_decimation_factor == 0) {
+      
+      // smooth level change
+      if (level <> target_level) {
+	level = level + level_step;
+	// reached target
+	if (
+	    (level_step > 0.0 && level > target_level) ||
+	    (level_step < 0.0 && level < target_level)
+	    ) {
+	  level = target_level;
+	}
       }
-
+      
       // idle, really nothing to do 
       if(state == 0) {
-        out = 0.0;
+	out = 0.0;
       }
       else {
-        idle = false;
-        out = out + step; 
-
-        // attack
-        if(state == 1) {
-           // peaked, going to decay
-           if(out >=  target) {
-              step = d_step;
-              out = target;
-              target = s * scale;
-              state = 2;
-           }
-           // gate off, to go release
-           if (not(bgate)) {
-              step = stepToRelease(out*scale_i);
-              target = 0.0;
-              state = 4;
-           }
-        }
-        // decay
-        if (state == 2) {
-           // gate off, to go release
-           if (not(bgate)) {
-              step = stepToRelease(out*scale_i);
-              target = 0.0;
-              state = 4;
-           }
-           // target reached, go to sustain
-           if (out <= target) {
-              out = target;
-              step = 0.0;
-	      state = 3;
-           }
-  
-        }
-        // sustain
-        if (state == 3) {
-           // just waiting for the gate to end, go to release
-           if (not(bgate)) {
-              step = r_step;
-              target = 0.0;
-              state = 4;
-           }
-        }
-   
-       // release
-        if(state == 4) {
-         // back to idle
-         if (out <= 0.0) {
-            out = 0.0;
-            state = 0;
-            step = 0.0;
-            target = 0.0;
-         }
-        }
+	idle = false;
+	out = out + step; 
+	
+	// attack
+	if(state == 1) {
+	  // peaked, going to decay
+	  if(out >=  target) {
+	    step = d_step;
+	    out = target;
+	    target = s * scale;
+	    state = 2;
+	  }
+	  // gate off, to go release
+	  if (not(bgate)) {
+	    step = stepToRelease(out*scale_i);
+	    target = 0.0;
+	    state = 4;
+	  }
+	}
+	// decay
+	if (state == 2) {
+	  // gate off, to go release
+	  if (not(bgate)) {
+	    step = stepToRelease(out*scale_i);
+	    target = 0.0;
+	    state = 4;
+	  }
+	  // target reached, go to sustain
+	  if (out <= target) {
+	    out = target;
+	    step = 0.0;
+	    state = 3;
+	  }
+	  
+	}
+	// sustain
+	if (state == 3) {
+	  // just waiting for the gate to end, go to release
+	  if (not(bgate)) {
+	    step = r_step;
+	    target = 0.0;
+	    state = 4;
+	  }
+	}
+	
+	// release
+	if(state == 4) {
+	  // back to idle
+	  if (out <= 0.0) {
+	    out = 0.0;
+	    state = 0;
+	    step = 0.0;
+	    target = 0.0;
+	  }
+	}
       }
-   
-      oBuffer[i] = clip(out * scale_i, 0.0, 1.0);
-      i = i + 1;
-   }
-   return idle;
+    }
+    
+    oBuffer[i] = clip((out * scale_i)*level, 0.0, 1.0);
+    i = i + 1;
+  }
+  return idle;
 }
 
 // once sample rate change, we need to adapt 
@@ -267,13 +314,55 @@ and updateSteps() {
    r_step = (- s) / (fs * (clip(r, min_r, r)));
 }
 
+// to be called internally, for smoothing changes in levels
+and updateLevelStep() {
+  // expects to go from 0 to 1 between levels in 3ms to avoid clicks -- albeit could counter lower attack in ADSR
+  // TODO: leave that as on option ?
+  level_step_ref = 1.0/(fs * 3.0);
+}
+
 // current sampling rate in kHz
-// note: sample rate of ADSR can be different from audio to save on computations, but beware of artifacts (try at least 10kHz)
 and setSamplerate(newFs:real) {
-   if (newFs > 0.0) {
-      fs = newFs;
-   }
-   _ = updateSteps();
+  // keep aside sampling rate of the system
+  mem real_fs;
+  if (newFs > 0.0) {
+     real_fs = newFs;
+  }
+   
+  // alter used sampling rate considering decimation factor
+  if (env_decimation_factor > 1) {
+     fs = real_fs / real(env_decimation_factor);
+  }
+  else {
+     fs = real_fs;
+  }
+
+  _ = updateSteps();
+  _ = updateLevelStep();
+}
+
+// tradeoff between perfs (high decimation) and having smooth ADSR (no decimation)
+// number should be a divisor of sample rate. Clip to max 1000, already well big enough (probably artifacts going beyond 5)
+and setDecimationFactor(newFactor: int) {
+  env_decimation_factor = clip(newFactor, 1, 1000);
+  // actual sampling rate is linked to decimation, will update corresponding steps
+  _ = setSamplerate(real_fs);
+}
+
+// set level of the output [0..1] (applied on the envelop)
+// interpolate between levels
+// NOTE: 0 level do not idle envelop because we consider that it could be modulated while running
+and setLevel(newLevel: real) {
+  target_level = clip(newLevel, 0.0, 1.0);
+  if (target_level < level) {
+    level_step = -level_step_ref;
+  } else {
+    level_step = level_step_ref;
+  }
+  // difference too tiny, just jump to level
+  if (abs(target_level - level) <= level_step_ref) {
+    level = target_level;
+  }
 }
 
 // attack: time (s) to peak output at 1.0 -- limit to 60s (for fixed point sake)
@@ -302,8 +391,9 @@ and default() @[init] {
    // Note: if fore some reason becomes < s, adapt decay to check if we reach sustain "from below" in process()
    mem a_target = 1.0;
    _ = setSamplerate(44.1);
-   //_ = config(1.0, 1.0, 0.8, 1.0);
    _ = config(0.0, 0.0, 0.5, 0.0);
+   _ = setLevel(1.0);
+   _ = setDecimationFactor(1);
 }
 
 // to let vult find above the good buffer size
