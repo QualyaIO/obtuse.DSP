@@ -894,6 +894,7 @@ typedef struct synthFMalt_ADSR__ctx_type_10 {
    fix16_t real_fs;
    fix16_t r_step;
    fix16_t r;
+   fix16_t out_scaled;
    fix16_t out;
    int n;
    fix16_t level_step_ref;
@@ -906,11 +907,11 @@ typedef struct synthFMalt_ADSR__ctx_type_10 {
    fix16_t a_target;
    fix16_t a_step;
    fix16_t a;
-   synthFMalt_ADSR__ctx_type_5 _inst52d6;
-   synthFMalt_ADSR__ctx_type_0 _inst5173;
-   synthFMalt_ADSR__ctx_type_5 _inst39d6;
+   synthFMalt_ADSR__ctx_type_5 _inst61d6;
+   synthFMalt_ADSR__ctx_type_0 _inst6073;
+   synthFMalt_ADSR__ctx_type_5 _inst43d6;
    synthFMalt_Util__ctx_type_2 _inst251;
-   synthFMalt_Util__ctx_type_2 _inst2051;
+   synthFMalt_Util__ctx_type_2 _inst2251;
    synthFMalt_ADSR__ctx_type_9 _inst12c;
 } synthFMalt_ADSR__ctx_type_10;
 
@@ -1051,11 +1052,9 @@ static_inline void synthFMalt_ADSR_dummy(synthFMalt_ADSR__ctx_type_11 &_ctx){
 typedef struct synthFMalt_FMalt__ctx_type_0 {
    fix16_t wavetable_modulator_idx;
    fix16_t wavetable_carrier_idx;
-   fix16_t target_level;
    uint8_t sustaining;
    uint8_t sustain;
    synthFMalt_Notes__ctx_type_0 playingnotes;
-   int n;
    synthFMalt_ADSR__ctx_type_10 modulatoradsr;
    uint8_t modulator_target_level;
    fix16_t modulator_phase_shift;
@@ -1067,14 +1066,10 @@ typedef struct synthFMalt_FMalt__ctx_type_0 {
    fix16_t modulator_env;
    fix16_t modulatorRatio;
    synthFMalt_OSCalt__ctx_type_1 modulator;
-   fix16_t level_step_ref;
-   fix16_t level_step;
-   fix16_t level;
    uint8_t gate;
    fix16_t fs;
    fix16_t freq;
    uint8_t env_modulator_idle;
-   int env_decimation_factor;
    uint8_t env_carrier_idle;
    synthFMalt_ADSR__ctx_type_10 carrieradsr;
    fix16_t carrier_phase_range;
@@ -1108,20 +1103,6 @@ static_inline void synthFMalt_FMalt_process_bufferTo_init(synthFMalt_FMalt__ctx_
 
 void synthFMalt_FMalt_process_bufferTo(synthFMalt_FMalt__ctx_type_0 &_ctx, int nb, fix16_t (&oBuffer)[128]);
 
-typedef synthFMalt_FMalt__ctx_type_0 synthFMalt_FMalt__updateLevelStep_type;
-
-static_inline void synthFMalt_FMalt__updateLevelStep_init(synthFMalt_FMalt__ctx_type_0 &_output_){
-   synthFMalt_FMalt__ctx_type_0_init(_output_);
-   return ;
-}
-
-static_inline void synthFMalt_FMalt__updateLevelStep(synthFMalt_FMalt__ctx_type_0 &_ctx){
-   _ctx.level_step_ref = fix_div(0x10000 /* 1.000000 */,fix_mul(0x30000 /* 3.000000 */,_ctx.fs));
-   if(_ctx.env_decimation_factor > 0){
-      _ctx.level_step_ref = fix_mul(_ctx.level_step_ref,int_to_fix(_ctx.env_decimation_factor));
-   }
-}
-
 typedef synthFMalt_FMalt__ctx_type_0 synthFMalt_FMalt_setEnvDecimationFactor_type;
 
 static_inline void synthFMalt_FMalt_setEnvDecimationFactor_init(synthFMalt_FMalt__ctx_type_0 &_output_){
@@ -1129,9 +1110,9 @@ static_inline void synthFMalt_FMalt_setEnvDecimationFactor_init(synthFMalt_FMalt
    return ;
 }
 
-static_inline void synthFMalt_FMalt_setEnvDecimationFactor(synthFMalt_FMalt__ctx_type_0 &_ctx, int newFactor){
-   _ctx.env_decimation_factor = int_clip(newFactor,0,1000);
-   synthFMalt_FMalt__updateLevelStep(_ctx);
+static_inline void synthFMalt_FMalt_setEnvDecimationFactor(synthFMalt_FMalt__ctx_type_0 &_ctx, int factor){
+   synthFMalt_ADSR_setDecimationFactor(_ctx.carrieradsr,factor);
+   synthFMalt_ADSR_setDecimationFactor(_ctx.modulatoradsr,factor);
 }
 
 typedef synthFMalt_FMalt__ctx_type_0 synthFMalt_FMalt_setSamplerate_type;
@@ -1150,7 +1131,9 @@ static_inline void synthFMalt_FMalt_setLevel_init(synthFMalt_FMalt__ctx_type_0 &
    return ;
 }
 
-void synthFMalt_FMalt_setLevel(synthFMalt_FMalt__ctx_type_0 &_ctx, fix16_t newLevel);
+static_inline void synthFMalt_FMalt_setLevel(synthFMalt_FMalt__ctx_type_0 &_ctx, fix16_t level){
+   synthFMalt_ADSR_setLevel(_ctx.carrieradsr,level);
+};
 
 typedef synthFMalt_FMalt__ctx_type_0 synthFMalt_FMalt_setCarrierRatio_type;
 

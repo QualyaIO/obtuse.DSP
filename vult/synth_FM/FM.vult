@@ -285,7 +285,7 @@ and noteOn(note:int, velocity:int, channel:int){
    note = clip(note, 0, 127);
    // check if the new note is new
    val isNew = playingnotes:Notes.noteOn(note, velocity, channel);
-   // set frequency... should we reset phase somehow? artifacts upon first tests
+   // set frequency -- phase reset upon idle envelop
    _ = setFrequency(Util.noteToFrequency(note));
    _ = setLevel(Util.velocityToLevel(velocity));
    // gate, no mater what
@@ -337,15 +337,15 @@ and default() @[init] {
     Buffer.buffer(buffer_carrier_env);
     Buffer.buffer(buffer_modulator_env);
 
-    // should be a divisor of sample rate
-    _ = setEnvDecimationFactor(3);
-
     // init used items
     // FIXME: not sure why if @init is set
     _ = carrier:OSC.default();
     _ = modulator:OSC.default();
     _ = carrieradsr:ADSR.default();
     _ = modulatoradsr:ADSR.default();
+
+    // should be a divisor of sample rate
+    _ = setEnvDecimationFactor(3);
 
     // default envelops
     _ = setModulatorADSR(0.0, 0.0, 0.5, 0.0);

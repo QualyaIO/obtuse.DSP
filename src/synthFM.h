@@ -872,6 +872,7 @@ typedef struct synthFM_ADSR__ctx_type_10 {
    fix16_t real_fs;
    fix16_t r_step;
    fix16_t r;
+   fix16_t out_scaled;
    fix16_t out;
    int n;
    fix16_t level_step_ref;
@@ -884,11 +885,11 @@ typedef struct synthFM_ADSR__ctx_type_10 {
    fix16_t a_target;
    fix16_t a_step;
    fix16_t a;
-   synthFM_ADSR__ctx_type_5 _inst52d6;
-   synthFM_ADSR__ctx_type_0 _inst5173;
-   synthFM_ADSR__ctx_type_5 _inst39d6;
+   synthFM_ADSR__ctx_type_5 _inst61d6;
+   synthFM_ADSR__ctx_type_0 _inst6073;
+   synthFM_ADSR__ctx_type_5 _inst43d6;
    synthFM_Util__ctx_type_2 _inst251;
-   synthFM_Util__ctx_type_2 _inst2051;
+   synthFM_Util__ctx_type_2 _inst2251;
    synthFM_ADSR__ctx_type_9 _inst12c;
 } synthFM_ADSR__ctx_type_10;
 
