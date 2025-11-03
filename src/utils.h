@@ -1013,26 +1013,6 @@ static_inline void utils_Clock_process_init(utils_Clock__ctx_type_7 &_output_){
 
 int utils_Clock_process(utils_Clock__ctx_type_7 &_ctx);
 
-typedef utils_Clock__ctx_type_7 utils_Clock_setTime_type;
-
-static_inline void utils_Clock_setTime_init(utils_Clock__ctx_type_7 &_output_){
-   utils_Clock__ctx_type_7_init(_output_);
-   return ;
-}
-
-void utils_Clock_setTime(utils_Clock__ctx_type_7 &_ctx, int newTimeS, fix16_t newTimeFract);
-
-typedef utils_Clock__ctx_type_7 utils_Clock_reset_type;
-
-static_inline void utils_Clock_reset_init(utils_Clock__ctx_type_7 &_output_){
-   utils_Clock__ctx_type_7_init(_output_);
-   return ;
-}
-
-static_inline void utils_Clock_reset(utils_Clock__ctx_type_7 &_ctx){
-   _ctx.init = false;
-};
-
 typedef utils_Clock__ctx_type_7 utils_Clock__recompute_type;
 
 static_inline void utils_Clock__recompute_init(utils_Clock__ctx_type_7 &_output_){
@@ -1108,6 +1088,24 @@ static_inline void utils_Clock_getNbNewTicks_init(utils_Clock__ctx_type_7 &_outp
 }
 
 int utils_Clock_getNbNewTicks(utils_Clock__ctx_type_7 &_ctx);
+
+typedef utils_Clock__ctx_type_7 utils_Clock_reset_type;
+
+static_inline void utils_Clock_reset_init(utils_Clock__ctx_type_7 &_output_){
+   utils_Clock__ctx_type_7_init(_output_);
+   return ;
+}
+
+void utils_Clock_reset(utils_Clock__ctx_type_7 &_ctx);
+
+typedef utils_Clock__ctx_type_7 utils_Clock_setTime_type;
+
+static_inline void utils_Clock_setTime_init(utils_Clock__ctx_type_7 &_output_){
+   utils_Clock__ctx_type_7_init(_output_);
+   return ;
+}
+
+void utils_Clock_setTime(utils_Clock__ctx_type_7 &_ctx, int newTimeS, fix16_t newTimeFract);
 
 typedef utils_Clock__ctx_type_7 utils_Clock_setNbTicks_type;
 

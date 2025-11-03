@@ -48,6 +48,7 @@ More examples of how to use the library (generative music, play back MIDI files,
 
 - HOTFIX: forgot default synthSampler in Obtuse.h
 - switch level and decimation handling from FM(alt) to ADSR -- more flexible, slight perf boost
+- clock: more robust detection of clock reset, also reset ticks
 
 ## v0.2.1 (2025-03-17)
 

@@ -1498,13 +1498,9 @@ void utils_Clock__ctx_type_7_init(utils_Clock__ctx_type_7 &_output_){
 int utils_Clock_process(utils_Clock__ctx_type_7 &_ctx){
    int trigger;
    trigger = 0;
-   if(bool_not(_ctx.init) || (utils_Clock_compareTimeFract(_ctx.timeS,_ctx.timeFract,_ctx.lastBeatS,_ctx.lastBeatFract) > 0)){
+   if(bool_not(_ctx.init)){
       _ctx.init = true;
-      _ctx.lastBeatS = _ctx.timeS;
-      _ctx.lastBeatFract = _ctx.timeFract;
       trigger = 1;
-      _ctx.pos = 1;
-      _ctx.ibi = _ctx.ibiA;
    }
    else
    {
@@ -1537,15 +1533,6 @@ int utils_Clock_process(utils_Clock__ctx_type_7 &_ctx){
    _ctx.lastTimeS = _ctx.timeS;
    _ctx.lastTimeFract = _ctx.timeFract;
    return trigger;
-}
-
-void utils_Clock_setTime(utils_Clock__ctx_type_7 &_ctx, int newTimeS, fix16_t newTimeFract){
-   _ctx.timeS = newTimeS;
-   _ctx.timeFract = newTimeFract;
-   while(_ctx.timeFract >= 0x10000 /* 1.000000 */){
-      _ctx.timeS = (1 + _ctx.timeS);
-      _ctx.timeFract = (-0x10000 /* -1.000000 */ + _ctx.timeFract);
-   }
 }
 
 void utils_Clock__recompute(utils_Clock__ctx_type_7 &_ctx){
@@ -1620,6 +1607,30 @@ int utils_Clock_getNbNewTicks(utils_Clock__ctx_type_7 &_ctx){
    }
    _ctx.lastTicks = curTicks;
    return newTicks;
+}
+
+void utils_Clock_reset(utils_Clock__ctx_type_7 &_ctx){
+   _ctx.init = false;
+   _ctx.lastBeatS = _ctx.timeS;
+   _ctx.lastBeatFract = _ctx.timeFract;
+   _ctx.lastTimeS = _ctx.timeS;
+   _ctx.lastTimeFract = _ctx.timeFract;
+   _ctx.pos = 1;
+   _ctx.ibi = _ctx.ibiA;
+   _ctx.lastTicks = 0;
+   _ctx.pendingTicks = 0;
+}
+
+void utils_Clock_setTime(utils_Clock__ctx_type_7 &_ctx, int newTimeS, fix16_t newTimeFract){
+   _ctx.timeS = newTimeS;
+   _ctx.timeFract = newTimeFract;
+   while(_ctx.timeFract >= 0x10000 /* 1.000000 */){
+      _ctx.timeS = (1 + _ctx.timeS);
+      _ctx.timeFract = (-0x10000 /* -1.000000 */ + _ctx.timeFract);
+   }
+   if(utils_Clock_compareTimeFract(_ctx.timeS,_ctx.timeFract,_ctx.lastTimeS,_ctx.lastTimeFract) > 0){
+      utils_Clock_reset(_ctx);
+   }
 }
 
 void utils_Clock_setNbTicks(utils_Clock__ctx_type_7 &_ctx, int newTicks){

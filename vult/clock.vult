@@ -103,15 +103,10 @@ fun process(): int {
   mem lastTimeFract: real;
 
   val trigger = 0;
-  // special case, we overflowed the time, or clock is wrong, consider that we should trigger, reset position
-  if (not(init) || compareTimeFract(timeS, timeFract, lastBeatS, lastBeatFract) > 0) {
+  // upon reset consider that we should trigger
+  if (not(init)) {
     init = true;
-    lastBeatS = timeS; 
-    lastBeatFract = timeFract; 
     trigger = 1;
-    pos = 1;
-    // starting with group A
-    ibi = ibiA;
   }
   // time to clock (time changed and we overshoot ibi)
   else if (compareTimeFract(lastTimeS, lastTimeFract, timeS, timeFract) <> 0 && compareTimeFract(timeS - lastBeatS, timeFract - lastBeatFract, int(ibi), ibi % 1.0) <= 0) {
@@ -148,23 +143,6 @@ fun process(): int {
   lastTimeS = timeS;
   lastTimeFract = timeFract;
   return trigger;
-}
-
-// timeS, timeFract: passing by, in seconds. timeS is integer part (should be positive), timeFract is the remainder. Used to overcome float precision
-// NOTE: round part should be >= 0 fract should be 0..1, otherwise will get costly quickly
-and setTime(newTimeS: int, newTimeFract: real) {
-  timeS = newTimeS;
-  timeFract = newTimeFract;
-  // norm
-  while (timeFract >= 1.0) {
-    timeS = timeS + 1;
-    timeFract = timeFract - 1.0;
-  }
-}
-
-// reset position in group, trigger on next call
-and reset() {
-  init = false;
 }
 
 // refresh groups and IBI for both groups. Update next ibi.
@@ -271,6 +249,39 @@ and getNbNewTicks(): int {
   return newTicks;
 }
 
+// reset position in group, time and number of ticks, will trigger on next call of process()
+and reset() {
+  init = false;
+  // reset all clocks
+  lastBeatS = timeS;
+  lastBeatFract = timeFract;
+  lastTimeS = timeS;
+  lastTimeFract = timeFract;
+  // reset position in group, starting with group A
+  pos = 1;
+  ibi = ibiA;
+  // reset ticks
+  lastTicks = 0;
+  pendingTicks = 0;
+}
+
+// timeS, timeFract: passing by, in seconds. timeS is integer part (should be positive), timeFract is the remainder. Used to overcome float precision
+// NOTE: round part should be >= 0 fract should be 0..1, otherwise will get costly quickly
+// WARNING: if clocks overflows everything will be reset
+and setTime(newTimeS: int, newTimeFract: real) {
+  timeS = newTimeS;
+  timeFract = newTimeFract;
+  // norm
+  while (timeFract >= 1.0) {
+    timeS = timeS + 1;
+    timeFract = timeFract - 1.0;
+  }
+  // detect if we overflowed time, or clock is wrong, reset position and ticks
+  if (compareTimeFract(timeS, timeFract, lastTimeS, lastTimeFract) > 0) {
+    _ = reset();
+  }
+}
+
 // define how many ticks there should be per beat
 // note: constant even during swing
 and setNbTicks(newTicks: int) {
@@ -296,8 +307,6 @@ and setBPM(newBPM: real) {
     lastTicks = getTicks();
   }
 }
-
-
 
 and default() @[init] {
   // good ol' 120 BPM
