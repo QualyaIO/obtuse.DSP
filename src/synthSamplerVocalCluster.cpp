@@ -368,7 +368,7 @@ uint8_t synthSamplerVocalCluster_Sampler_noteOn(synthSamplerVocalCluster_Sampler
 void synthSamplerVocalCluster_Sampler_noteOff(synthSamplerVocalCluster_Sampler__ctx_type_0 &_ctx, int note, int channel){
    note = int_clip(note,0,127);
    if(synthSamplerVocalCluster_Notes_noteOff(_ctx.playingnotes,note,channel)){
-      if(synthSamplerVocalCluster_Notes_nbNotes(_ctx.playingnotes) > 0){
+      if(synthSamplerVocalCluster_Sampler_nbHeldNotes(_ctx) > 0){
          int last_played;
          last_played = synthSamplerVocalCluster_Notes_lastNote(_ctx.playingnotes);
          if((last_played > 0) && (last_played <= 128)){
@@ -621,7 +621,7 @@ void synthSamplerVocalCluster_Voice_noteOn(synthSamplerVocalCluster_Voice__ctx_t
 void synthSamplerVocalCluster_Voice_setNbVoices(synthSamplerVocalCluster_Voice__ctx_type_0 &_ctx, int nbvoices){
    nbvoices = int_clip(nbvoices,0,4);
    int i;
-   i = synthSamplerVocalCluster_Notes_nbNotes(_ctx.voicesactive);
+   i = synthSamplerVocalCluster_Voice_nbActiveVoices(_ctx);
    while((i > nbvoices) && (i > 0)){
       synthSamplerVocalCluster_Voice_noteOff(_ctx,_ctx.voices[((-1) + i)],0);
       synthSamplerVocalCluster_Notes_noteOff(_ctx.voicesinactive,((-1) + i),0);

@@ -368,7 +368,7 @@ uint8_t synthSamplerPiano_Sampler_noteOn(synthSamplerPiano_Sampler__ctx_type_0 &
 void synthSamplerPiano_Sampler_noteOff(synthSamplerPiano_Sampler__ctx_type_0 &_ctx, int note, int channel){
    note = int_clip(note,0,127);
    if(synthSamplerPiano_Notes_noteOff(_ctx.playingnotes,note,channel)){
-      if(synthSamplerPiano_Notes_nbNotes(_ctx.playingnotes) > 0){
+      if(synthSamplerPiano_Sampler_nbHeldNotes(_ctx) > 0){
          int last_played;
          last_played = synthSamplerPiano_Notes_lastNote(_ctx.playingnotes);
          if((last_played > 0) && (last_played <= 128)){
@@ -621,7 +621,7 @@ void synthSamplerPiano_Voice_noteOn(synthSamplerPiano_Voice__ctx_type_0 &_ctx, i
 void synthSamplerPiano_Voice_setNbVoices(synthSamplerPiano_Voice__ctx_type_0 &_ctx, int nbvoices){
    nbvoices = int_clip(nbvoices,0,4);
    int i;
-   i = synthSamplerPiano_Notes_nbNotes(_ctx.voicesactive);
+   i = synthSamplerPiano_Voice_nbActiveVoices(_ctx);
    while((i > nbvoices) && (i > 0)){
       synthSamplerPiano_Voice_noteOff(_ctx,_ctx.voices[((-1) + i)],0);
       synthSamplerPiano_Notes_noteOff(_ctx.voicesinactive,((-1) + i),0);

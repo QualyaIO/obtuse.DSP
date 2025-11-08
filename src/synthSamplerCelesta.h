@@ -479,6 +479,17 @@ static_inline void synthSamplerCelesta_Sampler_setSustain_init(synthSamplerCeles
 
 void synthSamplerCelesta_Sampler_setSustain(synthSamplerCelesta_Sampler__ctx_type_0 &_ctx, uint8_t flag);
 
+typedef synthSamplerCelesta_Sampler__ctx_type_0 synthSamplerCelesta_Sampler_nbHeldNotes_type;
+
+static_inline void synthSamplerCelesta_Sampler_nbHeldNotes_init(synthSamplerCelesta_Sampler__ctx_type_0 &_output_){
+   synthSamplerCelesta_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerCelesta_Sampler_nbHeldNotes(synthSamplerCelesta_Sampler__ctx_type_0 &_ctx){
+   return synthSamplerCelesta_Notes_nbNotes(_ctx.playingnotes);
+};
+
 typedef synthSamplerCelesta_Sampler__ctx_type_0 synthSamplerCelesta_Sampler_noteOn_type;
 
 static_inline void synthSamplerCelesta_Sampler_noteOn_init(synthSamplerCelesta_Sampler__ctx_type_0 &_output_){
@@ -1015,6 +1026,17 @@ static_inline void synthSamplerCelesta_Voice_noteOn_init(synthSamplerCelesta_Voi
 }
 
 void synthSamplerCelesta_Voice_noteOn(synthSamplerCelesta_Voice__ctx_type_0 &_ctx, int note, int velocity, int channel);
+
+typedef synthSamplerCelesta_Voice__ctx_type_0 synthSamplerCelesta_Voice_nbActiveVoices_type;
+
+static_inline void synthSamplerCelesta_Voice_nbActiveVoices_init(synthSamplerCelesta_Voice__ctx_type_0 &_output_){
+   synthSamplerCelesta_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerCelesta_Voice_nbActiveVoices(synthSamplerCelesta_Voice__ctx_type_0 &_ctx){
+   return synthSamplerCelesta_Notes_nbNotes(_ctx.voicesactive);
+};
 
 typedef synthSamplerCelesta_Voice__ctx_type_0 synthSamplerCelesta_Voice_setNbVoices_type;
 

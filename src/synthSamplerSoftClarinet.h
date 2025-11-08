@@ -479,6 +479,17 @@ static_inline void synthSamplerSoftClarinet_Sampler_setSustain_init(synthSampler
 
 void synthSamplerSoftClarinet_Sampler_setSustain(synthSamplerSoftClarinet_Sampler__ctx_type_0 &_ctx, uint8_t flag);
 
+typedef synthSamplerSoftClarinet_Sampler__ctx_type_0 synthSamplerSoftClarinet_Sampler_nbHeldNotes_type;
+
+static_inline void synthSamplerSoftClarinet_Sampler_nbHeldNotes_init(synthSamplerSoftClarinet_Sampler__ctx_type_0 &_output_){
+   synthSamplerSoftClarinet_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerSoftClarinet_Sampler_nbHeldNotes(synthSamplerSoftClarinet_Sampler__ctx_type_0 &_ctx){
+   return synthSamplerSoftClarinet_Notes_nbNotes(_ctx.playingnotes);
+};
+
 typedef synthSamplerSoftClarinet_Sampler__ctx_type_0 synthSamplerSoftClarinet_Sampler_noteOn_type;
 
 static_inline void synthSamplerSoftClarinet_Sampler_noteOn_init(synthSamplerSoftClarinet_Sampler__ctx_type_0 &_output_){
@@ -1015,6 +1026,17 @@ static_inline void synthSamplerSoftClarinet_Voice_noteOn_init(synthSamplerSoftCl
 }
 
 void synthSamplerSoftClarinet_Voice_noteOn(synthSamplerSoftClarinet_Voice__ctx_type_0 &_ctx, int note, int velocity, int channel);
+
+typedef synthSamplerSoftClarinet_Voice__ctx_type_0 synthSamplerSoftClarinet_Voice_nbActiveVoices_type;
+
+static_inline void synthSamplerSoftClarinet_Voice_nbActiveVoices_init(synthSamplerSoftClarinet_Voice__ctx_type_0 &_output_){
+   synthSamplerSoftClarinet_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerSoftClarinet_Voice_nbActiveVoices(synthSamplerSoftClarinet_Voice__ctx_type_0 &_ctx){
+   return synthSamplerSoftClarinet_Notes_nbNotes(_ctx.voicesactive);
+};
 
 typedef synthSamplerSoftClarinet_Voice__ctx_type_0 synthSamplerSoftClarinet_Voice_setNbVoices_type;
 

@@ -1023,7 +1023,7 @@ uint8_t synthFMalt_FMalt_noteOn(synthFMalt_FMalt__ctx_type_0 &_ctx, int note, in
 void synthFMalt_FMalt_noteOff(synthFMalt_FMalt__ctx_type_0 &_ctx, int note, int channel){
    note = int_clip(note,0,127);
    if(synthFMalt_Notes_noteOff(_ctx.playingnotes,note,channel)){
-      if(synthFMalt_Notes_nbNotes(_ctx.playingnotes) > 0){
+      if(synthFMalt_FMalt_nbHeldNotes(_ctx) > 0){
          int last_played;
          last_played = synthFMalt_Notes_lastNote(_ctx.playingnotes);
          if((last_played > 0) && (last_played <= 128)){
@@ -1320,7 +1320,7 @@ void synthFMalt_Voice_noteOn(synthFMalt_Voice__ctx_type_0 &_ctx, int note, int v
 void synthFMalt_Voice_setNbVoices(synthFMalt_Voice__ctx_type_0 &_ctx, int nbvoices){
    nbvoices = int_clip(nbvoices,0,4);
    int i;
-   i = synthFMalt_Notes_nbNotes(_ctx.voicesactive);
+   i = synthFMalt_Voice_nbActiveVoices(_ctx);
    while((i > nbvoices) && (i > 0)){
       synthFMalt_Voice_noteOff(_ctx,_ctx.voices[((-1) + i)],0);
       synthFMalt_Notes_noteOff(_ctx.voicesinactive,((-1) + i),0);

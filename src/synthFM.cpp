@@ -976,7 +976,7 @@ uint8_t synthFM_FM_noteOn(synthFM_FM__ctx_type_0 &_ctx, int note, int velocity, 
 void synthFM_FM_noteOff(synthFM_FM__ctx_type_0 &_ctx, int note, int channel){
    note = int_clip(note,0,127);
    if(synthFM_Notes_noteOff(_ctx.playingnotes,note,channel)){
-      if(synthFM_Notes_nbNotes(_ctx.playingnotes) > 0){
+      if(synthFM_FM_nbHeldNotes(_ctx) > 0){
          int last_played;
          last_played = synthFM_Notes_lastNote(_ctx.playingnotes);
          if((last_played > 0) && (last_played <= 128)){
@@ -1235,7 +1235,7 @@ void synthFM_Voice_noteOn(synthFM_Voice__ctx_type_0 &_ctx, int note, int velocit
 void synthFM_Voice_setNbVoices(synthFM_Voice__ctx_type_0 &_ctx, int nbvoices){
    nbvoices = int_clip(nbvoices,0,4);
    int i;
-   i = synthFM_Notes_nbNotes(_ctx.voicesactive);
+   i = synthFM_Voice_nbActiveVoices(_ctx);
    while((i > nbvoices) && (i > 0)){
       synthFM_Voice_noteOff(_ctx,_ctx.voices[((-1) + i)],0);
       synthFM_Notes_noteOff(_ctx.voicesinactive,((-1) + i),0);

@@ -479,6 +479,17 @@ static_inline void synthSamplerPowerFifths_Sampler_setSustain_init(synthSamplerP
 
 void synthSamplerPowerFifths_Sampler_setSustain(synthSamplerPowerFifths_Sampler__ctx_type_0 &_ctx, uint8_t flag);
 
+typedef synthSamplerPowerFifths_Sampler__ctx_type_0 synthSamplerPowerFifths_Sampler_nbHeldNotes_type;
+
+static_inline void synthSamplerPowerFifths_Sampler_nbHeldNotes_init(synthSamplerPowerFifths_Sampler__ctx_type_0 &_output_){
+   synthSamplerPowerFifths_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerPowerFifths_Sampler_nbHeldNotes(synthSamplerPowerFifths_Sampler__ctx_type_0 &_ctx){
+   return synthSamplerPowerFifths_Notes_nbNotes(_ctx.playingnotes);
+};
+
 typedef synthSamplerPowerFifths_Sampler__ctx_type_0 synthSamplerPowerFifths_Sampler_noteOn_type;
 
 static_inline void synthSamplerPowerFifths_Sampler_noteOn_init(synthSamplerPowerFifths_Sampler__ctx_type_0 &_output_){
@@ -1015,6 +1026,17 @@ static_inline void synthSamplerPowerFifths_Voice_noteOn_init(synthSamplerPowerFi
 }
 
 void synthSamplerPowerFifths_Voice_noteOn(synthSamplerPowerFifths_Voice__ctx_type_0 &_ctx, int note, int velocity, int channel);
+
+typedef synthSamplerPowerFifths_Voice__ctx_type_0 synthSamplerPowerFifths_Voice_nbActiveVoices_type;
+
+static_inline void synthSamplerPowerFifths_Voice_nbActiveVoices_init(synthSamplerPowerFifths_Voice__ctx_type_0 &_output_){
+   synthSamplerPowerFifths_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerPowerFifths_Voice_nbActiveVoices(synthSamplerPowerFifths_Voice__ctx_type_0 &_ctx){
+   return synthSamplerPowerFifths_Notes_nbNotes(_ctx.voicesactive);
+};
 
 typedef synthSamplerPowerFifths_Voice__ctx_type_0 synthSamplerPowerFifths_Voice_setNbVoices_type;
 

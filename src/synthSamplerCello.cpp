@@ -368,7 +368,7 @@ uint8_t synthSamplerCello_Sampler_noteOn(synthSamplerCello_Sampler__ctx_type_0 &
 void synthSamplerCello_Sampler_noteOff(synthSamplerCello_Sampler__ctx_type_0 &_ctx, int note, int channel){
    note = int_clip(note,0,127);
    if(synthSamplerCello_Notes_noteOff(_ctx.playingnotes,note,channel)){
-      if(synthSamplerCello_Notes_nbNotes(_ctx.playingnotes) > 0){
+      if(synthSamplerCello_Sampler_nbHeldNotes(_ctx) > 0){
          int last_played;
          last_played = synthSamplerCello_Notes_lastNote(_ctx.playingnotes);
          if((last_played > 0) && (last_played <= 128)){
@@ -621,7 +621,7 @@ void synthSamplerCello_Voice_noteOn(synthSamplerCello_Voice__ctx_type_0 &_ctx, i
 void synthSamplerCello_Voice_setNbVoices(synthSamplerCello_Voice__ctx_type_0 &_ctx, int nbvoices){
    nbvoices = int_clip(nbvoices,0,4);
    int i;
-   i = synthSamplerCello_Notes_nbNotes(_ctx.voicesactive);
+   i = synthSamplerCello_Voice_nbActiveVoices(_ctx);
    while((i > nbvoices) && (i > 0)){
       synthSamplerCello_Voice_noteOff(_ctx,_ctx.voices[((-1) + i)],0);
       synthSamplerCello_Notes_noteOff(_ctx.voicesinactive,((-1) + i),0);

@@ -368,7 +368,7 @@ uint8_t synthSamplerJapaneseShakuhachiFlute_Sampler_noteOn(synthSamplerJapaneseS
 void synthSamplerJapaneseShakuhachiFlute_Sampler_noteOff(synthSamplerJapaneseShakuhachiFlute_Sampler__ctx_type_0 &_ctx, int note, int channel){
    note = int_clip(note,0,127);
    if(synthSamplerJapaneseShakuhachiFlute_Notes_noteOff(_ctx.playingnotes,note,channel)){
-      if(synthSamplerJapaneseShakuhachiFlute_Notes_nbNotes(_ctx.playingnotes) > 0){
+      if(synthSamplerJapaneseShakuhachiFlute_Sampler_nbHeldNotes(_ctx) > 0){
          int last_played;
          last_played = synthSamplerJapaneseShakuhachiFlute_Notes_lastNote(_ctx.playingnotes);
          if((last_played > 0) && (last_played <= 128)){
@@ -621,7 +621,7 @@ void synthSamplerJapaneseShakuhachiFlute_Voice_noteOn(synthSamplerJapaneseShakuh
 void synthSamplerJapaneseShakuhachiFlute_Voice_setNbVoices(synthSamplerJapaneseShakuhachiFlute_Voice__ctx_type_0 &_ctx, int nbvoices){
    nbvoices = int_clip(nbvoices,0,4);
    int i;
-   i = synthSamplerJapaneseShakuhachiFlute_Notes_nbNotes(_ctx.voicesactive);
+   i = synthSamplerJapaneseShakuhachiFlute_Voice_nbActiveVoices(_ctx);
    while((i > nbvoices) && (i > 0)){
       synthSamplerJapaneseShakuhachiFlute_Voice_noteOff(_ctx,_ctx.voices[((-1) + i)],0);
       synthSamplerJapaneseShakuhachiFlute_Notes_noteOff(_ctx.voicesinactive,((-1) + i),0);

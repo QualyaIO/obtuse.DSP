@@ -554,7 +554,7 @@ void synthDrummerNes_Voice_noteOn(synthDrummerNes_Voice__ctx_type_0 &_ctx, int n
 void synthDrummerNes_Voice_setNbVoices(synthDrummerNes_Voice__ctx_type_0 &_ctx, int nbvoices){
    nbvoices = int_clip(nbvoices,0,4);
    int i;
-   i = synthDrummerNes_Notes_nbNotes(_ctx.voicesactive);
+   i = synthDrummerNes_Voice_nbActiveVoices(_ctx);
    while((i > nbvoices) && (i > 0)){
       synthDrummerNes_Voice_noteOff(_ctx,_ctx.voices[((-1) + i)],0);
       synthDrummerNes_Notes_noteOff(_ctx.voicesinactive,((-1) + i),0);

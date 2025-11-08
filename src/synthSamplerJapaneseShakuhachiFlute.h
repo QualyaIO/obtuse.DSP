@@ -479,6 +479,17 @@ static_inline void synthSamplerJapaneseShakuhachiFlute_Sampler_setSustain_init(s
 
 void synthSamplerJapaneseShakuhachiFlute_Sampler_setSustain(synthSamplerJapaneseShakuhachiFlute_Sampler__ctx_type_0 &_ctx, uint8_t flag);
 
+typedef synthSamplerJapaneseShakuhachiFlute_Sampler__ctx_type_0 synthSamplerJapaneseShakuhachiFlute_Sampler_nbHeldNotes_type;
+
+static_inline void synthSamplerJapaneseShakuhachiFlute_Sampler_nbHeldNotes_init(synthSamplerJapaneseShakuhachiFlute_Sampler__ctx_type_0 &_output_){
+   synthSamplerJapaneseShakuhachiFlute_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerJapaneseShakuhachiFlute_Sampler_nbHeldNotes(synthSamplerJapaneseShakuhachiFlute_Sampler__ctx_type_0 &_ctx){
+   return synthSamplerJapaneseShakuhachiFlute_Notes_nbNotes(_ctx.playingnotes);
+};
+
 typedef synthSamplerJapaneseShakuhachiFlute_Sampler__ctx_type_0 synthSamplerJapaneseShakuhachiFlute_Sampler_noteOn_type;
 
 static_inline void synthSamplerJapaneseShakuhachiFlute_Sampler_noteOn_init(synthSamplerJapaneseShakuhachiFlute_Sampler__ctx_type_0 &_output_){
@@ -1015,6 +1026,17 @@ static_inline void synthSamplerJapaneseShakuhachiFlute_Voice_noteOn_init(synthSa
 }
 
 void synthSamplerJapaneseShakuhachiFlute_Voice_noteOn(synthSamplerJapaneseShakuhachiFlute_Voice__ctx_type_0 &_ctx, int note, int velocity, int channel);
+
+typedef synthSamplerJapaneseShakuhachiFlute_Voice__ctx_type_0 synthSamplerJapaneseShakuhachiFlute_Voice_nbActiveVoices_type;
+
+static_inline void synthSamplerJapaneseShakuhachiFlute_Voice_nbActiveVoices_init(synthSamplerJapaneseShakuhachiFlute_Voice__ctx_type_0 &_output_){
+   synthSamplerJapaneseShakuhachiFlute_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerJapaneseShakuhachiFlute_Voice_nbActiveVoices(synthSamplerJapaneseShakuhachiFlute_Voice__ctx_type_0 &_ctx){
+   return synthSamplerJapaneseShakuhachiFlute_Notes_nbNotes(_ctx.voicesactive);
+};
 
 typedef synthSamplerJapaneseShakuhachiFlute_Voice__ctx_type_0 synthSamplerJapaneseShakuhachiFlute_Voice_setNbVoices_type;
 

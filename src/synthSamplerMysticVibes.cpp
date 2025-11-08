@@ -368,7 +368,7 @@ uint8_t synthSamplerMysticVibes_Sampler_noteOn(synthSamplerMysticVibes_Sampler__
 void synthSamplerMysticVibes_Sampler_noteOff(synthSamplerMysticVibes_Sampler__ctx_type_0 &_ctx, int note, int channel){
    note = int_clip(note,0,127);
    if(synthSamplerMysticVibes_Notes_noteOff(_ctx.playingnotes,note,channel)){
-      if(synthSamplerMysticVibes_Notes_nbNotes(_ctx.playingnotes) > 0){
+      if(synthSamplerMysticVibes_Sampler_nbHeldNotes(_ctx) > 0){
          int last_played;
          last_played = synthSamplerMysticVibes_Notes_lastNote(_ctx.playingnotes);
          if((last_played > 0) && (last_played <= 128)){
@@ -621,7 +621,7 @@ void synthSamplerMysticVibes_Voice_noteOn(synthSamplerMysticVibes_Voice__ctx_typ
 void synthSamplerMysticVibes_Voice_setNbVoices(synthSamplerMysticVibes_Voice__ctx_type_0 &_ctx, int nbvoices){
    nbvoices = int_clip(nbvoices,0,4);
    int i;
-   i = synthSamplerMysticVibes_Notes_nbNotes(_ctx.voicesactive);
+   i = synthSamplerMysticVibes_Voice_nbActiveVoices(_ctx);
    while((i > nbvoices) && (i > 0)){
       synthSamplerMysticVibes_Voice_noteOff(_ctx,_ctx.voices[((-1) + i)],0);
       synthSamplerMysticVibes_Notes_noteOff(_ctx.voicesinactive,((-1) + i),0);

@@ -368,7 +368,7 @@ uint8_t synthSamplerClarinet_Sampler_noteOn(synthSamplerClarinet_Sampler__ctx_ty
 void synthSamplerClarinet_Sampler_noteOff(synthSamplerClarinet_Sampler__ctx_type_0 &_ctx, int note, int channel){
    note = int_clip(note,0,127);
    if(synthSamplerClarinet_Notes_noteOff(_ctx.playingnotes,note,channel)){
-      if(synthSamplerClarinet_Notes_nbNotes(_ctx.playingnotes) > 0){
+      if(synthSamplerClarinet_Sampler_nbHeldNotes(_ctx) > 0){
          int last_played;
          last_played = synthSamplerClarinet_Notes_lastNote(_ctx.playingnotes);
          if((last_played > 0) && (last_played <= 128)){
@@ -621,7 +621,7 @@ void synthSamplerClarinet_Voice_noteOn(synthSamplerClarinet_Voice__ctx_type_0 &_
 void synthSamplerClarinet_Voice_setNbVoices(synthSamplerClarinet_Voice__ctx_type_0 &_ctx, int nbvoices){
    nbvoices = int_clip(nbvoices,0,4);
    int i;
-   i = synthSamplerClarinet_Notes_nbNotes(_ctx.voicesactive);
+   i = synthSamplerClarinet_Voice_nbActiveVoices(_ctx);
    while((i > nbvoices) && (i > 0)){
       synthSamplerClarinet_Voice_noteOff(_ctx,_ctx.voices[((-1) + i)],0);
       synthSamplerClarinet_Notes_noteOff(_ctx.voicesinactive,((-1) + i),0);

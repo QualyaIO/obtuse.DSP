@@ -278,6 +278,12 @@ and setSustain(flag: bool) {
   }
 }
 
+// return number of notes currently held
+// note: sound could still come out while in release stage
+and nbHeldNotes() : int {
+  return playingnotes:Notes.nbNotes();
+}
+
 // beginning of a note, retrigger each time in case of polyphony
 // return true if was not playing this note, false otherwise
 and noteOn(note:int, velocity:int, channel:int){
@@ -309,7 +315,7 @@ and noteOff(note:int, channel:int) {
    // only acts if action taken into account
    if (playingnotes:Notes.noteOff(note, channel)) {
       // still gate on-going if there are note held, and switch to last (should happen only for monophony)
-      if (playingnotes:Notes.nbNotes() > 0){
+      if (nbHeldNotes() > 0){
          val last_played = playingnotes:Notes.lastNote();
 	 // check we do have a note -- and that it's in range
          if (last_played > 0 && last_played <= 128) {

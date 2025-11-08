@@ -221,6 +221,15 @@ and getSampleSize() {
 and setSustain(flag: bool) {
 }
 
+
+// same method's signature as in other synths although for this version we either return 0 (nothing playing) or 1 (a sample is playing)
+and nbHeldNotes() : int {
+  if (slice < 0) {
+    return 0;
+  }
+  return 1;
+}
+
 // beginning of a note
 // return true if was not playing, false otherwise
 and noteOn(note:int, velocity:int, channel:int): bool {
@@ -228,7 +237,7 @@ and noteOn(note:int, velocity:int, channel:int): bool {
   // only 128 midi notes
   note = clip(note, 0, 127);
 
-  // not playing, car start right away
+  // not playing, can start right away
   if (slice < 0) {
     _ = setNote(note);
     _ = setLevel(Util.velocityToLevel(velocity));

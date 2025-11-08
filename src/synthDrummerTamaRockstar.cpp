@@ -554,7 +554,7 @@ void synthDrummerTamaRockstar_Voice_noteOn(synthDrummerTamaRockstar_Voice__ctx_t
 void synthDrummerTamaRockstar_Voice_setNbVoices(synthDrummerTamaRockstar_Voice__ctx_type_0 &_ctx, int nbvoices){
    nbvoices = int_clip(nbvoices,0,4);
    int i;
-   i = synthDrummerTamaRockstar_Notes_nbNotes(_ctx.voicesactive);
+   i = synthDrummerTamaRockstar_Voice_nbActiveVoices(_ctx);
    while((i > nbvoices) && (i > 0)){
       synthDrummerTamaRockstar_Voice_noteOff(_ctx,_ctx.voices[((-1) + i)],0);
       synthDrummerTamaRockstar_Notes_noteOff(_ctx.voicesinactive,((-1) + i),0);

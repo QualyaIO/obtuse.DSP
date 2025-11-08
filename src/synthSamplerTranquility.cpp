@@ -368,7 +368,7 @@ uint8_t synthSamplerTranquility_Sampler_noteOn(synthSamplerTranquility_Sampler__
 void synthSamplerTranquility_Sampler_noteOff(synthSamplerTranquility_Sampler__ctx_type_0 &_ctx, int note, int channel){
    note = int_clip(note,0,127);
    if(synthSamplerTranquility_Notes_noteOff(_ctx.playingnotes,note,channel)){
-      if(synthSamplerTranquility_Notes_nbNotes(_ctx.playingnotes) > 0){
+      if(synthSamplerTranquility_Sampler_nbHeldNotes(_ctx) > 0){
          int last_played;
          last_played = synthSamplerTranquility_Notes_lastNote(_ctx.playingnotes);
          if((last_played > 0) && (last_played <= 128)){
@@ -621,7 +621,7 @@ void synthSamplerTranquility_Voice_noteOn(synthSamplerTranquility_Voice__ctx_typ
 void synthSamplerTranquility_Voice_setNbVoices(synthSamplerTranquility_Voice__ctx_type_0 &_ctx, int nbvoices){
    nbvoices = int_clip(nbvoices,0,4);
    int i;
-   i = synthSamplerTranquility_Notes_nbNotes(_ctx.voicesactive);
+   i = synthSamplerTranquility_Voice_nbActiveVoices(_ctx);
    while((i > nbvoices) && (i > 0)){
       synthSamplerTranquility_Voice_noteOff(_ctx,_ctx.voices[((-1) + i)],0);
       synthSamplerTranquility_Notes_noteOff(_ctx.voicesinactive,((-1) + i),0);

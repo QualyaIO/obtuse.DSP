@@ -368,7 +368,7 @@ uint8_t synthSamplerGlassMarimbaSoft_Sampler_noteOn(synthSamplerGlassMarimbaSoft
 void synthSamplerGlassMarimbaSoft_Sampler_noteOff(synthSamplerGlassMarimbaSoft_Sampler__ctx_type_0 &_ctx, int note, int channel){
    note = int_clip(note,0,127);
    if(synthSamplerGlassMarimbaSoft_Notes_noteOff(_ctx.playingnotes,note,channel)){
-      if(synthSamplerGlassMarimbaSoft_Notes_nbNotes(_ctx.playingnotes) > 0){
+      if(synthSamplerGlassMarimbaSoft_Sampler_nbHeldNotes(_ctx) > 0){
          int last_played;
          last_played = synthSamplerGlassMarimbaSoft_Notes_lastNote(_ctx.playingnotes);
          if((last_played > 0) && (last_played <= 128)){
@@ -621,7 +621,7 @@ void synthSamplerGlassMarimbaSoft_Voice_noteOn(synthSamplerGlassMarimbaSoft_Voic
 void synthSamplerGlassMarimbaSoft_Voice_setNbVoices(synthSamplerGlassMarimbaSoft_Voice__ctx_type_0 &_ctx, int nbvoices){
    nbvoices = int_clip(nbvoices,0,4);
    int i;
-   i = synthSamplerGlassMarimbaSoft_Notes_nbNotes(_ctx.voicesactive);
+   i = synthSamplerGlassMarimbaSoft_Voice_nbActiveVoices(_ctx);
    while((i > nbvoices) && (i > 0)){
       synthSamplerGlassMarimbaSoft_Voice_noteOff(_ctx,_ctx.voices[((-1) + i)],0);
       synthSamplerGlassMarimbaSoft_Notes_noteOff(_ctx.voicesinactive,((-1) + i),0);

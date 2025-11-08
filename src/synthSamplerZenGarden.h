@@ -479,6 +479,17 @@ static_inline void synthSamplerZenGarden_Sampler_setSustain_init(synthSamplerZen
 
 void synthSamplerZenGarden_Sampler_setSustain(synthSamplerZenGarden_Sampler__ctx_type_0 &_ctx, uint8_t flag);
 
+typedef synthSamplerZenGarden_Sampler__ctx_type_0 synthSamplerZenGarden_Sampler_nbHeldNotes_type;
+
+static_inline void synthSamplerZenGarden_Sampler_nbHeldNotes_init(synthSamplerZenGarden_Sampler__ctx_type_0 &_output_){
+   synthSamplerZenGarden_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerZenGarden_Sampler_nbHeldNotes(synthSamplerZenGarden_Sampler__ctx_type_0 &_ctx){
+   return synthSamplerZenGarden_Notes_nbNotes(_ctx.playingnotes);
+};
+
 typedef synthSamplerZenGarden_Sampler__ctx_type_0 synthSamplerZenGarden_Sampler_noteOn_type;
 
 static_inline void synthSamplerZenGarden_Sampler_noteOn_init(synthSamplerZenGarden_Sampler__ctx_type_0 &_output_){
@@ -1015,6 +1026,17 @@ static_inline void synthSamplerZenGarden_Voice_noteOn_init(synthSamplerZenGarden
 }
 
 void synthSamplerZenGarden_Voice_noteOn(synthSamplerZenGarden_Voice__ctx_type_0 &_ctx, int note, int velocity, int channel);
+
+typedef synthSamplerZenGarden_Voice__ctx_type_0 synthSamplerZenGarden_Voice_nbActiveVoices_type;
+
+static_inline void synthSamplerZenGarden_Voice_nbActiveVoices_init(synthSamplerZenGarden_Voice__ctx_type_0 &_output_){
+   synthSamplerZenGarden_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerZenGarden_Voice_nbActiveVoices(synthSamplerZenGarden_Voice__ctx_type_0 &_ctx){
+   return synthSamplerZenGarden_Notes_nbNotes(_ctx.voicesactive);
+};
 
 typedef synthSamplerZenGarden_Voice__ctx_type_0 synthSamplerZenGarden_Voice_setNbVoices_type;
 

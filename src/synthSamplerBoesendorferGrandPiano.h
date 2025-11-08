@@ -479,6 +479,17 @@ static_inline void synthSamplerBoesendorferGrandPiano_Sampler_setSustain_init(sy
 
 void synthSamplerBoesendorferGrandPiano_Sampler_setSustain(synthSamplerBoesendorferGrandPiano_Sampler__ctx_type_0 &_ctx, uint8_t flag);
 
+typedef synthSamplerBoesendorferGrandPiano_Sampler__ctx_type_0 synthSamplerBoesendorferGrandPiano_Sampler_nbHeldNotes_type;
+
+static_inline void synthSamplerBoesendorferGrandPiano_Sampler_nbHeldNotes_init(synthSamplerBoesendorferGrandPiano_Sampler__ctx_type_0 &_output_){
+   synthSamplerBoesendorferGrandPiano_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerBoesendorferGrandPiano_Sampler_nbHeldNotes(synthSamplerBoesendorferGrandPiano_Sampler__ctx_type_0 &_ctx){
+   return synthSamplerBoesendorferGrandPiano_Notes_nbNotes(_ctx.playingnotes);
+};
+
 typedef synthSamplerBoesendorferGrandPiano_Sampler__ctx_type_0 synthSamplerBoesendorferGrandPiano_Sampler_noteOn_type;
 
 static_inline void synthSamplerBoesendorferGrandPiano_Sampler_noteOn_init(synthSamplerBoesendorferGrandPiano_Sampler__ctx_type_0 &_output_){
@@ -1015,6 +1026,17 @@ static_inline void synthSamplerBoesendorferGrandPiano_Voice_noteOn_init(synthSam
 }
 
 void synthSamplerBoesendorferGrandPiano_Voice_noteOn(synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0 &_ctx, int note, int velocity, int channel);
+
+typedef synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0 synthSamplerBoesendorferGrandPiano_Voice_nbActiveVoices_type;
+
+static_inline void synthSamplerBoesendorferGrandPiano_Voice_nbActiveVoices_init(synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0 &_output_){
+   synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerBoesendorferGrandPiano_Voice_nbActiveVoices(synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0 &_ctx){
+   return synthSamplerBoesendorferGrandPiano_Notes_nbNotes(_ctx.voicesactive);
+};
 
 typedef synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0 synthSamplerBoesendorferGrandPiano_Voice_setNbVoices_type;
 

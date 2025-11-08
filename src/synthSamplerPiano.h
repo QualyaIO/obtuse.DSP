@@ -479,6 +479,17 @@ static_inline void synthSamplerPiano_Sampler_setSustain_init(synthSamplerPiano_S
 
 void synthSamplerPiano_Sampler_setSustain(synthSamplerPiano_Sampler__ctx_type_0 &_ctx, uint8_t flag);
 
+typedef synthSamplerPiano_Sampler__ctx_type_0 synthSamplerPiano_Sampler_nbHeldNotes_type;
+
+static_inline void synthSamplerPiano_Sampler_nbHeldNotes_init(synthSamplerPiano_Sampler__ctx_type_0 &_output_){
+   synthSamplerPiano_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerPiano_Sampler_nbHeldNotes(synthSamplerPiano_Sampler__ctx_type_0 &_ctx){
+   return synthSamplerPiano_Notes_nbNotes(_ctx.playingnotes);
+};
+
 typedef synthSamplerPiano_Sampler__ctx_type_0 synthSamplerPiano_Sampler_noteOn_type;
 
 static_inline void synthSamplerPiano_Sampler_noteOn_init(synthSamplerPiano_Sampler__ctx_type_0 &_output_){
@@ -1015,6 +1026,17 @@ static_inline void synthSamplerPiano_Voice_noteOn_init(synthSamplerPiano_Voice__
 }
 
 void synthSamplerPiano_Voice_noteOn(synthSamplerPiano_Voice__ctx_type_0 &_ctx, int note, int velocity, int channel);
+
+typedef synthSamplerPiano_Voice__ctx_type_0 synthSamplerPiano_Voice_nbActiveVoices_type;
+
+static_inline void synthSamplerPiano_Voice_nbActiveVoices_init(synthSamplerPiano_Voice__ctx_type_0 &_output_){
+   synthSamplerPiano_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerPiano_Voice_nbActiveVoices(synthSamplerPiano_Voice__ctx_type_0 &_ctx){
+   return synthSamplerPiano_Notes_nbNotes(_ctx.voicesactive);
+};
 
 typedef synthSamplerPiano_Voice__ctx_type_0 synthSamplerPiano_Voice_setNbVoices_type;
 

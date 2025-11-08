@@ -479,6 +479,17 @@ static_inline void synthSamplerCosmos_Sampler_setSustain_init(synthSamplerCosmos
 
 void synthSamplerCosmos_Sampler_setSustain(synthSamplerCosmos_Sampler__ctx_type_0 &_ctx, uint8_t flag);
 
+typedef synthSamplerCosmos_Sampler__ctx_type_0 synthSamplerCosmos_Sampler_nbHeldNotes_type;
+
+static_inline void synthSamplerCosmos_Sampler_nbHeldNotes_init(synthSamplerCosmos_Sampler__ctx_type_0 &_output_){
+   synthSamplerCosmos_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerCosmos_Sampler_nbHeldNotes(synthSamplerCosmos_Sampler__ctx_type_0 &_ctx){
+   return synthSamplerCosmos_Notes_nbNotes(_ctx.playingnotes);
+};
+
 typedef synthSamplerCosmos_Sampler__ctx_type_0 synthSamplerCosmos_Sampler_noteOn_type;
 
 static_inline void synthSamplerCosmos_Sampler_noteOn_init(synthSamplerCosmos_Sampler__ctx_type_0 &_output_){
@@ -1015,6 +1026,17 @@ static_inline void synthSamplerCosmos_Voice_noteOn_init(synthSamplerCosmos_Voice
 }
 
 void synthSamplerCosmos_Voice_noteOn(synthSamplerCosmos_Voice__ctx_type_0 &_ctx, int note, int velocity, int channel);
+
+typedef synthSamplerCosmos_Voice__ctx_type_0 synthSamplerCosmos_Voice_nbActiveVoices_type;
+
+static_inline void synthSamplerCosmos_Voice_nbActiveVoices_init(synthSamplerCosmos_Voice__ctx_type_0 &_output_){
+   synthSamplerCosmos_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerCosmos_Voice_nbActiveVoices(synthSamplerCosmos_Voice__ctx_type_0 &_ctx){
+   return synthSamplerCosmos_Notes_nbNotes(_ctx.voicesactive);
+};
 
 typedef synthSamplerCosmos_Voice__ctx_type_0 synthSamplerCosmos_Voice_setNbVoices_type;
 

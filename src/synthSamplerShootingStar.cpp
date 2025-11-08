@@ -368,7 +368,7 @@ uint8_t synthSamplerShootingStar_Sampler_noteOn(synthSamplerShootingStar_Sampler
 void synthSamplerShootingStar_Sampler_noteOff(synthSamplerShootingStar_Sampler__ctx_type_0 &_ctx, int note, int channel){
    note = int_clip(note,0,127);
    if(synthSamplerShootingStar_Notes_noteOff(_ctx.playingnotes,note,channel)){
-      if(synthSamplerShootingStar_Notes_nbNotes(_ctx.playingnotes) > 0){
+      if(synthSamplerShootingStar_Sampler_nbHeldNotes(_ctx) > 0){
          int last_played;
          last_played = synthSamplerShootingStar_Notes_lastNote(_ctx.playingnotes);
          if((last_played > 0) && (last_played <= 128)){
@@ -621,7 +621,7 @@ void synthSamplerShootingStar_Voice_noteOn(synthSamplerShootingStar_Voice__ctx_t
 void synthSamplerShootingStar_Voice_setNbVoices(synthSamplerShootingStar_Voice__ctx_type_0 &_ctx, int nbvoices){
    nbvoices = int_clip(nbvoices,0,4);
    int i;
-   i = synthSamplerShootingStar_Notes_nbNotes(_ctx.voicesactive);
+   i = synthSamplerShootingStar_Voice_nbActiveVoices(_ctx);
    while((i > nbvoices) && (i > 0)){
       synthSamplerShootingStar_Voice_noteOff(_ctx,_ctx.voices[((-1) + i)],0);
       synthSamplerShootingStar_Notes_noteOff(_ctx.voicesinactive,((-1) + i),0);

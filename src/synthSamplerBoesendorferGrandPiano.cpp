@@ -368,7 +368,7 @@ uint8_t synthSamplerBoesendorferGrandPiano_Sampler_noteOn(synthSamplerBoesendorf
 void synthSamplerBoesendorferGrandPiano_Sampler_noteOff(synthSamplerBoesendorferGrandPiano_Sampler__ctx_type_0 &_ctx, int note, int channel){
    note = int_clip(note,0,127);
    if(synthSamplerBoesendorferGrandPiano_Notes_noteOff(_ctx.playingnotes,note,channel)){
-      if(synthSamplerBoesendorferGrandPiano_Notes_nbNotes(_ctx.playingnotes) > 0){
+      if(synthSamplerBoesendorferGrandPiano_Sampler_nbHeldNotes(_ctx) > 0){
          int last_played;
          last_played = synthSamplerBoesendorferGrandPiano_Notes_lastNote(_ctx.playingnotes);
          if((last_played > 0) && (last_played <= 128)){
@@ -621,7 +621,7 @@ void synthSamplerBoesendorferGrandPiano_Voice_noteOn(synthSamplerBoesendorferGra
 void synthSamplerBoesendorferGrandPiano_Voice_setNbVoices(synthSamplerBoesendorferGrandPiano_Voice__ctx_type_0 &_ctx, int nbvoices){
    nbvoices = int_clip(nbvoices,0,4);
    int i;
-   i = synthSamplerBoesendorferGrandPiano_Notes_nbNotes(_ctx.voicesactive);
+   i = synthSamplerBoesendorferGrandPiano_Voice_nbActiveVoices(_ctx);
    while((i > nbvoices) && (i > 0)){
       synthSamplerBoesendorferGrandPiano_Voice_noteOff(_ctx,_ctx.voices[((-1) + i)],0);
       synthSamplerBoesendorferGrandPiano_Notes_noteOff(_ctx.voicesinactive,((-1) + i),0);

@@ -1233,6 +1233,17 @@ static_inline void synthFM_FM_setSustain_init(synthFM_FM__ctx_type_0 &_output_){
 
 void synthFM_FM_setSustain(synthFM_FM__ctx_type_0 &_ctx, uint8_t flag);
 
+typedef synthFM_FM__ctx_type_0 synthFM_FM_nbHeldNotes_type;
+
+static_inline void synthFM_FM_nbHeldNotes_init(synthFM_FM__ctx_type_0 &_output_){
+   synthFM_FM__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthFM_FM_nbHeldNotes(synthFM_FM__ctx_type_0 &_ctx){
+   return synthFM_Notes_nbNotes(_ctx.playingnotes);
+};
+
 typedef synthFM_FM__ctx_type_0 synthFM_FM_noteOn_type;
 
 static_inline void synthFM_FM_noteOn_init(synthFM_FM__ctx_type_0 &_output_){
@@ -1830,6 +1841,17 @@ static_inline void synthFM_Voice_noteOn_init(synthFM_Voice__ctx_type_0 &_output_
 }
 
 void synthFM_Voice_noteOn(synthFM_Voice__ctx_type_0 &_ctx, int note, int velocity, int channel);
+
+typedef synthFM_Voice__ctx_type_0 synthFM_Voice_nbActiveVoices_type;
+
+static_inline void synthFM_Voice_nbActiveVoices_init(synthFM_Voice__ctx_type_0 &_output_){
+   synthFM_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthFM_Voice_nbActiveVoices(synthFM_Voice__ctx_type_0 &_ctx){
+   return synthFM_Notes_nbNotes(_ctx.voicesactive);
+};
 
 typedef synthFM_Voice__ctx_type_0 synthFM_Voice_setNbVoices_type;
 

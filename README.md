@@ -49,6 +49,7 @@ More examples of how to use the library (generative music, play back MIDI files,
 - HOTFIX: forgot default synthSampler in Obtuse.h
 - switch level and decimation handling from FM(alt) to ADSR -- more flexible, slight perf boost
 - clock: more robust detection of clock reset, also reset ticks
+- synths, voice: adding `nbHeldNotes()` / `nbActiveVoices()` to get info about what is playing at synth or voice level
 
 ## v0.2.1 (2025-03-17)
 
@@ -84,7 +85,6 @@ Interface
 - filters and reverb: method to ask for auto-resize of delay upon change in samplerate
 - add mixer
 - optional C++ class wrappers?
-- more consistent usage of functions across synths (e.g. `process`, `process_bufferTo`)
 
 Fixes
 
@@ -104,9 +104,10 @@ Features
 - sampler, drummer: option to kill on note off?
 - clock: a version which handle time signature and different division for swing
 - gate: accommodate several noteOn (option to send duplicate noteOn ?)
-- synth: in case of monophonic option to retrigger for each note (already change velocity)?
+- synth: in case of monophonic, option to retrigger for each note (already change velocity)?
 - synth: implement sostenuto pedal?
 - synth: implement panic (note off all active notes), responding to CC 123?
+- synth: detect voice completely silenced?
 
 Vult
 

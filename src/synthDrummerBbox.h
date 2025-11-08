@@ -290,6 +290,20 @@ static_inline void synthDrummerBbox_Drummer_setSustain_init(synthDrummerBbox_Dru
 static_inline void synthDrummerBbox_Drummer_setSustain(synthDrummerBbox_Drummer__ctx_type_0 &_ctx, uint8_t flag){
 }
 
+typedef synthDrummerBbox_Drummer__ctx_type_0 synthDrummerBbox_Drummer_nbHeldNotes_type;
+
+static_inline void synthDrummerBbox_Drummer_nbHeldNotes_init(synthDrummerBbox_Drummer__ctx_type_0 &_output_){
+   synthDrummerBbox_Drummer__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthDrummerBbox_Drummer_nbHeldNotes(synthDrummerBbox_Drummer__ctx_type_0 &_ctx){
+   if(_ctx.slice < 0){
+      return 0;
+   }
+   return 1;
+}
+
 typedef synthDrummerBbox_Drummer__ctx_type_0 synthDrummerBbox_Drummer_noteOn_type;
 
 static_inline void synthDrummerBbox_Drummer_noteOn_init(synthDrummerBbox_Drummer__ctx_type_0 &_output_){
@@ -906,6 +920,17 @@ static_inline void synthDrummerBbox_Voice_noteOn_init(synthDrummerBbox_Voice__ct
 }
 
 void synthDrummerBbox_Voice_noteOn(synthDrummerBbox_Voice__ctx_type_0 &_ctx, int note, int velocity, int channel);
+
+typedef synthDrummerBbox_Voice__ctx_type_0 synthDrummerBbox_Voice_nbActiveVoices_type;
+
+static_inline void synthDrummerBbox_Voice_nbActiveVoices_init(synthDrummerBbox_Voice__ctx_type_0 &_output_){
+   synthDrummerBbox_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthDrummerBbox_Voice_nbActiveVoices(synthDrummerBbox_Voice__ctx_type_0 &_ctx){
+   return synthDrummerBbox_Notes_nbNotes(_ctx.voicesactive);
+};
 
 typedef synthDrummerBbox_Voice__ctx_type_0 synthDrummerBbox_Voice_setNbVoices_type;
 

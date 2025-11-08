@@ -479,6 +479,17 @@ static_inline void synthSamplerCello_Sampler_setSustain_init(synthSamplerCello_S
 
 void synthSamplerCello_Sampler_setSustain(synthSamplerCello_Sampler__ctx_type_0 &_ctx, uint8_t flag);
 
+typedef synthSamplerCello_Sampler__ctx_type_0 synthSamplerCello_Sampler_nbHeldNotes_type;
+
+static_inline void synthSamplerCello_Sampler_nbHeldNotes_init(synthSamplerCello_Sampler__ctx_type_0 &_output_){
+   synthSamplerCello_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerCello_Sampler_nbHeldNotes(synthSamplerCello_Sampler__ctx_type_0 &_ctx){
+   return synthSamplerCello_Notes_nbNotes(_ctx.playingnotes);
+};
+
 typedef synthSamplerCello_Sampler__ctx_type_0 synthSamplerCello_Sampler_noteOn_type;
 
 static_inline void synthSamplerCello_Sampler_noteOn_init(synthSamplerCello_Sampler__ctx_type_0 &_output_){
@@ -1015,6 +1026,17 @@ static_inline void synthSamplerCello_Voice_noteOn_init(synthSamplerCello_Voice__
 }
 
 void synthSamplerCello_Voice_noteOn(synthSamplerCello_Voice__ctx_type_0 &_ctx, int note, int velocity, int channel);
+
+typedef synthSamplerCello_Voice__ctx_type_0 synthSamplerCello_Voice_nbActiveVoices_type;
+
+static_inline void synthSamplerCello_Voice_nbActiveVoices_init(synthSamplerCello_Voice__ctx_type_0 &_output_){
+   synthSamplerCello_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerCello_Voice_nbActiveVoices(synthSamplerCello_Voice__ctx_type_0 &_ctx){
+   return synthSamplerCello_Notes_nbNotes(_ctx.voicesactive);
+};
 
 typedef synthSamplerCello_Voice__ctx_type_0 synthSamplerCello_Voice_setNbVoices_type;
 

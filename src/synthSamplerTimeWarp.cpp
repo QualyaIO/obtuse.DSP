@@ -368,7 +368,7 @@ uint8_t synthSamplerTimeWarp_Sampler_noteOn(synthSamplerTimeWarp_Sampler__ctx_ty
 void synthSamplerTimeWarp_Sampler_noteOff(synthSamplerTimeWarp_Sampler__ctx_type_0 &_ctx, int note, int channel){
    note = int_clip(note,0,127);
    if(synthSamplerTimeWarp_Notes_noteOff(_ctx.playingnotes,note,channel)){
-      if(synthSamplerTimeWarp_Notes_nbNotes(_ctx.playingnotes) > 0){
+      if(synthSamplerTimeWarp_Sampler_nbHeldNotes(_ctx) > 0){
          int last_played;
          last_played = synthSamplerTimeWarp_Notes_lastNote(_ctx.playingnotes);
          if((last_played > 0) && (last_played <= 128)){
@@ -621,7 +621,7 @@ void synthSamplerTimeWarp_Voice_noteOn(synthSamplerTimeWarp_Voice__ctx_type_0 &_
 void synthSamplerTimeWarp_Voice_setNbVoices(synthSamplerTimeWarp_Voice__ctx_type_0 &_ctx, int nbvoices){
    nbvoices = int_clip(nbvoices,0,4);
    int i;
-   i = synthSamplerTimeWarp_Notes_nbNotes(_ctx.voicesactive);
+   i = synthSamplerTimeWarp_Voice_nbActiveVoices(_ctx);
    while((i > nbvoices) && (i > 0)){
       synthSamplerTimeWarp_Voice_noteOff(_ctx,_ctx.voices[((-1) + i)],0);
       synthSamplerTimeWarp_Notes_noteOff(_ctx.voicesinactive,((-1) + i),0);

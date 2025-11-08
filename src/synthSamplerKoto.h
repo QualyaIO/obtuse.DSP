@@ -479,6 +479,17 @@ static_inline void synthSamplerKoto_Sampler_setSustain_init(synthSamplerKoto_Sam
 
 void synthSamplerKoto_Sampler_setSustain(synthSamplerKoto_Sampler__ctx_type_0 &_ctx, uint8_t flag);
 
+typedef synthSamplerKoto_Sampler__ctx_type_0 synthSamplerKoto_Sampler_nbHeldNotes_type;
+
+static_inline void synthSamplerKoto_Sampler_nbHeldNotes_init(synthSamplerKoto_Sampler__ctx_type_0 &_output_){
+   synthSamplerKoto_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerKoto_Sampler_nbHeldNotes(synthSamplerKoto_Sampler__ctx_type_0 &_ctx){
+   return synthSamplerKoto_Notes_nbNotes(_ctx.playingnotes);
+};
+
 typedef synthSamplerKoto_Sampler__ctx_type_0 synthSamplerKoto_Sampler_noteOn_type;
 
 static_inline void synthSamplerKoto_Sampler_noteOn_init(synthSamplerKoto_Sampler__ctx_type_0 &_output_){
@@ -1015,6 +1026,17 @@ static_inline void synthSamplerKoto_Voice_noteOn_init(synthSamplerKoto_Voice__ct
 }
 
 void synthSamplerKoto_Voice_noteOn(synthSamplerKoto_Voice__ctx_type_0 &_ctx, int note, int velocity, int channel);
+
+typedef synthSamplerKoto_Voice__ctx_type_0 synthSamplerKoto_Voice_nbActiveVoices_type;
+
+static_inline void synthSamplerKoto_Voice_nbActiveVoices_init(synthSamplerKoto_Voice__ctx_type_0 &_output_){
+   synthSamplerKoto_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerKoto_Voice_nbActiveVoices(synthSamplerKoto_Voice__ctx_type_0 &_ctx){
+   return synthSamplerKoto_Notes_nbNotes(_ctx.voicesactive);
+};
 
 typedef synthSamplerKoto_Voice__ctx_type_0 synthSamplerKoto_Voice_setNbVoices_type;
 

@@ -479,6 +479,17 @@ static_inline void synthSamplerIndianSitar_Sampler_setSustain_init(synthSamplerI
 
 void synthSamplerIndianSitar_Sampler_setSustain(synthSamplerIndianSitar_Sampler__ctx_type_0 &_ctx, uint8_t flag);
 
+typedef synthSamplerIndianSitar_Sampler__ctx_type_0 synthSamplerIndianSitar_Sampler_nbHeldNotes_type;
+
+static_inline void synthSamplerIndianSitar_Sampler_nbHeldNotes_init(synthSamplerIndianSitar_Sampler__ctx_type_0 &_output_){
+   synthSamplerIndianSitar_Sampler__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerIndianSitar_Sampler_nbHeldNotes(synthSamplerIndianSitar_Sampler__ctx_type_0 &_ctx){
+   return synthSamplerIndianSitar_Notes_nbNotes(_ctx.playingnotes);
+};
+
 typedef synthSamplerIndianSitar_Sampler__ctx_type_0 synthSamplerIndianSitar_Sampler_noteOn_type;
 
 static_inline void synthSamplerIndianSitar_Sampler_noteOn_init(synthSamplerIndianSitar_Sampler__ctx_type_0 &_output_){
@@ -1015,6 +1026,17 @@ static_inline void synthSamplerIndianSitar_Voice_noteOn_init(synthSamplerIndianS
 }
 
 void synthSamplerIndianSitar_Voice_noteOn(synthSamplerIndianSitar_Voice__ctx_type_0 &_ctx, int note, int velocity, int channel);
+
+typedef synthSamplerIndianSitar_Voice__ctx_type_0 synthSamplerIndianSitar_Voice_nbActiveVoices_type;
+
+static_inline void synthSamplerIndianSitar_Voice_nbActiveVoices_init(synthSamplerIndianSitar_Voice__ctx_type_0 &_output_){
+   synthSamplerIndianSitar_Voice__ctx_type_0_init(_output_);
+   return ;
+}
+
+static_inline int synthSamplerIndianSitar_Voice_nbActiveVoices(synthSamplerIndianSitar_Voice__ctx_type_0 &_ctx){
+   return synthSamplerIndianSitar_Notes_nbNotes(_ctx.voicesactive);
+};
 
 typedef synthSamplerIndianSitar_Voice__ctx_type_0 synthSamplerIndianSitar_Voice_setNbVoices_type;
 

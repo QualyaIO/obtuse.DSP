@@ -368,7 +368,7 @@ uint8_t synthSamplerKoto_Sampler_noteOn(synthSamplerKoto_Sampler__ctx_type_0 &_c
 void synthSamplerKoto_Sampler_noteOff(synthSamplerKoto_Sampler__ctx_type_0 &_ctx, int note, int channel){
    note = int_clip(note,0,127);
    if(synthSamplerKoto_Notes_noteOff(_ctx.playingnotes,note,channel)){
-      if(synthSamplerKoto_Notes_nbNotes(_ctx.playingnotes) > 0){
+      if(synthSamplerKoto_Sampler_nbHeldNotes(_ctx) > 0){
          int last_played;
          last_played = synthSamplerKoto_Notes_lastNote(_ctx.playingnotes);
          if((last_played > 0) && (last_played <= 128)){
@@ -621,7 +621,7 @@ void synthSamplerKoto_Voice_noteOn(synthSamplerKoto_Voice__ctx_type_0 &_ctx, int
 void synthSamplerKoto_Voice_setNbVoices(synthSamplerKoto_Voice__ctx_type_0 &_ctx, int nbvoices){
    nbvoices = int_clip(nbvoices,0,4);
    int i;
-   i = synthSamplerKoto_Notes_nbNotes(_ctx.voicesactive);
+   i = synthSamplerKoto_Voice_nbActiveVoices(_ctx);
    while((i > nbvoices) && (i > 0)){
       synthSamplerKoto_Voice_noteOff(_ctx,_ctx.voices[((-1) + i)],0);
       synthSamplerKoto_Notes_noteOff(_ctx.voicesinactive,((-1) + i),0);

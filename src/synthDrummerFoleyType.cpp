@@ -554,7 +554,7 @@ void synthDrummerFoleyType_Voice_noteOn(synthDrummerFoleyType_Voice__ctx_type_0 
 void synthDrummerFoleyType_Voice_setNbVoices(synthDrummerFoleyType_Voice__ctx_type_0 &_ctx, int nbvoices){
    nbvoices = int_clip(nbvoices,0,4);
    int i;
-   i = synthDrummerFoleyType_Notes_nbNotes(_ctx.voicesactive);
+   i = synthDrummerFoleyType_Voice_nbActiveVoices(_ctx);
    while((i > nbvoices) && (i > 0)){
       synthDrummerFoleyType_Voice_noteOff(_ctx,_ctx.voices[((-1) + i)],0);
       synthDrummerFoleyType_Notes_noteOff(_ctx.voicesinactive,((-1) + i),0);
